@@ -38,12 +38,6 @@ const (
 	FieldName = "name"
 	// FieldCode holds the string denoting the code field in the database.
 	FieldCode = "code"
-	// FieldMenus holds the string denoting the menus field in the database.
-	FieldMenus = "menus"
-	// FieldApis holds the string denoting the apis field in the database.
-	FieldApis = "apis"
-	// FieldPermissions holds the string denoting the permissions field in the database.
-	FieldPermissions = "permissions"
 	// FieldCustomOrgUnitIds holds the string denoting the custom_org_unit_ids field in the database.
 	FieldCustomOrgUnitIds = "custom_org_unit_ids"
 	// FieldDataScope holds the string denoting the data_scope field in the database.
@@ -83,9 +77,6 @@ var Columns = []string{
 	FieldTenantID,
 	FieldName,
 	FieldCode,
-	FieldMenus,
-	FieldApis,
-	FieldPermissions,
 	FieldCustomOrgUnitIds,
 	FieldDataScope,
 	FieldStatus,

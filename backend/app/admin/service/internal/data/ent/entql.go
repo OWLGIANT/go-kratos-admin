@@ -673,9 +673,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 			role.FieldTenantID:         {Type: field.TypeUint32, Column: role.FieldTenantID},
 			role.FieldName:             {Type: field.TypeString, Column: role.FieldName},
 			role.FieldCode:             {Type: field.TypeString, Column: role.FieldCode},
-			role.FieldMenus:            {Type: field.TypeJSON, Column: role.FieldMenus},
-			role.FieldApis:             {Type: field.TypeJSON, Column: role.FieldApis},
-			role.FieldPermissions:      {Type: field.TypeJSON, Column: role.FieldPermissions},
 			role.FieldCustomOrgUnitIds: {Type: field.TypeJSON, Column: role.FieldCustomOrgUnitIds},
 			role.FieldDataScope:        {Type: field.TypeEnum, Column: role.FieldDataScope},
 			role.FieldStatus:           {Type: field.TypeEnum, Column: role.FieldStatus},
@@ -3828,21 +3825,6 @@ func (f *RoleFilter) WhereName(p entql.StringP) {
 // WhereCode applies the entql string predicate on the code field.
 func (f *RoleFilter) WhereCode(p entql.StringP) {
 	f.Where(p.Field(role.FieldCode))
-}
-
-// WhereMenus applies the entql json.RawMessage predicate on the menus field.
-func (f *RoleFilter) WhereMenus(p entql.BytesP) {
-	f.Where(p.Field(role.FieldMenus))
-}
-
-// WhereApis applies the entql json.RawMessage predicate on the apis field.
-func (f *RoleFilter) WhereApis(p entql.BytesP) {
-	f.Where(p.Field(role.FieldApis))
-}
-
-// WherePermissions applies the entql json.RawMessage predicate on the permissions field.
-func (f *RoleFilter) WherePermissions(p entql.BytesP) {
-	f.Where(p.Field(role.FieldPermissions))
 }
 
 // WhereCustomOrgUnitIds applies the entql json.RawMessage predicate on the custom_org_unit_ids field.

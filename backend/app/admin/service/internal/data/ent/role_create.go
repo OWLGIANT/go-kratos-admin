@@ -190,24 +190,6 @@ func (_c *RoleCreate) SetNillableCode(v *string) *RoleCreate {
 	return _c
 }
 
-// SetMenus sets the "menus" field.
-func (_c *RoleCreate) SetMenus(v []uint32) *RoleCreate {
-	_c.mutation.SetMenus(v)
-	return _c
-}
-
-// SetApis sets the "apis" field.
-func (_c *RoleCreate) SetApis(v []uint32) *RoleCreate {
-	_c.mutation.SetApis(v)
-	return _c
-}
-
-// SetPermissions sets the "permissions" field.
-func (_c *RoleCreate) SetPermissions(v []uint32) *RoleCreate {
-	_c.mutation.SetPermissions(v)
-	return _c
-}
-
 // SetCustomOrgUnitIds sets the "custom_org_unit_ids" field.
 func (_c *RoleCreate) SetCustomOrgUnitIds(v []uint32) *RoleCreate {
 	_c.mutation.SetCustomOrgUnitIds(v)
@@ -439,18 +421,6 @@ func (_c *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Code(); ok {
 		_spec.SetField(role.FieldCode, field.TypeString, value)
 		_node.Code = &value
-	}
-	if value, ok := _c.mutation.Menus(); ok {
-		_spec.SetField(role.FieldMenus, field.TypeJSON, value)
-		_node.Menus = value
-	}
-	if value, ok := _c.mutation.Apis(); ok {
-		_spec.SetField(role.FieldApis, field.TypeJSON, value)
-		_node.Apis = value
-	}
-	if value, ok := _c.mutation.Permissions(); ok {
-		_spec.SetField(role.FieldPermissions, field.TypeJSON, value)
-		_node.Permissions = value
 	}
 	if value, ok := _c.mutation.CustomOrgUnitIds(); ok {
 		_spec.SetField(role.FieldCustomOrgUnitIds, field.TypeJSON, value)
@@ -754,60 +724,6 @@ func (u *RoleUpsert) UpdateCode() *RoleUpsert {
 // ClearCode clears the value of the "code" field.
 func (u *RoleUpsert) ClearCode() *RoleUpsert {
 	u.SetNull(role.FieldCode)
-	return u
-}
-
-// SetMenus sets the "menus" field.
-func (u *RoleUpsert) SetMenus(v []uint32) *RoleUpsert {
-	u.Set(role.FieldMenus, v)
-	return u
-}
-
-// UpdateMenus sets the "menus" field to the value that was provided on create.
-func (u *RoleUpsert) UpdateMenus() *RoleUpsert {
-	u.SetExcluded(role.FieldMenus)
-	return u
-}
-
-// ClearMenus clears the value of the "menus" field.
-func (u *RoleUpsert) ClearMenus() *RoleUpsert {
-	u.SetNull(role.FieldMenus)
-	return u
-}
-
-// SetApis sets the "apis" field.
-func (u *RoleUpsert) SetApis(v []uint32) *RoleUpsert {
-	u.Set(role.FieldApis, v)
-	return u
-}
-
-// UpdateApis sets the "apis" field to the value that was provided on create.
-func (u *RoleUpsert) UpdateApis() *RoleUpsert {
-	u.SetExcluded(role.FieldApis)
-	return u
-}
-
-// ClearApis clears the value of the "apis" field.
-func (u *RoleUpsert) ClearApis() *RoleUpsert {
-	u.SetNull(role.FieldApis)
-	return u
-}
-
-// SetPermissions sets the "permissions" field.
-func (u *RoleUpsert) SetPermissions(v []uint32) *RoleUpsert {
-	u.Set(role.FieldPermissions, v)
-	return u
-}
-
-// UpdatePermissions sets the "permissions" field to the value that was provided on create.
-func (u *RoleUpsert) UpdatePermissions() *RoleUpsert {
-	u.SetExcluded(role.FieldPermissions)
-	return u
-}
-
-// ClearPermissions clears the value of the "permissions" field.
-func (u *RoleUpsert) ClearPermissions() *RoleUpsert {
-	u.SetNull(role.FieldPermissions)
 	return u
 }
 
@@ -1172,69 +1088,6 @@ func (u *RoleUpsertOne) UpdateCode() *RoleUpsertOne {
 func (u *RoleUpsertOne) ClearCode() *RoleUpsertOne {
 	return u.Update(func(s *RoleUpsert) {
 		s.ClearCode()
-	})
-}
-
-// SetMenus sets the "menus" field.
-func (u *RoleUpsertOne) SetMenus(v []uint32) *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.SetMenus(v)
-	})
-}
-
-// UpdateMenus sets the "menus" field to the value that was provided on create.
-func (u *RoleUpsertOne) UpdateMenus() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.UpdateMenus()
-	})
-}
-
-// ClearMenus clears the value of the "menus" field.
-func (u *RoleUpsertOne) ClearMenus() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearMenus()
-	})
-}
-
-// SetApis sets the "apis" field.
-func (u *RoleUpsertOne) SetApis(v []uint32) *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.SetApis(v)
-	})
-}
-
-// UpdateApis sets the "apis" field to the value that was provided on create.
-func (u *RoleUpsertOne) UpdateApis() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.UpdateApis()
-	})
-}
-
-// ClearApis clears the value of the "apis" field.
-func (u *RoleUpsertOne) ClearApis() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearApis()
-	})
-}
-
-// SetPermissions sets the "permissions" field.
-func (u *RoleUpsertOne) SetPermissions(v []uint32) *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.SetPermissions(v)
-	})
-}
-
-// UpdatePermissions sets the "permissions" field to the value that was provided on create.
-func (u *RoleUpsertOne) UpdatePermissions() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.UpdatePermissions()
-	})
-}
-
-// ClearPermissions clears the value of the "permissions" field.
-func (u *RoleUpsertOne) ClearPermissions() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearPermissions()
 	})
 }
 
@@ -1777,69 +1630,6 @@ func (u *RoleUpsertBulk) UpdateCode() *RoleUpsertBulk {
 func (u *RoleUpsertBulk) ClearCode() *RoleUpsertBulk {
 	return u.Update(func(s *RoleUpsert) {
 		s.ClearCode()
-	})
-}
-
-// SetMenus sets the "menus" field.
-func (u *RoleUpsertBulk) SetMenus(v []uint32) *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.SetMenus(v)
-	})
-}
-
-// UpdateMenus sets the "menus" field to the value that was provided on create.
-func (u *RoleUpsertBulk) UpdateMenus() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.UpdateMenus()
-	})
-}
-
-// ClearMenus clears the value of the "menus" field.
-func (u *RoleUpsertBulk) ClearMenus() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearMenus()
-	})
-}
-
-// SetApis sets the "apis" field.
-func (u *RoleUpsertBulk) SetApis(v []uint32) *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.SetApis(v)
-	})
-}
-
-// UpdateApis sets the "apis" field to the value that was provided on create.
-func (u *RoleUpsertBulk) UpdateApis() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.UpdateApis()
-	})
-}
-
-// ClearApis clears the value of the "apis" field.
-func (u *RoleUpsertBulk) ClearApis() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearApis()
-	})
-}
-
-// SetPermissions sets the "permissions" field.
-func (u *RoleUpsertBulk) SetPermissions(v []uint32) *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.SetPermissions(v)
-	})
-}
-
-// UpdatePermissions sets the "permissions" field to the value that was provided on create.
-func (u *RoleUpsertBulk) UpdatePermissions() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.UpdatePermissions()
-	})
-}
-
-// ClearPermissions clears the value of the "permissions" field.
-func (u *RoleUpsertBulk) ClearPermissions() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearPermissions()
 	})
 }
 

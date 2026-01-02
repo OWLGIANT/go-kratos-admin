@@ -36,7 +36,9 @@ func (r *RoleApiRepo) AssignApis(ctx context.Context, roleId uint32, apiIds []ui
 	}
 
 	// 删除该角色的所有旧关联
-	if _, err = tx.RoleApi.Delete().Where(roleapi.RoleID(roleId)).Exec(ctx); err != nil {
+	if _, err = tx.RoleApi.Delete().
+		Where(roleapi.RoleID(roleId)).
+		Exec(ctx); err != nil {
 		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("delete old role apis failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("delete old role apis failed")
@@ -54,7 +56,7 @@ func (r *RoleApiRepo) AssignApis(ctx context.Context, roleId uint32, apiIds []ui
 
 	var roleApis []*ent.RoleApiCreate
 	for _, apiId := range apiIds {
-		rm := r.entClient.Client().RoleApi.
+		rm := tx.RoleApi.
 			Create().
 			SetRoleID(roleId).
 			SetAPIID(apiId).
@@ -63,7 +65,7 @@ func (r *RoleApiRepo) AssignApis(ctx context.Context, roleId uint32, apiIds []ui
 		roleApis = append(roleApis, rm)
 	}
 
-	_, err = r.entClient.Client().RoleApi.CreateBulk(roleApis...).Save(ctx)
+	_, err = tx.RoleApi.CreateBulk(roleApis...).Save(ctx)
 	if err != nil {
 		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("assign apis to role failed: %s", err.Error())
@@ -82,13 +84,14 @@ func (r *RoleApiRepo) AssignApis(ctx context.Context, roleId uint32, apiIds []ui
 // ListApiIdsByRoleId 获取角色分配的API ID列表
 func (r *RoleApiRepo) ListApiIdsByRoleId(ctx context.Context, roleId uint32) ([]uint32, error) {
 	intIDs, err := r.entClient.Client().RoleApi.Query().
-		Where(roleapi.IDEQ(roleId)).
+		Where(roleapi.RoleIDEQ(roleId)).
 		Select(roleapi.FieldAPIID).
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query api ids by role id failed: %s", err.Error())
 		return nil, userV1.ErrorInternalServerError("query api ids by role id failed")
 	}
+
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {
 		ids[i] = uint32(v)

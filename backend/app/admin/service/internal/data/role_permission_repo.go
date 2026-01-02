@@ -51,7 +51,7 @@ func (r *RolePermissionRepo) AssignPermissions(ctx context.Context, tx *ent.Tx, 
 	}
 
 	for _, permissionID := range permissions {
-		rp := r.entClient.Client().RolePermission.
+		rp := tx.RolePermission.
 			Create().
 			SetRoleID(roleID).
 			SetPermissionID(permissionID).

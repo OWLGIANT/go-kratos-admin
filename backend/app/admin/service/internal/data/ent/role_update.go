@@ -258,60 +258,6 @@ func (_u *RoleUpdate) ClearCode() *RoleUpdate {
 	return _u
 }
 
-// SetMenus sets the "menus" field.
-func (_u *RoleUpdate) SetMenus(v []uint32) *RoleUpdate {
-	_u.mutation.SetMenus(v)
-	return _u
-}
-
-// AppendMenus appends value to the "menus" field.
-func (_u *RoleUpdate) AppendMenus(v []uint32) *RoleUpdate {
-	_u.mutation.AppendMenus(v)
-	return _u
-}
-
-// ClearMenus clears the value of the "menus" field.
-func (_u *RoleUpdate) ClearMenus() *RoleUpdate {
-	_u.mutation.ClearMenus()
-	return _u
-}
-
-// SetApis sets the "apis" field.
-func (_u *RoleUpdate) SetApis(v []uint32) *RoleUpdate {
-	_u.mutation.SetApis(v)
-	return _u
-}
-
-// AppendApis appends value to the "apis" field.
-func (_u *RoleUpdate) AppendApis(v []uint32) *RoleUpdate {
-	_u.mutation.AppendApis(v)
-	return _u
-}
-
-// ClearApis clears the value of the "apis" field.
-func (_u *RoleUpdate) ClearApis() *RoleUpdate {
-	_u.mutation.ClearApis()
-	return _u
-}
-
-// SetPermissions sets the "permissions" field.
-func (_u *RoleUpdate) SetPermissions(v []uint32) *RoleUpdate {
-	_u.mutation.SetPermissions(v)
-	return _u
-}
-
-// AppendPermissions appends value to the "permissions" field.
-func (_u *RoleUpdate) AppendPermissions(v []uint32) *RoleUpdate {
-	_u.mutation.AppendPermissions(v)
-	return _u
-}
-
-// ClearPermissions clears the value of the "permissions" field.
-func (_u *RoleUpdate) ClearPermissions() *RoleUpdate {
-	_u.mutation.ClearPermissions()
-	return _u
-}
-
 // SetCustomOrgUnitIds sets the "custom_org_unit_ids" field.
 func (_u *RoleUpdate) SetCustomOrgUnitIds(v []uint32) *RoleUpdate {
 	_u.mutation.SetCustomOrgUnitIds(v)
@@ -588,39 +534,6 @@ func (_u *RoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.CodeCleared() {
 		_spec.ClearField(role.FieldCode, field.TypeString)
-	}
-	if value, ok := _u.mutation.Menus(); ok {
-		_spec.SetField(role.FieldMenus, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedMenus(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, role.FieldMenus, value)
-		})
-	}
-	if _u.mutation.MenusCleared() {
-		_spec.ClearField(role.FieldMenus, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.Apis(); ok {
-		_spec.SetField(role.FieldApis, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedApis(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, role.FieldApis, value)
-		})
-	}
-	if _u.mutation.ApisCleared() {
-		_spec.ClearField(role.FieldApis, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.Permissions(); ok {
-		_spec.SetField(role.FieldPermissions, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedPermissions(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, role.FieldPermissions, value)
-		})
-	}
-	if _u.mutation.PermissionsCleared() {
-		_spec.ClearField(role.FieldPermissions, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.CustomOrgUnitIds(); ok {
 		_spec.SetField(role.FieldCustomOrgUnitIds, field.TypeJSON, value)
@@ -975,60 +888,6 @@ func (_u *RoleUpdateOne) ClearCode() *RoleUpdateOne {
 	return _u
 }
 
-// SetMenus sets the "menus" field.
-func (_u *RoleUpdateOne) SetMenus(v []uint32) *RoleUpdateOne {
-	_u.mutation.SetMenus(v)
-	return _u
-}
-
-// AppendMenus appends value to the "menus" field.
-func (_u *RoleUpdateOne) AppendMenus(v []uint32) *RoleUpdateOne {
-	_u.mutation.AppendMenus(v)
-	return _u
-}
-
-// ClearMenus clears the value of the "menus" field.
-func (_u *RoleUpdateOne) ClearMenus() *RoleUpdateOne {
-	_u.mutation.ClearMenus()
-	return _u
-}
-
-// SetApis sets the "apis" field.
-func (_u *RoleUpdateOne) SetApis(v []uint32) *RoleUpdateOne {
-	_u.mutation.SetApis(v)
-	return _u
-}
-
-// AppendApis appends value to the "apis" field.
-func (_u *RoleUpdateOne) AppendApis(v []uint32) *RoleUpdateOne {
-	_u.mutation.AppendApis(v)
-	return _u
-}
-
-// ClearApis clears the value of the "apis" field.
-func (_u *RoleUpdateOne) ClearApis() *RoleUpdateOne {
-	_u.mutation.ClearApis()
-	return _u
-}
-
-// SetPermissions sets the "permissions" field.
-func (_u *RoleUpdateOne) SetPermissions(v []uint32) *RoleUpdateOne {
-	_u.mutation.SetPermissions(v)
-	return _u
-}
-
-// AppendPermissions appends value to the "permissions" field.
-func (_u *RoleUpdateOne) AppendPermissions(v []uint32) *RoleUpdateOne {
-	_u.mutation.AppendPermissions(v)
-	return _u
-}
-
-// ClearPermissions clears the value of the "permissions" field.
-func (_u *RoleUpdateOne) ClearPermissions() *RoleUpdateOne {
-	_u.mutation.ClearPermissions()
-	return _u
-}
-
 // SetCustomOrgUnitIds sets the "custom_org_unit_ids" field.
 func (_u *RoleUpdateOne) SetCustomOrgUnitIds(v []uint32) *RoleUpdateOne {
 	_u.mutation.SetCustomOrgUnitIds(v)
@@ -1335,39 +1194,6 @@ func (_u *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) {
 	}
 	if _u.mutation.CodeCleared() {
 		_spec.ClearField(role.FieldCode, field.TypeString)
-	}
-	if value, ok := _u.mutation.Menus(); ok {
-		_spec.SetField(role.FieldMenus, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedMenus(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, role.FieldMenus, value)
-		})
-	}
-	if _u.mutation.MenusCleared() {
-		_spec.ClearField(role.FieldMenus, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.Apis(); ok {
-		_spec.SetField(role.FieldApis, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedApis(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, role.FieldApis, value)
-		})
-	}
-	if _u.mutation.ApisCleared() {
-		_spec.ClearField(role.FieldApis, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.Permissions(); ok {
-		_spec.SetField(role.FieldPermissions, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedPermissions(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, role.FieldPermissions, value)
-		})
-	}
-	if _u.mutation.PermissionsCleared() {
-		_spec.ClearField(role.FieldPermissions, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.CustomOrgUnitIds(); ok {
 		_spec.SetField(role.FieldCustomOrgUnitIds, field.TypeJSON, value)

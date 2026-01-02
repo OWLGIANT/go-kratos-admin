@@ -52,7 +52,7 @@ func (r *PermissionMenuRepo) AssignMenus(ctx context.Context, tx *ent.Tx, tenant
 	}
 
 	for permissionID, menuID := range menus {
-		pm := r.entClient.Client().PermissionMenu.
+		pm := tx.PermissionMenu.
 			Create().
 			SetPermissionID(permissionID).
 			SetMenuID(menuID).

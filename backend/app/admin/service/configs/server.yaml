@@ -28,8 +28,8 @@ server:
       auth:
         method: "HS256"
         key: "some_api_key"
-        access_token_expires: 0s
-        refresh_token_expires: 0s
+        access_token_expires: 7200s # 2 hours
+        refresh_token_expires: 604800s # 7 days
         access_token_key_prefix: "uat_"
         refresh_token_key_prefix: "urt_"
 

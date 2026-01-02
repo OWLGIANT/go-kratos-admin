@@ -124,7 +124,7 @@ func (r *MembershipPositionRepo) AssignPositions(
 
 	var membershipPositionCreates []*ent.MembershipPositionCreate
 	for _, id := range positionIDs {
-		rm := r.entClient.Client().MembershipPosition.
+		rm := tx.MembershipPosition.
 			Create().
 			SetMembershipID(membershipID).
 			SetPositionID(id).
@@ -140,7 +140,7 @@ func (r *MembershipPositionRepo) AssignPositions(
 		membershipPositionCreates = append(membershipPositionCreates, rm)
 	}
 
-	_, err = r.entClient.Client().MembershipPosition.CreateBulk(membershipPositionCreates...).Save(ctx)
+	_, err = tx.MembershipPosition.CreateBulk(membershipPositionCreates...).Save(ctx)
 	if err != nil {
 		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("assign positions to membership failed: %s", err.Error())

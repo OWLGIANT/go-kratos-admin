@@ -36,7 +36,9 @@ func (r *RoleMenuRepo) AssignMenus(ctx context.Context, roleId uint32, menuIds [
 	}
 
 	// 删除该角色的所有旧关联
-	if _, err = tx.RoleMenu.Delete().Where(rolemenu.RoleID(roleId)).Exec(ctx); err != nil {
+	if _, err = tx.RoleMenu.Delete().
+		Where(rolemenu.RoleID(roleId)).
+		Exec(ctx); err != nil {
 		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("delete old role menus failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("delete old role menus failed")
@@ -54,7 +56,7 @@ func (r *RoleMenuRepo) AssignMenus(ctx context.Context, roleId uint32, menuIds [
 
 	var roleMenus []*ent.RoleMenuCreate
 	for _, menuID := range menuIds {
-		rm := r.entClient.Client().RoleMenu.
+		rm := tx.RoleMenu.
 			Create().
 			SetRoleID(roleId).
 			SetMenuID(menuID).
@@ -63,7 +65,7 @@ func (r *RoleMenuRepo) AssignMenus(ctx context.Context, roleId uint32, menuIds [
 		roleMenus = append(roleMenus, rm)
 	}
 
-	_, err = r.entClient.Client().RoleMenu.CreateBulk(roleMenus...).Save(ctx)
+	_, err = tx.RoleMenu.CreateBulk(roleMenus...).Save(ctx)
 	if err != nil {
 		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("assign menus to role failed: %s", err.Error())

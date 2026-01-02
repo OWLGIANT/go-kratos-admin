@@ -111,6 +111,17 @@ func (r *RoleRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector))
 	return count, nil
 }
 
+func (r *RoleRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+	exist, err := r.entClient.Client().Role.Query().
+		Where(role.IDEQ(id)).
+		Exist(ctx)
+	if err != nil {
+		r.log.Errorf("query exist failed: %s", err.Error())
+		return false, userV1.ErrorInternalServerError("query exist failed")
+	}
+	return exist, nil
+}
+
 func (r *RoleRepo) List(ctx context.Context, req *pagination.PagingRequest) (*userV1.ListRoleResponse, error) {
 	if req == nil {
 		return nil, userV1.ErrorBadRequest("invalid parameter")
@@ -126,43 +137,14 @@ func (r *RoleRepo) List(ctx context.Context, req *pagination.PagingRequest) (*us
 		return &userV1.ListRoleResponse{Total: 0, Items: nil}, nil
 	}
 
+	if err = r.fillMenusAndApis(ctx, ret.Items); err != nil {
+		return nil, err
+	}
+
 	return &userV1.ListRoleResponse{
 		Total: ret.Total,
 		Items: ret.Items,
 	}, nil
-}
-
-func (r *RoleRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
-	exist, err := r.entClient.Client().Role.Query().
-		Where(role.IDEQ(id)).
-		Exist(ctx)
-	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
-		return false, userV1.ErrorInternalServerError("query exist failed")
-	}
-	return exist, nil
-}
-
-func (r *RoleRepo) Get(ctx context.Context, req *userV1.GetRoleRequest) (*userV1.Role, error) {
-	if req == nil {
-		return nil, userV1.ErrorBadRequest("invalid parameter")
-	}
-
-	builder := r.entClient.Client().Role.Query()
-
-	var whereCond []func(s *sql.Selector)
-	switch req.QueryBy.(type) {
-	default:
-	case *userV1.GetRoleRequest_Id:
-		whereCond = append(whereCond, role.IDEQ(req.GetId()))
-	}
-
-	dto, err := r.repository.Get(ctx, builder, req.GetViewMask(), whereCond...)
-	if err != nil {
-		return nil, err
-	}
-
-	return dto, err
 }
 
 // ListRolesByRoleCodes 通过角色编码列表获取角色列表
@@ -183,6 +165,10 @@ func (r *RoleRepo) ListRolesByRoleCodes(ctx context.Context, codes []string) ([]
 	for _, entity := range entities {
 		dto := r.mapper.ToDTO(entity)
 		dtos = append(dtos, dto)
+	}
+
+	if err = r.fillMenusAndApis(ctx, dtos); err != nil {
+		return nil, err
 	}
 
 	return dtos, nil
@@ -206,6 +192,10 @@ func (r *RoleRepo) ListRolesByRoleIds(ctx context.Context, ids []uint32) ([]*use
 	for _, entity := range entities {
 		dto := r.mapper.ToDTO(entity)
 		dtos = append(dtos, dto)
+	}
+
+	if err = r.fillMenusAndApis(ctx, dtos); err != nil {
+		return nil, err
 	}
 
 	return dtos, nil
@@ -235,6 +225,34 @@ func (r *RoleRepo) ListRoleCodesByRoleIds(ctx context.Context, ids []uint32) ([]
 	return codes, nil
 }
 
+// Get 获取角色信息
+func (r *RoleRepo) Get(ctx context.Context, req *userV1.GetRoleRequest) (*userV1.Role, error) {
+	if req == nil {
+		return nil, userV1.ErrorBadRequest("invalid parameter")
+	}
+
+	builder := r.entClient.Client().Role.Query()
+
+	var whereCond []func(s *sql.Selector)
+	switch req.QueryBy.(type) {
+	default:
+	case *userV1.GetRoleRequest_Id:
+		whereCond = append(whereCond, role.IDEQ(req.GetId()))
+	}
+
+	dto, err := r.repository.Get(ctx, builder, req.GetViewMask(), whereCond...)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = r.fillMenuAndApi(ctx, dto); err != nil {
+		return nil, err
+	}
+
+	return dto, err
+}
+
+// Create 创建角色
 func (r *RoleRepo) Create(ctx context.Context, req *userV1.CreateRoleRequest) error {
 	if req == nil || req.Data == nil {
 		return userV1.ErrorBadRequest("invalid parameter")
@@ -260,25 +278,36 @@ func (r *RoleRepo) Create(ctx context.Context, req *userV1.CreateRoleRequest) er
 		builder.SetCreatedAt(time.Now())
 	}
 
-	if req.Data.Menus != nil {
-		builder.SetMenus(req.Data.Menus)
-	}
-	if req.Data.Apis != nil {
-		builder.SetApis(req.Data.Apis)
-	}
-
 	if req.Data.Id != nil {
 		builder.SetID(req.GetData().GetId())
 	}
 
-	if err := builder.Exec(ctx); err != nil {
+	var err error
+	var ret *ent.Role
+	if ret, err = builder.Save(ctx); err != nil {
 		r.log.Errorf("insert one data failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("insert data failed")
+	}
+
+	if req.Data.Menus != nil {
+		//builder.SetMenus(req.Data.Menus)
+		if err = r.assignMenusToRole(ctx, ret.ID, req.Data.Menus, req.Data.GetCreatedBy()); err != nil {
+			r.log.Errorf("assign menus to role failed: %s", err.Error())
+			return userV1.ErrorInternalServerError("assign menus to role failed")
+		}
+	}
+	if req.Data.Apis != nil {
+		//builder.SetApis(req.Data.Apis)
+		if err = r.assignApisToRole(ctx, ret.ID, req.Data.Apis, req.Data.GetCreatedBy()); err != nil {
+			r.log.Errorf("assign apis to role failed: %s", err.Error())
+			return userV1.ErrorInternalServerError("assign apis to role failed")
+		}
 	}
 
 	return nil
 }
 
+// Update 更新角色信息
 func (r *RoleRepo) Update(ctx context.Context, req *userV1.UpdateRoleRequest) error {
 	if req == nil || req.Data == nil {
 		return userV1.ErrorBadRequest("invalid parameter")
@@ -317,21 +346,35 @@ func (r *RoleRepo) Update(ctx context.Context, req *userV1.UpdateRoleRequest) er
 				builder.SetUpdatedAt(time.Now())
 			}
 
-			if req.Data.Menus != nil {
-				builder.SetMenus(req.Data.Menus)
-			}
-			if req.Data.Apis != nil {
-				builder.SetApis(req.Data.Apis)
-			}
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(role.FieldID, req.GetId()))
 		},
 	)
+	if err != nil {
+		r.log.Errorf("update role failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("update role failed")
+	}
 
-	return err
+	if req.Data.Menus != nil {
+		//builder.SetMenus(req.Data.Menus)
+		if err = r.assignMenusToRole(ctx, req.GetId(), req.Data.Menus, req.Data.GetUpdatedBy()); err != nil {
+			r.log.Errorf("assign menus to role failed: %s", err.Error())
+			return userV1.ErrorInternalServerError("assign menus to role failed")
+		}
+	}
+	if req.Data.Apis != nil {
+		//builder.SetApis(req.Data.Apis)
+		if err = r.assignApisToRole(ctx, req.GetId(), req.Data.Apis, req.Data.GetUpdatedBy()); err != nil {
+			r.log.Errorf("assign apis to role failed: %s", err.Error())
+			return userV1.ErrorInternalServerError("assign apis to role failed")
+		}
+	}
+
+	return nil
 }
 
+// Delete 删除角色，同时删除其所有子角色
 func (r *RoleRepo) Delete(ctx context.Context, req *userV1.DeleteRoleRequest) error {
 	if req == nil {
 		return userV1.ErrorBadRequest("invalid parameter")
@@ -351,6 +394,47 @@ func (r *RoleRepo) Delete(ctx context.Context, req *userV1.DeleteRoleRequest) er
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete roles failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("delete roles failed")
+	}
+
+	return nil
+}
+
+// assignApisToRole 分配API给角色
+func (r *RoleRepo) assignApisToRole(ctx context.Context, roleId uint32, apiIds []uint32, operatorId uint32) error {
+	return r.roleApiRepo.AssignApis(ctx, roleId, apiIds, operatorId)
+}
+
+// assignMenusToRole 分配菜单给角色
+func (r *RoleRepo) assignMenusToRole(ctx context.Context, roleId uint32, menuIds []uint32, operatorId uint32) error {
+	return r.roleMenuRepo.AssignMenus(ctx, roleId, menuIds, operatorId)
+}
+
+func (r *RoleRepo) fillMenuAndApi(ctx context.Context, role *userV1.Role) error {
+	// 获取角色分配的菜单ID列表
+	menuIds, err := r.roleMenuRepo.ListMenuIdsByRoleId(ctx, role.GetId())
+	if err != nil {
+		r.log.Errorf("list menu ids by role id failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("list menu ids by role id failed")
+	}
+	role.Menus = menuIds
+
+	// 获取角色分配的API ID列表
+	apiIds, err := r.roleApiRepo.ListApiIdsByRoleId(ctx, role.GetId())
+	if err != nil {
+		r.log.Errorf("list api ids by role id failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("list api ids by role id failed")
+	}
+	role.Apis = apiIds
+
+	return nil
+}
+
+// fillMenusAndApis 填充角色的菜单和API列表
+func (r *RoleRepo) fillMenusAndApis(ctx context.Context, roles []*userV1.Role) error {
+	for _, item := range roles {
+		if err := r.fillMenuAndApi(ctx, item); err != nil {
+			return err
+		}
 	}
 
 	return nil

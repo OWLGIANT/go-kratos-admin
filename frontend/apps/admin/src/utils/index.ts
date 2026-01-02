@@ -3,9 +3,14 @@
  * @param value
  */
 export function deepClone<T>(value: T): T {
-  // 优先使用原生 structuredClone（现代浏览器）
+  // 尝试使用原生 structuredClone，但发生异常时回退到手写实现
   if (typeof (globalThis as any).structuredClone === 'function') {
-    return (globalThis as any).structuredClone(value);
+    try {
+      return (globalThis as any).structuredClone(value);
+    } catch {
+      // structuredClone 不能克隆某些类型（如 Vue 响应式代理、DOM 节点、window 等）
+      // 回退到手写深拷贝
+    }
   }
 
   const seen = new WeakMap<any, any>();
@@ -15,12 +20,14 @@ export function deepClone<T>(value: T): T {
     if (v instanceof Date) return new Date(v.getTime());
     if (v instanceof RegExp) return new RegExp(v.source, v.flags);
     if (v instanceof Map) {
+      if (seen.has(v)) return seen.get(v);
       const m = new Map();
       seen.set(v, m);
       for (const [k, val] of v) m.set(_clone(k), _clone(val));
       return m;
     }
     if (v instanceof Set) {
+      if (seen.has(v)) return seen.get(v);
       const s = new Set();
       seen.set(v, s);
       for (const item of v) s.add(_clone(item));

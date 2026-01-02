@@ -27,9 +27,6 @@ type RoleService struct {
 
 	roleRepo *data.RoleRepo
 
-	roleApiRepo  *data.RoleApiRepo
-	roleMenuRepo *data.RoleMenuRepo
-
 	membershipOrgUnitRepo *data.MembershipOrgUnitRepo
 	membershipRepo        *data.MembershipRepo
 }
@@ -38,8 +35,6 @@ func NewRoleService(
 	ctx *bootstrap.Context,
 	authorizer *data.Authorizer,
 	roleRepo *data.RoleRepo,
-	roleApiRepo *data.RoleApiRepo,
-	roleMenuRepo *data.RoleMenuRepo,
 	membershipOrgUnitRepo *data.MembershipOrgUnitRepo,
 	membershipRepo *data.MembershipRepo,
 ) *RoleService {
@@ -47,8 +42,6 @@ func NewRoleService(
 		log:                   ctx.NewLoggerHelper("role/service/admin-service"),
 		authorizer:            authorizer,
 		roleRepo:              roleRepo,
-		roleApiRepo:           roleApiRepo,
-		roleMenuRepo:          roleMenuRepo,
 		membershipOrgUnitRepo: membershipOrgUnitRepo,
 		membershipRepo:        membershipRepo,
 	}

@@ -34889,12 +34889,6 @@ type RoleMutation struct {
 	addtenant_id              *int32
 	name                      *string
 	code                      *string
-	menus                     *[]uint32
-	appendmenus               []uint32
-	apis                      *[]uint32
-	appendapis                []uint32
-	permissions               *[]uint32
-	appendpermissions         []uint32
 	custom_org_unit_ids       *[]uint32
 	appendcustom_org_unit_ids []uint32
 	data_scope                *role.DataScope
@@ -35708,201 +35702,6 @@ func (m *RoleMutation) ResetCode() {
 	delete(m.clearedFields, role.FieldCode)
 }
 
-// SetMenus sets the "menus" field.
-func (m *RoleMutation) SetMenus(u []uint32) {
-	m.menus = &u
-	m.appendmenus = nil
-}
-
-// Menus returns the value of the "menus" field in the mutation.
-func (m *RoleMutation) Menus() (r []uint32, exists bool) {
-	v := m.menus
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldMenus returns the old "menus" field's value of the Role entity.
-// If the Role object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RoleMutation) OldMenus(ctx context.Context) (v []uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldMenus is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldMenus requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMenus: %w", err)
-	}
-	return oldValue.Menus, nil
-}
-
-// AppendMenus adds u to the "menus" field.
-func (m *RoleMutation) AppendMenus(u []uint32) {
-	m.appendmenus = append(m.appendmenus, u...)
-}
-
-// AppendedMenus returns the list of values that were appended to the "menus" field in this mutation.
-func (m *RoleMutation) AppendedMenus() ([]uint32, bool) {
-	if len(m.appendmenus) == 0 {
-		return nil, false
-	}
-	return m.appendmenus, true
-}
-
-// ClearMenus clears the value of the "menus" field.
-func (m *RoleMutation) ClearMenus() {
-	m.menus = nil
-	m.appendmenus = nil
-	m.clearedFields[role.FieldMenus] = struct{}{}
-}
-
-// MenusCleared returns if the "menus" field was cleared in this mutation.
-func (m *RoleMutation) MenusCleared() bool {
-	_, ok := m.clearedFields[role.FieldMenus]
-	return ok
-}
-
-// ResetMenus resets all changes to the "menus" field.
-func (m *RoleMutation) ResetMenus() {
-	m.menus = nil
-	m.appendmenus = nil
-	delete(m.clearedFields, role.FieldMenus)
-}
-
-// SetApis sets the "apis" field.
-func (m *RoleMutation) SetApis(u []uint32) {
-	m.apis = &u
-	m.appendapis = nil
-}
-
-// Apis returns the value of the "apis" field in the mutation.
-func (m *RoleMutation) Apis() (r []uint32, exists bool) {
-	v := m.apis
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldApis returns the old "apis" field's value of the Role entity.
-// If the Role object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RoleMutation) OldApis(ctx context.Context) (v []uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldApis is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldApis requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldApis: %w", err)
-	}
-	return oldValue.Apis, nil
-}
-
-// AppendApis adds u to the "apis" field.
-func (m *RoleMutation) AppendApis(u []uint32) {
-	m.appendapis = append(m.appendapis, u...)
-}
-
-// AppendedApis returns the list of values that were appended to the "apis" field in this mutation.
-func (m *RoleMutation) AppendedApis() ([]uint32, bool) {
-	if len(m.appendapis) == 0 {
-		return nil, false
-	}
-	return m.appendapis, true
-}
-
-// ClearApis clears the value of the "apis" field.
-func (m *RoleMutation) ClearApis() {
-	m.apis = nil
-	m.appendapis = nil
-	m.clearedFields[role.FieldApis] = struct{}{}
-}
-
-// ApisCleared returns if the "apis" field was cleared in this mutation.
-func (m *RoleMutation) ApisCleared() bool {
-	_, ok := m.clearedFields[role.FieldApis]
-	return ok
-}
-
-// ResetApis resets all changes to the "apis" field.
-func (m *RoleMutation) ResetApis() {
-	m.apis = nil
-	m.appendapis = nil
-	delete(m.clearedFields, role.FieldApis)
-}
-
-// SetPermissions sets the "permissions" field.
-func (m *RoleMutation) SetPermissions(u []uint32) {
-	m.permissions = &u
-	m.appendpermissions = nil
-}
-
-// Permissions returns the value of the "permissions" field in the mutation.
-func (m *RoleMutation) Permissions() (r []uint32, exists bool) {
-	v := m.permissions
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPermissions returns the old "permissions" field's value of the Role entity.
-// If the Role object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RoleMutation) OldPermissions(ctx context.Context) (v []uint32, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPermissions is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPermissions requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPermissions: %w", err)
-	}
-	return oldValue.Permissions, nil
-}
-
-// AppendPermissions adds u to the "permissions" field.
-func (m *RoleMutation) AppendPermissions(u []uint32) {
-	m.appendpermissions = append(m.appendpermissions, u...)
-}
-
-// AppendedPermissions returns the list of values that were appended to the "permissions" field in this mutation.
-func (m *RoleMutation) AppendedPermissions() ([]uint32, bool) {
-	if len(m.appendpermissions) == 0 {
-		return nil, false
-	}
-	return m.appendpermissions, true
-}
-
-// ClearPermissions clears the value of the "permissions" field.
-func (m *RoleMutation) ClearPermissions() {
-	m.permissions = nil
-	m.appendpermissions = nil
-	m.clearedFields[role.FieldPermissions] = struct{}{}
-}
-
-// PermissionsCleared returns if the "permissions" field was cleared in this mutation.
-func (m *RoleMutation) PermissionsCleared() bool {
-	_, ok := m.clearedFields[role.FieldPermissions]
-	return ok
-}
-
-// ResetPermissions resets all changes to the "permissions" field.
-func (m *RoleMutation) ResetPermissions() {
-	m.permissions = nil
-	m.appendpermissions = nil
-	delete(m.clearedFields, role.FieldPermissions)
-}
-
 // SetCustomOrgUnitIds sets the "custom_org_unit_ids" field.
 func (m *RoleMutation) SetCustomOrgUnitIds(u []uint32) {
 	m.custom_org_unit_ids = &u
@@ -36230,7 +36029,7 @@ func (m *RoleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RoleMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, role.FieldCreatedAt)
 	}
@@ -36266,15 +36065,6 @@ func (m *RoleMutation) Fields() []string {
 	}
 	if m.code != nil {
 		fields = append(fields, role.FieldCode)
-	}
-	if m.menus != nil {
-		fields = append(fields, role.FieldMenus)
-	}
-	if m.apis != nil {
-		fields = append(fields, role.FieldApis)
-	}
-	if m.permissions != nil {
-		fields = append(fields, role.FieldPermissions)
 	}
 	if m.custom_org_unit_ids != nil {
 		fields = append(fields, role.FieldCustomOrgUnitIds)
@@ -36320,12 +36110,6 @@ func (m *RoleMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case role.FieldCode:
 		return m.Code()
-	case role.FieldMenus:
-		return m.Menus()
-	case role.FieldApis:
-		return m.Apis()
-	case role.FieldPermissions:
-		return m.Permissions()
 	case role.FieldCustomOrgUnitIds:
 		return m.CustomOrgUnitIds()
 	case role.FieldDataScope:
@@ -36367,12 +36151,6 @@ func (m *RoleMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldName(ctx)
 	case role.FieldCode:
 		return m.OldCode(ctx)
-	case role.FieldMenus:
-		return m.OldMenus(ctx)
-	case role.FieldApis:
-		return m.OldApis(ctx)
-	case role.FieldPermissions:
-		return m.OldPermissions(ctx)
 	case role.FieldCustomOrgUnitIds:
 		return m.OldCustomOrgUnitIds(ctx)
 	case role.FieldDataScope:
@@ -36473,27 +36251,6 @@ func (m *RoleMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCode(v)
-		return nil
-	case role.FieldMenus:
-		v, ok := value.([]uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetMenus(v)
-		return nil
-	case role.FieldApis:
-		v, ok := value.([]uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetApis(v)
-		return nil
-	case role.FieldPermissions:
-		v, ok := value.([]uint32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPermissions(v)
 		return nil
 	case role.FieldCustomOrgUnitIds:
 		v, ok := value.([]uint32)
@@ -36652,15 +36409,6 @@ func (m *RoleMutation) ClearedFields() []string {
 	if m.FieldCleared(role.FieldCode) {
 		fields = append(fields, role.FieldCode)
 	}
-	if m.FieldCleared(role.FieldMenus) {
-		fields = append(fields, role.FieldMenus)
-	}
-	if m.FieldCleared(role.FieldApis) {
-		fields = append(fields, role.FieldApis)
-	}
-	if m.FieldCleared(role.FieldPermissions) {
-		fields = append(fields, role.FieldPermissions)
-	}
 	if m.FieldCleared(role.FieldCustomOrgUnitIds) {
 		fields = append(fields, role.FieldCustomOrgUnitIds)
 	}
@@ -36723,15 +36471,6 @@ func (m *RoleMutation) ClearField(name string) error {
 	case role.FieldCode:
 		m.ClearCode()
 		return nil
-	case role.FieldMenus:
-		m.ClearMenus()
-		return nil
-	case role.FieldApis:
-		m.ClearApis()
-		return nil
-	case role.FieldPermissions:
-		m.ClearPermissions()
-		return nil
 	case role.FieldCustomOrgUnitIds:
 		m.ClearCustomOrgUnitIds()
 		return nil
@@ -36787,15 +36526,6 @@ func (m *RoleMutation) ResetField(name string) error {
 		return nil
 	case role.FieldCode:
 		m.ResetCode()
-		return nil
-	case role.FieldMenus:
-		m.ResetMenus()
-		return nil
-	case role.FieldApis:
-		m.ResetApis()
-		return nil
-	case role.FieldPermissions:
-		m.ResetPermissions()
 		return nil
 	case role.FieldCustomOrgUnitIds:
 		m.ResetCustomOrgUnitIds()

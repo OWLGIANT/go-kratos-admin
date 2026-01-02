@@ -956,9 +956,6 @@ var (
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
 		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "角色名称"},
 		{Name: "code", Type: field.TypeString, Nullable: true, Comment: "角色标识"},
-		{Name: "menus", Type: field.TypeJSON, Nullable: true, Comment: "分配的菜单列表"},
-		{Name: "apis", Type: field.TypeJSON, Nullable: true, Comment: "分配的API列表"},
-		{Name: "permissions", Type: field.TypeJSON, Nullable: true, Comment: "权限点列表"},
 		{Name: "custom_org_unit_ids", Type: field.TypeJSON, Nullable: true, Comment: "当 DataScope 为 SELECTED_UNITS 时关联的组织单元列表"},
 		{Name: "data_scope", Type: field.TypeEnum, Nullable: true, Comment: "数据权限范围", Enums: []string{"ALL", "SELF", "UNIT_ONLY", "UNIT_AND_CHILD", "SELECTED_UNITS"}},
 		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "角色状态", Enums: []string{"ON", "OFF"}, Default: "ON"},
@@ -974,7 +971,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "sys_roles_sys_roles_children",
-				Columns:    []*schema.Column{SysRolesColumns[19]},
+				Columns:    []*schema.Column{SysRolesColumns[16]},
 				RefColumns: []*schema.Column{SysRolesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

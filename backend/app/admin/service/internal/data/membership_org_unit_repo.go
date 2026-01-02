@@ -88,7 +88,7 @@ func (r *MembershipOrgUnitRepo) AssignOrgUnits(
 
 	var membershipOrgUnitCreates []*ent.MembershipOrgUnitCreate
 	for _, id := range orgUnitIDs {
-		rm := r.entClient.Client().MembershipOrgUnit.
+		rm := tx.MembershipOrgUnit.
 			Create().
 			SetMembershipID(membershipID).
 			SetOrgUnitID(id).
@@ -104,7 +104,7 @@ func (r *MembershipOrgUnitRepo) AssignOrgUnits(
 		membershipOrgUnitCreates = append(membershipOrgUnitCreates, rm)
 	}
 
-	_, err = r.entClient.Client().MembershipOrgUnit.CreateBulk(membershipOrgUnitCreates...).Save(ctx)
+	_, err = tx.MembershipOrgUnit.CreateBulk(membershipOrgUnitCreates...).Save(ctx)
 	if err != nil {
 		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("assign organizations to role failed: %s", err.Error())

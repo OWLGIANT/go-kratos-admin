@@ -153,12 +153,5 @@ func NewRestServer(
 		)
 	}
 
-	// Trigger policy reload after all services are initialized to ensure that the policy rules are up to date.
-	if err = authorizer.ResetPolicies(context.Background()); err != nil {
-		log.Errorf("Failed to reload policies after service initialization: %v", err)
-	} else {
-		log.Info("Successfully reloaded policies after service initialization")
-	}
-
 	return srv, nil
 }

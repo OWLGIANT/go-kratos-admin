@@ -119,7 +119,7 @@ func (r *MembershipRoleRepo) AssignRoles(ctx context.Context,
 
 	var membershipRoleCreates []*ent.MembershipRoleCreate
 	for _, id := range roleIDs {
-		rm := r.entClient.Client().MembershipRole.
+		rm := tx.MembershipRole.
 			Create().
 			SetMembershipID(membershipID).
 			SetRoleID(id).
@@ -135,7 +135,7 @@ func (r *MembershipRoleRepo) AssignRoles(ctx context.Context,
 		membershipRoleCreates = append(membershipRoleCreates, rm)
 	}
 
-	_, err = r.entClient.Client().MembershipRole.CreateBulk(membershipRoleCreates...).Save(ctx)
+	_, err = tx.MembershipRole.CreateBulk(membershipRoleCreates...).Save(ctx)
 	if err != nil {
 		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("assign roles to membership failed: %s", err.Error())

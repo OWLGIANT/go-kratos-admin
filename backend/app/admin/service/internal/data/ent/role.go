@@ -43,12 +43,6 @@ type Role struct {
 	Name *string `json:"name,omitempty"`
 	// 角色标识
 	Code *string `json:"code,omitempty"`
-	// 分配的菜单列表
-	Menus []uint32 `json:"menus,omitempty"`
-	// 分配的API列表
-	Apis []uint32 `json:"apis,omitempty"`
-	// 权限点列表
-	Permissions []uint32 `json:"permissions,omitempty"`
 	// 当 DataScope 为 SELECTED_UNITS 时关联的组织单元列表
 	CustomOrgUnitIds []uint32 `json:"custom_org_unit_ids,omitempty"`
 	// 数据权限范围
@@ -99,7 +93,7 @@ func (*Role) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case role.FieldMenus, role.FieldApis, role.FieldPermissions, role.FieldCustomOrgUnitIds:
+		case role.FieldCustomOrgUnitIds:
 			values[i] = new([]byte)
 		case role.FieldID, role.FieldCreatedBy, role.FieldUpdatedBy, role.FieldDeletedBy, role.FieldSortOrder, role.FieldParentID, role.FieldTenantID:
 			values[i] = new(sql.NullInt64)
@@ -211,30 +205,6 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Code = new(string)
 				*_m.Code = value.String
-			}
-		case role.FieldMenus:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field menus", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &_m.Menus); err != nil {
-					return fmt.Errorf("unmarshal field menus: %w", err)
-				}
-			}
-		case role.FieldApis:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field apis", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &_m.Apis); err != nil {
-					return fmt.Errorf("unmarshal field apis: %w", err)
-				}
-			}
-		case role.FieldPermissions:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field permissions", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &_m.Permissions); err != nil {
-					return fmt.Errorf("unmarshal field permissions: %w", err)
-				}
 			}
 		case role.FieldCustomOrgUnitIds:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -370,15 +340,6 @@ func (_m *Role) String() string {
 		builder.WriteString("code=")
 		builder.WriteString(*v)
 	}
-	builder.WriteString(", ")
-	builder.WriteString("menus=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Menus))
-	builder.WriteString(", ")
-	builder.WriteString("apis=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Apis))
-	builder.WriteString(", ")
-	builder.WriteString("permissions=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Permissions))
 	builder.WriteString(", ")
 	builder.WriteString("custom_org_unit_ids=")
 	builder.WriteString(fmt.Sprintf("%v", _m.CustomOrgUnitIds))

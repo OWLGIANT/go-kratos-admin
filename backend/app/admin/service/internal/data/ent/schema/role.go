@@ -41,17 +41,15 @@ func (Role) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.JSON("menus", []uint32{}).
-			Comment("分配的菜单列表").
-			Optional(),
-
-		field.JSON("apis", []uint32{}).
-			Comment("分配的API列表").
-			Optional(),
-
-		field.JSON("permissions", []uint32{}).
-			Comment("权限点列表").
-			Optional(),
+		//field.JSON("menus", []uint32{}).
+		//	Comment("分配的菜单列表").
+		//	Optional(),
+		//field.JSON("apis", []uint32{}).
+		//	Comment("分配的API列表").
+		//	Optional(),
+		//field.JSON("permissions", []uint32{}).
+		//	Comment("权限点列表").
+		//	Optional(),
 
 		field.JSON("custom_org_unit_ids", []uint32{}).
 			Comment("当 DataScope 为 SELECTED_UNITS 时关联的组织单元列表").

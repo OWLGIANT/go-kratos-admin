@@ -770,36 +770,6 @@ func CodeContainsFold(v string) predicate.Role {
 	return predicate.Role(sql.FieldContainsFold(FieldCode, v))
 }
 
-// MenusIsNil applies the IsNil predicate on the "menus" field.
-func MenusIsNil() predicate.Role {
-	return predicate.Role(sql.FieldIsNull(FieldMenus))
-}
-
-// MenusNotNil applies the NotNil predicate on the "menus" field.
-func MenusNotNil() predicate.Role {
-	return predicate.Role(sql.FieldNotNull(FieldMenus))
-}
-
-// ApisIsNil applies the IsNil predicate on the "apis" field.
-func ApisIsNil() predicate.Role {
-	return predicate.Role(sql.FieldIsNull(FieldApis))
-}
-
-// ApisNotNil applies the NotNil predicate on the "apis" field.
-func ApisNotNil() predicate.Role {
-	return predicate.Role(sql.FieldNotNull(FieldApis))
-}
-
-// PermissionsIsNil applies the IsNil predicate on the "permissions" field.
-func PermissionsIsNil() predicate.Role {
-	return predicate.Role(sql.FieldIsNull(FieldPermissions))
-}
-
-// PermissionsNotNil applies the NotNil predicate on the "permissions" field.
-func PermissionsNotNil() predicate.Role {
-	return predicate.Role(sql.FieldNotNull(FieldPermissions))
-}
-
 // CustomOrgUnitIdsIsNil applies the IsNil predicate on the "custom_org_unit_ids" field.
 func CustomOrgUnitIdsIsNil() predicate.Role {
 	return predicate.Role(sql.FieldIsNull(FieldCustomOrgUnitIds))
