@@ -142,6 +142,12 @@ func (s *PermissionService) Delete(ctx context.Context, req *adminV1.DeletePermi
 }
 
 func (s *PermissionService) SyncApiResources(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+	// 获取操作人信息
+	operator, err := auth.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	// 清理 API 相关权限
 	_ = s.permissionRepo.CleanApiPermissions(ctx)
 
@@ -196,13 +202,14 @@ func (s *PermissionService) SyncApiResources(ctx context.Context, _ *emptypb.Emp
 			Type:     trans.Ptr(adminV1.Permission_API),
 			Status:   trans.Ptr(adminV1.Permission_ON),
 			ParentId: trans.Ptr(rootID),
+			Bind:     &adminV1.Permission_ApiResourceId{ApiResourceId: api.GetId()},
 		}
 		permissions = append(permissions, permission)
 
 		//s.log.Debugf("SyncApiResources: prepared permission for API %s - %s", api.GetOperation(), code)
 	}
 
-	if err = s.permissionRepo.BatchCreate(ctx, permissions); err != nil {
+	if err = s.permissionRepo.BatchCreate(ctx, operator.GetTenantId(), permissions); err != nil {
 		s.log.Errorf("batch create api permissions failed: %s", err.Error())
 		return nil, err
 	}
@@ -249,6 +256,12 @@ func (s *PermissionService) SyncApiResources(ctx context.Context, _ *emptypb.Emp
 }
 
 func (s *PermissionService) SyncMenus(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+	// 获取操作人信息
+	operator, err := auth.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	// 清理菜单相关权限
 	_ = s.permissionRepo.CleanMenuPermissions(ctx)
 
@@ -289,6 +302,7 @@ func (s *PermissionService) SyncMenus(ctx context.Context, _ *emptypb.Empty) (*e
 			Code:   trans.Ptr(code),
 			Type:   trans.Ptr(perType),
 			Status: trans.Ptr(adminV1.Permission_ON),
+			Bind:   &adminV1.Permission_MenuId{MenuId: menu.GetId()},
 		}
 		if parentModule != "" {
 			permission.Module = trans.Ptr(parentModule)
@@ -303,7 +317,7 @@ func (s *PermissionService) SyncMenus(ctx context.Context, _ *emptypb.Empty) (*e
 		}
 	}
 
-	if err = s.permissionRepo.BatchCreate(ctx, permissions); err != nil {
+	if err = s.permissionRepo.BatchCreate(ctx, operator.GetTenantId(), permissions); err != nil {
 		s.log.Errorf("batch create api permissions failed: %s", err.Error())
 		return nil, err
 	}

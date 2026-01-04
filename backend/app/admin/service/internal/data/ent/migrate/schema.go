@@ -822,14 +822,9 @@ var (
 				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[7]},
 			},
 			{
-				Name:    "uk_perm_api",
-				Unique:  true,
-				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[8], SysPermissionAPIResourcesColumns[9]},
-			},
-			{
 				Name:    "uix_perm_api_tenant",
 				Unique:  true,
-				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[7], SysPermissionAPIResourcesColumns[8]},
+				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[7], SysPermissionAPIResourcesColumns[9]},
 			},
 		},
 	}
@@ -859,14 +854,9 @@ var (
 				Columns: []*schema.Column{SysPermissionMenusColumns[7]},
 			},
 			{
-				Name:    "uk_perm_menu",
-				Unique:  true,
-				Columns: []*schema.Column{SysPermissionMenusColumns[8], SysPermissionMenusColumns[9]},
-			},
-			{
 				Name:    "uix_perm_menu_tenant",
 				Unique:  true,
-				Columns: []*schema.Column{SysPermissionMenusColumns[7], SysPermissionMenusColumns[8]},
+				Columns: []*schema.Column{SysPermissionMenusColumns[7], SysPermissionMenusColumns[9]},
 			},
 		},
 	}

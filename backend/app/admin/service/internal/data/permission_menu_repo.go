@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	entCrud "github.com/tx7do/go-crud/entgo"
@@ -38,7 +39,6 @@ func (r *PermissionMenuRepo) CleanMenus(
 			permissionmenu.TenantIDEQ(tenantID),
 		).
 		Exec(ctx); err != nil {
-		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("delete old permission menus failed: %s", err.Error())
 		return adminV1.ErrorInternalServerError("delete old permission menus failed")
 	}
@@ -51,16 +51,22 @@ func (r *PermissionMenuRepo) AssignMenus(ctx context.Context, tx *ent.Tx, tenant
 		return nil
 	}
 
+	now := time.Now()
+
 	for permissionID, menuID := range menus {
 		pm := tx.PermissionMenu.
 			Create().
+			SetTenantID(tenantID).
 			SetPermissionID(permissionID).
 			SetMenuID(menuID).
-			SetTenantID(tenantID).
-			OnConflict().
-			UpdateNewValues()
+			SetCreatedAt(now).
+			OnConflictColumns(
+				permissionmenu.FieldTenantID,
+				permissionmenu.FieldPermissionID,
+			).
+			UpdateNewValues().
+			SetUpdatedAt(now)
 		if err := pm.Exec(ctx); err != nil {
-			err = entCrud.Rollback(tx, err)
 			r.log.Errorf("assign permission menus failed: %s", err.Error())
 			return adminV1.ErrorInternalServerError("assign permission menus failed")
 		}
@@ -91,4 +97,74 @@ func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, tenantID uint32, p
 		ids[i] = uint32(v)
 	}
 	return ids, nil
+}
+
+// Truncate 清空表数据
+func (r *PermissionMenuRepo) Truncate(ctx context.Context) error {
+	if _, err := r.entClient.Client().PermissionMenu.Delete().Exec(ctx); err != nil {
+		r.log.Errorf("failed to truncate permission menu table: %s", err.Error())
+		return adminV1.ErrorInternalServerError("truncate failed")
+	}
+
+	return nil
+}
+
+// Delete 删除权限关联的菜单
+func (r *PermissionMenuRepo) Delete(ctx context.Context, permissionID uint32) error {
+	if _, err := r.entClient.Client().PermissionMenu.Delete().
+		Where(
+			permissionmenu.PermissionIDEQ(permissionID),
+		).
+		Exec(ctx); err != nil {
+		r.log.Errorf("failed to delete permission menu by permission id: %s", err.Error())
+		return adminV1.ErrorInternalServerError("delete failed")
+	}
+
+	return nil
+}
+
+// Get 获取权限关联的菜单ID
+func (r *PermissionMenuRepo) Get(ctx context.Context, tenantID, permissionID uint32) (uint32, error) {
+	entity, err := r.entClient.Client().PermissionMenu.Query().
+		Where(
+			permissionmenu.TenantIDEQ(tenantID),
+			permissionmenu.PermissionIDEQ(permissionID),
+		).
+		Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return 0, nil
+		}
+		r.log.Errorf("get permission menu failed: %s", err.Error())
+		return 0, adminV1.ErrorInternalServerError("get permission menu failed")
+	}
+
+	if entity != nil {
+		return *entity.MenuID, nil
+	}
+
+	return 0, nil
+}
+
+// AssignMenu 给权限分配菜单
+func (r *PermissionMenuRepo) AssignMenu(ctx context.Context, tenantID uint32, permissionID uint32, menuID uint32) error {
+	now := time.Now()
+
+	pm := r.entClient.Client().PermissionMenu.
+		Create().
+		SetTenantID(tenantID).
+		SetPermissionID(permissionID).
+		SetMenuID(menuID).
+		SetCreatedAt(now).
+		OnConflictColumns(
+			permissionmenu.FieldTenantID,
+			permissionmenu.FieldPermissionID,
+		).
+		UpdateNewValues().
+		SetUpdatedAt(now)
+	if err := pm.Exec(ctx); err != nil {
+		return adminV1.ErrorInternalServerError("assign permission menu failed")
+	}
+
+	return nil
 }

@@ -53,11 +53,7 @@ func (PermissionApiResource) Mixin() []ent.Mixin {
 // Indexes of the PermissionApiResource.
 func (PermissionApiResource) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("api_resource_id", "permission_id").
-			Unique().
-			StorageKey("uk_perm_api"),
-
-		index.Fields("tenant_id", "api_resource_id").
+		index.Fields("tenant_id", "permission_id").
 			Unique().
 			StorageKey("uix_perm_api_tenant"),
 	}

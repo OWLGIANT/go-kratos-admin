@@ -7,6 +7,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
@@ -96,6 +97,23 @@ func (r *PermissionRepo) Count(ctx context.Context, whereCond []func(s *sql.Sele
 	return count, nil
 }
 
+func isApiPermission(typ adminV1.Permission_Type) bool {
+	if typ == adminV1.Permission_API {
+		return true
+	}
+	return false
+}
+
+func isMenuPermission(typ adminV1.Permission_Type) bool {
+	if typ == adminV1.Permission_CATALOG ||
+		typ == adminV1.Permission_MENU ||
+		typ == adminV1.Permission_BUTTON ||
+		typ == adminV1.Permission_PAGE {
+		return true
+	}
+	return false
+}
+
 func (r *PermissionRepo) List(ctx context.Context, req *pagination.PagingRequest) (*adminV1.ListPermissionResponse, error) {
 	if req == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
@@ -109,6 +127,26 @@ func (r *PermissionRepo) List(ctx context.Context, req *pagination.PagingRequest
 	}
 	if ret == nil {
 		return &adminV1.ListPermissionResponse{Total: 0, Items: nil}, nil
+	}
+
+	hasMenuID := hasPath("menu_id", req.GetFieldMask())
+	hasApiResourceID := hasPath("api_resource_id", req.GetFieldMask())
+
+	for _, dto := range ret.Items {
+		if hasMenuID && isMenuPermission(dto.GetType()) {
+			menuID, err := r.permissionMenuRepo.Get(ctx, dto.GetTenantId(), dto.GetId())
+			if err != nil {
+				return nil, err
+			}
+			dto.Bind = &adminV1.Permission_MenuId{MenuId: menuID}
+		}
+		if hasApiResourceID && isApiPermission(dto.GetType()) {
+			apiResourceID, err := r.permissionApiResourceRepo.Get(ctx, dto.GetTenantId(), dto.GetId())
+			if err != nil {
+				return nil, err
+			}
+			dto.Bind = &adminV1.Permission_ApiResourceId{ApiResourceId: apiResourceID}
+		}
 	}
 
 	return &adminV1.ListPermissionResponse{
@@ -149,7 +187,34 @@ func (r *PermissionRepo) Get(ctx context.Context, req *adminV1.GetPermissionRequ
 		return nil, err
 	}
 
+	if hasPath("api_resource_id", req.GetViewMask()) && isApiPermission(dto.GetType()) {
+		apiResourceID, err := r.permissionApiResourceRepo.Get(ctx, dto.GetTenantId(), dto.GetId())
+		if err != nil {
+			return nil, err
+		}
+		dto.Bind = &adminV1.Permission_ApiResourceId{ApiResourceId: apiResourceID}
+	}
+	if hasPath("menu_id", req.GetViewMask()) && isMenuPermission(dto.GetType()) {
+		menuID, err := r.permissionMenuRepo.Get(ctx, dto.GetTenantId(), dto.GetId())
+		if err != nil {
+			return nil, err
+		}
+		dto.Bind = &adminV1.Permission_MenuId{MenuId: menuID}
+	}
+
 	return dto, err
+}
+
+func hasPath(path string, fieldMask *fieldmaskpb.FieldMask) bool {
+	if fieldMask == nil {
+		return true
+	}
+	for _, p := range fieldMask.GetPaths() {
+		if path == p {
+			return true
+		}
+	}
+	return false
 }
 
 // Create 创建 Permission
@@ -160,16 +225,29 @@ func (r *PermissionRepo) Create(ctx context.Context, req *adminV1.CreatePermissi
 
 	builder := r.newPermissionCreate(req.Data)
 
-	if err := builder.Exec(ctx); err != nil {
+	var entity *ent.Permission
+	var err error
+	if entity, err = builder.Save(ctx); err != nil {
 		r.log.Errorf("insert one data failed: %s", err.Error())
 		return adminV1.ErrorInternalServerError("insert data failed")
+	}
+
+	switch req.Data.Bind.(type) {
+	case *adminV1.Permission_ApiResourceId:
+		if err = r.permissionApiResourceRepo.AssignApi(ctx, req.Data.GetTenantId(), entity.ID, req.Data.GetApiResourceId()); err != nil {
+			return err
+		}
+	case *adminV1.Permission_MenuId:
+		if err = r.permissionMenuRepo.AssignMenu(ctx, req.Data.GetTenantId(), entity.ID, req.Data.GetMenuId()); err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
 // BatchCreate 批量创建 Permission
-func (r *PermissionRepo) BatchCreate(ctx context.Context, permissions []*adminV1.Permission) error {
+func (r *PermissionRepo) BatchCreate(ctx context.Context, tenantID uint32, permissions []*adminV1.Permission) error {
 	if len(permissions) == 0 {
 		return adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -182,9 +260,48 @@ func (r *PermissionRepo) BatchCreate(ctx context.Context, permissions []*adminV1
 
 	builder := r.entClient.Client().Permission.CreateBulk(permissionCreates...)
 
-	if err := builder.Exec(ctx); err != nil {
+	var entities []*ent.Permission
+	var err error
+	if entities, err = builder.Save(ctx); err != nil {
 		r.log.Errorf("batch insert data failed: %s", err.Error())
 		return adminV1.ErrorInternalServerError("batch insert data failed")
+	}
+
+	apis := make(map[uint32]uint32)
+	menus := make(map[uint32]uint32)
+	for i, perm := range permissions {
+		switch perm.Bind.(type) {
+		case *adminV1.Permission_ApiResourceId:
+			apis[entities[i].ID] = perm.GetApiResourceId()
+		case *adminV1.Permission_MenuId:
+			menus[entities[i].ID] = perm.GetMenuId()
+		}
+	}
+
+	tx, err := r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return adminV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = adminV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	if err = r.permissionApiResourceRepo.AssignApis(ctx, tx, tenantID, apis); err != nil {
+		return err
+	}
+
+	if err = r.permissionMenuRepo.AssignMenus(ctx, tx, tenantID, menus); err != nil {
+		return err
 	}
 
 	return nil
@@ -239,8 +356,8 @@ func (r *PermissionRepo) Update(ctx context.Context, req *adminV1.UpdatePermissi
 		}
 	}
 
-	builder := r.entClient.Client().Debug().Permission.Update()
-	err := r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
+	builder := r.entClient.Client().Debug().Permission.UpdateOneID(req.GetId())
+	perm, err := r.repository.UpdateOne(ctx, builder, req.Data, req.GetUpdateMask(),
 		func(dto *adminV1.Permission) {
 			builder.
 				SetNillableCode(req.Data.Code).
@@ -263,10 +380,25 @@ func (r *PermissionRepo) Update(ctx context.Context, req *adminV1.UpdatePermissi
 			s.Where(sql.EQ(permission.FieldID, req.GetId()))
 		},
 	)
+	if err != nil {
+		return err
+	}
+
+	switch req.Data.Bind.(type) {
+	case *adminV1.Permission_ApiResourceId:
+		if err = r.permissionApiResourceRepo.AssignApi(ctx, req.Data.GetTenantId(), perm.GetId(), req.Data.GetApiResourceId()); err != nil {
+			return err
+		}
+	case *adminV1.Permission_MenuId:
+		if err = r.permissionMenuRepo.AssignMenu(ctx, req.Data.GetTenantId(), perm.GetId(), req.Data.GetMenuId()); err != nil {
+			return err
+		}
+	}
 
 	return err
 }
 
+// UpdateParentIDs 更新 Permission ParentID
 func (r *PermissionRepo) UpdateParentIDs(ctx context.Context, parentIDs map[uint32]uint32) error {
 	if len(parentIDs) == 0 {
 		return nil
@@ -304,6 +436,7 @@ func (r *PermissionRepo) UpdateParentIDs(ctx context.Context, parentIDs map[uint
 	return nil
 }
 
+// UpdatePaths 更新 Permission Path
 func (r *PermissionRepo) UpdatePaths(ctx context.Context, paths map[uint32]string) error {
 	if len(paths) == 0 {
 		return nil
@@ -347,7 +480,7 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *adminV1.DeletePermissi
 		return adminV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().Debug().Permission.Delete()
+	builder := r.entClient.Client().Permission.Delete()
 
 	_, err := r.repository.Delete(ctx, builder, func(s *sql.Selector) {
 		s.Where(sql.EQ(permission.FieldID, req.GetId()))
@@ -355,6 +488,14 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *adminV1.DeletePermissi
 	if err != nil {
 		r.log.Errorf("delete permission failed: %s", err.Error())
 		return adminV1.ErrorInternalServerError("delete permission failed")
+	}
+
+	if err = r.permissionApiResourceRepo.Delete(ctx, req.GetId()); err != nil {
+		return err
+	}
+
+	if err = r.permissionMenuRepo.Delete(ctx, req.GetId()); err != nil {
+		return err
 	}
 
 	return nil
@@ -366,6 +507,15 @@ func (r *PermissionRepo) Truncate(ctx context.Context) error {
 		r.log.Errorf("failed to truncate permission table: %s", err.Error())
 		return adminV1.ErrorInternalServerError("truncate failed")
 	}
+
+	if err := r.permissionApiResourceRepo.Truncate(ctx); err != nil {
+		return err
+	}
+
+	if err := r.permissionMenuRepo.Truncate(ctx); err != nil {
+		return err
+	}
+
 	return nil
 }
 

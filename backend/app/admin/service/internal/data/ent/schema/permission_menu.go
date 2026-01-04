@@ -53,11 +53,7 @@ func (PermissionMenu) Mixin() []ent.Mixin {
 // Indexes of the PermissionMenu.
 func (PermissionMenu) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("menu_id", "permission_id").
-			Unique().
-			StorageKey("uk_perm_menu"),
-
-		index.Fields("tenant_id", "menu_id").
+		index.Fields("tenant_id", "permission_id").
 			Unique().
 			StorageKey("uix_perm_menu_tenant"),
 	}
