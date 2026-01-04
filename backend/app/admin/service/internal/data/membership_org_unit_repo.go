@@ -45,7 +45,6 @@ func (r *MembershipOrgUnitRepo) CleanOrgUnits(
 			membershiporgunit.TenantIDEQ(tenantID),
 		).
 		Exec(ctx); err != nil {
-		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("delete old membership orgUnits failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("delete old membership orgUnits failed")
 	}
@@ -72,11 +71,6 @@ func (r *MembershipOrgUnitRepo) AssignOrgUnits(
 
 	// 如果没有分配任何，则直接提交事务返回
 	if len(orgUnitIDs) == 0 {
-		// 提交事务
-		if err = tx.Commit(); err != nil {
-			r.log.Errorf("commit transaction failed: %s", err.Error())
-			return userV1.ErrorInternalServerError("commit transaction failed")
-		}
 		return nil
 	}
 
@@ -106,15 +100,8 @@ func (r *MembershipOrgUnitRepo) AssignOrgUnits(
 
 	_, err = tx.MembershipOrgUnit.CreateBulk(membershipOrgUnitCreates...).Save(ctx)
 	if err != nil {
-		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("assign organizations to role failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("assign organizations to role failed")
-	}
-
-	// 提交事务
-	if err = tx.Commit(); err != nil {
-		r.log.Errorf("commit transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("commit transaction failed")
 	}
 
 	return nil

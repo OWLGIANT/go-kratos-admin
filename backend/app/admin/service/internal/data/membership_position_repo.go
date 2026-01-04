@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -45,14 +46,13 @@ func (r *MembershipPositionRepo) CleanPositions(
 			membershipposition.TenantIDEQ(tenantID),
 		).
 		Exec(ctx); err != nil {
-		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("delete old membership positions failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("delete old membership positions failed")
 	}
 	return nil
 }
 
-func (r *MembershipPositionRepo) AssignPositionWithData(ctx context.Context, operatorID *uint32, data *userV1.MembershipPosition) error {
+func (r *MembershipPositionRepo) AssignPositionWithData(ctx context.Context, operatorID *uint32, data *userV1.MembershipPosition) (err error) {
 	var startAt *time.Time
 	var endAt *time.Time
 	var assignedAt *time.Time
@@ -66,11 +66,24 @@ func (r *MembershipPositionRepo) AssignPositionWithData(ctx context.Context, ope
 		assignedAt = trans.Ptr(data.AssignedAt.AsTime())
 	}
 
-	tx, err := r.entClient.Client().Tx(ctx)
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("start transaction failed")
+		return adminV1.ErrorInternalServerError("start transaction failed")
 	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = adminV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
 
 	return r.AssignPositions(
 		ctx,
@@ -108,11 +121,6 @@ func (r *MembershipPositionRepo) AssignPositions(
 
 	// 如果没有分配任何，则直接提交事务返回
 	if len(positionIDs) == 0 {
-		// 提交事务
-		if err = tx.Commit(); err != nil {
-			r.log.Errorf("commit transaction failed: %s", err.Error())
-			return userV1.ErrorInternalServerError("commit transaction failed")
-		}
 		return nil
 	}
 
@@ -142,15 +150,8 @@ func (r *MembershipPositionRepo) AssignPositions(
 
 	_, err = tx.MembershipPosition.CreateBulk(membershipPositionCreates...).Save(ctx)
 	if err != nil {
-		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("assign positions to membership failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("assign positions to membership failed")
-	}
-
-	// 提交事务
-	if err = tx.Commit(); err != nil {
-		r.log.Errorf("commit transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("commit transaction failed")
 	}
 
 	return nil

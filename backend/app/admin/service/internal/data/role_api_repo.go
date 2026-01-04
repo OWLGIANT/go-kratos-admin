@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -27,30 +28,37 @@ func NewRoleApiRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Cl
 }
 
 // AssignApis 给角色分配API
-func (r *RoleApiRepo) AssignApis(ctx context.Context, roleId uint32, apiIds []uint32, operatorId uint32) error {
+func (r *RoleApiRepo) AssignApis(ctx context.Context, roleId uint32, apiIds []uint32, operatorId uint32) (err error) {
 	// 开启事务
-	tx, err := r.entClient.Client().Tx(ctx)
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("start transaction failed")
+		return adminV1.ErrorInternalServerError("start transaction failed")
 	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = adminV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
 
 	// 删除该角色的所有旧关联
 	if _, err = tx.RoleApi.Delete().
 		Where(roleapi.RoleID(roleId)).
 		Exec(ctx); err != nil {
-		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("delete old role apis failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("delete old role apis failed")
 	}
 
 	// 如果没有分配任何，则直接提交事务返回
 	if len(apiIds) == 0 {
-		// 提交事务
-		if err = tx.Commit(); err != nil {
-			r.log.Errorf("commit transaction failed: %s", err.Error())
-			return userV1.ErrorInternalServerError("commit transaction failed")
-		}
 		return nil
 	}
 
@@ -67,15 +75,8 @@ func (r *RoleApiRepo) AssignApis(ctx context.Context, roleId uint32, apiIds []ui
 
 	_, err = tx.RoleApi.CreateBulk(roleApis...).Save(ctx)
 	if err != nil {
-		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("assign apis to role failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("assign apis to role failed")
-	}
-
-	// 提交事务
-	if err = tx.Commit(); err != nil {
-		r.log.Errorf("commit transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("commit transaction failed")
 	}
 
 	return nil

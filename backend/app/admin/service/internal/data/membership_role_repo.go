@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -44,14 +45,13 @@ func (r *MembershipRoleRepo) CleanRoles(
 			membershiprole.TenantIDEQ(tenantID),
 		).
 		Exec(ctx); err != nil {
-		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("delete old membership roles failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("delete old membership roles failed")
 	}
 	return nil
 }
 
-func (r *MembershipRoleRepo) AssignRoleWithData(ctx context.Context, operatorID *uint32, data *userV1.MembershipRole) error {
+func (r *MembershipRoleRepo) AssignRoleWithData(ctx context.Context, operatorID *uint32, data *userV1.MembershipRole) (err error) {
 	var startAt *time.Time
 	var endAt *time.Time
 	var assignedAt *time.Time
@@ -65,11 +65,24 @@ func (r *MembershipRoleRepo) AssignRoleWithData(ctx context.Context, operatorID 
 		assignedAt = trans.Ptr(data.AssignedAt.AsTime())
 	}
 
-	tx, err := r.entClient.Client().Tx(ctx)
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("start transaction failed")
+		return adminV1.ErrorInternalServerError("start transaction failed")
 	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = adminV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
 
 	return r.AssignRoles(ctx,
 		tx,
@@ -104,10 +117,6 @@ func (r *MembershipRoleRepo) AssignRoles(ctx context.Context,
 	}
 
 	if len(roleIDs) == 0 {
-		if err = tx.Commit(); err != nil {
-			r.log.Errorf("commit transaction failed: %s", err.Error())
-			return userV1.ErrorInternalServerError("commit transaction failed")
-		}
 		return nil
 	}
 
@@ -137,14 +146,8 @@ func (r *MembershipRoleRepo) AssignRoles(ctx context.Context,
 
 	_, err = tx.MembershipRole.CreateBulk(membershipRoleCreates...).Save(ctx)
 	if err != nil {
-		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("assign roles to membership failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("assign roles to membership failed")
-	}
-
-	if err = tx.Commit(); err != nil {
-		r.log.Errorf("commit transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("commit transaction failed")
 	}
 
 	return nil

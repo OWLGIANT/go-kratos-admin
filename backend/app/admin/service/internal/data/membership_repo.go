@@ -67,7 +67,7 @@ func (r *MembershipRepo) AssignTenantWithData(
 	ctx context.Context,
 	operatorID *uint32,
 	data *userV1.Membership,
-) error {
+) (err error) {
 	var startAt *time.Time
 	var endAt *time.Time
 	var assignedAt *time.Time
@@ -81,11 +81,24 @@ func (r *MembershipRepo) AssignTenantWithData(
 		assignedAt = trans.Ptr(data.AssignedAt.AsTime())
 	}
 
-	tx, err := r.entClient.Client().Tx(ctx)
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("start transaction failed")
 	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
 
 	return r.AssignTenant(
 		ctx,
@@ -122,7 +135,7 @@ func (r *MembershipRepo) AssignTenant(
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old membership failed: %s", err.Error())
-		return entCrud.Rollback(tx, userV1.ErrorInternalServerError("delete old membership failed"))
+		return userV1.ErrorInternalServerError("delete old membership failed")
 	}
 
 	if _, err = r.upsertMembership(ctx, tx, &userV1.Membership{
@@ -137,12 +150,7 @@ func (r *MembershipRepo) AssignTenant(
 		EndAt:      timeutil.TimeToTimestamppb(endAt),
 	}); err != nil {
 		r.log.Errorf("create membership failed: %s", err.Error())
-		return entCrud.Rollback(tx, userV1.ErrorInternalServerError("create membership failed"))
-	}
-
-	if err = tx.Commit(); err != nil {
-		r.log.Errorf("commit transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("commit transaction failed")
+		return userV1.ErrorInternalServerError("create membership failed")
 	}
 
 	return nil
@@ -156,16 +164,29 @@ func (r *MembershipRepo) AssignRolesWithTransaction(ctx context.Context,
 	startAt, endAt *time.Time,
 	assignedAt *time.Time, assignedBy *uint32,
 	isPrimary bool,
-) error {
-	tx, err := r.entClient.Client().Tx(ctx)
+) (err error) {
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("start transaction failed")
 	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
 
-	membershipID, err := r.queryMembershipID(ctx, tx, userID, tenantID)
+	var membershipID uint32
+	membershipID, err = r.queryMembershipID(ctx, tx, userID, tenantID)
 	if err != nil {
-		_ = entCrud.Rollback(tx, err)
 		r.log.Errorf("get membership id failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("get membership id failed")
 	}
@@ -179,13 +200,7 @@ func (r *MembershipRepo) AssignRolesWithTransaction(ctx context.Context,
 		startAt, endAt,
 		assignedAt, assignedBy, isPrimary,
 	); err != nil {
-		_ = entCrud.Rollback(tx, err)
 		return err
-	}
-
-	if err = tx.Commit(); err != nil {
-		r.log.Errorf("commit transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("commit transaction failed")
 	}
 
 	return nil
@@ -200,16 +215,29 @@ func (r *MembershipRepo) AssignPositionsWithTransaction(
 	startAt, endAt *time.Time,
 	assignedAt *time.Time, assignedBy *uint32,
 	isPrimary bool,
-) error {
-	tx, err := r.entClient.Client().Tx(ctx)
+) (err error) {
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("start transaction failed")
 	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
 
-	membershipID, err := r.queryMembershipID(ctx, tx, userID, tenantID)
+	var membershipID uint32
+	membershipID, err = r.queryMembershipID(ctx, tx, userID, tenantID)
 	if err != nil {
-		_ = entCrud.Rollback(tx, err)
 		r.log.Errorf("get membership id failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("get membership id failed")
 	}
@@ -223,13 +251,7 @@ func (r *MembershipRepo) AssignPositionsWithTransaction(
 		startAt, endAt,
 		assignedAt, assignedBy, isPrimary,
 	); err != nil {
-		_ = entCrud.Rollback(tx, err)
 		return err
-	}
-
-	if err = tx.Commit(); err != nil {
-		r.log.Errorf("commit transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("commit transaction failed")
 	}
 
 	return nil
@@ -243,16 +265,29 @@ func (r *MembershipRepo) AssignOrgUnitsWithTransaction(ctx context.Context,
 	startAt, endAt *time.Time,
 	assignedAt *time.Time, assignedBy *uint32,
 	isPrimary bool,
-) error {
-	tx, err := r.entClient.Client().Tx(ctx)
+) (err error) {
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("start transaction failed")
 	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
 
-	membershipID, err := r.queryMembershipID(ctx, tx, userID, tenantID)
+	var membershipID uint32
+	membershipID, err = r.queryMembershipID(ctx, tx, userID, tenantID)
 	if err != nil {
-		_ = entCrud.Rollback(tx, err)
 		r.log.Errorf("get membership id failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("get membership id failed")
 	}
@@ -266,13 +301,7 @@ func (r *MembershipRepo) AssignOrgUnitsWithTransaction(ctx context.Context,
 		startAt, endAt,
 		assignedAt, assignedBy, isPrimary,
 	); err != nil {
-		_ = entCrud.Rollback(tx, err)
 		return err
-	}
-
-	if err = tx.Commit(); err != nil {
-		r.log.Errorf("commit transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("commit transaction failed")
 	}
 
 	return nil
@@ -402,12 +431,25 @@ func (r *MembershipRepo) SetUserEndAt(ctx context.Context, userID, tenantID uint
 }
 
 // GetMembershipID 获取 Membership ID
-func (r *MembershipRepo) GetMembershipID(ctx context.Context, userID, tenantID uint32) (uint32, error) {
-	tx, err := r.entClient.Client().Tx(ctx)
+func (r *MembershipRepo) GetMembershipID(ctx context.Context, userID, tenantID uint32) (membershipID uint32, err error) {
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return 0, userV1.ErrorInternalServerError("start transaction failed")
+		return uint32(0), userV1.ErrorInternalServerError("start transaction failed")
 	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
 
 	return r.queryMembershipID(ctx, tx, userID, tenantID)
 }
@@ -436,16 +478,29 @@ func (r *MembershipRepo) GetMembership(ctx context.Context, userID, tenantID uin
 }
 
 // ListMembershipRoleIDs 获取 Membership 关联的角色 ID 列表
-func (r *MembershipRepo) ListMembershipRoleIDs(ctx context.Context, userID, tenantID uint32) ([]uint32, error) {
-	tx, err := r.entClient.Client().Tx(ctx)
+func (r *MembershipRepo) ListMembershipRoleIDs(ctx context.Context, userID, tenantID uint32) (roleIDs []uint32, err error) {
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
 		return nil, userV1.ErrorInternalServerError("start transaction failed")
 	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
 
-	membershipID, err := r.queryMembershipID(ctx, tx, userID, tenantID)
+	var membershipID uint32
+	membershipID, err = r.queryMembershipID(ctx, tx, userID, tenantID)
 	if err != nil {
-		_ = entCrud.Rollback(tx, err)
 		r.log.Errorf("get membership id failed: %s", err.Error())
 		return nil, userV1.ErrorInternalServerError("get membership id failed")
 	}
@@ -454,16 +509,28 @@ func (r *MembershipRepo) ListMembershipRoleIDs(ctx context.Context, userID, tena
 }
 
 // ListMembershipOrgUnitIDs 获取 Membership 关联的组织单元 ID 列表
-func (r *MembershipRepo) ListMembershipOrgUnitIDs(ctx context.Context, userID, tenantID uint32) ([]uint32, error) {
-	tx, err := r.entClient.Client().Tx(ctx)
+func (r *MembershipRepo) ListMembershipOrgUnitIDs(ctx context.Context, userID, tenantID uint32) (orgUnitIDs []uint32, err error) {
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
 		return nil, userV1.ErrorInternalServerError("start transaction failed")
 	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
 
 	membershipID, err := r.queryMembershipID(ctx, tx, userID, tenantID)
 	if err != nil {
-		_ = entCrud.Rollback(tx, err)
 		r.log.Errorf("get membership id failed: %s", err.Error())
 		return nil, userV1.ErrorInternalServerError("get membership id failed")
 	}
@@ -472,16 +539,28 @@ func (r *MembershipRepo) ListMembershipOrgUnitIDs(ctx context.Context, userID, t
 }
 
 // ListMembershipPositionIDs 获取 Membership 关联的职位 ID 列表
-func (r *MembershipRepo) ListMembershipPositionIDs(ctx context.Context, userID, tenantID uint32) ([]uint32, error) {
-	tx, err := r.entClient.Client().Tx(ctx)
+func (r *MembershipRepo) ListMembershipPositionIDs(ctx context.Context, userID, tenantID uint32) (positionIDs []uint32, err error) {
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
 		return nil, userV1.ErrorInternalServerError("start transaction failed")
 	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
 
 	membershipID, err := r.queryMembershipID(ctx, tx, userID, tenantID)
 	if err != nil {
-		_ = entCrud.Rollback(tx, err)
 		r.log.Errorf("get membership id failed: %s", err.Error())
 		return nil, userV1.ErrorInternalServerError("get membership id failed")
 	}
@@ -562,7 +641,7 @@ func (r *MembershipRepo) createMembership(ctx context.Context, tx *ent.Tx, data 
 
 	if entity, err := cr.Save(ctx); err != nil {
 		r.log.Errorf("create membership failed: %s", err.Error())
-		return nil, entCrud.Rollback(tx, userV1.ErrorInternalServerError("create membership failed"))
+		return nil, userV1.ErrorInternalServerError("create membership failed")
 	} else {
 		return entity, err
 	}
@@ -602,7 +681,7 @@ func (r *MembershipRepo) upsertMembership(ctx context.Context, tx *ent.Tx, data 
 
 	if entity, err := builder.Save(ctx); err != nil {
 		r.log.Errorf("upsert membership failed: %s", err.Error())
-		return nil, entCrud.Rollback(tx, userV1.ErrorInternalServerError("upsert membership failed"))
+		return nil, userV1.ErrorInternalServerError("upsert membership failed")
 	} else {
 		return entity, err
 	}
@@ -614,7 +693,7 @@ func (r *MembershipRepo) queryMembershipID(
 	userID, tenantID uint32,
 ) (uint32, error) {
 	now := time.Now()
-	membershipID, err := r.entClient.Client().Membership.Query().
+	membershipID, err := tx.Membership.Query().
 		Where(
 			membership.TenantIDEQ(tenantID),
 			membership.UserIDEQ(userID),
@@ -625,7 +704,6 @@ func (r *MembershipRepo) queryMembershipID(
 		).
 		OnlyID(ctx)
 	if err != nil {
-		_ = entCrud.Rollback(tx, err)
 		r.log.Errorf("get membership id failed: %s", err.Error())
 		return 0, userV1.ErrorInternalServerError("get membership id failed")
 	}

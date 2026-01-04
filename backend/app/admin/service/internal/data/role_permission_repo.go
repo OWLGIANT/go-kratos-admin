@@ -37,7 +37,6 @@ func (r *RolePermissionRepo) CleanPermissions(
 			rolepermission.TenantIDEQ(tenantID),
 		).
 		Exec(ctx); err != nil {
-		err = entCrud.Rollback(tx, err)
 		r.log.Errorf("delete old role permissions failed: %s", err.Error())
 		return adminV1.ErrorInternalServerError("delete old role permissions failed")
 	}
@@ -60,7 +59,6 @@ func (r *RolePermissionRepo) AssignPermissions(ctx context.Context, tx *ent.Tx, 
 			UpdateNewValues()
 
 		if err := rp.Exec(ctx); err != nil {
-			err = entCrud.Rollback(tx, err)
 			r.log.Errorf("assign permission to role failed: %s", err.Error())
 			return adminV1.ErrorInternalServerError("assign permission to role failed")
 		}

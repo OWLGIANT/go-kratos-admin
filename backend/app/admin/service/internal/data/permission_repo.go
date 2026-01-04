@@ -247,7 +247,7 @@ func (r *PermissionRepo) Create(ctx context.Context, req *adminV1.CreatePermissi
 }
 
 // BatchCreate 批量创建 Permission
-func (r *PermissionRepo) BatchCreate(ctx context.Context, tenantID uint32, permissions []*adminV1.Permission) error {
+func (r *PermissionRepo) BatchCreate(ctx context.Context, tenantID uint32, permissions []*adminV1.Permission) (err error) {
 	if len(permissions) == 0 {
 		return adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -261,7 +261,6 @@ func (r *PermissionRepo) BatchCreate(ctx context.Context, tenantID uint32, permi
 	builder := r.entClient.Client().Permission.CreateBulk(permissionCreates...)
 
 	var entities []*ent.Permission
-	var err error
 	if entities, err = builder.Save(ctx); err != nil {
 		r.log.Errorf("batch insert data failed: %s", err.Error())
 		return adminV1.ErrorInternalServerError("batch insert data failed")
@@ -278,7 +277,8 @@ func (r *PermissionRepo) BatchCreate(ctx context.Context, tenantID uint32, permi
 		}
 	}
 
-	tx, err := r.entClient.Client().Tx(ctx)
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
 		return adminV1.ErrorInternalServerError("start transaction failed")
@@ -389,22 +389,36 @@ func (r *PermissionRepo) Update(ctx context.Context, req *adminV1.UpdatePermissi
 		if err = r.permissionApiResourceRepo.AssignApi(ctx, req.Data.GetTenantId(), perm.GetId(), req.Data.GetApiResourceId()); err != nil {
 			return err
 		}
+		if err = r.permissionMenuRepo.Delete(ctx, perm.GetId()); err != nil {
+			return err
+		}
 	case *adminV1.Permission_MenuId:
 		if err = r.permissionMenuRepo.AssignMenu(ctx, req.Data.GetTenantId(), perm.GetId(), req.Data.GetMenuId()); err != nil {
 			return err
 		}
+		if err = r.permissionApiResourceRepo.Delete(ctx, perm.GetId()); err != nil {
+			return err
+		}
+	default:
+		if err = r.permissionMenuRepo.Delete(ctx, perm.GetId()); err != nil {
+			return err
+		}
+		if err = r.permissionApiResourceRepo.Delete(ctx, perm.GetId()); err != nil {
+			return err
+		}
 	}
 
-	return err
+	return nil
 }
 
 // UpdateParentIDs 更新 Permission ParentID
-func (r *PermissionRepo) UpdateParentIDs(ctx context.Context, parentIDs map[uint32]uint32) error {
+func (r *PermissionRepo) UpdateParentIDs(ctx context.Context, parentIDs map[uint32]uint32) (err error) {
 	if len(parentIDs) == 0 {
 		return nil
 	}
 
-	tx, err := r.entClient.Client().Tx(ctx)
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
 		return adminV1.ErrorInternalServerError("start transaction failed")
@@ -437,12 +451,13 @@ func (r *PermissionRepo) UpdateParentIDs(ctx context.Context, parentIDs map[uint
 }
 
 // UpdatePaths 更新 Permission Path
-func (r *PermissionRepo) UpdatePaths(ctx context.Context, paths map[uint32]string) error {
+func (r *PermissionRepo) UpdatePaths(ctx context.Context, paths map[uint32]string) (err error) {
 	if len(paths) == 0 {
 		return nil
 	}
 
-	tx, err := r.entClient.Client().Tx(ctx)
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
 		return adminV1.ErrorInternalServerError("start transaction failed")
