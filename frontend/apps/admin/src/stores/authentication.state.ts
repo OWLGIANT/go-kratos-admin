@@ -19,6 +19,16 @@ import {
 import { $t } from '#/locales';
 import { requestClientRequestHandler } from '#/utils/request';
 
+type RefreshTokenFunc = () => Promise<string> | string;
+
+const REFRESH_INTERVAL = 90 * 60 * 1000; // 1.5 小时
+
+let refreshTimer: null | ReturnType<typeof setTimeout> = null;
+let refreshCallback: null | RefreshTokenFunc = null;
+
+/**
+ * 认证状态管理
+ */
 export const useAuthStore = defineStore('auth', () => {
   const accessStore = useAccessStore();
   const userStore = useUserStore();
@@ -34,7 +44,12 @@ export const useAuthStore = defineStore('auth', () => {
     requestClientRequestHandler,
   );
 
-  // 加密函数
+  /**
+   * 加密数据
+   * @param data 待加密数据
+   * @param key 密钥
+   * @param iv 初始向量
+   */
   function encryptData(data: string, key: string, iv: string): string {
     const keyHex = CryptoJS.enc.Utf8.parse(key);
     const ivHex = CryptoJS.enc.Utf8.parse(iv);
@@ -46,11 +61,16 @@ export const useAuthStore = defineStore('auth', () => {
     return encrypted.toString();
   }
 
-  // 加密密码
-  function encryptPassword(password: string) {
+  /**
+   * 加密密码
+   * @param password 明文密码
+   */
+  function encryptPassword(password: string): string {
     const key = import.meta.env.VITE_AES_KEY;
-    const encrypted = encryptData(password, key, key);
-    return encrypted.toString();
+    if (!key) {
+      throw new Error('VITE_AES_KEY is not set in environment');
+    }
+    return encryptData(password, key, key);
   }
 
   /**
@@ -62,21 +82,29 @@ export const useAuthStore = defineStore('auth', () => {
   async function authLogin(
     params: Recordable<any>,
     onSuccess?: () => Promise<void> | void,
-  ) {
+  ): Promise<{ userInfo: null | UserInfo } | null> {
     // 异步处理用户登录操作并获取 accessToken
     let userInfo: null | UserInfo = null;
     try {
       loginLoading.value = true;
 
-      const { access_token } = await authnService.Login({
+      const resp = await authnService.Login({
         username: params.username,
         password: encryptPassword(params.password),
         grant_type: 'password',
       });
 
+      const access_token = (resp as any).access_token;
+      const refresh_token = (resp as any).refresh_token;
+
       // 如果成功获取到 accessToken
       if (access_token) {
         accessStore.setAccessToken(access_token);
+
+        if (refresh_token) {
+          accessStore.setRefreshToken(refresh_token);
+          startRefreshTimer(refreshToken);
+        }
 
         // 获取用户信息并存储到 accessStore 中
         const [fetchUserInfoResult, accessCodes] = await Promise.all([
@@ -111,7 +139,7 @@ export const useAuthStore = defineStore('auth', () => {
         }
       }
     } catch (error) {
-      await doLogout();
+      await _doLogout();
 
       // 处理登录错误
       if (error instanceof Error) {
@@ -137,20 +165,27 @@ export const useAuthStore = defineStore('auth', () => {
 
   /**
    * 用户登出
-   * @param redirect
+   * @param redirect 是否重定向到登录页
    */
   async function logout(redirect: boolean = true) {
     try {
       await authnService.Logout({});
     } catch {
-      // 不做任何处理
+      // 忽略错误
     }
 
-    await doLogout(redirect);
+    await _doLogout(redirect);
   }
 
-  async function doLogout(redirect: boolean = true) {
-    console.log('doLogout');
+  /**
+   * 执行登出操作
+   * @param redirect 是否重定向到登录页
+   */
+  async function _doLogout(redirect: boolean = true) {
+    console.log('_doLogout');
+
+    // 停止定时刷新
+    stopRefreshTimer();
 
     resetAllStores();
 
@@ -172,28 +207,43 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * 刷新访问令牌
    */
-  async function refreshToken() {
-    const accessStore = useAccessStore();
+  async function refreshToken(): Promise<string> {
+    if (!accessStore.refreshToken) {
+      await reauthenticate();
+      return '';
+    }
 
-    const resp = await authnService.RefreshToken({
-      grant_type: 'password',
-      refresh_token: accessStore.refreshToken ?? '',
-    });
-    const newToken = resp.access_token;
+    try {
+      const resp = await authnService.RefreshToken({
+        grant_type: 'refresh_token',
+        refresh_token: accessStore.refreshToken ?? '',
+      });
 
-    accessStore.setAccessToken(newToken ?? null);
+      const newAccessToken = (resp as any).access_token;
+      const newRefreshToken = (resp as any).refresh_token;
 
-    return newToken ?? '';
+      accessStore.setAccessToken(newAccessToken ?? null);
+      accessStore.setRefreshToken(newRefreshToken ?? null);
+
+      return newAccessToken ?? '';
+    } catch (error) {
+      console.error('刷新 access token 失败', error);
+      await reauthenticate();
+      return '';
+    }
   }
 
   /**
    * 重新认证
    */
-  async function reauthenticate() {
+  async function reauthenticate(): Promise<void> {
     console.warn('Access token or refresh token is invalid or expired. ');
-    const accessStore = useAccessStore();
+
+    // 停止定时刷新并清理回调，防止继续触发刷新请求
+    stopRefreshTimer();
 
     accessStore.setAccessToken(null);
+    accessStore.setRefreshToken(null);
 
     if (
       preferences.app.loginExpiredMode === 'modal' &&
@@ -201,9 +251,8 @@ export const useAuthStore = defineStore('auth', () => {
     ) {
       accessStore.setLoginExpired(true);
     } else {
-      if (accessStore.accessToken !== null) {
-        await logout();
-      }
+      // 非 modal 模式直接登出并跳转登录页
+      await logout();
     }
   }
 
@@ -215,7 +264,7 @@ export const useAuthStore = defineStore('auth', () => {
       return (await userProfileService.GetUser({})) as unknown as UserInfo;
     } catch (error) {
       console.error(error);
-      await doLogout();
+      await _doLogout();
       return null;
     }
   }
@@ -227,8 +276,58 @@ export const useAuthStore = defineStore('auth', () => {
     return await routerService.ListPermissionCode({});
   }
 
+  /**
+   * 启动定时刷新
+   * @param cb 刷新回调函数
+   */
+  function startRefreshTimer(cb?: RefreshTokenFunc): void {
+    if (cb) refreshCallback = cb;
+
+    // 先停止已存在的调度
+    stopRefreshTimer();
+
+    if (!refreshCallback) return;
+
+    // 使用 self-scheduling 的 setTimeout，避免并发刷新
+    const schedule = async () => {
+      try {
+        // 在每次触发前校验是否仍有 refresh token
+        if (!accessStore.refreshToken) {
+          // 若无 refresh token，触发重认证并停止后续调度
+          await reauthenticate();
+          return;
+        }
+        await refreshCallback?.();
+      } catch (error) {
+        console.error('refreshToken 定时刷新失败', error);
+        // 刷新失败通常会触发 reauthenticate()，无需额外处理
+      } finally {
+        // 只有在回调仍然存在时才继续调度
+        if (refreshCallback) {
+          refreshTimer = globalThis.setTimeout(schedule, REFRESH_INTERVAL);
+        }
+      }
+    };
+
+    // 首次在间隔后执行（不立即执行）
+    refreshTimer = globalThis.setTimeout(schedule, REFRESH_INTERVAL);
+  }
+
+  /**
+   * 停止定时器
+   */
+  function stopRefreshTimer(): void {
+    if (refreshTimer !== null) {
+      globalThis.clearTimeout(refreshTimer);
+      refreshTimer = null;
+    }
+    // 清除回调，防止后续意外触发
+    refreshCallback = null;
+  }
+
   function $reset() {
     loginLoading.value = false;
+    stopRefreshTimer();
   }
 
   return {
@@ -239,5 +338,7 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     refreshToken,
     reauthenticate,
+    startRefreshTimer,
+    stopRefreshTimer,
   };
 });

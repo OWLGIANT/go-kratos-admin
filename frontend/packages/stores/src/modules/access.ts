@@ -3,8 +3,14 @@ import type { RouteRecordRaw } from 'vue-router';
 
 import { acceptHMRUpdate, defineStore } from 'pinia';
 
+/**
+ * @zh_CN 访问令牌类型
+ */
 type AccessToken = null | string;
 
+/**
+ * @zh_CN 访问权限相关状态定义
+ */
 interface AccessState {
   /**
    * 权限码
@@ -37,7 +43,7 @@ interface AccessState {
 }
 
 /**
- * @zh_CN 访问权限相关
+ * @zh_CN 访问权限相关状态管理
  */
 export const useAccessStore = defineStore('core-access', {
   actions: {
