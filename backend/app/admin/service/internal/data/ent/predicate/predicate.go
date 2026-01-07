@@ -84,12 +84,6 @@ type Position func(*sql.Selector)
 // Role is the predicate function for role builders.
 type Role func(*sql.Selector)
 
-// RoleApi is the predicate function for roleapi builders.
-type RoleApi func(*sql.Selector)
-
-// RoleMenu is the predicate function for rolemenu builders.
-type RoleMenu func(*sql.Selector)
-
 // RolePermission is the predicate function for rolepermission builders.
 type RolePermission func(*sql.Selector)
 

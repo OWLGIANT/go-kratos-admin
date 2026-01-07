@@ -37,8 +37,6 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/policyevaluationlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/position"
 	"go-wind-admin/app/admin/service/internal/data/ent/role"
-	"go-wind-admin/app/admin/service/internal/data/ent/roleapi"
-	"go-wind-admin/app/admin/service/internal/data/ent/rolemenu"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolepermission"
 	"go-wind-admin/app/admin/service/internal/data/ent/roletemplate"
 	"go-wind-admin/app/admin/service/internal/data/ent/task"
@@ -109,10 +107,6 @@ type Client struct {
 	Position *PositionClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
-	// RoleApi is the client for interacting with the RoleApi builders.
-	RoleApi *RoleApiClient
-	// RoleMenu is the client for interacting with the RoleMenu builders.
-	RoleMenu *RoleMenuClient
 	// RolePermission is the client for interacting with the RolePermission builders.
 	RolePermission *RolePermissionClient
 	// RoleTemplate is the client for interacting with the RoleTemplate builders.
@@ -162,8 +156,6 @@ func (c *Client) init() {
 	c.PolicyEvaluationLog = NewPolicyEvaluationLogClient(c.config)
 	c.Position = NewPositionClient(c.config)
 	c.Role = NewRoleClient(c.config)
-	c.RoleApi = NewRoleApiClient(c.config)
-	c.RoleMenu = NewRoleMenuClient(c.config)
 	c.RolePermission = NewRolePermissionClient(c.config)
 	c.RoleTemplate = NewRoleTemplateClient(c.config)
 	c.Task = NewTaskClient(c.config)
@@ -288,8 +280,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		PolicyEvaluationLog:      NewPolicyEvaluationLogClient(cfg),
 		Position:                 NewPositionClient(cfg),
 		Role:                     NewRoleClient(cfg),
-		RoleApi:                  NewRoleApiClient(cfg),
-		RoleMenu:                 NewRoleMenuClient(cfg),
 		RolePermission:           NewRolePermissionClient(cfg),
 		RoleTemplate:             NewRoleTemplateClient(cfg),
 		Task:                     NewTaskClient(cfg),
@@ -341,8 +331,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		PolicyEvaluationLog:      NewPolicyEvaluationLogClient(cfg),
 		Position:                 NewPositionClient(cfg),
 		Role:                     NewRoleClient(cfg),
-		RoleApi:                  NewRoleApiClient(cfg),
-		RoleMenu:                 NewRoleMenuClient(cfg),
 		RolePermission:           NewRolePermissionClient(cfg),
 		RoleTemplate:             NewRoleTemplateClient(cfg),
 		Task:                     NewTaskClient(cfg),
@@ -384,8 +372,8 @@ func (c *Client) Use(hooks ...Hook) {
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.OrgUnit, c.Permission,
 		c.PermissionApiResource, c.PermissionAuditLog, c.PermissionGroup,
 		c.PermissionMenu, c.PermissionPolicy, c.PolicyEvaluationLog, c.Position,
-		c.Role, c.RoleApi, c.RoleMenu, c.RolePermission, c.RoleTemplate, c.Task,
-		c.Tenant, c.User, c.UserCredential,
+		c.Role, c.RolePermission, c.RoleTemplate, c.Task, c.Tenant, c.User,
+		c.UserCredential,
 	} {
 		n.Use(hooks...)
 	}
@@ -401,8 +389,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.OrgUnit, c.Permission,
 		c.PermissionApiResource, c.PermissionAuditLog, c.PermissionGroup,
 		c.PermissionMenu, c.PermissionPolicy, c.PolicyEvaluationLog, c.Position,
-		c.Role, c.RoleApi, c.RoleMenu, c.RolePermission, c.RoleTemplate, c.Task,
-		c.Tenant, c.User, c.UserCredential,
+		c.Role, c.RolePermission, c.RoleTemplate, c.Task, c.Tenant, c.User,
+		c.UserCredential,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -463,10 +451,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Position.mutate(ctx, m)
 	case *RoleMutation:
 		return c.Role.mutate(ctx, m)
-	case *RoleApiMutation:
-		return c.RoleApi.mutate(ctx, m)
-	case *RoleMenuMutation:
-		return c.RoleMenu.mutate(ctx, m)
 	case *RolePermissionMutation:
 		return c.RolePermission.mutate(ctx, m)
 	case *RoleTemplateMutation:
@@ -4070,272 +4054,6 @@ func (c *RoleClient) mutate(ctx context.Context, m *RoleMutation) (Value, error)
 	}
 }
 
-// RoleApiClient is a client for the RoleApi schema.
-type RoleApiClient struct {
-	config
-}
-
-// NewRoleApiClient returns a client for the RoleApi from the given config.
-func NewRoleApiClient(c config) *RoleApiClient {
-	return &RoleApiClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `roleapi.Hooks(f(g(h())))`.
-func (c *RoleApiClient) Use(hooks ...Hook) {
-	c.hooks.RoleApi = append(c.hooks.RoleApi, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `roleapi.Intercept(f(g(h())))`.
-func (c *RoleApiClient) Intercept(interceptors ...Interceptor) {
-	c.inters.RoleApi = append(c.inters.RoleApi, interceptors...)
-}
-
-// Create returns a builder for creating a RoleApi entity.
-func (c *RoleApiClient) Create() *RoleApiCreate {
-	mutation := newRoleApiMutation(c.config, OpCreate)
-	return &RoleApiCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of RoleApi entities.
-func (c *RoleApiClient) CreateBulk(builders ...*RoleApiCreate) *RoleApiCreateBulk {
-	return &RoleApiCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *RoleApiClient) MapCreateBulk(slice any, setFunc func(*RoleApiCreate, int)) *RoleApiCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &RoleApiCreateBulk{err: fmt.Errorf("calling to RoleApiClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*RoleApiCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &RoleApiCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for RoleApi.
-func (c *RoleApiClient) Update() *RoleApiUpdate {
-	mutation := newRoleApiMutation(c.config, OpUpdate)
-	return &RoleApiUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *RoleApiClient) UpdateOne(_m *RoleApi) *RoleApiUpdateOne {
-	mutation := newRoleApiMutation(c.config, OpUpdateOne, withRoleApi(_m))
-	return &RoleApiUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *RoleApiClient) UpdateOneID(id uint32) *RoleApiUpdateOne {
-	mutation := newRoleApiMutation(c.config, OpUpdateOne, withRoleApiID(id))
-	return &RoleApiUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for RoleApi.
-func (c *RoleApiClient) Delete() *RoleApiDelete {
-	mutation := newRoleApiMutation(c.config, OpDelete)
-	return &RoleApiDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *RoleApiClient) DeleteOne(_m *RoleApi) *RoleApiDeleteOne {
-	return c.DeleteOneID(_m.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RoleApiClient) DeleteOneID(id uint32) *RoleApiDeleteOne {
-	builder := c.Delete().Where(roleapi.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &RoleApiDeleteOne{builder}
-}
-
-// Query returns a query builder for RoleApi.
-func (c *RoleApiClient) Query() *RoleApiQuery {
-	return &RoleApiQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeRoleApi},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a RoleApi entity by its id.
-func (c *RoleApiClient) Get(ctx context.Context, id uint32) (*RoleApi, error) {
-	return c.Query().Where(roleapi.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *RoleApiClient) GetX(ctx context.Context, id uint32) *RoleApi {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *RoleApiClient) Hooks() []Hook {
-	return c.hooks.RoleApi
-}
-
-// Interceptors returns the client interceptors.
-func (c *RoleApiClient) Interceptors() []Interceptor {
-	return c.inters.RoleApi
-}
-
-func (c *RoleApiClient) mutate(ctx context.Context, m *RoleApiMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&RoleApiCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&RoleApiUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&RoleApiUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&RoleApiDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown RoleApi mutation op: %q", m.Op())
-	}
-}
-
-// RoleMenuClient is a client for the RoleMenu schema.
-type RoleMenuClient struct {
-	config
-}
-
-// NewRoleMenuClient returns a client for the RoleMenu from the given config.
-func NewRoleMenuClient(c config) *RoleMenuClient {
-	return &RoleMenuClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `rolemenu.Hooks(f(g(h())))`.
-func (c *RoleMenuClient) Use(hooks ...Hook) {
-	c.hooks.RoleMenu = append(c.hooks.RoleMenu, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `rolemenu.Intercept(f(g(h())))`.
-func (c *RoleMenuClient) Intercept(interceptors ...Interceptor) {
-	c.inters.RoleMenu = append(c.inters.RoleMenu, interceptors...)
-}
-
-// Create returns a builder for creating a RoleMenu entity.
-func (c *RoleMenuClient) Create() *RoleMenuCreate {
-	mutation := newRoleMenuMutation(c.config, OpCreate)
-	return &RoleMenuCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of RoleMenu entities.
-func (c *RoleMenuClient) CreateBulk(builders ...*RoleMenuCreate) *RoleMenuCreateBulk {
-	return &RoleMenuCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *RoleMenuClient) MapCreateBulk(slice any, setFunc func(*RoleMenuCreate, int)) *RoleMenuCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &RoleMenuCreateBulk{err: fmt.Errorf("calling to RoleMenuClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*RoleMenuCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &RoleMenuCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for RoleMenu.
-func (c *RoleMenuClient) Update() *RoleMenuUpdate {
-	mutation := newRoleMenuMutation(c.config, OpUpdate)
-	return &RoleMenuUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *RoleMenuClient) UpdateOne(_m *RoleMenu) *RoleMenuUpdateOne {
-	mutation := newRoleMenuMutation(c.config, OpUpdateOne, withRoleMenu(_m))
-	return &RoleMenuUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *RoleMenuClient) UpdateOneID(id uint32) *RoleMenuUpdateOne {
-	mutation := newRoleMenuMutation(c.config, OpUpdateOne, withRoleMenuID(id))
-	return &RoleMenuUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for RoleMenu.
-func (c *RoleMenuClient) Delete() *RoleMenuDelete {
-	mutation := newRoleMenuMutation(c.config, OpDelete)
-	return &RoleMenuDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *RoleMenuClient) DeleteOne(_m *RoleMenu) *RoleMenuDeleteOne {
-	return c.DeleteOneID(_m.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RoleMenuClient) DeleteOneID(id uint32) *RoleMenuDeleteOne {
-	builder := c.Delete().Where(rolemenu.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &RoleMenuDeleteOne{builder}
-}
-
-// Query returns a query builder for RoleMenu.
-func (c *RoleMenuClient) Query() *RoleMenuQuery {
-	return &RoleMenuQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeRoleMenu},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a RoleMenu entity by its id.
-func (c *RoleMenuClient) Get(ctx context.Context, id uint32) (*RoleMenu, error) {
-	return c.Query().Where(rolemenu.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *RoleMenuClient) GetX(ctx context.Context, id uint32) *RoleMenu {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *RoleMenuClient) Hooks() []Hook {
-	return c.hooks.RoleMenu
-}
-
-// Interceptors returns the client interceptors.
-func (c *RoleMenuClient) Interceptors() []Interceptor {
-	return c.inters.RoleMenu
-}
-
-func (c *RoleMenuClient) mutate(ctx context.Context, m *RoleMenuMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&RoleMenuCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&RoleMenuUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&RoleMenuUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&RoleMenuDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown RoleMenu mutation op: %q", m.Op())
-	}
-}
-
 // RolePermissionClient is a client for the RolePermission schema.
 type RolePermissionClient struct {
 	config
@@ -5142,8 +4860,8 @@ type (
 		InternalMessageRecipient, Language, Membership, MembershipOrgUnit,
 		MembershipPosition, MembershipRole, Menu, OrgUnit, Permission,
 		PermissionApiResource, PermissionAuditLog, PermissionGroup, PermissionMenu,
-		PermissionPolicy, PolicyEvaluationLog, Position, Role, RoleApi, RoleMenu,
-		RolePermission, RoleTemplate, Task, Tenant, User, UserCredential []ent.Hook
+		PermissionPolicy, PolicyEvaluationLog, Position, Role, RolePermission,
+		RoleTemplate, Task, Tenant, User, UserCredential []ent.Hook
 	}
 	inters struct {
 		AdminLoginLog, AdminLoginRestriction, AdminOperationLog, ApiResource, DictEntry,
@@ -5151,8 +4869,7 @@ type (
 		InternalMessageRecipient, Language, Membership, MembershipOrgUnit,
 		MembershipPosition, MembershipRole, Menu, OrgUnit, Permission,
 		PermissionApiResource, PermissionAuditLog, PermissionGroup, PermissionMenu,
-		PermissionPolicy, PolicyEvaluationLog, Position, Role, RoleApi, RoleMenu,
-		RolePermission, RoleTemplate, Task, Tenant, User,
-		UserCredential []ent.Interceptor
+		PermissionPolicy, PolicyEvaluationLog, Position, Role, RolePermission,
+		RoleTemplate, Task, Tenant, User, UserCredential []ent.Interceptor
 	}
 )

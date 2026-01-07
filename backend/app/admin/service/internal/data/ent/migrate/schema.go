@@ -1774,68 +1774,6 @@ var (
 			},
 		},
 	}
-	// SysRoleAPIColumns holds the columns for the "sys_role_api" table.
-	SysRoleAPIColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
-		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
-		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
-		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
-		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
-		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
-		{Name: "role_id", Type: field.TypeUint32, Comment: "角色ID"},
-		{Name: "api_id", Type: field.TypeUint32, Comment: "API ID"},
-	}
-	// SysRoleAPITable holds the schema information for the "sys_role_api" table.
-	SysRoleAPITable = &schema.Table{
-		Name:       "sys_role_api",
-		Comment:    "角色 - API关联表",
-		Columns:    SysRoleAPIColumns,
-		PrimaryKey: []*schema.Column{SysRoleAPIColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "idx_sys_role_api_role_id_api_id",
-				Unique:  true,
-				Columns: []*schema.Column{SysRoleAPIColumns[7], SysRoleAPIColumns[8]},
-			},
-			{
-				Name:    "idx_sys_role_api_role_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysRoleAPIColumns[7]},
-			},
-		},
-	}
-	// SysRoleMenuColumns holds the columns for the "sys_role_menu" table.
-	SysRoleMenuColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
-		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
-		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
-		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
-		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
-		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
-		{Name: "role_id", Type: field.TypeUint32, Comment: "角色ID"},
-		{Name: "menu_id", Type: field.TypeUint32, Comment: "菜单ID"},
-	}
-	// SysRoleMenuTable holds the schema information for the "sys_role_menu" table.
-	SysRoleMenuTable = &schema.Table{
-		Name:       "sys_role_menu",
-		Comment:    "角色 - 菜单关联表",
-		Columns:    SysRoleMenuColumns,
-		PrimaryKey: []*schema.Column{SysRoleMenuColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "idx_sys_role_menu_role_id_menu_id",
-				Unique:  true,
-				Columns: []*schema.Column{SysRoleMenuColumns[7], SysRoleMenuColumns[8]},
-			},
-			{
-				Name:    "idx_sys_role_menu_role_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysRoleMenuColumns[7]},
-			},
-		},
-	}
 	// SysRolePermissionsColumns holds the columns for the "sys_role_permissions" table.
 	SysRolePermissionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -2259,8 +2197,6 @@ var (
 		SysPolicyEvaluationLogsTable,
 		SysPositionsTable,
 		SysRolesTable,
-		SysRoleAPITable,
-		SysRoleMenuTable,
 		SysRolePermissionsTable,
 		SysRoleTemplatesTable,
 		SysTasksTable,
@@ -2402,16 +2338,6 @@ func init() {
 	}
 	SysRolesTable.Annotation = &entsql.Annotation{
 		Table:     "sys_roles",
-		Charset:   "utf8mb4",
-		Collation: "utf8mb4_bin",
-	}
-	SysRoleAPITable.Annotation = &entsql.Annotation{
-		Table:     "sys_role_api",
-		Charset:   "utf8mb4",
-		Collation: "utf8mb4_bin",
-	}
-	SysRoleMenuTable.Annotation = &entsql.Annotation{
-		Table:     "sys_role_menu",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

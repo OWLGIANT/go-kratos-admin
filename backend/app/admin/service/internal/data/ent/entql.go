@@ -30,8 +30,6 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/position"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"go-wind-admin/app/admin/service/internal/data/ent/role"
-	"go-wind-admin/app/admin/service/internal/data/ent/roleapi"
-	"go-wind-admin/app/admin/service/internal/data/ent/rolemenu"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolepermission"
 	"go-wind-admin/app/admin/service/internal/data/ent/roletemplate"
 	"go-wind-admin/app/admin/service/internal/data/ent/task"
@@ -47,7 +45,7 @@ import (
 
 // schemaGraph holds a representation of ent/schema at runtime.
 var schemaGraph = func() *sqlgraph.Schema {
-	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 34)}
+	graph := &sqlgraph.Schema{Nodes: make([]*sqlgraph.Node, 32)}
 	graph.Nodes[0] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   adminloginlog.Table,
@@ -781,48 +779,6 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[26] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
-			Table:   roleapi.Table,
-			Columns: roleapi.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: roleapi.FieldID,
-			},
-		},
-		Type: "RoleApi",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			roleapi.FieldCreatedAt: {Type: field.TypeTime, Column: roleapi.FieldCreatedAt},
-			roleapi.FieldUpdatedAt: {Type: field.TypeTime, Column: roleapi.FieldUpdatedAt},
-			roleapi.FieldDeletedAt: {Type: field.TypeTime, Column: roleapi.FieldDeletedAt},
-			roleapi.FieldCreatedBy: {Type: field.TypeUint32, Column: roleapi.FieldCreatedBy},
-			roleapi.FieldUpdatedBy: {Type: field.TypeUint32, Column: roleapi.FieldUpdatedBy},
-			roleapi.FieldDeletedBy: {Type: field.TypeUint32, Column: roleapi.FieldDeletedBy},
-			roleapi.FieldRoleID:    {Type: field.TypeUint32, Column: roleapi.FieldRoleID},
-			roleapi.FieldAPIID:     {Type: field.TypeUint32, Column: roleapi.FieldAPIID},
-		},
-	}
-	graph.Nodes[27] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
-			Table:   rolemenu.Table,
-			Columns: rolemenu.Columns,
-			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeUint32,
-				Column: rolemenu.FieldID,
-			},
-		},
-		Type: "RoleMenu",
-		Fields: map[string]*sqlgraph.FieldSpec{
-			rolemenu.FieldCreatedAt: {Type: field.TypeTime, Column: rolemenu.FieldCreatedAt},
-			rolemenu.FieldUpdatedAt: {Type: field.TypeTime, Column: rolemenu.FieldUpdatedAt},
-			rolemenu.FieldDeletedAt: {Type: field.TypeTime, Column: rolemenu.FieldDeletedAt},
-			rolemenu.FieldCreatedBy: {Type: field.TypeUint32, Column: rolemenu.FieldCreatedBy},
-			rolemenu.FieldUpdatedBy: {Type: field.TypeUint32, Column: rolemenu.FieldUpdatedBy},
-			rolemenu.FieldDeletedBy: {Type: field.TypeUint32, Column: rolemenu.FieldDeletedBy},
-			rolemenu.FieldRoleID:    {Type: field.TypeUint32, Column: rolemenu.FieldRoleID},
-			rolemenu.FieldMenuID:    {Type: field.TypeUint32, Column: rolemenu.FieldMenuID},
-		},
-	}
-	graph.Nodes[28] = &sqlgraph.Node{
-		NodeSpec: sqlgraph.NodeSpec{
 			Table:   rolepermission.Table,
 			Columns: rolepermission.Columns,
 			ID: &sqlgraph.FieldSpec{
@@ -843,7 +799,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rolepermission.FieldPermissionID: {Type: field.TypeUint32, Column: rolepermission.FieldPermissionID},
 		},
 	}
-	graph.Nodes[29] = &sqlgraph.Node{
+	graph.Nodes[27] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   roletemplate.Table,
 			Columns: roletemplate.Columns,
@@ -872,7 +828,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			roletemplate.FieldIsSystem:    {Type: field.TypeBool, Column: roletemplate.FieldIsSystem},
 		},
 	}
-	graph.Nodes[30] = &sqlgraph.Node{
+	graph.Nodes[28] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   task.Table,
 			Columns: task.Columns,
@@ -899,7 +855,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			task.FieldEnable:      {Type: field.TypeBool, Column: task.FieldEnable},
 		},
 	}
-	graph.Nodes[31] = &sqlgraph.Node{
+	graph.Nodes[29] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   tenant.Table,
 			Columns: tenant.Columns,
@@ -932,7 +888,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			tenant.FieldExpiredAt:        {Type: field.TypeTime, Column: tenant.FieldExpiredAt},
 		},
 	}
-	graph.Nodes[32] = &sqlgraph.Node{
+	graph.Nodes[30] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   user.Table,
 			Columns: user.Columns,
@@ -968,7 +924,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			user.FieldStatus:      {Type: field.TypeEnum, Column: user.FieldStatus},
 		},
 	}
-	graph.Nodes[33] = &sqlgraph.Node{
+	graph.Nodes[31] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
 			Table:   usercredential.Table,
 			Columns: usercredential.Columns,
@@ -4224,166 +4180,6 @@ func (f *RoleFilter) WhereIsProtected(p entql.BoolP) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (_q *RoleApiQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the RoleApiQuery builder.
-func (_q *RoleApiQuery) Filter() *RoleApiFilter {
-	return &RoleApiFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *RoleApiMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the RoleApiMutation builder.
-func (m *RoleApiMutation) Filter() *RoleApiFilter {
-	return &RoleApiFilter{config: m.config, predicateAdder: m}
-}
-
-// RoleApiFilter provides a generic filtering capability at runtime for RoleApiQuery.
-type RoleApiFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *RoleApiFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[26].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *RoleApiFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(roleapi.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *RoleApiFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(roleapi.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *RoleApiFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(roleapi.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *RoleApiFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(roleapi.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *RoleApiFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(roleapi.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *RoleApiFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(roleapi.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *RoleApiFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(roleapi.FieldDeletedBy))
-}
-
-// WhereRoleID applies the entql uint32 predicate on the role_id field.
-func (f *RoleApiFilter) WhereRoleID(p entql.Uint32P) {
-	f.Where(p.Field(roleapi.FieldRoleID))
-}
-
-// WhereAPIID applies the entql uint32 predicate on the api_id field.
-func (f *RoleApiFilter) WhereAPIID(p entql.Uint32P) {
-	f.Where(p.Field(roleapi.FieldAPIID))
-}
-
-// addPredicate implements the predicateAdder interface.
-func (_q *RoleMenuQuery) addPredicate(pred func(s *sql.Selector)) {
-	_q.predicates = append(_q.predicates, pred)
-}
-
-// Filter returns a Filter implementation to apply filters on the RoleMenuQuery builder.
-func (_q *RoleMenuQuery) Filter() *RoleMenuFilter {
-	return &RoleMenuFilter{config: _q.config, predicateAdder: _q}
-}
-
-// addPredicate implements the predicateAdder interface.
-func (m *RoleMenuMutation) addPredicate(pred func(s *sql.Selector)) {
-	m.predicates = append(m.predicates, pred)
-}
-
-// Filter returns an entql.Where implementation to apply filters on the RoleMenuMutation builder.
-func (m *RoleMenuMutation) Filter() *RoleMenuFilter {
-	return &RoleMenuFilter{config: m.config, predicateAdder: m}
-}
-
-// RoleMenuFilter provides a generic filtering capability at runtime for RoleMenuQuery.
-type RoleMenuFilter struct {
-	predicateAdder
-	config
-}
-
-// Where applies the entql predicate on the query filter.
-func (f *RoleMenuFilter) Where(p entql.P) {
-	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[27].Type, p, s); err != nil {
-			s.AddError(err)
-		}
-	})
-}
-
-// WhereID applies the entql uint32 predicate on the id field.
-func (f *RoleMenuFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(rolemenu.FieldID))
-}
-
-// WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *RoleMenuFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(rolemenu.FieldCreatedAt))
-}
-
-// WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *RoleMenuFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(rolemenu.FieldUpdatedAt))
-}
-
-// WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *RoleMenuFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(rolemenu.FieldDeletedAt))
-}
-
-// WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *RoleMenuFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(rolemenu.FieldCreatedBy))
-}
-
-// WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *RoleMenuFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(rolemenu.FieldUpdatedBy))
-}
-
-// WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *RoleMenuFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(rolemenu.FieldDeletedBy))
-}
-
-// WhereRoleID applies the entql uint32 predicate on the role_id field.
-func (f *RoleMenuFilter) WhereRoleID(p entql.Uint32P) {
-	f.Where(p.Field(rolemenu.FieldRoleID))
-}
-
-// WhereMenuID applies the entql uint32 predicate on the menu_id field.
-func (f *RoleMenuFilter) WhereMenuID(p entql.Uint32P) {
-	f.Where(p.Field(rolemenu.FieldMenuID))
-}
-
-// addPredicate implements the predicateAdder interface.
 func (_q *RolePermissionQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
@@ -4412,7 +4208,7 @@ type RolePermissionFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RolePermissionFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[28].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[26].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -4497,7 +4293,7 @@ type RoleTemplateFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *RoleTemplateFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[29].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[27].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -4617,7 +4413,7 @@ type TaskFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TaskFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[30].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[28].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -4727,7 +4523,7 @@ type TenantFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *TenantFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[31].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[29].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -4867,7 +4663,7 @@ type UserFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[32].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[30].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})
@@ -5022,7 +4818,7 @@ type UserCredentialFilter struct {
 // Where applies the entql predicate on the query filter.
 func (f *UserCredentialFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
-		if err := schemaGraph.EvalP(schemaGraph.Nodes[33].Type, p, s); err != nil {
+		if err := schemaGraph.EvalP(schemaGraph.Nodes[31].Type, p, s); err != nil {
 			s.AddError(err)
 		}
 	})

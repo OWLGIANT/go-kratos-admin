@@ -64,10 +64,6 @@ type Tx struct {
 	Position *PositionClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
-	// RoleApi is the client for interacting with the RoleApi builders.
-	RoleApi *RoleApiClient
-	// RoleMenu is the client for interacting with the RoleMenu builders.
-	RoleMenu *RoleMenuClient
 	// RolePermission is the client for interacting with the RolePermission builders.
 	RolePermission *RolePermissionClient
 	// RoleTemplate is the client for interacting with the RoleTemplate builders.
@@ -237,8 +233,6 @@ func (tx *Tx) init() {
 	tx.PolicyEvaluationLog = NewPolicyEvaluationLogClient(tx.config)
 	tx.Position = NewPositionClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
-	tx.RoleApi = NewRoleApiClient(tx.config)
-	tx.RoleMenu = NewRoleMenuClient(tx.config)
 	tx.RolePermission = NewRolePermissionClient(tx.config)
 	tx.RoleTemplate = NewRoleTemplateClient(tx.config)
 	tx.Task = NewTaskClient(tx.config)

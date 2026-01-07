@@ -29,8 +29,6 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/policyevaluationlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/position"
 	"go-wind-admin/app/admin/service/internal/data/ent/role"
-	"go-wind-admin/app/admin/service/internal/data/ent/roleapi"
-	"go-wind-admin/app/admin/service/internal/data/ent/rolemenu"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolepermission"
 	"go-wind-admin/app/admin/service/internal/data/ent/roletemplate"
 	"go-wind-admin/app/admin/service/internal/data/ent/schema"
@@ -490,24 +488,6 @@ func init() {
 	roleDescID := roleMixinFields0[0].Descriptor()
 	// role.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	role.IDValidator = roleDescID.Validators[0].(func(uint32) error)
-	roleapiMixin := schema.RoleApi{}.Mixin()
-	roleapiMixinFields0 := roleapiMixin[0].Fields()
-	_ = roleapiMixinFields0
-	roleapiFields := schema.RoleApi{}.Fields()
-	_ = roleapiFields
-	// roleapiDescID is the schema descriptor for id field.
-	roleapiDescID := roleapiMixinFields0[0].Descriptor()
-	// roleapi.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	roleapi.IDValidator = roleapiDescID.Validators[0].(func(uint32) error)
-	rolemenuMixin := schema.RoleMenu{}.Mixin()
-	rolemenuMixinFields0 := rolemenuMixin[0].Fields()
-	_ = rolemenuMixinFields0
-	rolemenuFields := schema.RoleMenu{}.Fields()
-	_ = rolemenuFields
-	// rolemenuDescID is the schema descriptor for id field.
-	rolemenuDescID := rolemenuMixinFields0[0].Descriptor()
-	// rolemenu.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	rolemenu.IDValidator = rolemenuDescID.Validators[0].(func(uint32) error)
 	rolepermissionMixin := schema.RolePermission{}.Mixin()
 	rolepermissionMixinFields0 := rolepermissionMixin[0].Fields()
 	_ = rolepermissionMixinFields0
