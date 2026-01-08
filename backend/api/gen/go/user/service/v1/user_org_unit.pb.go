@@ -89,8 +89,8 @@ type UserOrgUnit struct {
 	UserId        *uint32                `protobuf:"varint,2,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                           // 用户ID
 	TenantId      *uint32                `protobuf:"varint,3,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                     // 租户ID
 	OrgUnitId     *uint32                `protobuf:"varint,4,opt,name=org_unit_id,json=orgUnitId,proto3,oneof" json:"org_unit_id,omitempty"`                // 组织单元ID
-	IsPrimary     *bool                  `protobuf:"varint,6,opt,name=is_primary,json=isPrimary,proto3,oneof" json:"is_primary,omitempty"`                  // 是否主角色
-	Status        *UserOrgUnit_Status    `protobuf:"varint,7,opt,name=status,proto3,enum=user.service.v1.UserOrgUnit_Status,oneof" json:"status,omitempty"` // 岗位状态
+	IsPrimary     *bool                  `protobuf:"varint,6,opt,name=is_primary,json=isPrimary,proto3,oneof" json:"is_primary,omitempty"`                  // 是否主组织
+	Status        *UserOrgUnit_Status    `protobuf:"varint,7,opt,name=status,proto3,enum=user.service.v1.UserOrgUnit_Status,oneof" json:"status,omitempty"` // 状态
 	AssignedAt    *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=assigned_at,json=assignedAt,proto3,oneof" json:"assigned_at,omitempty"`
 	AssignedBy    *uint32                `protobuf:"varint,11,opt,name=assigned_by,json=assignedBy,proto3,oneof" json:"assigned_by,omitempty"`
 	StartAt       *timestamppb.Timestamp `protobuf:"bytes,50,opt,name=start_at,json=startAt,proto3,oneof" json:"start_at,omitempty"`         // 生效时间
@@ -251,7 +251,7 @@ var File_user_service_v1_user_org_unit_proto protoreflect.FileDescriptor
 
 const file_user_service_v1_user_org_unit_proto_rawDesc = "" +
 	"\n" +
-	"#user/service/v1/user_org_unit.proto\x12\x0fuser.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xff\n" +
+	"#user/service/v1/user_org_unit.proto\x12\x0fuser.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xf9\n" +
 	"\n" +
 	"\vUserOrgUnit\x12\x1d\n" +
 	"\x02id\x18\x01 \x01(\rB\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12,\n" +
@@ -259,8 +259,8 @@ const file_user_service_v1_user_org_unit_proto_rawDesc = "" +
 	"\ttenant_id\x18\x03 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x02R\btenantId\x88\x01\x01\x129\n" +
 	"\vorg_unit_id\x18\x04 \x01(\rB\x14\xbaG\x11\x92\x02\x0e组织单元IDH\x03R\torgUnitId\x88\x01\x01\x129\n" +
 	"\n" +
-	"is_primary\x18\x06 \x01(\bB\x15\xbaG\x12\x92\x02\x0f是否主角色H\x04R\tisPrimary\x88\x01\x01\x12T\n" +
-	"\x06status\x18\a \x01(\x0e2#.user.service.v1.UserOrgUnit.StatusB\x12\xbaG\x0f\x92\x02\f岗位状态H\x05R\x06status\x88\x01\x01\x12c\n" +
+	"is_primary\x18\x06 \x01(\bB\x15\xbaG\x12\x92\x02\x0f是否主组织H\x04R\tisPrimary\x88\x01\x01\x12N\n" +
+	"\x06status\x18\a \x01(\x0e2#.user.service.v1.UserOrgUnit.StatusB\f\xbaG\t\x92\x02\x06状态H\x05R\x06status\x88\x01\x01\x12c\n" +
 	"\vassigned_at\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampB!\xbaG\x1e\x92\x02\x1b岗位分配时间（UTC）H\x06R\n" +
 	"assignedAt\x88\x01\x01\x12>\n" +

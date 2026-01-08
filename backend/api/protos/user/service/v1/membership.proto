@@ -42,8 +42,8 @@ message Membership {
   ]; // 是否主身份
 
   optional Status status = 5 [
-    (gnostic.openapi.v3.property) = {description: "成员状态"}
-  ]; // 成员状态
+    (gnostic.openapi.v3.property) = {description: "状态"}
+  ]; // 状态
 
   optional google.protobuf.Timestamp assigned_at = 6 [
     json_name = "assignedAt",

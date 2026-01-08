@@ -42,12 +42,12 @@ message UserOrgUnit {
 
   optional bool is_primary = 6 [
     json_name = "isPrimary",
-    (gnostic.openapi.v3.property) = {description: "是否主角色"}
-  ]; // 是否主角色
+    (gnostic.openapi.v3.property) = {description: "是否主组织"}
+  ]; // 是否主组织
 
   optional Status status = 7 [
-    (gnostic.openapi.v3.property) = { description: "岗位状态" }
-  ]; // 岗位状态
+    (gnostic.openapi.v3.property) = { description: "状态" }
+  ]; // 状态
 
   optional google.protobuf.Timestamp assigned_at = 10 [
     json_name = "assignedAt",
