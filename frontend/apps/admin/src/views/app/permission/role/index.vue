@@ -99,7 +99,7 @@ const gridOptions: VxeGridProps<Role> = {
   columns: [
     { title: $t('ui.table.seq'), type: 'seq', width: 50 },
     { title: $t('page.role.name'), field: 'name' },
-    { title: $t('page.role.code'), field: 'code', width: 140 },
+    { title: $t('page.role.code'), field: 'code' },
     { title: $t('ui.table.sortOrder'), field: 'sortOrder', width: 70 },
     {
       title: $t('ui.table.status'),

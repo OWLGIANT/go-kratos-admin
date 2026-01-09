@@ -10,7 +10,7 @@ import { Icon } from '@iconify/vue';
 import { notification } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type Menu } from '#/generated/api/admin/service/v1';
+import { type permissionservicev1_Menu as Menu } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
 import {
   menuTypeToColor,
@@ -66,8 +66,6 @@ const gridOptions: VxeGridProps<Menu> = {
     refresh: true,
     zoom: true,
   },
-  height: 'auto',
-
   exportConfig: {},
   pagerConfig: {
     enabled: false,
@@ -77,10 +75,10 @@ const gridOptions: VxeGridProps<Menu> = {
   },
 
   stripe: true,
+  height: 'auto',
 
   treeConfig: {
     parentField: 'parentId',
-    // childrenField: 'children',
     rowField: 'id',
     transform: true,
   },

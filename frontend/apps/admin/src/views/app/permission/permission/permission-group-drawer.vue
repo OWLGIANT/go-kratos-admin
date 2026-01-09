@@ -6,22 +6,32 @@ import { $t } from '@vben/locales';
 
 import { notification } from 'ant-design-vue';
 
-import { useVbenForm, z } from '#/adapter/form';
-import { enableBoolList, useDictStore } from '#/stores';
+import { useVbenForm } from '#/adapter/form';
+import {
+  buildPermissionGroupTree,
+  statusList,
+  usePermissionGroupStore,
+} from '#/stores';
 
-const dictStore = useDictStore();
+const permissionGroupStore = usePermissionGroupStore();
 
 const data = ref();
 
 const getTitle = computed(() =>
   data.value?.create
-    ? $t('ui.modal.create', { moduleName: $t('page.dict.dictType') })
-    : $t('ui.modal.update', { moduleName: $t('page.dict.dictType') }),
+    ? $t('ui.modal.create', {
+        moduleName: $t('page.permissionGroup.moduleName'),
+      })
+    : $t('ui.modal.update', {
+        moduleName: $t('page.permissionGroup.moduleName'),
+      }),
 );
+
 // const isCreate = computed(() => data.value?.create);
 
 const [BaseForm, baseFormApi] = useVbenForm({
   showDefaultActions: false,
+
   // 所有表单项共用，可单独在表单内覆盖
   commonConfig: {
     // 所有表单项
@@ -29,28 +39,65 @@ const [BaseForm, baseFormApi] = useVbenForm({
       class: 'w-full',
     },
   },
+
   schema: [
     {
       component: 'Input',
-      fieldName: 'typeCode',
-      label: $t('page.dict.typeCode'),
-      componentProps: {
-        placeholder: $t('ui.placeholder.input'),
-        allowClear: true,
+      fieldName: 'name',
+      label: $t('page.permissionGroup.name'),
+      rules: 'required',
+      componentProps() {
+        return {
+          placeholder: $t('ui.placeholder.input'),
+          allowClear: true,
+        };
       },
-      rules: z.string().min(1, { message: $t('ui.formRules.required') }),
     },
     {
       component: 'Input',
-      fieldName: 'typeName',
-      label: $t('page.dict.typeName'),
-      componentProps: {
-        placeholder: $t('ui.placeholder.input'),
-        allowClear: true,
-      },
+      fieldName: 'module',
+      label: $t('page.permissionGroup.module'),
       rules: 'required',
+      componentProps() {
+        return {
+          placeholder: $t('ui.placeholder.input'),
+          allowClear: true,
+        };
+      },
     },
-
+    {
+      component: 'ApiTreeSelect',
+      fieldName: 'parentId',
+      label: $t('page.permissionGroup.parentId'),
+      componentProps: {
+        placeholder: $t('ui.placeholder.select'),
+        class: 'w-full',
+        showSearch: true,
+        treeDefaultExpandAll: true,
+        numberToString: true,
+        allowClear: true,
+        childrenField: 'children',
+        labelField: 'name',
+        valueField: 'id',
+        treeNodeFilterProp: 'label',
+        filterOption: (input: string, option: any) =>
+          option.label.toLowerCase().includes(input.toLowerCase()),
+        afterFetch: (data: any) => {
+          return buildPermissionGroupTree(data);
+        },
+        api: async () => {
+          const fieldValue = baseFormApi.form.values;
+          const result = await permissionGroupStore.listPermissionGroup(
+            undefined,
+            {
+              parentId: fieldValue.parentId,
+              status: 'ON',
+            },
+          );
+          return result.items;
+        },
+      },
+    },
     {
       component: 'InputNumber',
       fieldName: 'sortOrder',
@@ -61,28 +108,17 @@ const [BaseForm, baseFormApi] = useVbenForm({
         allowClear: true,
       },
     },
-
     {
       component: 'RadioGroup',
-      fieldName: 'isEnabled',
+      fieldName: 'status',
+      defaultValue: 'ON',
       label: $t('ui.table.status'),
-      defaultValue: true,
       rules: 'selectRequired',
       componentProps: {
         optionType: 'button',
         buttonStyle: 'solid',
         class: 'flex flex-wrap', // 如果选项过多，可以添加class来自动折叠
-        options: enableBoolList,
-      },
-    },
-
-    {
-      component: 'Textarea',
-      fieldName: 'description',
-      label: $t('ui.table.description'),
-      componentProps: {
-        placeholder: $t('ui.placeholder.input'),
-        allowClear: true,
+        options: statusList,
       },
     },
   ],
@@ -102,18 +138,20 @@ const [Drawer, drawerApi] = useVbenDrawer({
       return;
     }
 
-    // 加载条设置为加载状态
     setLoading(true);
 
     // 获取表单数据
     const values = await baseFormApi.getValues();
 
-    console.log(getTitle.value, Object.keys(values));
+    console.log(getTitle.value, values);
 
     try {
       await (data.value?.create
-        ? dictStore.createDictType(values)
-        : dictStore.updateDictType(data.value.row.id, values));
+        ? permissionGroupStore.createPermissionGroup(values)
+        : permissionGroupStore.updatePermissionGroup(
+            data.value.row.id,
+            values,
+          ));
 
       notification.success({
         message: data.value?.create
@@ -127,31 +165,26 @@ const [Drawer, drawerApi] = useVbenDrawer({
           : $t('ui.notification.update_failed'),
       });
     } finally {
-      // 关闭窗口
       drawerApi.close();
       setLoading(false);
     }
   },
 
-  onOpenChange(isOpen: boolean) {
+  onOpenChange(isOpen) {
     if (isOpen) {
       // 获取传入的数据
       data.value = drawerApi.getData<Record<string, any>>();
 
       // 为表单赋值
-      if (data.value.row !== undefined) {
-        baseFormApi.setValues(data.value?.row);
-      }
+      baseFormApi.setValues(data.value?.row);
 
       setLoading(false);
-
-      console.log('onOpenChange', data.value, data.value?.create);
     }
   },
 });
 
 function setLoading(loading: boolean) {
-  drawerApi.setState({ confirmLoading: loading });
+  drawerApi.setState({ loading });
 }
 </script>
 

@@ -71,7 +71,6 @@ export const useDictViewStore = defineStore('dict-view', {
     ) {
       if (!typeId) {
         this.resetEntryList(); // 无字典类型ID时清空子列表
-        this.resetEntryList(); // 无字典类型ID时清空子列表
         return this.entryList;
       }
 

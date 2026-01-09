@@ -143,7 +143,6 @@ interface PermissionTreeDataNode {
   key: number | string; // 节点唯一标识（父节点用groupId，子节点用id）
   title: string; // 节点显示文本（父节点用groupName，子节点用name）
   children?: PermissionTreeDataNode[]; // 子节点（仅父节点有）
-  disabled?: boolean;
   permission?: Permission;
 }
 
@@ -159,13 +158,19 @@ export function convertPermissionToTree(
     permMap.get(groupName)?.push(perm);
   });
 
-  return [...permMap.entries()].map(([groupName, permissionList]) => ({
-    key: `group-${groupName}`,
-    title: groupName,
-    children: permissionList.map((perm, index) => ({
-      key: perm.id ?? `perm-default-${index}`,
-      title: perm.name,
-      permission: perm,
-    })),
-  }));
+  return [...permMap.entries()].map(([groupName, permissionList]) => {
+    const children: PermissionTreeDataNode[] = permissionList.map(
+      (perm, index) => ({
+        key: perm.id ?? `perm-default-${index}`,
+        title: typeof perm.name === 'string' ? perm.name : '',
+        permission: perm,
+      }),
+    );
+
+    return {
+      key: `group-${groupName || 'default'}`,
+      title: groupName || '',
+      children,
+    };
+  });
 }

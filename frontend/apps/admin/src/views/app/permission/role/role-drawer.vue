@@ -8,18 +8,14 @@ import { notification } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import {
-  buildMenuTree,
-  convertApiToTree, convertPermissionToTree,
+  convertPermissionToTree,
   statusList,
-  useApiStore,
-  useMenuStore, usePermissionStore,
+  usePermissionStore,
   useRoleStore,
 } from '#/stores';
 import { deepClone } from '#/utils';
 
 const roleStore = useRoleStore();
-const apiStore = useApiStore();
-const menuStore = useMenuStore();
 const permissionStore = usePermissionStore();
 
 const data = ref();
@@ -64,6 +60,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'InputNumber',
       fieldName: 'sortOrder',
+      defaultValue: 1,
       label: $t('ui.table.sortOrder'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),

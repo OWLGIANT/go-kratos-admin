@@ -8,7 +8,7 @@ import { notification } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import {
-  buildMenuTree,
+  buildMenuTree, buildPermissionGroupTree,
   convertApiToTree,
   statusList,
   useApiStore,
@@ -69,25 +69,33 @@ const [BaseForm, baseFormApi] = useVbenForm({
       },
     },
     {
-      component: 'ApiSelect',
+      component: 'ApiTreeSelect',
       fieldName: 'groupId',
       label: $t('page.permission.groupId'),
       componentProps: {
-        allowClear: true,
-        showSearch: true,
         placeholder: $t('ui.placeholder.select'),
+        class: 'w-full',
+        showSearch: true,
+        treeDefaultExpandAll: true,
+        numberToString: false,
+        allowClear: true,
+        childrenField: 'children',
+        labelField: 'name',
+        valueField: 'id',
+        treeNodeFilterProp: 'label',
         filterOption: (input: string, option: any) =>
           option.label.toLowerCase().includes(input.toLowerCase()),
-        afterFetch: (data: { name: string; path: string }[]) => {
-          return data.map((item: any) => ({
-            label: item.name,
-            value: item.id,
-          }));
+        afterFetch: (data: any) => {
+          return buildPermissionGroupTree(data);
         },
         api: async () => {
+          const fieldValue = baseFormApi.form.values;
           const result = await permissionGroupStore.listPermissionGroup(
             undefined,
-            {},
+            {
+              parentId: fieldValue.groupId,
+              status: 'ON',
+            },
           );
           return result.items;
         },
