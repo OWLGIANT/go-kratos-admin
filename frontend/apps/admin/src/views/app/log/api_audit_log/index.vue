@@ -10,6 +10,7 @@ import { type auditservicev1_ApiAuditLog as ApiAuditLog } from '#/generated/api/
 import { $t } from '#/locales';
 import {
   methodList,
+  successStatusList,
   successToColor,
   successToNameWithStatusCode,
   useApiAuditLogStore,
@@ -63,6 +64,19 @@ const formOptions: VbenFormProps = {
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
+      },
+    },
+    {
+      component: 'Select',
+      fieldName: 'success',
+      label: $t('page.apiAuditLog.success'),
+      componentProps: {
+        options: successStatusList,
+        placeholder: $t('ui.placeholder.select'),
+        filterOption: (input: string, option: any) =>
+          option.label.toLowerCase().includes(input.toLowerCase()),
+        allowClear: true,
+        showSearch: true,
       },
     },
     {
@@ -123,6 +137,7 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
             httpMethod: formValues.httpMethod,
             path: formValues.path,
             ipAddress: formValues.ipAddress,
+            success: formValues.success,
             created_at__gte: startTime,
             created_at__lte: endTime,
           },
@@ -138,14 +153,13 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
       formatter: 'formatDateTime',
       width: 140,
     },
-    { title: $t('page.apiAuditLog.username'), field: 'username' },
     {
       title: $t('page.apiAuditLog.success'),
       field: 'success',
       slots: { default: 'success' },
       width: 80,
     },
-
+    { title: $t('page.apiAuditLog.username'), field: 'username' },
     {
       title: $t('page.apiAuditLog.httpMethod'),
       field: 'httpMethod',
@@ -154,14 +168,14 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
     { title: $t('page.apiAuditLog.path'), field: 'path' },
     { title: $t('page.apiAuditLog.costTimeMs'), field: 'costTimeMs' },
     {
-      title: $t('page.apiAuditLog.geoLocation'),
-      field: 'geoLocation',
-      slots: { default: 'geoLocation' },
-    },
-    {
       title: $t('page.apiAuditLog.platform'),
       field: 'deviceInfo.platform',
       slots: { default: 'platform' },
+    },
+    {
+      title: $t('page.apiAuditLog.geoLocation'),
+      field: 'geoLocation',
+      slots: { default: 'geoLocation' },
     },
     {
       title: $t('page.apiAuditLog.ipAddress'),

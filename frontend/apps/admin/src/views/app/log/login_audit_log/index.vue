@@ -12,8 +12,11 @@ import {
   getLoginAuditLogActionTypeColor,
   getLoginAuditLogRiskLevelColor,
   getLoginAuditLogStatusColor,
-  loginAuditLogActiveTypeToName,
+  loginAuditLogActionTypeList,
+  loginAuditLogActionTypeToName,
+  loginAuditLogRiskLevelList,
   loginAuditLogRiskLevelToName,
+  loginAuditLogStatusList,
   loginAuditLogStatusToName,
   useLoginAuditLogStore,
 } from '#/stores';
@@ -35,6 +38,54 @@ const formOptions: VbenFormProps = {
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'ipAddress',
+      label: $t('page.loginAuditLog.ipAddress'),
+      componentProps: {
+        placeholder: $t('ui.placeholder.input'),
+        allowClear: true,
+      },
+    },
+    {
+      component: 'Select',
+      fieldName: 'actionType',
+      label: $t('page.loginAuditLog.actionType'),
+      componentProps: {
+        options: loginAuditLogActionTypeList,
+        placeholder: $t('ui.placeholder.select'),
+        filterOption: (input: string, option: any) =>
+          option.label.toLowerCase().includes(input.toLowerCase()),
+        allowClear: true,
+        showSearch: true,
+      },
+    },
+    {
+      component: 'Select',
+      fieldName: 'riskLevel',
+      label: $t('page.loginAuditLog.riskLevel'),
+      componentProps: {
+        options: loginAuditLogRiskLevelList,
+        placeholder: $t('ui.placeholder.select'),
+        filterOption: (input: string, option: any) =>
+          option.label.toLowerCase().includes(input.toLowerCase()),
+        allowClear: true,
+        showSearch: true,
+      },
+    },
+    {
+      component: 'Select',
+      fieldName: 'status',
+      label: $t('page.loginAuditLog.status'),
+      componentProps: {
+        options: loginAuditLogStatusList,
+        placeholder: $t('ui.placeholder.select'),
+        filterOption: (input: string, option: any) =>
+          option.label.toLowerCase().includes(input.toLowerCase()),
+        allowClear: true,
+        showSearch: true,
       },
     },
     {
@@ -92,6 +143,10 @@ const gridOptions: VxeGridProps<LoginAuditLog> = {
           },
           {
             username: formValues.username,
+            ipAddress: formValues.ipAddress,
+            status: formValues.status,
+            actionType: formValues.actionType,
+            riskType: formValues.riskType,
             created_at__gte: startTime,
             created_at__lte: endTime,
           },
@@ -107,12 +162,13 @@ const gridOptions: VxeGridProps<LoginAuditLog> = {
       formatter: 'formatDateTime',
       width: 140,
     },
-    { title: $t('page.loginAuditLog.username'), field: 'username' },
     {
       title: $t('page.loginAuditLog.status'),
       field: 'status',
+      width: 80,
       slots: { default: 'status' },
     },
+    { title: $t('page.loginAuditLog.username'), field: 'username' },
     {
       title: $t('page.loginAuditLog.actionType'),
       field: 'actionType',
@@ -124,14 +180,14 @@ const gridOptions: VxeGridProps<LoginAuditLog> = {
       slots: { default: 'riskLevel' },
     },
     {
-      title: $t('page.loginAuditLog.geoLocation'),
-      field: 'geoLocation',
-      slots: { default: 'geoLocation' },
-    },
-    {
       title: $t('page.loginAuditLog.platform'),
       field: 'deviceInfo.platform',
       slots: { default: 'platform' },
+    },
+    {
+      title: $t('page.loginAuditLog.geoLocation'),
+      field: 'geoLocation',
+      slots: { default: 'geoLocation' },
     },
     {
       title: $t('page.loginAuditLog.ipAddress'),
@@ -154,7 +210,7 @@ const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
       </template>
       <template #actionType="{ row }">
         <a-tag :color="getLoginAuditLogActionTypeColor(row.actionType)">
-          {{ loginAuditLogActiveTypeToName(row.actionType) }}
+          {{ loginAuditLogActionTypeToName(row.actionType) }}
         </a-tag>
       </template>
       <template #riskLevel="{ row }">

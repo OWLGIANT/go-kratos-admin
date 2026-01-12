@@ -12,6 +12,10 @@
     "MALE": "男性",
     "FEMALE": "女性"
   },
+  "successStatus": {
+    "success": "成功",
+    "failed": "失败"
+  },
   "menu": {
     "type": {
       "CATALOG": "目录",
@@ -20,10 +24,6 @@
       "EMBEDDED": "内嵌",
       "LINK": "外链"
     }
-  },
-  "successStatus": {
-    "success": "成功",
-    "failed": "失败"
   },
   "task": {
     "type": {

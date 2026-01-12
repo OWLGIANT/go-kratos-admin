@@ -1,3 +1,5 @@
+import { computed } from 'vue';
+
 import { $t } from '@vben/locales';
 
 import { defineStore } from 'pinia';
@@ -153,7 +155,13 @@ export function loginAuditLogStatusToName(status: LoginAuditLog_Status) {
   }
 }
 
-export function loginAuditLogActiveTypeToName(
+export const loginAuditLogStatusList = computed(() => [
+  { value: 'FAILED', label: $t('enum.loginAuditLog.status.FAILED') },
+  { value: 'PARTIAL', label: $t('enum.loginAuditLog.status.PARTIAL') },
+  { value: 'SUCCESS', label: $t('enum.loginAuditLog.status.SUCCESS') },
+]);
+
+export function loginAuditLogActionTypeToName(
   status: LoginAuditLog_ActionType,
 ) {
   switch (status) {
@@ -169,6 +177,15 @@ export function loginAuditLogActiveTypeToName(
   }
 }
 
+export const loginAuditLogActionTypeList = computed(() => [
+  { value: 'LOGIN', label: $t('enum.loginAuditLog.actionType.LOGIN') },
+  { value: 'LOGOUT', label: $t('enum.loginAuditLog.actionType.LOGOUT') },
+  {
+    value: 'SESSION_EXPIRED',
+    label: $t('enum.loginAuditLog.actionType.SESSION_EXPIRED'),
+  },
+]);
+
 export function loginAuditLogRiskLevelToName(status: LoginAuditLog_RiskLevel) {
   switch (status) {
     case 'HIGH': {
@@ -182,3 +199,12 @@ export function loginAuditLogRiskLevelToName(status: LoginAuditLog_RiskLevel) {
     }
   }
 }
+
+export const loginAuditLogRiskLevelList = computed(() => [
+  { value: 'HIGH', label: $t('enum.loginAuditLog.riskLevel.HIGH') },
+  { value: 'LOW', label: $t('enum.loginAuditLog.riskLevel.LOW') },
+  {
+    value: 'MEDIUM',
+    label: $t('enum.loginAuditLog.riskLevel.MEDIUM'),
+  },
+]);

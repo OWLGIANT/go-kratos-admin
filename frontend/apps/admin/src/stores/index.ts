@@ -2,15 +2,15 @@ import { computed } from 'vue';
 
 import { $t } from '@vben/locales';
 
-export * from './login-audit-log';
-export * from './login-policy.state';
-export * from './api-audit-log';
 export * from './api.state';
+export * from './api-audit-log';
 export * from './authentication.state';
 export * from './dict.state';
 export * from './file.state';
 export * from './internal-message.state';
 export * from './internal-message-category.state';
+export * from './login-audit-log';
+export * from './login-policy.state';
 export * from './menu.state';
 export * from './org-unit.state';
 export * from './oss.state';
@@ -34,6 +34,11 @@ export const enableList = computed(() => [
 export const enableBoolList = computed(() => [
   { value: true, label: $t('enum.enable.true') },
   { value: false, label: $t('enum.enable.false') },
+]);
+
+export const successStatusList = computed(() => [
+  { value: true, label: $t('enum.successStatus.success') },
+  { value: false, label: $t('enum.successStatus.failed') },
 ]);
 
 /**
