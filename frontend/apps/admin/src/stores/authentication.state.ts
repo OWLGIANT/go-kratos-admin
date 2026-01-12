@@ -171,7 +171,9 @@ export const useAuthStore = defineStore('auth', () => {
    */
   async function logout(redirect: boolean = true) {
     try {
-      await authnService.Logout({});
+      if (accessStore.accessToken !== null && accessStore.accessToken !== '') {
+        await authnService.Logout({});
+      }
     } catch {
       // 忽略错误
     }
