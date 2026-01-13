@@ -30,16 +30,16 @@ import (
 	applogging "go-wind-admin/pkg/middleware/logging"
 )
 
-// NewMiddleware 创建中间件
-func newRestMiddleware(
-	logger log.Logger,
+// NewRestMiddleware 创建中间件
+func NewRestMiddleware(
+	ctx *bootstrap.Context,
 	authenticator authnEngine.Authenticator,
 	authorizer *data.Authorizer,
 	apiAuditLogRepo *data.ApiAuditLogRepo,
 	loginLogRepo *data.LoginAuditLogRepo,
 ) []middleware.Middleware {
 	var ms []middleware.Middleware
-	ms = append(ms, logging.Server(logger))
+	ms = append(ms, logging.Server(ctx.GetLogger()))
 
 	ms = append(ms, applogging.Server(
 		applogging.WithWriteApiLogFunc(func(ctx context.Context, data *auditV1.ApiAuditLog) error {
@@ -61,45 +61,51 @@ func newRestMiddleware(
 		authn.Server(authenticator),
 		auth.Server(),
 		authz.Server(authorizer.Engine()),
-	).Match(rpc.NewRestWhiteListMatcher()).Build())
+	).
+		Match(rpc.NewRestWhiteListMatcher()).
+		Build(),
+	)
 
 	return ms
 }
 
-// NewRestServer new an HTTP server.
+// NewRestServer new an REST server.
 func NewRestServer(
 	ctx *bootstrap.Context,
 
-	authenticator authnEngine.Authenticator, authorizer *data.Authorizer,
-
-	apiAuditLogRepo *data.ApiAuditLogRepo,
-	loginAuditLogRepo *data.LoginAuditLogRepo,
+	middlewares []middleware.Middleware,
+	authorizer *data.Authorizer,
 
 	authenticationService *service.AuthenticationService,
-	userService *service.UserService,
-	menuService *service.MenuService,
 	routerService *service.RouterService,
-	orgUnitService *service.OrgUnitService,
-	roleService *service.RoleService,
-	positionService *service.PositionService,
 	dictService *service.DictService,
-	loginAuditLogService *service.LoginAuditLogService,
-	apiAuditLogService *service.ApiAuditLogService,
 	ossService *service.OssService,
 	uEditorService *service.UEditorService,
 	fileService *service.FileService,
-	tenantService *service.TenantService,
 	taskService *service.TaskService,
-	internalMessageService *service.InternalMessageService,
-	internalMessageCategoryService *service.InternalMessageCategoryService,
-	internalMessageRecipientService *service.InternalMessageRecipientService,
 	loginPolicyService *service.LoginPolicyService,
+
+	tenantService *service.TenantService,
+	userService *service.UserService,
 	userProfileService *service.UserProfileService,
+	roleService *service.RoleService,
+	positionService *service.PositionService,
+	orgUnitService *service.OrgUnitService,
+
+	menuService *service.MenuService,
 	apiService *service.ApiService,
 	permissionService *service.PermissionService,
 	permissionGroupService *service.PermissionGroupService,
 	permissionAuditLogService *service.PermissionAuditLogService,
 	policyEvaluationLogService *service.PolicyEvaluationLogService,
+
+	loginAuditLogService *service.LoginAuditLogService,
+	apiAuditLogService *service.ApiAuditLogService,
+
+	internalMessageService *service.InternalMessageService,
+	internalMessageCategoryService *service.InternalMessageCategoryService,
+	internalMessageRecipientService *service.InternalMessageRecipientService,
+
 ) (*http.Server, error) {
 	cfg := ctx.GetConfig()
 
@@ -108,7 +114,7 @@ func NewRestServer(
 	}
 
 	srv, err := rpc.CreateRestServer(cfg,
-		newRestMiddleware(ctx.GetLogger(), authenticator, authorizer, apiAuditLogRepo, loginAuditLogRepo)...,
+		middlewares...,
 	)
 	if err != nil {
 		return nil, err
