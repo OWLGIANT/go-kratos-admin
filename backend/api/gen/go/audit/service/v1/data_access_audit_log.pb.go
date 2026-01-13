@@ -508,7 +508,7 @@ var File_audit_service_v1_data_access_audit_log_proto protoreflect.FileDescripto
 
 const file_audit_service_v1_data_access_audit_log_proto_rawDesc = "" +
 	"\n" +
-	",audit/service/v1/data_access_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x17validate/validate.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1daudit/service/v1/common.proto\"\x8c\x14\n" +
+	",audit/service/v1/data_access_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x17validate/validate.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1daudit/service/v1/common.proto\"\x8f\x14\n" +
 	"\x12DataAccessAuditLog\x12,\n" +
 	"\x02id\x18\x01 \x01(\rB\x17\xbaG\x14\x92\x02\x11API审计日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
 	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x128\n" +
@@ -532,9 +532,9 @@ const file_audit_service_v1_data_access_audit_log_proto_rawDesc = "" +
 	"\n" +
 	"sql_digest\x18\x15 \x01(\tB'\xbaG$\x92\x02!执行的SQL语句摘要（MD5）H\vR\tsqlDigest\x88\x01\x01\x12X\n" +
 	"\bsql_text\x18\x16 \x01(\tB8\xbaG5\x92\x022执行的SQL语句（脱敏后，Redis为命令）H\fR\asqlText\x88\x01\x01\x12Y\n" +
-	"\raffected_rows\x18\x17 \x01(\rB/\xbaG,\x92\x02)影响行数（Redis为影响key数量）H\rR\faffectedRows\x88\x01\x01\x12I\n" +
+	"\raffected_rows\x18\x17 \x01(\rB/\xbaG,\x92\x02)影响行数（Redis为影响key数量）H\rR\faffectedRows\x88\x01\x01\x12L\n" +
 	"\n" +
-	"latency_ms\x18\x18 \x01(\rB%\xfaB\a*\x05\x18\x80\xdd\xdb\x01\xbaG\x18\x92\x02\x15延迟时间（毫秒H\x0eR\tlatencyMs\x88\x01\x01\x127\n" +
+	"latency_ms\x18\x18 \x01(\rB(\xfaB\a*\x05\x18\x80\xdd\xdb\x01\xbaG\x1b\x92\x02\x18延迟时间（毫秒）H\x0eR\tlatencyMs\x88\x01\x01\x127\n" +
 	"\asuccess\x18\x19 \x01(\bB\x18\xbaG\x15\x92\x02\x12操作是否成功H\x0fR\asuccess\x88\x01\x01\x12h\n" +
 	"\x0fsensitive_level\x18\x1a \x01(\x0e2 .audit.service.v1.SensitiveLevelB\x18\xbaG\x15\x92\x02\x12数据敏感级别H\x10R\x0esensitiveLevel\x88\x01\x01\x12;\n" +
 	"\vdata_masked\x18\x1e \x01(\bB\x15\xbaG\x12\x92\x02\x0f是否已脱敏H\x11R\n" +

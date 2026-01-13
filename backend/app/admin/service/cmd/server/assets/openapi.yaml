@@ -4325,7 +4325,7 @@ components:
                     format: uint32
                 latencyMs:
                     type: integer
-                    description: 延迟时间（毫秒
+                    description: 延迟时间（毫秒）
                     format: uint32
                 success:
                     type: boolean
