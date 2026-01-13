@@ -58,29 +58,7 @@ func (m *GeoLocation) validate(all bool) error {
 	var errors []error
 
 	if m.CountryCode != nil {
-
-		if utf8.RuneCountInString(m.GetCountryCode()) > 2 {
-			err := GeoLocationValidationError{
-				field:  "CountryCode",
-				reason: "value length must be at most 2 runes",
-			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
-		}
-
-		if !_GeoLocation_CountryCode_Pattern.MatchString(m.GetCountryCode()) {
-			err := GeoLocationValidationError{
-				field:  "CountryCode",
-				reason: "value does not match regex pattern \"^[A-Z]{2}$\"",
-			}
-			if !all {
-				return err
-			}
-			errors = append(errors, err)
-		}
-
+		// no validation rules for CountryCode
 	}
 
 	if m.Province != nil {
@@ -183,5 +161,3 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GeoLocationValidationError{}
-
-var _GeoLocation_CountryCode_Pattern = regexp.MustCompile("^[A-Z]{2}$")

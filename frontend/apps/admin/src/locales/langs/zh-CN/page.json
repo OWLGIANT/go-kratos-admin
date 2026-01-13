@@ -330,7 +330,7 @@
     "createdAt": "日志时间",
     "path": "请求路径",
     "httpMethod": "请求方法",
-    "costTimeMs": "API耗时（毫秒）"
+    "latencyMs": "API耗时（毫秒）"
   },
   "api": {
     "moduleName": "API资源",

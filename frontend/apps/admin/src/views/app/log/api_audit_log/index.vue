@@ -168,7 +168,7 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
       width: 80,
     },
     { title: $t('page.apiAuditLog.path'), field: 'path' },
-    { title: $t('page.apiAuditLog.costTimeMs'), field: 'costTimeMs' },
+    { title: $t('page.apiAuditLog.latencyMs'), field: 'latencyMs' },
     {
       title: $t('page.apiAuditLog.platform'),
       field: 'deviceInfo.platform',

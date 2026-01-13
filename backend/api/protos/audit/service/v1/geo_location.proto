@@ -11,10 +11,6 @@ message GeoLocation {
     json_name = "countryCode",
     (gnostic.openapi.v3.property) = {
       description: "国家代码（CN/US），遵循ISO 3166-1 alpha-2标准"
-    },
-    (validate.rules).string = {
-      pattern: "^[A-Z]{2}$",
-      max_len: 2
     }
   ]; // 国家代码（CN/US），遵循ISO 3166-1 alpha-2标准
 
