@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/hibiken/asynq"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"github.com/tx7do/kratos-transport/broker"
@@ -64,7 +64,7 @@ func (s *TaskService) RegisterTaskScheduler(taskScheduler TaskScheduler) {
 	s.taskScheduler = taskScheduler
 }
 
-func (s *TaskService) List(ctx context.Context, req *pagination.PagingRequest) (*adminV1.ListTaskResponse, error) {
+func (s *TaskService) List(ctx context.Context, req *paginationV1.PagingRequest) (*adminV1.ListTaskResponse, error) {
 	return s.taskRepo.List(ctx, req)
 }
 
@@ -211,7 +211,7 @@ func (s *TaskService) RestartAllTask(ctx context.Context, _ *emptypb.Empty) (*ad
 func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 	//_, _ = s.asynqServer.NewPeriodicTask("*/1 * * * ?", task.BackupTaskType, task.BackupTaskData{Name: "test"})
 
-	resp, err := s.List(ctx, &pagination.PagingRequest{
+	resp, err := s.List(ctx, &paginationV1.PagingRequest{
 		NoPaging: trans.Ptr(true),
 		Query:    trans.Ptr(""),
 	})

@@ -5,7 +5,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -51,7 +51,7 @@ func (s *PermissionGroupService) init() {
 	}
 }
 
-func (s *PermissionGroupService) List(ctx context.Context, req *pagination.PagingRequest) (*permissionV1.ListPermissionGroupResponse, error) {
+func (s *PermissionGroupService) List(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.ListPermissionGroupResponse, error) {
 	return s.permissionGroupRepo.List(ctx, req, true)
 }
 

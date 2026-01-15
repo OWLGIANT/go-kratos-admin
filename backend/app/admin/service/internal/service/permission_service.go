@@ -7,7 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/stringcase"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -109,7 +109,7 @@ func (s *PermissionService) queryGroupInfoFromRepo(ctx context.Context, groupSet
 	}
 }
 
-func (s *PermissionService) List(ctx context.Context, req *pagination.PagingRequest) (*permissionV1.ListPermissionResponse, error) {
+func (s *PermissionService) List(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.ListPermissionResponse, error) {
 	resp, err := s.permissionRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
@@ -221,7 +221,7 @@ func (s *PermissionService) appendAPis(
 	operatorUserId uint32,
 ) error {
 	// 查询所有启用的 API 资源
-	apis, err := s.apiRepo.List(ctx, &pagination.PagingRequest{
+	apis, err := s.apiRepo.List(ctx, &paginationV1.PagingRequest{
 		NoPaging: trans.Ptr(true),
 		Query:    trans.Ptr(`{"status":"ON"}`),
 		OrderBy:  []string{"operation"},
@@ -345,7 +345,7 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 	_ = s.permissionGroupRepo.TruncateBizGroup(ctx)
 
 	// 查询所有启用的菜单
-	menus, err := s.menuRepo.List(ctx, &pagination.PagingRequest{
+	menus, err := s.menuRepo.List(ctx, &paginationV1.PagingRequest{
 		NoPaging: trans.Ptr(true),
 		Query:    trans.Ptr(`{"status":"ON"}`),
 		OrderBy:  []string{"-id"},

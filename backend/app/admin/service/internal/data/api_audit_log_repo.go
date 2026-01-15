@@ -10,7 +10,7 @@ import (
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
 
 	"github.com/tx7do/go-utils/copierutil"
@@ -95,7 +95,7 @@ func (r *ApiAuditLogRepo) Count(ctx context.Context, whereCond []func(s *sql.Sel
 	return count, nil
 }
 
-func (r *ApiAuditLogRepo) List(ctx context.Context, req *pagination.PagingRequest) (*auditV1.ListApiAuditLogResponse, error) {
+func (r *ApiAuditLogRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*auditV1.ListApiAuditLogResponse, error) {
 	if req == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}

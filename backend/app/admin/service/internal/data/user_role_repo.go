@@ -33,15 +33,15 @@ func NewUserRoleRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.C
 	}
 }
 
-func (r *UserRoleRepo) CleanRoles(
-	ctx context.Context,
-	tx *ent.Tx,
-	userID, tenantID uint32,
-) error {
+// CleanRelationsByUserID 删除会员的所有角色关联
+func (r *UserRoleRepo) CleanRelationsByUserID(ctx context.Context, tx *ent.Tx, userID uint32) error {
+	if userID == 0 {
+		return nil
+	}
+
 	if _, err := tx.UserRole.Delete().
 		Where(
 			userrole.UserIDEQ(userID),
-			userrole.TenantIDEQ(tenantID),
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old user roles failed: %s", err.Error())
@@ -50,21 +50,118 @@ func (r *UserRoleRepo) CleanRoles(
 	return nil
 }
 
-// AssignRoles 分配角色
-func (r *UserRoleRepo) AssignRoles(ctx context.Context,
-	tx *ent.Tx,
-	userID, tenantID uint32,
-	datas []*userV1.UserRole,
-) error {
+// CleanRelationsByUserIDs 删除多个会员的所有角色关联
+func (r *UserRoleRepo) CleanRelationsByUserIDs(ctx context.Context, tx *ent.Tx, userIDs []uint32) error {
+	if len(userIDs) == 0 {
+		return nil
+	}
+
+	if _, err := tx.UserRole.Delete().
+		Where(
+			userrole.UserIDIn(userIDs...),
+		).
+		Exec(ctx); err != nil {
+		r.log.Errorf("delete old user roles by user ids failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("delete old user roles by user ids failed")
+	}
+	return nil
+}
+
+// CleanRelationsByRoleID 删除角色的所有用户关联
+func (r *UserRoleRepo) CleanRelationsByRoleID(ctx context.Context, tx *ent.Tx, roleID uint32) error {
+	if roleID == 0 {
+		return nil
+	}
+
+	if _, err := tx.UserRole.Delete().
+		Where(
+			userrole.RoleIDEQ(roleID),
+		).
+		Exec(ctx); err != nil {
+		r.log.Errorf("delete old user roles by role id failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("delete old user roles by role id failed")
+	}
+	return nil
+}
+
+// CleanRelationsByRoleIDs 删除多个角色的所有用户关联
+func (r *UserRoleRepo) CleanRelationsByRoleIDs(ctx context.Context, tx *ent.Tx, roleIDs []uint32) error {
+	if len(roleIDs) == 0 {
+		return nil
+	}
+
+	if _, err := tx.UserRole.Delete().
+		Where(
+			userrole.RoleIDIn(roleIDs...),
+		).
+		Exec(ctx); err != nil {
+		r.log.Errorf("delete old user roles by role ids failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("delete old user roles by role ids failed")
+	}
+	return nil
+}
+
+// RemoveRolesFromUser 从用户移除角色
+func (r *UserRoleRepo) RemoveRolesFromUser(ctx context.Context, userID uint32, roleIDs []uint32) error {
+	if len(roleIDs) == 0 || userID == 0 {
+		return nil
+	}
+
+	_, err := r.entClient.Client().UserRole.Delete().
+		Where(
+			userrole.And(
+				userrole.UserIDEQ(userID),
+				userrole.RoleIDIn(roleIDs...),
+			),
+		).
+		Exec(ctx)
+	if err != nil {
+		r.log.Errorf("remove roles from user failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("remove roles from user failed")
+	}
+	return nil
+}
+
+// AssignUserRole 分配角色
+func (r *UserRoleRepo) AssignUserRole(ctx context.Context, tx *ent.Tx, data *userV1.UserRole) error {
+	if data == nil {
+		return nil
+	}
+
+	now := time.Now()
+
+	_, err := tx.UserRole.
+		Create().
+		SetUserID(data.GetUserId()).
+		SetRoleID(data.GetRoleId()).
+		SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
+		SetNillableAssignedBy(data.AssignedBy).
+		SetNillableAssignedAt(timeutil.TimestamppbToTime(data.AssignedAt)).
+		SetNillableIsPrimary(data.IsPrimary).
+		SetNillableStartAt(timeutil.TimestamppbToTime(data.StartAt)).
+		SetNillableEndAt(timeutil.TimestamppbToTime(data.EndAt)).
+		SetCreatedAt(now).
+		SetNillableCreatedBy(data.CreatedBy).
+		Save(ctx)
+	if err != nil {
+		r.log.Errorf("assign role to user failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("assign role to user failed")
+	}
+
+	return nil
+}
+
+// AssignUserRoles 分配角色
+func (r *UserRoleRepo) AssignUserRoles(ctx context.Context, tx *ent.Tx, userID uint32, datas []*userV1.UserRole) error {
+	if len(datas) == 0 || userID == 0 {
+		return nil
+	}
+
 	var err error
 
 	// 删除该用户的所有旧关联
-	if err = r.CleanRoles(ctx, tx, userID, tenantID); err != nil {
+	if err = r.CleanRelationsByUserID(ctx, tx, userID); err != nil {
 		return userV1.ErrorInternalServerError("clean old user roles failed")
-	}
-
-	if len(datas) == 0 {
-		return nil
 	}
 
 	now := time.Now()
@@ -77,8 +174,7 @@ func (r *UserRoleRepo) AssignRoles(ctx context.Context,
 
 		rm := tx.UserRole.
 			Create().
-			SetTenantID(tenantID).
-			SetUserID(data.GetUserId()).
+			SetUserID(userID).
 			SetRoleID(data.GetRoleId()).
 			SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
 			SetNillableAssignedBy(data.AssignedBy).
@@ -102,6 +198,10 @@ func (r *UserRoleRepo) AssignRoles(ctx context.Context,
 
 // ListRoleIDs 获取用户关联的角色ID列表
 func (r *UserRoleRepo) ListRoleIDs(ctx context.Context, userID uint32, excludeExpired bool) ([]uint32, error) {
+	if userID == 0 {
+		return []uint32{}, nil
+	}
+
 	q := r.entClient.Client().UserRole.Query().
 		Where(
 			userrole.UserIDEQ(userID),
@@ -131,20 +231,72 @@ func (r *UserRoleRepo) ListRoleIDs(ctx context.Context, userID uint32, excludeEx
 	return ids, nil
 }
 
-// RemoveRoles 移除角色
-func (r *UserRoleRepo) RemoveRoles(ctx context.Context, userID, tenantID uint32, roleIDs []uint32) error {
-	_, err := r.entClient.Client().UserRole.Delete().
-		Where(
-			userrole.And(
-				userrole.UserIDEQ(userID),
-				userrole.TenantIDEQ(tenantID),
-				userrole.RoleIDIn(roleIDs...),
-			),
-		).
-		Exec(ctx)
-	if err != nil {
-		r.log.Errorf("remove roles from user failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("remove roles from user failed")
+// ListUserIDs 获取角色关联的用户ID列表
+func (r *UserRoleRepo) ListUserIDs(ctx context.Context, roleID uint32, excludeExpired bool) ([]uint32, error) {
+	if roleID == 0 {
+		return []uint32{}, nil
 	}
-	return nil
+
+	q := r.entClient.Client().UserRole.Query().
+		Where(
+			userrole.RoleIDEQ(roleID),
+		)
+
+	if excludeExpired {
+		now := time.Now()
+		q = q.Where(
+			userrole.Or(
+				userrole.EndAtIsNil(),
+				userrole.EndAtGT(now),
+			),
+		)
+	}
+
+	intIDs, err := q.
+		Select(userrole.FieldUserID).
+		Ints(ctx)
+	if err != nil {
+		r.log.Errorf("query user ids by role id failed: %s", err.Error())
+		return nil, userV1.ErrorInternalServerError("query user ids by role id failed")
+	}
+	ids := make([]uint32, len(intIDs))
+	for i, v := range intIDs {
+		ids[i] = uint32(v)
+	}
+	return ids, nil
+}
+
+// ListUserIDsByRoleIDs 获取多个角色关联的用户ID列表
+func (r *UserRoleRepo) ListUserIDsByRoleIDs(ctx context.Context, roleIDs []uint32, excludeExpired bool) ([]uint32, error) {
+	if len(roleIDs) == 0 {
+		return nil, nil
+	}
+
+	q := r.entClient.Client().UserRole.Query().
+		Where(
+			userrole.RoleIDIn(roleIDs...),
+		)
+
+	if excludeExpired {
+		now := time.Now()
+		q = q.Where(
+			userrole.Or(
+				userrole.EndAtIsNil(),
+				userrole.EndAtGT(now),
+			),
+		)
+	}
+
+	intIDs, err := q.
+		Select(userrole.FieldUserID).
+		Ints(ctx)
+	if err != nil {
+		r.log.Errorf("query user ids by role ids failed: %s", err.Error())
+		return nil, userV1.ErrorInternalServerError("query user ids by role ids failed")
+	}
+	ids := make([]uint32, len(intIDs))
+	for i, v := range intIDs {
+		ids[i] = uint32(v)
+	}
+	return ids, nil
 }

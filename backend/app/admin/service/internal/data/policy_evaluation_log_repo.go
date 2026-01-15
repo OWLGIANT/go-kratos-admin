@@ -6,7 +6,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
@@ -78,7 +78,7 @@ func (r *PolicyEvaluationLogRepo) Count(ctx context.Context, whereCond []func(s 
 	return count, nil
 }
 
-func (r *PolicyEvaluationLogRepo) List(ctx context.Context, req *pagination.PagingRequest) (*permissionV1.ListPolicyEvaluationLogResponse, error) {
+func (r *PolicyEvaluationLogRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.ListPolicyEvaluationLogResponse, error) {
 	if req == nil {
 		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}

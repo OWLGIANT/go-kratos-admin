@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 
 	"go-wind-admin/app/admin/service/internal/data"
@@ -126,7 +126,7 @@ func (s *RouterService) ListPermissionCode(ctx context.Context, _ *emptypb.Empty
 		return nil, err
 	}
 
-	menus, err := s.menuRepo.List(ctx, &pagination.PagingRequest{
+	menus, err := s.menuRepo.List(ctx, &paginationV1.PagingRequest{
 		NoPaging: trans.Ptr(true),
 		Query:    trans.Ptr(s.menuListToQueryString(roleMenus, true)),
 		FieldMask: &fieldmaskpb.FieldMask{
@@ -218,7 +218,7 @@ func (s *RouterService) ListRoute(ctx context.Context, _ *emptypb.Empty) (*permi
 		return nil, err
 	}
 
-	menuList, err := s.menuRepo.List(ctx, &pagination.PagingRequest{
+	menuList, err := s.menuRepo.List(ctx, &paginationV1.PagingRequest{
 		NoPaging: trans.Ptr(true),
 		Query:    trans.Ptr(s.menuListToQueryString(roleMenus, false)),
 	}, true)

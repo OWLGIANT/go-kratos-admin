@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -36,7 +36,7 @@ func NewInternalMessageRecipientService(
 }
 
 // ListUserInbox 获取用户的收件箱列表 (通知类)
-func (s *InternalMessageRecipientService) ListUserInbox(ctx context.Context, req *pagination.PagingRequest) (*internalMessageV1.ListUserInboxResponse, error) {
+func (s *InternalMessageRecipientService) ListUserInbox(ctx context.Context, req *paginationV1.PagingRequest) (*internalMessageV1.ListUserInboxResponse, error) {
 	resp, err := s.internalMessageRecipientRepo.List(ctx, req)
 	if err != nil {
 		return nil, err

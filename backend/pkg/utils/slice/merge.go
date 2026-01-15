@@ -76,3 +76,26 @@ func Unique[T comparable](s []T) []T {
 	}
 	return out
 }
+
+// Intersect 计算两个切片的交集，返回包含在两个切片中都出现的唯一元素的新切片。
+// 泛型类型 T 需要是 comparable，以便用作 map 的键。
+func Intersect[T comparable](a, b []T) []T {
+	if len(a) == 0 || len(b) == 0 {
+		return []T{}
+	}
+	m := make(map[T]struct{}, len(b))
+	for _, v := range b {
+		m[v] = struct{}{}
+	}
+	out := make([]T, 0, len(a))
+	seen := make(map[T]struct{}, len(a))
+	for _, v := range a {
+		if _, ok := m[v]; ok {
+			if _, s := seen[v]; !s {
+				out = append(out, v)
+				seen[v] = struct{}{}
+			}
+		}
+	}
+	return out
+}

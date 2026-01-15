@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/getkin/kin-openapi/openapi3"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -64,7 +64,7 @@ func (s *ApiService) RegisterRouteWalker(routeWalker RouteWalker) {
 	s.routeWalker = routeWalker
 }
 
-func (s *ApiService) List(ctx context.Context, req *pagination.PagingRequest) (*permissionV1.ListApiResponse, error) {
+func (s *ApiService) List(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.ListApiResponse, error) {
 	return s.repo.List(ctx, req)
 }
 

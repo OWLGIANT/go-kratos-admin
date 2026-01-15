@@ -33,15 +33,15 @@ func NewMembershipRoleRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[
 	}
 }
 
-func (r *MembershipRoleRepo) CleanRoles(
-	ctx context.Context,
-	tx *ent.Tx,
-	membershipID, tenantID uint32,
-) error {
+// CleanRelationsByMembershipID 删除会员的所有角色关联
+func (r *MembershipRoleRepo) CleanRelationsByMembershipID(ctx context.Context, tx *ent.Tx, membershipID uint32) error {
+	if membershipID == 0 {
+		return nil
+	}
+
 	if _, err := tx.MembershipRole.Delete().
 		Where(
 			membershiprole.MembershipIDEQ(membershipID),
-			membershiprole.TenantIDEQ(tenantID),
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old membership roles failed: %s", err.Error())
@@ -50,21 +50,93 @@ func (r *MembershipRoleRepo) CleanRoles(
 	return nil
 }
 
-// AssignRoles 分配角色
-func (r *MembershipRoleRepo) AssignRoles(ctx context.Context,
+// CleanRelationsByMembershipIDs 删除多个会员的所有角色关联
+func (r *MembershipRoleRepo) CleanRelationsByMembershipIDs(ctx context.Context, tx *ent.Tx, membershipIDs []uint32) error {
+	if len(membershipIDs) == 0 {
+		return nil
+	}
+
+	if _, err := tx.MembershipRole.Delete().
+		Where(
+			membershiprole.MembershipIDIn(membershipIDs...),
+		).
+		Exec(ctx); err != nil {
+		r.log.Errorf("delete old membership roles by membership ids failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("delete old membership roles by membership ids failed")
+	}
+	return nil
+}
+
+// CleanRelationsByRoleID 删除角色的所有会员关联
+func (r *MembershipRoleRepo) CleanRelationsByRoleID(ctx context.Context, tx *ent.Tx, roleID uint32) error {
+	if roleID == 0 {
+		return nil
+	}
+
+	if _, err := tx.MembershipRole.Delete().
+		Where(
+			membershiprole.RoleIDEQ(roleID),
+		).
+		Exec(ctx); err != nil {
+		r.log.Errorf("delete old membership roles by role id failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("delete old membership roles by role id failed")
+	}
+	return nil
+}
+
+// CleanRelationsByRoleIDs 删除多个角色的所有会员关联
+func (r *MembershipRoleRepo) CleanRelationsByRoleIDs(ctx context.Context, tx *ent.Tx, roleIDs []uint32) error {
+	if len(roleIDs) == 0 {
+		return nil
+	}
+
+	if _, err := tx.MembershipRole.Delete().
+		Where(
+			membershiprole.RoleIDIn(roleIDs...),
+		).
+		Exec(ctx); err != nil {
+		r.log.Errorf("delete old membership roles by role ids failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("delete old membership roles by role ids failed")
+	}
+	return nil
+}
+
+// RemoveRolesFromMembership 移除角色
+func (r *MembershipRoleRepo) RemoveRolesFromMembership(ctx context.Context, membershipID uint32, roleIDs []uint32) error {
+	if membershipID == 0 || len(roleIDs) == 0 {
+		return nil
+	}
+
+	_, err := r.entClient.Client().MembershipRole.Delete().
+		Where(
+			membershiprole.And(
+				membershiprole.MembershipIDEQ(membershipID),
+				membershiprole.RoleIDIn(roleIDs...),
+			),
+		).
+		Exec(ctx)
+	if err != nil {
+		r.log.Errorf("remove roles from membership failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("remove roles from membership failed")
+	}
+	return nil
+}
+
+// AssignMembershipRoles 分配角色
+func (r *MembershipRoleRepo) AssignMembershipRoles(ctx context.Context,
 	tx *ent.Tx,
-	membershipID, tenantID uint32,
+	membershipID uint32,
 	datas []*userV1.MembershipRole,
 ) error {
+	if membershipID == 0 || len(datas) == 0 {
+		return nil
+	}
+
 	var err error
 
 	// 删除该用户的所有旧关联
-	if err = r.CleanRoles(ctx, tx, membershipID, tenantID); err != nil {
+	if err = r.CleanRelationsByMembershipID(ctx, tx, membershipID); err != nil {
 		return userV1.ErrorInternalServerError("clean old membership roles failed")
-	}
-
-	if len(datas) == 0 {
-		return nil
 	}
 
 	now := time.Now()
@@ -77,7 +149,6 @@ func (r *MembershipRoleRepo) AssignRoles(ctx context.Context,
 
 		rm := tx.MembershipRole.
 			Create().
-			SetTenantID(tenantID).
 			SetMembershipID(data.GetMembershipId()).
 			SetRoleID(data.GetRoleId()).
 			SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
@@ -102,6 +173,10 @@ func (r *MembershipRoleRepo) AssignRoles(ctx context.Context,
 
 // ListRoleIDs 获取用户关联的角色ID列表
 func (r *MembershipRoleRepo) ListRoleIDs(ctx context.Context, membershipID uint32, excludeExpired bool) ([]uint32, error) {
+	if membershipID == 0 {
+		return []uint32{}, nil
+	}
+
 	q := r.entClient.Client().MembershipRole.Query().
 		Where(
 			membershiprole.MembershipIDEQ(membershipID),
@@ -131,20 +206,72 @@ func (r *MembershipRoleRepo) ListRoleIDs(ctx context.Context, membershipID uint3
 	return ids, nil
 }
 
-// RemoveRoles 移除角色
-func (r *MembershipRoleRepo) RemoveRoles(ctx context.Context, membershipID, tenantID uint32, roleIDs []uint32) error {
-	_, err := r.entClient.Client().MembershipRole.Delete().
-		Where(
-			membershiprole.And(
-				membershiprole.MembershipIDEQ(membershipID),
-				membershiprole.TenantIDEQ(tenantID),
-				membershiprole.RoleIDIn(roleIDs...),
-			),
-		).
-		Exec(ctx)
-	if err != nil {
-		r.log.Errorf("remove roles from membership failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("remove roles from membership failed")
+// ListMembershipIDs 获取角色关联的会员ID列表
+func (r *MembershipRoleRepo) ListMembershipIDs(ctx context.Context, roleID uint32, excludeExpired bool) ([]uint32, error) {
+	if roleID == 0 {
+		return []uint32{}, nil
 	}
-	return nil
+
+	q := r.entClient.Client().MembershipRole.Query().
+		Where(
+			membershiprole.RoleIDEQ(roleID),
+		)
+
+	if excludeExpired {
+		now := time.Now()
+		q = q.Where(
+			membershiprole.Or(
+				membershiprole.EndAtIsNil(),
+				membershiprole.EndAtGT(now),
+			),
+		)
+	}
+
+	intIDs, err := q.
+		Select(membershiprole.FieldMembershipID).
+		Ints(ctx)
+	if err != nil {
+		r.log.Errorf("query membership ids by role id failed: %s", err.Error())
+		return nil, userV1.ErrorInternalServerError("query membership ids by role id failed")
+	}
+	ids := make([]uint32, len(intIDs))
+	for i, v := range intIDs {
+		ids[i] = uint32(v)
+	}
+	return ids, nil
+}
+
+// ListMembershipIDsByRoleIDs 获取多个角色关联的会员ID列表
+func (r *MembershipRoleRepo) ListMembershipIDsByRoleIDs(ctx context.Context, roleIDs []uint32, excludeExpired bool) ([]uint32, error) {
+	if len(roleIDs) == 0 {
+		return nil, nil
+	}
+
+	q := r.entClient.Client().MembershipRole.Query().
+		Where(
+			membershiprole.RoleIDIn(roleIDs...),
+		)
+
+	if excludeExpired {
+		now := time.Now()
+		q = q.Where(
+			membershiprole.Or(
+				membershiprole.EndAtIsNil(),
+				membershiprole.EndAtGT(now),
+			),
+		)
+	}
+
+	intIDs, err := q.
+		Select(membershiprole.FieldMembershipID).
+		Ints(ctx)
+	if err != nil {
+		r.log.Errorf("query membership ids by role ids failed: %s", err.Error())
+		return nil, userV1.ErrorInternalServerError("query membership ids by role ids failed")
+	}
+	ids := make([]uint32, len(intIDs))
+	for i, v := range intIDs {
+		ids[i] = uint32(v)
+	}
+	return ids, nil
 }

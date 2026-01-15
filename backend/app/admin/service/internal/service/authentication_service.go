@@ -156,12 +156,69 @@ func containsPermission(perms []string, target string) bool {
 	return false
 }
 
-// authorizeAndEnrichUserTokenPayload 授权并丰富用户令牌载荷
-func (s *AuthenticationService) authorizeAndEnrichUserTokenPayload(ctx context.Context, userID, tenantID uint32, tokenPayload *authenticationV1.UserTokenPayload) error {
+// authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToOne 一对一用户-租户关系的授权与丰富
+func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToOne(ctx context.Context, userID, tenantID uint32, tokenPayload *authenticationV1.UserTokenPayload) error {
+	hasBackendAccess := false
+
+	if tenantID > 0 {
+		// 检查租户状态
+		tenant, _ := s.tenantRepo.Get(ctx, &userV1.GetTenantRequest{
+			QueryBy: &userV1.GetTenantRequest_Id{Id: tenantID},
+		})
+		if tenant == nil || tenant.GetStatus() != userV1.Tenant_ON {
+			return authenticationV1.ErrorForbidden("insufficient authority")
+		}
+	}
+
+	// 获取角色 ID 列表
+	roleIDs, err := s.userRepo.ListRoleIDsByUserID(ctx, userID)
+	if err != nil || len(roleIDs) == 0 {
+		s.log.Errorf("get roles by user [%d] failed [%v]", userID, err)
+		return authenticationV1.ErrorForbidden("insufficient authority")
+	}
+
+	// 获取权限 ID 列表
+	permissionIDs, err := s.roleRepo.GetPermissionsByRoleIDs(ctx, roleIDs)
+	if err != nil || len(permissionIDs) == 0 {
+		s.log.Errorf("get permissions by role ids failed [%v]", err)
+		return authenticationV1.ErrorForbidden("insufficient authority")
+	}
+
+	// 获取权限代码列表
+	permissionCodes, err := s.permissionRepo.GetPermissionCodesByIDs(ctx, permissionIDs)
+	if err != nil || len(permissionCodes) == 0 {
+		s.log.Errorf("get permission codes by ids failed [%v]", err)
+		return authenticationV1.ErrorForbidden("insufficient authority")
+	}
+
+	// 检查是否包含系统访问后台权限
+	if containsPermission(permissionCodes, constants.SystemAccessBackendPermissionCode) {
+		hasBackendAccess = true
+	}
+
+	// 授权决策
+	if !hasBackendAccess {
+		s.log.Errorf("user [%d] has no backend access permission", userID)
+		return authenticationV1.ErrorForbidden("insufficient authority")
+	}
+
+	// 获取角色代码列表
+	roleCodes, err := s.roleRepo.ListRoleCodesByRoleIds(ctx, roleIDs)
+	if err != nil || len(roleCodes) == 0 {
+		s.log.Errorf("list role codes by role ids failed [%v]", err)
+		return authenticationV1.ErrorForbidden("insufficient authority")
+	}
+	tokenPayload.Roles = roleCodes
+
+	return nil
+}
+
+// authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToMany 一对多用户-租户关系的授权与丰富
+func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToMany(ctx context.Context, userID, tenantID uint32, tokenPayload *authenticationV1.UserTokenPayload) error {
 	var memberships []*userV1.Membership
 	if tenantID > 0 {
 		// 指定租户
-		membership, err := s.membershipRepo.GetMembershipByUserTenant(ctx, userID, tenantID)
+		membership, err := s.membershipRepo.GetMembershipByUserTenant(ctx, userID)
 		if err != nil {
 			s.log.Errorf("get user [%d] membership for tenant [%d] failed [%s]", userID, tenantID, err.Error())
 			return authenticationV1.ErrorForbidden("insufficient authority")
@@ -228,7 +285,7 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayload(ctx context.C
 	roleCodes, err := s.roleRepo.ListRoleCodesByRoleIds(ctx, validRoleIDs)
 	if err != nil || len(roleCodes) == 0 {
 		s.log.Errorf("list role codes by role ids failed [%v]", err)
-		return authenticationV1.ErrorServiceUnavailable("获取用户角色失败")
+		return authenticationV1.ErrorForbidden("insufficient authority")
 	}
 	tokenPayload.Roles = roleCodes
 
@@ -243,6 +300,21 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayload(ctx context.C
 	//}
 
 	return nil
+}
+
+// authorizeAndEnrichUserTokenPayload 授权并丰富用户令牌载荷
+func (s *AuthenticationService) authorizeAndEnrichUserTokenPayload(ctx context.Context, userID, tenantID uint32, tokenPayload *authenticationV1.UserTokenPayload) error {
+	switch constants.DefaultUserTenantRelation {
+	case constants.UserTenantRelationOneToOne:
+		return s.authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToOne(ctx, userID, tenantID, tokenPayload)
+
+	case constants.UserTenantRelationOneToMany:
+		return s.authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToMany(ctx, userID, tenantID, tokenPayload)
+
+	default:
+		s.log.Errorf("unsupported user-tenant relation type: %d", constants.DefaultUserTenantRelation)
+		return authenticationV1.ErrorServiceUnavailable("unsupported user-tenant relation type")
+	}
 }
 
 // resolveUserAuthority 解析用户权限信息

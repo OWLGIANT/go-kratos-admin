@@ -283,7 +283,7 @@ function handleDetail(row: any) {
 }
 
 watch(
-  () => userViewStore.currentOrgUnitId,
+  () => [userViewStore.currentOrgUnitId, userViewStore.currentTenantId],
   (newValues, oldValue) => {
     if (isEqual(newValues, oldValue)) {
       return;

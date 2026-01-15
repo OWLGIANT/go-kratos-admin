@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -32,7 +32,7 @@ func NewFileService(ctx *bootstrap.Context, repo *data.FileRepo) *FileService {
 	}
 }
 
-func (s *FileService) List(ctx context.Context, req *pagination.PagingRequest) (*fileV1.ListFileResponse, error) {
+func (s *FileService) List(ctx context.Context, req *paginationV1.PagingRequest) (*fileV1.ListFileResponse, error) {
 	return s.fileRepo.List(ctx, req)
 }
 

@@ -5,6 +5,7 @@ import { h, watch } from 'vue';
 
 import { useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
+import { isEqual } from '@vben/utils';
 
 import { notification } from 'ant-design-vue';
 
@@ -211,8 +212,8 @@ const collapseAll = () => {
 
 watch(
   () => permissionViewStore.needReloadGroupList,
-  () => {
-    if (!permissionViewStore.needReloadGroupList) {
+  (newValues, oldValue) => {
+    if (isEqual(newValues, oldValue) || !newValues) {
       return;
     }
     permissionViewStore.needReloadGroupList = false;

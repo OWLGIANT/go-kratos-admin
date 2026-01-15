@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
@@ -47,7 +47,7 @@ func NewAuthorizerProvider(
 
 // Provide 提供权限数据
 func (p *AuthorizerProvider) Provide(ctx context.Context) (AuthorizerDataMap, error) {
-	roles, err := p.roleRepo.List(ctx, &pagination.PagingRequest{NoPaging: trans.Ptr(true)})
+	roles, err := p.roleRepo.List(ctx, &paginationV1.PagingRequest{NoPaging: trans.Ptr(true)})
 	if err != nil {
 		p.log.Errorf("failed to list roles: %v", err)
 		return nil, err

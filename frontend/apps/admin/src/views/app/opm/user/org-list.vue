@@ -50,6 +50,9 @@ const filterOption = (input: string, option: any) => {
   return text.includes(input.toLowerCase());
 };
 
+/**
+ * 获取组织单元列表
+ */
 async function fetchOrgUnits() {
   try {
     const response = await userViewStore.fetchOrgUnitList();

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -38,7 +38,7 @@ func NewDictService(
 	}
 }
 
-func (s *DictService) ListDictType(ctx context.Context, req *pagination.PagingRequest) (*dictV1.ListDictTypeResponse, error) {
+func (s *DictService) ListDictType(ctx context.Context, req *paginationV1.PagingRequest) (*dictV1.ListDictTypeResponse, error) {
 	return s.dictTypeRepo.List(ctx, req)
 }
 
@@ -94,7 +94,7 @@ func (s *DictService) DeleteDictType(ctx context.Context, req *dictV1.BatchDelet
 	return &emptypb.Empty{}, nil
 }
 
-func (s *DictService) ListDictEntry(ctx context.Context, req *pagination.PagingRequest) (*dictV1.ListDictEntryResponse, error) {
+func (s *DictService) ListDictEntry(ctx context.Context, req *paginationV1.PagingRequest) (*dictV1.ListDictEntryResponse, error) {
 	return s.dictEntryRepo.List(ctx, req)
 }
 

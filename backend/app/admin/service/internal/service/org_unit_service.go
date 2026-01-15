@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -39,7 +39,7 @@ func NewOrgUnitService(
 	}
 }
 
-func (s *OrgUnitService) List(ctx context.Context, req *pagination.PagingRequest) (*userV1.ListOrgUnitResponse, error) {
+func (s *OrgUnitService) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListOrgUnitResponse, error) {
 	resp, err := s.orgUnitRepo.List(ctx, req)
 	if err != nil {
 		return nil, err

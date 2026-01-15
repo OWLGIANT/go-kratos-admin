@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/genproto/protobuf/field_mask"
@@ -44,7 +44,7 @@ func NewTenantService(
 	}
 }
 
-func (s *TenantService) List(ctx context.Context, req *pagination.PagingRequest) (*userV1.ListTenantResponse, error) {
+func (s *TenantService) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListTenantResponse, error) {
 	resp, err := s.tenantRepo.List(ctx, req)
 	if err != nil {
 		return nil, err

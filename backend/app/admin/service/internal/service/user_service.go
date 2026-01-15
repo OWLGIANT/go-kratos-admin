@@ -5,7 +5,7 @@ import (
 	"go-wind-admin/pkg/constants"
 
 	"github.com/go-kratos/kratos/v2/log"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -92,7 +92,7 @@ func (s *UserService) initUserNameSetMap(
 	}
 }
 
-func (s *UserService) List(ctx context.Context, req *pagination.PagingRequest) (*userV1.ListUserResponse, error) {
+func (s *UserService) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListUserResponse, error) {
 	resp, err := s.userRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
@@ -408,11 +408,25 @@ func (s *UserService) createDefaultUser(ctx context.Context) error {
 		}
 	}
 
-	// 创建默认用户租户关联关系
-	for _, membership := range constants.DefaultMemberships {
-		if err = s.membershipRepo.AssignTenantMembership(ctx, membership); err != nil {
-			s.log.Errorf("create default user membership err: %v", err)
-			return err
+	switch constants.DefaultUserTenantRelation {
+	default:
+		fallthrough
+	case constants.UserTenantRelationOneToOne:
+		// 创建默认用户角色关联关系
+		for _, userRole := range constants.DefaultUserRoles {
+			if err = s.userRepo.AssignUserRole(ctx, userRole); err != nil {
+				s.log.Errorf("create default user role relation err: %v", err)
+				return err
+			}
+		}
+
+	case constants.UserTenantRelationOneToMany:
+		// 创建默认用户租户关联关系
+		for _, membership := range constants.DefaultMemberships {
+			if err = s.membershipRepo.AssignTenantMembership(ctx, membership); err != nil {
+				s.log.Errorf("create default user membership err: %v", err)
+				return err
+			}
 		}
 	}
 

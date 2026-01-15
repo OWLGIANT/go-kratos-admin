@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -31,7 +31,7 @@ func NewLoginPolicyService(ctx *bootstrap.Context, repo *data.LoginPolicyRepo) *
 	}
 }
 
-func (s *LoginPolicyService) List(ctx context.Context, req *pagination.PagingRequest) (*adminV1.ListLoginPolicyResponse, error) {
+func (s *LoginPolicyService) List(ctx context.Context, req *paginationV1.PagingRequest) (*adminV1.ListLoginPolicyResponse, error) {
 	return s.repo.List(ctx, req)
 }
 

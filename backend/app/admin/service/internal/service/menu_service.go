@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -32,7 +32,7 @@ func NewMenuService(ctx *bootstrap.Context, repo *data.MenuRepo) *MenuService {
 	}
 }
 
-func (s *MenuService) List(ctx context.Context, req *pagination.PagingRequest) (*permissionV1.ListMenuResponse, error) {
+func (s *MenuService) List(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.ListMenuResponse, error) {
 	ret, err := s.repo.List(ctx, req, false)
 	if err != nil {
 

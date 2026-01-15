@@ -180,10 +180,22 @@ export function createApiServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -343,6 +355,8 @@ export type pagination_PagingRequest = {
   or?: string;
   // 复杂过滤表达式
   filterExpr?: pagination_FilterExpr;
+  // 过滤字符串，基于AIP规范的过滤表达式。
+  filter?: string;
   // 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
   fieldMask?: wellKnownFieldMask;
 };
@@ -363,7 +377,7 @@ export type pagination_FilterExpr = {
   // 过滤表达式类型
   type: pagination_ExprType | undefined;
   // 条件列表
-  conditions: pagination_Condition[] | undefined;
+  conditions: pagination_FilterCondition[] | undefined;
   // 子表达式列表
   groups: pagination_FilterExpr[] | undefined;
 };
@@ -373,16 +387,24 @@ export type pagination_ExprType =
   | "EXPR_TYPE_UNSPECIFIED"
   | "AND"
   | "OR";
-// 单个条件
-export type pagination_Condition = {
+// 过滤条件
+export type pagination_FilterCondition = {
   // 过滤字段名
   field: string | undefined;
   // 过滤操作符
   op: pagination_Operator | undefined;
   // 过滤值（单值）
   value?: string;
+  // 当需要使用非字符串类型的比较值（对象/数组/数字/布尔）时使用此字段，
+  // 使用 google.protobuf.Value 能表达任意 JSON 值。
+  jsonValue?: wellKnownValue;
   // 过滤值（多值，如IN操作符）
   values: string[] | undefined;
+  // 日期时间部分（可选，仅在字段为日期时间类型时使用）
+  datePart?: pagination_DatePart;
+  // 当字段为 JSON/JSONB 类型时，可指定要抽取的子路径（例如: "meta.user.name" 或 JSONPath）
+  // 服务端应把此路径用于 JSON_EXTRACT / -> 操作，再对抽取结果应用 op。
+  jsonPath?: string;
 };
 
 // 操作符枚举
@@ -424,6 +446,25 @@ export type pagination_Operator =
   | "SEARCH"
   | "EXACT"
   | "IEXACT";
+type wellKnownValue = unknown;
+
+// 日期时间部分枚举
+export type pagination_DatePart =
+  | "DATE_PART_UNSPECIFIED"
+  | "DATE"
+  | "YEAR"
+  | "ISO_YEAR"
+  | "QUARTER"
+  | "MONTH"
+  | "WEEK"
+  | "WEEK_DAY"
+  | "ISO_WEEK_DAY"
+  | "DAY"
+  | "TIME"
+  | "HOUR"
+  | "MINUTE"
+  | "SECOND"
+  | "MICROSECOND";
 // In JSON, a field mask is encoded as a single string where paths are
 // separated by a comma. Fields name in each path are converted
 // to/from lower-camel naming conventions.
@@ -581,10 +622,22 @@ export function createApiAuditLogServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -891,10 +944,22 @@ export function createDataAccessAuditLogServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -1073,10 +1138,22 @@ export function createDictServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -1230,10 +1307,22 @@ export function createDictServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -1466,10 +1555,22 @@ export function createFileServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -1707,10 +1808,22 @@ export function createInternalMessageServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -1975,10 +2088,22 @@ export function createInternalMessageCategoryServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -2189,10 +2314,22 @@ export function createInternalMessageRecipientServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -2349,10 +2486,22 @@ export function createLoginAuditLogServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -2593,10 +2742,22 @@ export function createLoginPolicyServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -2765,10 +2926,22 @@ export function createMenuServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -3084,10 +3257,22 @@ export function createOperationAuditLogServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -3246,10 +3431,22 @@ export function createOrgUnitServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -3607,10 +3804,22 @@ export function createPermissionServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -3855,10 +4064,22 @@ export function createPermissionAuditLogServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -4009,10 +4230,22 @@ export function createPermissionGroupServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -4228,10 +4461,22 @@ export function createPolicyEvaluationLogServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -4376,10 +4621,22 @@ export function createPositionServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -4629,10 +4886,22 @@ export function createRoleServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -5082,10 +5351,22 @@ export function createTaskServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -5454,10 +5735,22 @@ export function createTenantServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -5872,10 +6165,22 @@ export function createUserServiceClient(
       if (request.filterExpr?.conditions?.value) {
         queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
       }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
       if (request.filterExpr?.conditions?.values) {
         request.filterExpr.conditions.values.forEach((x) => {
           queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
         })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)

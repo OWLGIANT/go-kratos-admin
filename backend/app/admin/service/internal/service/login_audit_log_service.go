@@ -7,7 +7,7 @@ import (
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 
 	"go-wind-admin/app/admin/service/internal/data"
 
@@ -30,7 +30,7 @@ func NewLoginAuditLogService(ctx *bootstrap.Context, repo *data.LoginAuditLogRep
 	}
 }
 
-func (s *LoginAuditLogService) List(ctx context.Context, req *pagination.PagingRequest) (*auditV1.ListLoginAuditLogResponse, error) {
+func (s *LoginAuditLogService) List(ctx context.Context, req *paginationV1.PagingRequest) (*auditV1.ListLoginAuditLogResponse, error) {
 	return s.repo.List(ctx, req)
 }
 

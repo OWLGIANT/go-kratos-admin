@@ -81,6 +81,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -186,6 +191,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -371,6 +381,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -476,6 +491,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -611,6 +631,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -859,6 +884,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -1017,6 +1047,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -1175,6 +1210,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -1271,6 +1311,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -1486,6 +1531,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -1591,6 +1641,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -1867,6 +1922,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -2030,6 +2090,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -2135,6 +2200,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -2306,6 +2376,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -2411,6 +2486,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -2569,6 +2649,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -2754,6 +2839,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -2859,6 +2949,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -3044,6 +3139,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -3223,6 +3323,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -3488,6 +3593,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
@@ -3738,6 +3848,11 @@ paths:
                         - OR
                     type: string
                     format: enum
+                - name: filter
+                  in: query
+                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  schema:
+                    type: string
                 - name: fieldMask
                   in: query
                   description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。

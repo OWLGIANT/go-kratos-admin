@@ -25,7 +25,6 @@ type UserProfileService struct {
 	userToken          *data.UserTokenCacheRepo
 	roleRepo           *data.RoleRepo
 	userCredentialRepo *data.UserCredentialRepo
-	membershipRepo     *data.MembershipRepo
 
 	log *log.Helper
 }
@@ -36,7 +35,6 @@ func NewUserProfileService(
 	userToken *data.UserTokenCacheRepo,
 	roleRepo *data.RoleRepo,
 	userCredentialRepo *data.UserCredentialRepo,
-	membershipRepo *data.MembershipRepo,
 ) *UserProfileService {
 	return &UserProfileService{
 		log:                ctx.NewLoggerHelper("user-profile/service/admin-service"),
@@ -44,7 +42,6 @@ func NewUserProfileService(
 		userToken:          userToken,
 		roleRepo:           roleRepo,
 		userCredentialRepo: userCredentialRepo,
-		membershipRepo:     membershipRepo,
 	}
 }
 
@@ -66,7 +63,7 @@ func (s *UserProfileService) GetUser(ctx context.Context, _ *emptypb.Empty) (*us
 	}
 
 	// 获取用户角色、岗位、组织单元等信息
-	roleIDs, positionIDs, orgUnitIDs, err := s.membershipRepo.ListMembershipAllIDs(ctx, user.GetId(), user.GetTenantId())
+	roleIDs, positionIDs, orgUnitIDs, err := s.userRepo.ListUserRelationIDs(ctx, user.GetId())
 	if err != nil {
 		s.log.Errorf("list user [%d] membership ids failed [%s]", user.GetId(), err.Error())
 		return nil, authenticationV1.ErrorServiceUnavailable("获取用户角色失败")

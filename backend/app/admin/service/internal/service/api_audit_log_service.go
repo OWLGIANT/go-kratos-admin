@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"github.com/go-kratos/kratos/v2/log"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -44,7 +44,7 @@ func NewApiAuditLogService(
 func (s *ApiAuditLogService) queryApis(ctx context.Context, path, method string) (*permissionV1.Api, error) {
 	if len(s.apis) == 0 {
 		s.apiMutex.Lock()
-		apis, err := s.apiRepo.List(ctx, &pagination.PagingRequest{
+		apis, err := s.apiRepo.List(ctx, &paginationV1.PagingRequest{
 			NoPaging: trans.Ptr(true),
 		})
 		if err != nil {
@@ -68,7 +68,7 @@ func (s *ApiAuditLogService) queryApis(ctx context.Context, path, method string)
 	return nil, nil
 }
 
-func (s *ApiAuditLogService) List(ctx context.Context, req *pagination.PagingRequest) (*auditV1.ListApiAuditLogResponse, error) {
+func (s *ApiAuditLogService) List(ctx context.Context, req *paginationV1.PagingRequest) (*auditV1.ListApiAuditLogResponse, error) {
 	resp, err := s.apiAuditLogRepo.List(ctx, req)
 	if err != nil {
 		return nil, err

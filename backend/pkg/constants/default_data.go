@@ -167,12 +167,24 @@ var DefaultUsers = []*userV1.User{
 var DefaultUserCredentials = []*authenticationV1.UserCredential{
 	{
 		UserId:         trans.Ptr(uint32(1)),
+		TenantId:       trans.Ptr(uint32(0)),
 		IdentityType:   authenticationV1.UserCredential_USERNAME.Enum(),
 		Identifier:     trans.Ptr(DefaultAdminUserName),
 		CredentialType: authenticationV1.UserCredential_PASSWORD_HASH.Enum(),
 		Credential:     trans.Ptr(DefaultAdminPassword),
 		IsPrimary:      trans.Ptr(true),
 		Status:         authenticationV1.UserCredential_ENABLED.Enum(),
+	},
+}
+
+// DefaultUserRoles 系统初始化默认用户角色关系数据
+var DefaultUserRoles = []*userV1.UserRole{
+	{
+		UserId:    trans.Ptr(uint32(1)),
+		TenantId:  trans.Ptr(uint32(0)),
+		RoleId:    trans.Ptr(uint32(1)),
+		IsPrimary: trans.Ptr(true),
+		Status:    userV1.UserRole_ACTIVE.Enum(),
 	},
 }
 

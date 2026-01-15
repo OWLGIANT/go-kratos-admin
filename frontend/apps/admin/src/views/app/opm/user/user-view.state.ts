@@ -68,7 +68,7 @@ export const useUserViewStore = defineStore('user-view', {
       try {
         this.orgUnitList = await orgUnitStore.listOrgUnit(undefined, {
           ...formValues,
-          tenant_id: (this.currentTenantId ?? '0').toString(),
+          tenant_id: this.currentTenantId ?? 0,
           status: 'ON',
         });
       } catch (error) {
@@ -98,8 +98,8 @@ export const useUserViewStore = defineStore('user-view', {
           },
           {
             ...formValues,
-            tenant_id: (this.currentTenantId ?? '0').toString(),
-            org_unit_id: (this.currentOrgUnitId ?? '0').toString(),
+            tenant_id: this.currentTenantId ?? 0,
+            org_unit_id: this.currentOrgUnitId,
           },
         );
       } catch (error) {
@@ -129,6 +129,7 @@ export const useUserViewStore = defineStore('user-view', {
 
     setCurrentTenantId(tenantId: number | undefined) {
       this.currentTenantId = tenantId;
+      this.currentOrgUnitId = undefined;
     },
 
     setCurrentOrgUnitId(orgUnitId: number | undefined) {

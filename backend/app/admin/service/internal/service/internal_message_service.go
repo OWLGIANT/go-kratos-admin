@@ -7,7 +7,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/timeutil"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -57,7 +57,7 @@ func NewInternalMessageService(
 	}
 }
 
-func (s *InternalMessageService) ListMessage(ctx context.Context, req *pagination.PagingRequest) (*internalMessageV1.ListInternalMessageResponse, error) {
+func (s *InternalMessageService) ListMessage(ctx context.Context, req *paginationV1.PagingRequest) (*internalMessageV1.ListInternalMessageResponse, error) {
 	resp, err := s.internalMessageRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
@@ -208,7 +208,7 @@ func (s *InternalMessageService) SendMessage(ctx context.Context, req *internalM
 	}
 
 	if req.GetTargetAll() {
-		users, err := s.userRepo.List(ctx, &pagination.PagingRequest{NoPaging: trans.Ptr(true)})
+		users, err := s.userRepo.List(ctx, &paginationV1.PagingRequest{NoPaging: trans.Ptr(true)})
 		if err != nil {
 			s.log.Errorf("send message failed, list users failed, %s", err)
 		} else {

@@ -2,13 +2,15 @@ package data
 
 import (
 	"context"
+
+	"strconv"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
 
 	"github.com/tx7do/go-utils/copierutil"
@@ -21,10 +23,13 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/user"
 
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+
+	"go-wind-admin/pkg/constants"
+	"go-wind-admin/pkg/utils/slice"
 )
 
 type UserRepo interface {
-	List(ctx context.Context, req *pagination.PagingRequest) (*userV1.ListUserResponse, error)
+	List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListUserResponse, error)
 
 	Get(ctx context.Context, req *userV1.GetUserRequest) (*userV1.User, error)
 
@@ -36,9 +41,26 @@ type UserRepo interface {
 
 	Count(ctx context.Context) (int, error)
 
+	UserExists(ctx context.Context, req *userV1.UserExistsRequest) (*userV1.UserExistsResponse, error)
+
+	AssignUserRole(ctx context.Context, data *userV1.UserRole) error
+	AssignUserRoles(ctx context.Context, userID uint32, datas []*userV1.UserRole) error
+
+	AssignUserOrgUnit(ctx context.Context, data *userV1.UserOrgUnit) error
+	AssignUserOrgUnits(ctx context.Context, userID uint32, datas []*userV1.UserOrgUnit) error
+
+	AssignUserPosition(ctx context.Context, data *userV1.UserPosition) error
+	AssignUserPositions(ctx context.Context, userID uint32, datas []*userV1.UserPosition) error
+
 	ListUsersByIds(ctx context.Context, ids []uint32) ([]*userV1.User, error)
 
-	UserExists(ctx context.Context, req *userV1.UserExistsRequest) (*userV1.UserExistsResponse, error)
+	ListRoleIDsByUserID(ctx context.Context, userID uint32) ([]uint32, error)
+
+	ListPositionIDsByUserID(ctx context.Context, userID uint32) ([]uint32, error)
+
+	ListOrgUnitIDsByUserID(ctx context.Context, userID uint32) ([]uint32, error)
+
+	ListUserRelationIDs(ctx context.Context, userID uint32) (roleIDs []uint32, positionIDs []uint32, orgUnitIDs []uint32, err error)
 }
 
 type userRepo struct {
@@ -57,15 +79,32 @@ type userRepo struct {
 		predicate.User,
 		userV1.User, ent.User,
 	]
+
+	userRoleRepo     *UserRoleRepo
+	userOrgUnitRepo  *UserOrgUnitRepo
+	userPositionRepo *UserPositionRepo
+
+	membershipRepo *MembershipRepo
 }
 
-func NewUserRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) UserRepo {
+func NewUserRepo(
+	ctx *bootstrap.Context,
+	entClient *entCrud.EntClient[*ent.Client],
+	userRoleRepo *UserRoleRepo,
+	userOrgUnitRepo *UserOrgUnitRepo,
+	userPositionRepo *UserPositionRepo,
+	membershipRepo *MembershipRepo,
+) UserRepo {
 	repo := &userRepo{
-		log:             ctx.NewLoggerHelper("user/repo/admin-service"),
-		entClient:       entClient,
-		mapper:          mapper.NewCopierMapper[userV1.User, ent.User](),
-		genderConverter: mapper.NewEnumTypeConverter[userV1.User_Gender, user.Gender](userV1.User_Gender_name, userV1.User_Gender_value),
-		statusConverter: mapper.NewEnumTypeConverter[userV1.User_Status, user.Status](userV1.User_Status_name, userV1.User_Status_value),
+		log:              ctx.NewLoggerHelper("user/repo/admin-service"),
+		entClient:        entClient,
+		mapper:           mapper.NewCopierMapper[userV1.User, ent.User](),
+		genderConverter:  mapper.NewEnumTypeConverter[userV1.User_Gender, user.Gender](userV1.User_Gender_name, userV1.User_Gender_value),
+		statusConverter:  mapper.NewEnumTypeConverter[userV1.User_Status, user.Status](userV1.User_Status_name, userV1.User_Status_value),
+		userRoleRepo:     userRoleRepo,
+		userOrgUnitRepo:  userOrgUnitRepo,
+		userPositionRepo: userPositionRepo,
+		membershipRepo:   membershipRepo,
 	}
 
 	repo.init()
@@ -102,12 +141,280 @@ func (r *userRepo) Count(ctx context.Context) (int, error) {
 	return count, nil
 }
 
-func (r *userRepo) List(ctx context.Context, req *pagination.PagingRequest) (*userV1.ListUserResponse, error) {
+// FilterFields 过滤掉不需要的字段条件
+func FilterFields(filterExpr *paginationV1.FilterExpr, excludeFields []string) []*paginationV1.FilterCondition {
+	if filterExpr == nil || len(filterExpr.Conditions) == 0 {
+		return []*paginationV1.FilterCondition{}
+	}
+
+	exclude := make(map[string]struct{}, len(excludeFields))
+	for _, f := range excludeFields {
+		if f == "" {
+			continue
+		}
+		exclude[f] = struct{}{}
+	}
+
+	includeConditions := make([]*paginationV1.FilterCondition, 0, len(filterExpr.Conditions))
+	excludeConditions := make([]*paginationV1.FilterCondition, 0, len(filterExpr.Conditions))
+	for _, cond := range filterExpr.Conditions {
+		if cond == nil || cond.Field == "" {
+			continue
+		}
+		if _, skip := exclude[cond.Field]; skip {
+			excludeConditions = append(excludeConditions, cond)
+			continue
+		}
+		includeConditions = append(includeConditions, cond)
+	}
+
+	filterExpr.Conditions = includeConditions
+
+	return excludeConditions
+}
+
+// queryUserIDsByRelationIDs 根据关联关系查询用户ID列表
+func (r *userRepo) queryUserIDsByRelationIDs(ctx context.Context, roleIDs []uint32, orgUnitIDs []uint32, positionIDs []uint32) ([]uint32, error) {
+	if len(roleIDs) == 0 && len(orgUnitIDs) == 0 && len(positionIDs) == 0 {
+		return nil, nil
+	}
+
+	switch constants.DefaultUserTenantRelation {
+	default:
+		fallthrough
+	case constants.UserTenantRelationOneToOne:
+		return r.queryUserIDsByRelationIDsUserTenantRelationOneToOne(ctx, roleIDs, orgUnitIDs, positionIDs)
+	case constants.UserTenantRelationOneToMany:
+		return r.queryUserIDsByRelationIDsUserTenantRelationOneToMany(ctx, roleIDs, orgUnitIDs, positionIDs)
+	}
+}
+
+// queryUserIDsByRelationIDsUserTenantRelationOneToMany 根据关联关系一对多查询用户ID列表
+func (r *userRepo) queryUserIDsByRelationIDsUserTenantRelationOneToMany(ctx context.Context, roleIDs []uint32, orgUnitIDs []uint32, positionIDs []uint32) ([]uint32, error) {
+	if len(roleIDs) == 0 && len(orgUnitIDs) == 0 && len(positionIDs) == 0 {
+		return nil, nil
+	}
+
+	var err error
+
+	var orgUnitUserIDs []uint32
+	var positionUserIDs []uint32
+	var roleUserIDs []uint32
+
+	if len(orgUnitIDs) > 0 {
+		orgUnitUserIDs, err = r.membershipRepo.ListUserIDsByOrgUnitIDs(ctx, orgUnitIDs, false)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if len(positionIDs) > 0 {
+		positionUserIDs, err = r.membershipRepo.ListUserIDsByPositionIDs(ctx, positionIDs, false)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if len(roleIDs) > 0 {
+		roleUserIDs, err = r.membershipRepo.ListUserIDsByRoleIDs(ctx, roleIDs, false)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// 收集所有非空列表用于求交集
+	lists := make([][]uint32, 0, 3)
+	if orgUnitUserIDs != nil {
+		lists = append(lists, orgUnitUserIDs)
+	}
+	if positionUserIDs != nil {
+		lists = append(lists, positionUserIDs)
+	}
+	if roleUserIDs != nil {
+		lists = append(lists, roleUserIDs)
+	}
+
+	// 如果没有任何实际列表（例如对应 ids 为空导致查询未执行），返回空
+	if len(lists) == 0 {
+		return []uint32{}, nil
+	}
+
+	// 逐步求交集
+	result := lists[0]
+	for i := 1; i < len(lists); i++ {
+		result = slice.Intersect(result, lists[i])
+		if len(result) == 0 {
+			break
+		}
+	}
+
+	return result, nil
+}
+
+// queryUserIDsByRelationIDsUserTenantRelationOneToOne 根据关联关系一对一查询用户ID列表
+func (r *userRepo) queryUserIDsByRelationIDsUserTenantRelationOneToOne(ctx context.Context, roleIDs []uint32, orgUnitIDs []uint32, positionIDs []uint32) ([]uint32, error) {
+	if len(roleIDs) == 0 && len(orgUnitIDs) == 0 && len(positionIDs) == 0 {
+		return nil, nil
+	}
+
+	var err error
+
+	var orgUnitUserIDs []uint32
+	var positionUserIDs []uint32
+	var roleUserIDs []uint32
+	if len(orgUnitIDs) > 0 {
+		orgUnitUserIDs, err = r.userOrgUnitRepo.ListUserIDsByOrgUnitIDs(ctx, orgUnitIDs, false)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if len(positionIDs) > 0 {
+		positionUserIDs, err = r.userPositionRepo.ListUserIDsByPositionIDs(ctx, positionIDs, false)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if len(roleIDs) > 0 {
+		roleUserIDs, err = r.userRoleRepo.ListUserIDsByRoleIDs(ctx, roleIDs, false)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// 收集所有非空列表用于求交集
+	lists := make([][]uint32, 0, 3)
+	if orgUnitUserIDs != nil {
+		lists = append(lists, orgUnitUserIDs)
+	}
+	if positionUserIDs != nil {
+		lists = append(lists, positionUserIDs)
+	}
+	if roleUserIDs != nil {
+		lists = append(lists, roleUserIDs)
+	}
+
+	// 如果没有任何实际列表（例如对应 ids 为空导致查询未执行），返回空
+	if len(lists) == 0 {
+		return []uint32{}, nil
+	}
+
+	// 逐步求交集
+	result := lists[0]
+	for i := 1; i < len(lists); i++ {
+		result = slice.Intersect(result, lists[i])
+		if len(result) == 0 {
+			break
+		}
+	}
+
+	return result, nil
+}
+
+func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListUserResponse, error) {
 	if req == nil {
 		return nil, userV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().User.Query()
+
+	filterExpr, err := r.repository.ConvertFilterByPagingRequest(req)
+	if err != nil {
+		r.log.Errorf("convert filter by paging request failed: %s", err.Error())
+		return nil, err
+	}
+
+	excludeConditions := FilterFields(filterExpr, []string{
+		"org_unit_id", "org_unit_ids",
+		"position_id", "position_ids",
+		"role_id", "role_ids",
+	})
+
+	var orgUnitIDs []uint32
+	var positionIDs []uint32
+	var roleIDs []uint32
+	for _, cond := range excludeConditions {
+		//r.log.Debugf("excluding filter condition: field=%s operator=%s value=%v", cond.GetField(), cond.GetOp(), cond.GetValue())
+
+		var val uint64
+		switch cond.GetField() {
+		case "org_unit_id":
+			if val, err = strconv.ParseUint(cond.GetValue(), 10, 64); err == nil {
+				orgUnitIDs = append(orgUnitIDs, uint32(val))
+			} else {
+				r.log.Errorf("parse org_unit_id value failed: %s", err.Error())
+			}
+		case "org_unit_ids":
+			for _, v := range cond.GetValues() {
+				if val, err = strconv.ParseUint(v, 10, 64); err == nil {
+					orgUnitIDs = append(orgUnitIDs, uint32(val))
+				} else {
+					r.log.Errorf("parse org_unit_ids value failed: %s", err.Error())
+				}
+			}
+
+		case "position_id":
+			if val, err = strconv.ParseUint(cond.GetValue(), 10, 64); err == nil {
+				positionIDs = append(positionIDs, uint32(val))
+			} else {
+				r.log.Errorf("parse position_id value failed: %s", err.Error())
+			}
+		case "position_ids":
+			for _, v := range cond.GetValues() {
+				if val, err = strconv.ParseUint(v, 10, 64); err == nil {
+					positionIDs = append(positionIDs, uint32(val))
+				} else {
+					r.log.Errorf("parse position_ids value failed: %s", err.Error())
+				}
+			}
+
+		case "role_id":
+			if val, err = strconv.ParseUint(cond.GetValue(), 10, 64); err == nil {
+				roleIDs = append(roleIDs, uint32(val))
+			} else {
+				r.log.Errorf("parse role_id value failed: %s", err.Error())
+			}
+		case "role_ids":
+			for _, v := range cond.GetValues() {
+				if val, err = strconv.ParseUint(v, 10, 64); err == nil {
+					roleIDs = append(roleIDs, uint32(val))
+				} else {
+					r.log.Errorf("parse role_ids value failed: %s", err.Error())
+				}
+			}
+		}
+	}
+
+	var mergedUserIDs []uint32
+	mergedUserIDs, err = r.queryUserIDsByRelationIDs(ctx, roleIDs, orgUnitIDs, positionIDs)
+	if err != nil {
+		r.log.Errorf("query user ids by relation ids failed: %s", err.Error())
+		return nil, err
+	}
+
+	//r.log.Debugf("filtered user ids by relation ids: [%v] [%v] [%v] [%v]", roleIDs, orgUnitIDs, positionIDs, mergedUserIDs)
+
+	hasRelationFilter := len(roleIDs) > 0 || len(orgUnitIDs) > 0 || len(positionIDs) > 0
+	if hasRelationFilter && len(mergedUserIDs) == 0 {
+		// 如果有关系过滤条件但没有匹配的用户ID，直接返回空结果
+		return &userV1.ListUserResponse{Total: 0, Items: nil}, nil
+	}
+
+	if len(mergedUserIDs) > 0 {
+		filterExpr.Conditions = append(filterExpr.Conditions, &paginationV1.FilterCondition{
+			Field: "id",
+			Op:    paginationV1.Operator_IN,
+			Values: func() []string {
+				values := make([]string, 0, len(mergedUserIDs))
+				for _, id := range mergedUserIDs {
+					values = append(values, strconv.FormatUint(uint64(id), 10))
+				}
+				return values
+			}(),
+		})
+	}
+
+	req.FilterExpr = filterExpr
+	req.Query = nil
+	req.OrQuery = nil
+	req.Filter = nil
 
 	ret, err := r.repository.ListWithPaging(ctx, builder, builder.Clone(), req)
 	if err != nil {
@@ -342,4 +649,194 @@ func (r *userRepo) UserExists(ctx context.Context, req *userV1.UserExistsRequest
 	return &userV1.UserExistsResponse{
 		Exist: exist,
 	}, nil
+}
+
+// AssignUserRole 分配角色
+func (r *userRepo) AssignUserRole(ctx context.Context, data *userV1.UserRole) error {
+	var tx *ent.Tx
+	tx, err := r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	return r.userRoleRepo.AssignUserRole(ctx, tx, data)
+}
+
+func (r *userRepo) AssignUserRoles(ctx context.Context, userID uint32, datas []*userV1.UserRole) error {
+	var tx *ent.Tx
+	tx, err := r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	return r.userRoleRepo.AssignUserRoles(ctx, tx, userID, datas)
+}
+
+// AssignUserOrgUnit 分配组织单元给用户
+func (r *userRepo) AssignUserOrgUnit(ctx context.Context, data *userV1.UserOrgUnit) error {
+	var tx *ent.Tx
+	tx, err := r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	return r.userOrgUnitRepo.AssignUserOrgUnit(ctx, tx, data)
+}
+
+func (r *userRepo) AssignUserOrgUnits(ctx context.Context, userID uint32, datas []*userV1.UserOrgUnit) error {
+	var tx *ent.Tx
+	tx, err := r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	return r.userOrgUnitRepo.AssignUserOrgUnits(ctx, tx, userID, datas)
+}
+
+// AssignUserPosition 分配岗位
+func (r *userRepo) AssignUserPosition(ctx context.Context, data *userV1.UserPosition) error {
+	var tx *ent.Tx
+	tx, err := r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	return r.userPositionRepo.AssignUserPosition(ctx, tx, data)
+}
+
+func (r *userRepo) AssignUserPositions(ctx context.Context, userID uint32, datas []*userV1.UserPosition) error {
+	var tx *ent.Tx
+	tx, err := r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	return r.userPositionRepo.AssignUserPositions(ctx, tx, userID, datas)
+}
+
+func (r *userRepo) ListRoleIDsByUserID(ctx context.Context, userID uint32) ([]uint32, error) {
+	return r.userRoleRepo.ListRoleIDs(ctx, userID, false)
+}
+
+func (r *userRepo) ListPositionIDsByUserID(ctx context.Context, userID uint32) ([]uint32, error) {
+	return r.userPositionRepo.ListPositionIDs(ctx, userID, false)
+}
+
+func (r *userRepo) ListOrgUnitIDsByUserID(ctx context.Context, userID uint32) ([]uint32, error) {
+	return r.userOrgUnitRepo.ListOrgUnitIDs(ctx, userID, false)
+}
+
+// ListUserRelationIDs 列出用户关联的角色、岗位、组织单元ID列表
+func (r *userRepo) ListUserRelationIDs(ctx context.Context, userID uint32) (roleIDs []uint32, positionIDs []uint32, orgUnitIDs []uint32, err error) {
+	if userID == 0 {
+		return
+	}
+
+	switch constants.DefaultUserTenantRelation {
+	default:
+		fallthrough
+	case constants.UserTenantRelationOneToOne:
+		return r.listUserRelationIDs(ctx, userID)
+	case constants.UserTenantRelationOneToMany:
+		return r.membershipRepo.ListMembershipRelationIDs(ctx, userID)
+	}
+}
+
+// listUserRelationIDsOneToOne 列出用户关联的角色、岗位、组织单元ID列表（一对一关系）
+func (r *userRepo) listUserRelationIDs(ctx context.Context, userID uint32) (roleIDs []uint32, positionIDs []uint32, orgUnitIDs []uint32, err error) {
+	if userID == 0 {
+		return
+	}
+
+	if roleIDs, err = r.userRoleRepo.ListRoleIDs(ctx, userID, false); err != nil {
+		return
+	}
+
+	if positionIDs, err = r.userPositionRepo.ListPositionIDs(ctx, userID, false); err != nil {
+		return
+	}
+
+	if orgUnitIDs, err = r.userOrgUnitRepo.ListOrgUnitIDs(ctx, userID, false); err != nil {
+		return
+	}
+
+	return
 }
