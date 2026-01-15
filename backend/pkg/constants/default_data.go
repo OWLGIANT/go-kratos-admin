@@ -14,6 +14,9 @@ const (
 	// DefaultAdminPassword 系统初始化默认管理员用户密码
 	DefaultAdminPassword = "admin"
 
+	// DefaultUserPassword 系统初始化默认普通用户密码
+	DefaultUserPassword = "12345678"
+
 	// PlatformTenantID 平台管理员租户ID
 	PlatformTenantID = uint32(0)
 )

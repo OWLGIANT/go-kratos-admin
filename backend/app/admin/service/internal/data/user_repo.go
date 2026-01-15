@@ -8,6 +8,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -476,10 +477,29 @@ func (r *userRepo) Get(ctx context.Context, req *userV1.GetUserRequest) (*userV1
 	return dto, err
 }
 
-func (r *userRepo) Create(ctx context.Context, req *userV1.CreateUserRequest) (*userV1.User, error) {
+func (r *userRepo) Create(ctx context.Context, req *userV1.CreateUserRequest) (dto *userV1.User, err error) {
 	if req == nil || req.Data == nil {
 		return nil, userV1.ErrorBadRequest("invalid parameter")
 	}
+
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return nil, userV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
 
 	builder := r.entClient.Client().User.Create().
 		SetNillableUsername(req.Data.Username).
@@ -512,40 +532,129 @@ func (r *userRepo) Create(ctx context.Context, req *userV1.CreateUserRequest) (*
 		builder.SetID(req.GetData().GetId())
 	}
 
-	//if req.Data.Roles != nil {
-	//	builder.SetRoles(req.Data.GetRoles())
-	//}
-
 	if req.Data.RoleIds != nil {
 		var roleIds []int
 		for _, roleId := range req.Data.GetRoleIds() {
 			roleIds = append(roleIds, int(roleId))
 		}
-		//builder.SetRoleIds(roleIds)
 	}
 
-	if ret, err := builder.Save(ctx); err != nil {
+	var entity *ent.User
+	if entity, err = builder.Save(ctx); err != nil {
 		r.log.Errorf("insert user failed: %s", err.Error())
 		return nil, userV1.ErrorInternalServerError("insert user failed")
-	} else {
-		return r.mapper.ToDTO(ret), nil
 	}
+
+	switch constants.DefaultUserTenantRelationType {
+	case constants.UserTenantRelationNone, constants.UserTenantRelationOneToOne:
+		if err = r.assignUserRelations(ctx, tx, entity.ID,
+			req.GetData().GetRoleIds(),
+			req.GetData().GetOrgUnitIds(),
+			req.GetData().GetPositionIds()); err != nil {
+			return nil, err
+		}
+	case constants.UserTenantRelationOneToMany:
+		if err = r.assignMembershipRelations(ctx, tx, entity.ID,
+			req.GetData().GetRoleIds(),
+			req.GetData().GetOrgUnitIds(),
+			req.GetData().GetPositionIds()); err != nil {
+			return nil, err
+		}
+	}
+
+	return r.mapper.ToDTO(entity), nil
 }
 
-func (r *userRepo) Update(ctx context.Context, req *userV1.UpdateUserRequest) error {
+func (r *userRepo) assignMembershipRelations(ctx context.Context, tx *ent.Tx, userID uint32, roleIDs, orgUnitIDs, positionIDs []uint32) error {
+	now := time.Now()
+	err := r.membershipRepo.AssignTenantMembershipWithTx(ctx, tx, &userV1.Membership{
+		UserId:     trans.Ptr(userID),
+		Status:     userV1.Membership_ACTIVE.Enum(),
+		IsPrimary:  trans.Ptr(true),
+		AssignedAt: timeutil.TimeToTimestamppb(&now),
+
+		RoleIds:     roleIDs,
+		OrgUnitIds:  orgUnitIDs,
+		PositionIds: positionIDs,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *userRepo) assignUserRelations(ctx context.Context, tx *ent.Tx, userID uint32, roleIDs, orgUnitIDs, positionIDs []uint32) (err error) {
+	if len(roleIDs) == 0 && len(orgUnitIDs) == 0 && len(positionIDs) == 0 {
+		return nil
+	}
+
+	now := time.Now()
+
+	if len(roleIDs) > 0 {
+		var userRoles []*userV1.UserRole
+		for _, roleID := range roleIDs {
+			userRoles = append(userRoles, &userV1.UserRole{
+				UserId:     trans.Ptr(userID),
+				RoleId:     trans.Ptr(roleID),
+				Status:     userV1.UserRole_ACTIVE.Enum(),
+				IsPrimary:  trans.Ptr(true),
+				AssignedAt: timeutil.TimeToTimestamppb(&now),
+			})
+		}
+		if err = r.userRoleRepo.AssignUserRoles(ctx, tx, userID, userRoles); err != nil {
+			return err
+		}
+	}
+	if len(orgUnitIDs) > 0 {
+		var userOrgUnits []*userV1.UserOrgUnit
+		for _, orgUnitID := range orgUnitIDs {
+			userOrgUnits = append(userOrgUnits, &userV1.UserOrgUnit{
+				UserId:     trans.Ptr(userID),
+				OrgUnitId:  trans.Ptr(orgUnitID),
+				Status:     userV1.UserOrgUnit_ACTIVE.Enum(),
+				IsPrimary:  trans.Ptr(true),
+				AssignedAt: timeutil.TimeToTimestamppb(&now),
+			})
+		}
+		if err = r.userOrgUnitRepo.AssignUserOrgUnits(ctx, tx, userID, userOrgUnits); err != nil {
+			return err
+		}
+	}
+	if len(positionIDs) > 0 {
+		var userPositions []*userV1.UserPosition
+		for _, positionID := range positionIDs {
+			userPositions = append(userPositions, &userV1.UserPosition{
+				UserId:     trans.Ptr(userID),
+				PositionId: trans.Ptr(positionID),
+				Status:     userV1.UserPosition_ACTIVE.Enum(),
+				IsPrimary:  trans.Ptr(true),
+				AssignedAt: timeutil.TimeToTimestamppb(&now),
+			})
+		}
+		if err = r.userPositionRepo.AssignUserPositions(ctx, tx, userID, userPositions); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *userRepo) Update(ctx context.Context, req *userV1.UpdateUserRequest) (err error) {
 	if req == nil || req.Data == nil {
 		return userV1.ErrorBadRequest("invalid parameter")
 	}
 
 	// 如果不存在则创建
 	if req.GetAllowMissing() {
-		exist, err := r.UserExists(ctx, &userV1.UserExistsRequest{
+		var existResp *userV1.UserExistsResponse
+		existResp, err = r.UserExists(ctx, &userV1.UserExistsRequest{
 			QueryBy: &userV1.UserExistsRequest_Id{Id: req.GetData().GetId()},
 		})
 		if err != nil {
 			return err
 		}
-		if !exist.Exist {
+		if !existResp.Exist {
 			createReq := &userV1.CreateUserRequest{Data: req.Data}
 			createReq.Data.CreatedBy = createReq.Data.UpdatedBy
 			createReq.Data.UpdatedBy = nil
@@ -554,8 +663,27 @@ func (r *userRepo) Update(ctx context.Context, req *userV1.UpdateUserRequest) er
 		}
 	}
 
-	builder := r.entClient.Client().Debug().User.Update()
-	err := r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	builder := tx.User.Update()
+	err = r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
 		func(dto *userV1.User) {
 			builder.
 				SetNillableNickname(req.Data.Nickname).
@@ -593,11 +721,64 @@ func (r *userRepo) Update(ctx context.Context, req *userV1.UpdateUserRequest) er
 		},
 	)
 
+	switch constants.DefaultUserTenantRelationType {
+	case constants.UserTenantRelationNone, constants.UserTenantRelationOneToOne:
+		if err = r.assignUserRelations(ctx, tx, req.GetId(),
+			req.GetData().GetRoleIds(),
+			req.GetData().GetOrgUnitIds(),
+			req.GetData().GetPositionIds()); err != nil {
+			return err
+		}
+	case constants.UserTenantRelationOneToMany:
+		if err = r.assignMembershipRelations(ctx, tx, req.GetId(),
+			req.GetData().GetRoleIds(),
+			req.GetData().GetOrgUnitIds(),
+			req.GetData().GetPositionIds()); err != nil {
+			return err
+		}
+	}
+
 	return err
 }
 
-func (r *userRepo) Delete(ctx context.Context, req *userV1.DeleteUserRequest) error {
-	builder := r.entClient.Client().User.Delete()
+func (r *userRepo) Delete(ctx context.Context, req *userV1.DeleteUserRequest) (err error) {
+	var existResp *userV1.UserExistsResponse
+	existReq := &userV1.UserExistsRequest{}
+	switch req.DeleteBy.(type) {
+	default:
+	case *userV1.DeleteUserRequest_Id:
+		existReq.QueryBy = &userV1.UserExistsRequest_Id{Id: req.GetId()}
+	case *userV1.DeleteUserRequest_Username:
+		existReq.QueryBy = &userV1.UserExistsRequest_Username{Username: req.GetUsername()}
+	}
+	existResp, err = r.UserExists(ctx, existReq)
+	if err != nil {
+		return err
+	}
+	if !existResp.Exist {
+		return userV1.ErrorNotFound("user not found")
+	}
+
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	builder := tx.User.Delete()
 
 	switch req.DeleteBy.(type) {
 	case *userV1.DeleteUserRequest_Id:
@@ -608,7 +789,7 @@ func (r *userRepo) Delete(ctx context.Context, req *userV1.DeleteUserRequest) er
 		builder.Where(user.IDEQ(req.GetId()))
 	}
 
-	if _, err := builder.Exec(ctx); err != nil {
+	if _, err = builder.Exec(ctx); err != nil {
 		if ent.IsNotFound(err) {
 			return userV1.ErrorNotFound("user not found")
 		}
@@ -618,6 +799,39 @@ func (r *userRepo) Delete(ctx context.Context, req *userV1.DeleteUserRequest) er
 		return userV1.ErrorInternalServerError("delete failed")
 	}
 
+	switch constants.DefaultUserTenantRelationType {
+	case constants.UserTenantRelationNone, constants.UserTenantRelationOneToOne:
+		if err = r.removeUserRelations(ctx, tx, req.GetId()); err != nil {
+			return err
+		}
+	case constants.UserTenantRelationOneToMany:
+		if err = r.removeMembershipRelations(ctx, tx, req.GetId()); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (r *userRepo) removeUserRelations(ctx context.Context, tx *ent.Tx, userID uint32) (err error) {
+	if err = r.userRoleRepo.CleanRelationsByUserID(ctx, tx, userID); err != nil {
+		r.log.Errorf("clean user role relations failed: %s", err.Error())
+	}
+	if err = r.userOrgUnitRepo.CleanRelationsByUserID(ctx, tx, userID); err != nil {
+		r.log.Errorf("clean user org unit relations failed: %s", err.Error())
+	}
+	if err = r.userPositionRepo.CleanRelationsByUserID(ctx, tx, userID); err != nil {
+		r.log.Errorf("clean user position relations failed: %s", err.Error())
+	}
+
+	return
+}
+
+func (r *userRepo) removeMembershipRelations(ctx context.Context, tx *ent.Tx, userID uint32) error {
+	if err := r.membershipRepo.CleanRelationsByUserID(ctx, tx, userID); err != nil {
+		r.log.Errorf("clean user membership relations failed: %s", err.Error())
+		return err
+	}
 	return nil
 }
 

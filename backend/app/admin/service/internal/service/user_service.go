@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"go-wind-admin/pkg/constants"
 
 	"github.com/go-kratos/kratos/v2/log"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -16,6 +15,7 @@ import (
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 
+	"go-wind-admin/pkg/constants"
 	"go-wind-admin/pkg/middleware/auth"
 	"go-wind-admin/pkg/utils/name_set"
 )
@@ -253,8 +253,8 @@ func (s *UserService) Create(ctx context.Context, req *userV1.CreateUserRequest)
 	}
 
 	if len(req.GetPassword()) == 0 {
-		// 如果没有设置密码，则默认设置为 666666
-		req.Password = trans.Ptr("666666")
+		// 如果没有设置密码，则设置为默认密码。
+		req.Password = trans.Ptr(constants.DefaultUserPassword)
 	}
 
 	if len(req.GetPassword()) > 0 {
@@ -423,7 +423,7 @@ func (s *UserService) createDefaultUser(ctx context.Context) error {
 	case constants.UserTenantRelationOneToMany:
 		// 创建默认用户租户关联关系
 		for _, membership := range constants.DefaultMemberships {
-			if err = s.membershipRepo.AssignTenantMembership(ctx, membership); err != nil {
+			if err = s.membershipRepo.AssignTenantMembershipWith(ctx, membership); err != nil {
 				s.log.Errorf("create default user membership err: %v", err)
 				return err
 			}

@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -64,16 +65,12 @@ func (r *MembershipRepo) init() {
 	r.mapper.AppendConverters(r.statusConverter.NewConverterPair())
 }
 
-// AssignTenantMembership 使用 Membership 数据为用户分配租户
-func (r *MembershipRepo) AssignTenantMembership(
-	ctx context.Context,
-	data *userV1.Membership,
-) (err error) {
+func (r *MembershipRepo) AssignTenantMembershipWith(ctx context.Context, data *userV1.Membership) (err error) {
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("start transaction failed")
+		return permissionV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -84,10 +81,15 @@ func (r *MembershipRepo) AssignTenantMembership(
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = userV1.ErrorInternalServerError("transaction commit failed")
+			err = permissionV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
+	return r.AssignTenantMembershipWithTx(ctx, tx, data)
+}
+
+// AssignTenantMembershipWithTx 使用 Membership 数据为用户分配租户
+func (r *MembershipRepo) AssignTenantMembershipWithTx(ctx context.Context, tx *ent.Tx, data *userV1.Membership) (err error) {
 	var entity *ent.Membership
 	entity, err = r.upsertMembership(ctx, tx, data)
 	if err != nil {
@@ -193,17 +195,7 @@ func (r *MembershipRepo) AssignTenantMembership(
 	return nil
 }
 
-// AssignTenantWithTx 为用户分配租户
-func (r *MembershipRepo) AssignTenantWithTx(
-	ctx context.Context,
-	tx *ent.Tx,
-	data *userV1.Membership,
-) error {
-	_, err := r.upsertMembership(ctx, tx, data)
-	return err
-}
-
-func (r *MembershipRepo) AssignRoles(ctx context.Context,
+func (r *MembershipRepo) AssignMembershipRoles(ctx context.Context,
 	userID uint32,
 	datas []*userV1.MembershipRole,
 ) (err error) {
@@ -850,4 +842,35 @@ func (r *MembershipRepo) ListUserIDsByRoleIDs(ctx context.Context, roleIDs []uin
 	}
 
 	return r.ListUserIDsByMembershipIDs(ctx, membershipIDs, excludeExpired)
+}
+
+// CleanRelationsByUserID 清理用户关联的所有关系数据
+func (r *MembershipRepo) CleanRelationsByUserID(ctx context.Context, tx *ent.Tx, userID uint32) (err error) {
+	if userID == 0 {
+		return nil
+	}
+
+	var membershipID uint32
+	membershipID, err = r.queryMembershipID(ctx, tx, userID)
+	if err != nil {
+		return
+	}
+
+	if err = r.membershipRoleRepo.CleanRelationsByMembershipID(ctx, tx, membershipID); err != nil {
+		r.log.Errorf("clean membership roles by membership id failed: %s", err.Error())
+	}
+
+	if err = r.membershipPositionRepo.CleanRelationsByMembershipID(ctx, tx, membershipID); err != nil {
+		r.log.Errorf("clean membership positions by membership id failed: %s", err.Error())
+	}
+
+	if err = r.membershipOrgUnitRepo.CleanRelationsByMembershipID(ctx, tx, membershipID); err != nil {
+		r.log.Errorf("clean membership org units by membership id failed: %s", err.Error())
+	}
+
+	if err = tx.Membership.DeleteOneID(membershipID).Exec(ctx); err != nil {
+		r.log.Errorf("delete membership by id failed: %s", err.Error())
+	}
+
+	return
 }
