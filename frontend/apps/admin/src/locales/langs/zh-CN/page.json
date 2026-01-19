@@ -25,7 +25,8 @@
       "position": "所属岗位",
       "oldPassword": "当前密码",
       "newPassword": "新密码",
-      "confirmPassword": "确认密码"
+      "confirmPassword": "确认密码",
+      "status": "状态"
     },
     "table": {
       "seq": "编号",

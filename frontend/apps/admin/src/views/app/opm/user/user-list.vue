@@ -18,6 +18,7 @@ import {
   genderToName,
   usePositionStore,
   useRoleStore,
+  userStatusList,
   userStatusToColor,
   userStatusToName,
   useUserListStore,
@@ -65,6 +66,19 @@ const formOptions: VbenFormProps = {
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
+      },
+    },
+    {
+      component: 'Select',
+      fieldName: 'status',
+      label: $t('page.user.form.status'),
+      componentProps: {
+        options: userStatusList,
+        placeholder: $t('ui.placeholder.select'),
+        filterOption: (input: string, option: any) =>
+          option.label.toLowerCase().includes(input.toLowerCase()),
+        allowClear: true,
+        showSearch: true,
       },
     },
     {
