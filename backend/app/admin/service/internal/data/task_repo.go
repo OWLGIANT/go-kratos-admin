@@ -20,14 +20,15 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/task"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	taskV1 "go-wind-admin/api/gen/go/task/service/v1"
 )
 
 type TaskRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper        *mapper.CopierMapper[adminV1.Task, ent.Task]
-	typeConverter *mapper.EnumTypeConverter[adminV1.Task_Type, task.Type]
+	mapper        *mapper.CopierMapper[taskV1.Task, ent.Task]
+	typeConverter *mapper.EnumTypeConverter[taskV1.Task_Type, task.Type]
 
 	repository *entCrud.Repository[
 		ent.TaskQuery, ent.TaskSelect,
@@ -35,7 +36,7 @@ type TaskRepo struct {
 		ent.TaskUpdate, ent.TaskUpdateOne,
 		ent.TaskDelete,
 		predicate.Task,
-		adminV1.Task, ent.Task,
+		taskV1.Task, ent.Task,
 	]
 }
 
@@ -43,8 +44,8 @@ func NewTaskRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Clien
 	repo := &TaskRepo{
 		log:           ctx.NewLoggerHelper("task/repo/admin-service"),
 		entClient:     entClient,
-		mapper:        mapper.NewCopierMapper[adminV1.Task, ent.Task](),
-		typeConverter: mapper.NewEnumTypeConverter[adminV1.Task_Type, task.Type](adminV1.Task_Type_name, adminV1.Task_Type_value),
+		mapper:        mapper.NewCopierMapper[taskV1.Task, ent.Task](),
+		typeConverter: mapper.NewEnumTypeConverter[taskV1.Task_Type, task.Type](taskV1.Task_Type_name, taskV1.Task_Type_value),
 	}
 
 	repo.init()
@@ -59,7 +60,7 @@ func (r *TaskRepo) init() {
 		ent.TaskUpdate, ent.TaskUpdateOne,
 		ent.TaskDelete,
 		predicate.Task,
-		adminV1.Task, ent.Task,
+		taskV1.Task, ent.Task,
 	](r.mapper)
 
 	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
@@ -83,7 +84,7 @@ func (r *TaskRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector))
 	return count, nil
 }
 
-func (r *TaskRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*adminV1.ListTaskResponse, error) {
+func (r *TaskRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*taskV1.ListTaskResponse, error) {
 	if req == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -95,10 +96,10 @@ func (r *TaskRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 		return nil, err
 	}
 	if ret == nil {
-		return &adminV1.ListTaskResponse{Total: 0, Items: nil}, nil
+		return &taskV1.ListTaskResponse{Total: 0, Items: nil}, nil
 	}
 
-	return &adminV1.ListTaskResponse{
+	return &taskV1.ListTaskResponse{
 		Total: ret.Total,
 		Items: ret.Items,
 	}, nil
@@ -115,7 +116,7 @@ func (r *TaskRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 	return exist, nil
 }
 
-func (r *TaskRepo) Get(ctx context.Context, req *adminV1.GetTaskRequest) (*adminV1.Task, error) {
+func (r *TaskRepo) Get(ctx context.Context, req *taskV1.GetTaskRequest) (*taskV1.Task, error) {
 	if req == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -125,10 +126,10 @@ func (r *TaskRepo) Get(ctx context.Context, req *adminV1.GetTaskRequest) (*admin
 	var whereCond []func(s *sql.Selector)
 	switch req.QueryBy.(type) {
 	default:
-	case *adminV1.GetTaskRequest_Id:
+	case *taskV1.GetTaskRequest_Id:
 		whereCond = append(whereCond, task.IDEQ(req.GetId()))
 
-	case *adminV1.GetTaskRequest_TypeName:
+	case *taskV1.GetTaskRequest_TypeName:
 		whereCond = append(whereCond, task.TypeNameEQ(req.GetTypeName()))
 	}
 
@@ -140,7 +141,7 @@ func (r *TaskRepo) Get(ctx context.Context, req *adminV1.GetTaskRequest) (*admin
 	return dto, err
 }
 
-func (r *TaskRepo) Create(ctx context.Context, req *adminV1.CreateTaskRequest) (*adminV1.Task, error) {
+func (r *TaskRepo) Create(ctx context.Context, req *taskV1.CreateTaskRequest) (*taskV1.Task, error) {
 	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -177,7 +178,7 @@ func (r *TaskRepo) Create(ctx context.Context, req *adminV1.CreateTaskRequest) (
 	return r.mapper.ToDTO(t), nil
 }
 
-func (r *TaskRepo) Update(ctx context.Context, req *adminV1.UpdateTaskRequest) (*adminV1.Task, error) {
+func (r *TaskRepo) Update(ctx context.Context, req *taskV1.UpdateTaskRequest) (*taskV1.Task, error) {
 	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -189,7 +190,7 @@ func (r *TaskRepo) Update(ctx context.Context, req *adminV1.UpdateTaskRequest) (
 			return nil, err
 		}
 		if !exist {
-			createReq := &adminV1.CreateTaskRequest{Data: req.Data}
+			createReq := &taskV1.CreateTaskRequest{Data: req.Data}
 			createReq.Data.CreatedBy = createReq.Data.UpdatedBy
 			createReq.Data.UpdatedBy = nil
 			return r.Create(ctx, createReq)
@@ -198,7 +199,7 @@ func (r *TaskRepo) Update(ctx context.Context, req *adminV1.UpdateTaskRequest) (
 
 	builder := r.entClient.Client().Debug().Task.UpdateOneID(req.GetId())
 	result, err := r.repository.UpdateOne(ctx, builder, req.Data, req.GetUpdateMask(),
-		func(dto *adminV1.Task) {
+		func(dto *taskV1.Task) {
 			builder.
 				SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
 				SetNillableTypeName(req.Data.TypeName).
@@ -225,7 +226,7 @@ func (r *TaskRepo) Update(ctx context.Context, req *adminV1.UpdateTaskRequest) (
 	return result, err
 }
 
-func (r *TaskRepo) Delete(ctx context.Context, req *adminV1.DeleteTaskRequest) error {
+func (r *TaskRepo) Delete(ctx context.Context, req *taskV1.DeleteTaskRequest) error {
 	if req == nil {
 		return adminV1.ErrorBadRequest("invalid parameter")
 	}

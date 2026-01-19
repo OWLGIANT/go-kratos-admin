@@ -16,6 +16,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	taskV1 "go-wind-admin/api/gen/go/task/service/v1"
 
 	"go-wind-admin/pkg/middleware/auth"
 	"go-wind-admin/pkg/task"
@@ -64,22 +65,22 @@ func (s *TaskService) RegisterTaskScheduler(taskScheduler TaskScheduler) {
 	s.taskScheduler = taskScheduler
 }
 
-func (s *TaskService) List(ctx context.Context, req *paginationV1.PagingRequest) (*adminV1.ListTaskResponse, error) {
+func (s *TaskService) List(ctx context.Context, req *paginationV1.PagingRequest) (*taskV1.ListTaskResponse, error) {
 	return s.taskRepo.List(ctx, req)
 }
 
-func (s *TaskService) Get(ctx context.Context, req *adminV1.GetTaskRequest) (*adminV1.Task, error) {
+func (s *TaskService) Get(ctx context.Context, req *taskV1.GetTaskRequest) (*taskV1.Task, error) {
 	return s.taskRepo.Get(ctx, req)
 }
 
-func (s *TaskService) ListTaskTypeName(_ context.Context, _ *emptypb.Empty) (*adminV1.ListTaskTypeNameResponse, error) {
+func (s *TaskService) ListTaskTypeName(_ context.Context, _ *emptypb.Empty) (*taskV1.ListTaskTypeNameResponse, error) {
 	typeNames := s.taskScheduler.GetRegisteredTaskTypes()
-	return &adminV1.ListTaskTypeNameResponse{
+	return &taskV1.ListTaskTypeNameResponse{
 		TypeNames: typeNames,
 	}, nil
 }
 
-func (s *TaskService) Create(ctx context.Context, req *adminV1.CreateTaskRequest) (*emptypb.Empty, error) {
+func (s *TaskService) Create(ctx context.Context, req *taskV1.CreateTaskRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -92,7 +93,7 @@ func (s *TaskService) Create(ctx context.Context, req *adminV1.CreateTaskRequest
 
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
 
-	var t *adminV1.Task
+	var t *taskV1.Task
 	if t, err = s.taskRepo.Create(ctx, req); err != nil {
 		return nil, err
 	}
@@ -104,7 +105,7 @@ func (s *TaskService) Create(ctx context.Context, req *adminV1.CreateTaskRequest
 	return &emptypb.Empty{}, nil
 }
 
-func (s *TaskService) Update(ctx context.Context, req *adminV1.UpdateTaskRequest) (*emptypb.Empty, error) {
+func (s *TaskService) Update(ctx context.Context, req *taskV1.UpdateTaskRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -117,7 +118,7 @@ func (s *TaskService) Update(ctx context.Context, req *adminV1.UpdateTaskRequest
 
 	req.Data.UpdatedBy = trans.Ptr(operator.UserId)
 
-	var t *adminV1.Task
+	var t *taskV1.Task
 	if t, err = s.taskRepo.Update(ctx, req); err != nil {
 
 		return nil, err
@@ -130,10 +131,10 @@ func (s *TaskService) Update(ctx context.Context, req *adminV1.UpdateTaskRequest
 	return &emptypb.Empty{}, nil
 }
 
-func (s *TaskService) Delete(ctx context.Context, req *adminV1.DeleteTaskRequest) (*emptypb.Empty, error) {
+func (s *TaskService) Delete(ctx context.Context, req *taskV1.DeleteTaskRequest) (*emptypb.Empty, error) {
 	var err error
-	var t *adminV1.Task
-	if t, err = s.taskRepo.Get(ctx, &adminV1.GetTaskRequest{QueryBy: &adminV1.GetTaskRequest_Id{Id: req.GetId()}}); err != nil {
+	var t *taskV1.Task
+	if t, err = s.taskRepo.Get(ctx, &taskV1.GetTaskRequest{QueryBy: &taskV1.GetTaskRequest_Id{Id: req.GetId()}}); err != nil {
 		s.log.Error(err)
 	}
 
@@ -149,15 +150,15 @@ func (s *TaskService) Delete(ctx context.Context, req *adminV1.DeleteTaskRequest
 }
 
 // ControlTask 控制调度任务
-func (s *TaskService) ControlTask(ctx context.Context, req *adminV1.ControlTaskRequest) (*emptypb.Empty, error) {
-	t, err := s.taskRepo.Get(ctx, &adminV1.GetTaskRequest{QueryBy: &adminV1.GetTaskRequest_TypeName{TypeName: req.GetTypeName()}})
+func (s *TaskService) ControlTask(ctx context.Context, req *taskV1.ControlTaskRequest) (*emptypb.Empty, error) {
+	t, err := s.taskRepo.Get(ctx, &taskV1.GetTaskRequest{QueryBy: &taskV1.GetTaskRequest_TypeName{TypeName: req.GetTypeName()}})
 	if err != nil {
 		s.log.Errorf("获取任务失败[%s]", err.Error())
 		return nil, err
 	}
 
 	switch req.GetControlType() {
-	case adminV1.ControlTaskRequest_Restart:
+	case taskV1.ControlTaskRequest_Restart:
 		if err = s.stopTask(t); err != nil {
 			return nil, err
 		}
@@ -166,11 +167,11 @@ func (s *TaskService) ControlTask(ctx context.Context, req *adminV1.ControlTaskR
 			return nil, err
 		}
 
-	case adminV1.ControlTaskRequest_Stop:
+	case taskV1.ControlTaskRequest_Stop:
 		err = s.stopTask(t)
 		return nil, err
 
-	case adminV1.ControlTaskRequest_Start:
+	case taskV1.ControlTaskRequest_Start:
 		err = s.startTask(t)
 		return nil, err
 	}
@@ -195,14 +196,14 @@ func (s *TaskService) StartAllTask(ctx context.Context, _ *emptypb.Empty) (*empt
 }
 
 // RestartAllTask 重启所有的调度任务
-func (s *TaskService) RestartAllTask(ctx context.Context, _ *emptypb.Empty) (*adminV1.RestartAllTaskResponse, error) {
+func (s *TaskService) RestartAllTask(ctx context.Context, _ *emptypb.Empty) (*taskV1.RestartAllTaskResponse, error) {
 	// 停止所有的任务
 	s.stopAllTask()
 
 	// 重新启动所有的任务
 	count, err := s.startAllTask(ctx)
 
-	return &adminV1.RestartAllTaskResponse{
+	return &taskV1.RestartAllTaskResponse{
 		Count: count,
 	}, err
 }
@@ -247,7 +248,7 @@ func (s *TaskService) stopAllTask() {
 }
 
 // stopTask 停止一个任务
-func (s *TaskService) stopTask(t *adminV1.Task) error {
+func (s *TaskService) stopTask(t *taskV1.Task) error {
 	if t == nil {
 		return errors.New("task is nil")
 	}
@@ -257,19 +258,19 @@ func (s *TaskService) stopTask(t *adminV1.Task) error {
 	}
 
 	switch t.GetType() {
-	case adminV1.Task_PERIODIC:
+	case taskV1.Task_PERIODIC:
 		return s.taskScheduler.RemovePeriodicTask(t.GetTypeName())
 
-	case adminV1.Task_DELAY:
+	case taskV1.Task_DELAY:
 
-	case adminV1.Task_WAIT_RESULT:
+	case taskV1.Task_WAIT_RESULT:
 	}
 
 	return nil
 }
 
 // convertTaskOption 转换任务选项
-func (s *TaskService) convertTaskOption(t *adminV1.Task) (opts []asynq.Option, payload broker.Any) {
+func (s *TaskService) convertTaskOption(t *taskV1.Task) (opts []asynq.Option, payload broker.Any) {
 	if t == nil {
 		return
 	}
@@ -312,7 +313,7 @@ func (s *TaskService) convertTaskOption(t *adminV1.Task) (opts []asynq.Option, p
 }
 
 // startTask 启动一个任务
-func (s *TaskService) startTask(t *adminV1.Task) error {
+func (s *TaskService) startTask(t *taskV1.Task) error {
 	if t == nil {
 		return errors.New("task is nil")
 	}
@@ -326,21 +327,21 @@ func (s *TaskService) startTask(t *adminV1.Task) error {
 	var err error
 
 	switch t.GetType() {
-	case adminV1.Task_PERIODIC:
+	case taskV1.Task_PERIODIC:
 		opts, payload = s.convertTaskOption(t)
 		if _, err = s.taskScheduler.NewPeriodicTask(t.GetCronSpec(), task.CreateBackupTaskID(t.GetId()), t.GetTypeName(), payload, opts...); err != nil {
 			s.log.Errorf("[%s] 创建定时任务失败[%s]", t.GetTypeName(), err.Error())
 			return err
 		}
 
-	case adminV1.Task_DELAY:
+	case taskV1.Task_DELAY:
 		opts, payload = s.convertTaskOption(t)
 		if err = s.taskScheduler.NewTask(t.GetTypeName(), payload, opts...); err != nil {
 			s.log.Errorf("[%s] 创建延迟任务失败[%s]", t.GetTypeName(), err.Error())
 			return err
 		}
 
-	case adminV1.Task_WAIT_RESULT:
+	case taskV1.Task_WAIT_RESULT:
 		opts, payload = s.convertTaskOption(t)
 		if err = s.taskScheduler.NewWaitResultTask(t.GetTypeName(), payload, opts...); err != nil {
 			s.log.Errorf("[%s] 创建等待结果任务失败[%s]", t.GetTypeName(), err.Error())

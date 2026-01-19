@@ -5058,157 +5058,28 @@ export type permissionservicev1_ListPermissionCodeResponse = {
   codes: string[] | undefined;
 };
 
-// 任务选项
-export type TaskOption = {
-  //
-  // Behaviors: OPTIONAL
-  maxRetry?: number;
-  //
-  // Behaviors: OPTIONAL
-  timeout?: wellKnownDuration;
-  //
-  // Behaviors: OPTIONAL
-  deadline?: wellKnownTimestamp;
-  //
-  // Behaviors: OPTIONAL
-  processIn?: wellKnownDuration;
-  //
-  // Behaviors: OPTIONAL
-  processAt?: wellKnownTimestamp;
-  //
-  // Behaviors: OPTIONAL
-  uniqueTTL?: wellKnownDuration;
-  //
-  // Behaviors: OPTIONAL
-  retention?: wellKnownDuration;
-  //
-  // Behaviors: OPTIONAL
-  group?: string;
-  //
-  // Behaviors: OPTIONAL
-  taskID?: string;
-};
-
-// Generated output always contains 0, 3, 6, or 9 fractional digits,
-// depending on required precision, followed by the suffix "s".
-// Accepted are any fractional digits (also none) as long as they fit
-// into nano-seconds precision and the suffix "s" is required.
-type wellKnownDuration = string;
-
-// 调度任务
-export type Task = {
-  //
-  // Behaviors: OPTIONAL
-  id?: number;
-  //
-  // Behaviors: OPTIONAL
-  type?: Task_Type;
-  //
-  // Behaviors: OPTIONAL
-  typeName?: string;
-  //
-  // Behaviors: OPTIONAL
-  taskPayload?: string;
-  //
-  // Behaviors: OPTIONAL
-  cronSpec?: string;
-  //
-  // Behaviors: OPTIONAL
-  taskOptions?: TaskOption;
-  enable?: boolean;
-  remark?: string;
-  tenantId?: number;
-  createdBy?: number;
-  updatedBy?: number;
-  deletedBy?: number;
-  createdAt?: wellKnownTimestamp;
-  updatedAt?: wellKnownTimestamp;
-  deletedAt?: wellKnownTimestamp;
-};
-
-// 调度任务类型
-export type Task_Type =
-  | "PERIODIC"
-  | "DELAY"
-  | "WAIT_RESULT";
-// 查询调度任务列表 - 回应
-export type ListTaskResponse = {
-  items: Task[] | undefined;
-  total: number | undefined;
-};
-
-// 查询调度任务详情 - 请求
-export type GetTaskRequest = {
-  id?: number;
-  //
-  // Behaviors: OPTIONAL
-  typeName?: string;
-  viewMask?: wellKnownFieldMask;
-};
-
-// 创建调度任务 - 请求
-export type CreateTaskRequest = {
-  data: Task | undefined;
-};
-
-// 更新调度任务 - 请求
-export type UpdateTaskRequest = {
-  id: number | undefined;
-  data: Task | undefined;
-  updateMask: wellKnownFieldMask | undefined;
-  allowMissing?: boolean;
-};
-
-// 删除调度任务 - 请求
-export type DeleteTaskRequest = {
-  id: number | undefined;
-};
-
-// 重启调度任务 - 回应
-export type RestartAllTaskResponse = {
-  count: number | undefined;
-};
-
-// 控制调度任务 - 请求
-export type ControlTaskRequest = {
-  controlType: ControlTaskRequest_ControlType | undefined;
-  //
-  // Behaviors: OPTIONAL
-  typeName: string | undefined;
-};
-
-// 调度任务控制类型
-export type ControlTaskRequest_ControlType =
-  | "Start"
-  | "Stop"
-  | "Restart";
-// 任务类型名称列表 - 回应
-export type ListTaskTypeNameResponse = {
-  typeNames: string[] | undefined;
-};
-
 // 调度任务管理服务
 export interface TaskService {
   // 查询调度任务列表
-  List(request: pagination_PagingRequest): Promise<ListTaskResponse>;
+  List(request: pagination_PagingRequest): Promise<taskservicev1_ListTaskResponse>;
   // 查询调度任务详情
-  Get(request: GetTaskRequest): Promise<Task>;
+  Get(request: taskservicev1_GetTaskRequest): Promise<taskservicev1_Task>;
   // 创建调度任务
-  Create(request: CreateTaskRequest): Promise<wellKnownEmpty>;
+  Create(request: taskservicev1_CreateTaskRequest): Promise<wellKnownEmpty>;
   // 更新调度任务
-  Update(request: UpdateTaskRequest): Promise<wellKnownEmpty>;
+  Update(request: taskservicev1_UpdateTaskRequest): Promise<wellKnownEmpty>;
   // 删除调度任务
-  Delete(request: DeleteTaskRequest): Promise<wellKnownEmpty>;
+  Delete(request: taskservicev1_DeleteTaskRequest): Promise<wellKnownEmpty>;
   // 任务类型名称列表
-  ListTaskTypeName(request: wellKnownEmpty): Promise<ListTaskTypeNameResponse>;
+  ListTaskTypeName(request: wellKnownEmpty): Promise<taskservicev1_ListTaskTypeNameResponse>;
   // 重启所有的调度任务
-  RestartAllTask(request: wellKnownEmpty): Promise<RestartAllTaskResponse>;
+  RestartAllTask(request: wellKnownEmpty): Promise<taskservicev1_RestartAllTaskResponse>;
   // 启动所有的调度任务
   StartAllTask(request: wellKnownEmpty): Promise<wellKnownEmpty>;
   // 停止所有的调度任务
   StopAllTask(request: wellKnownEmpty): Promise<wellKnownEmpty>;
   // 控制调度任务
-  ControlTask(request: ControlTaskRequest): Promise<wellKnownEmpty>;
+  ControlTask(request: taskservicev1_ControlTaskRequest): Promise<wellKnownEmpty>;
 }
 
 export function createTaskServiceClient(
@@ -5292,7 +5163,7 @@ export function createTaskServiceClient(
       }, {
         service: "TaskService",
         method: "List",
-      }) as Promise<ListTaskResponse>;
+      }) as Promise<taskservicev1_ListTaskResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -5318,7 +5189,7 @@ export function createTaskServiceClient(
       }, {
         service: "TaskService",
         method: "Get",
-      }) as Promise<Task>;
+      }) as Promise<taskservicev1_Task>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/tasks`; // eslint-disable-line quotes
@@ -5392,7 +5263,7 @@ export function createTaskServiceClient(
       }, {
         service: "TaskService",
         method: "ListTaskTypeName",
-      }) as Promise<ListTaskTypeNameResponse>;
+      }) as Promise<taskservicev1_ListTaskTypeNameResponse>;
     },
     RestartAllTask(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/tasks:restart`; // eslint-disable-line quotes
@@ -5409,7 +5280,7 @@ export function createTaskServiceClient(
       }, {
         service: "TaskService",
         method: "RestartAllTask",
-      }) as Promise<RestartAllTaskResponse>;
+      }) as Promise<taskservicev1_RestartAllTaskResponse>;
     },
     StartAllTask(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/tasks:start`; // eslint-disable-line quotes
@@ -5464,6 +5335,135 @@ export function createTaskServiceClient(
     },
   };
 }
+// 查询调度任务列表 - 回应
+export type taskservicev1_ListTaskResponse = {
+  items: taskservicev1_Task[] | undefined;
+  total: number | undefined;
+};
+
+// 调度任务
+export type taskservicev1_Task = {
+  //
+  // Behaviors: OPTIONAL
+  id?: number;
+  //
+  // Behaviors: OPTIONAL
+  type?: taskservicev1_Task_Type;
+  //
+  // Behaviors: OPTIONAL
+  typeName?: string;
+  //
+  // Behaviors: OPTIONAL
+  taskPayload?: string;
+  //
+  // Behaviors: OPTIONAL
+  cronSpec?: string;
+  //
+  // Behaviors: OPTIONAL
+  taskOptions?: taskservicev1_TaskOption;
+  enable?: boolean;
+  remark?: string;
+  tenantId?: number;
+  createdBy?: number;
+  updatedBy?: number;
+  deletedBy?: number;
+  createdAt?: wellKnownTimestamp;
+  updatedAt?: wellKnownTimestamp;
+  deletedAt?: wellKnownTimestamp;
+};
+
+// 调度任务类型
+export type taskservicev1_Task_Type =
+  | "PERIODIC"
+  | "DELAY"
+  | "WAIT_RESULT";
+// 任务选项
+export type taskservicev1_TaskOption = {
+  //
+  // Behaviors: OPTIONAL
+  maxRetry?: number;
+  //
+  // Behaviors: OPTIONAL
+  timeout?: wellKnownDuration;
+  //
+  // Behaviors: OPTIONAL
+  deadline?: wellKnownTimestamp;
+  //
+  // Behaviors: OPTIONAL
+  processIn?: wellKnownDuration;
+  //
+  // Behaviors: OPTIONAL
+  processAt?: wellKnownTimestamp;
+  //
+  // Behaviors: OPTIONAL
+  uniqueTTL?: wellKnownDuration;
+  //
+  // Behaviors: OPTIONAL
+  retention?: wellKnownDuration;
+  //
+  // Behaviors: OPTIONAL
+  group?: string;
+  //
+  // Behaviors: OPTIONAL
+  taskID?: string;
+};
+
+// Generated output always contains 0, 3, 6, or 9 fractional digits,
+// depending on required precision, followed by the suffix "s".
+// Accepted are any fractional digits (also none) as long as they fit
+// into nano-seconds precision and the suffix "s" is required.
+type wellKnownDuration = string;
+
+// 查询调度任务详情 - 请求
+export type taskservicev1_GetTaskRequest = {
+  id?: number;
+  //
+  // Behaviors: OPTIONAL
+  typeName?: string;
+  viewMask?: wellKnownFieldMask;
+};
+
+// 创建调度任务 - 请求
+export type taskservicev1_CreateTaskRequest = {
+  data: taskservicev1_Task | undefined;
+};
+
+// 更新调度任务 - 请求
+export type taskservicev1_UpdateTaskRequest = {
+  id: number | undefined;
+  data: taskservicev1_Task | undefined;
+  updateMask: wellKnownFieldMask | undefined;
+  allowMissing?: boolean;
+};
+
+// 删除调度任务 - 请求
+export type taskservicev1_DeleteTaskRequest = {
+  id: number | undefined;
+};
+
+// 任务类型名称列表 - 回应
+export type taskservicev1_ListTaskTypeNameResponse = {
+  typeNames: string[] | undefined;
+};
+
+// 重启调度任务 - 回应
+export type taskservicev1_RestartAllTaskResponse = {
+  count: number | undefined;
+};
+
+// 控制调度任务 - 请求
+export type taskservicev1_ControlTaskRequest = {
+  controlType: taskservicev1_ControlTaskRequest_ControlType | undefined;
+  //
+  // Behaviors: OPTIONAL
+  typeName: string | undefined;
+};
+
+// 调度任务控制类型
+export type taskservicev1_ControlTaskRequest_ControlType =
+  | "Start"
+  | "Stop"
+  | "Restart";
 // 创建租户及管理员用户 - 请求
 export type CreateTenantWithAdminUserRequest = {
   tenant: userservicev1_Tenant | undefined;

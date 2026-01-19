@@ -1,7 +1,6 @@
 package schema
 
 import (
-	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
 	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 
 	"entgo.io/ent"
@@ -111,9 +110,7 @@ func (Membership) Mixin() []ent.Mixin {
 
 // Policy for all schemas that embed Membership.
 func (Membership) Policy() ent.Policy {
-	return privacy.Policy{
-		Query: rule.TenantQueryPolicy(),
-	}
+	return rule.TenantPolicy()
 }
 
 // Indexes of the Membership.

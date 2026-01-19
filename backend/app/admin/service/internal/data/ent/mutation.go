@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	adminpb "go-wind-admin/api/gen/go/admin/service/v1"
 	servicev1 "go-wind-admin/api/gen/go/audit/service/v1"
 	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
+	taskpb "go-wind-admin/api/gen/go/task/service/v1"
 	userpb "go-wind-admin/api/gen/go/user/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
@@ -48412,7 +48412,7 @@ type TaskMutation struct {
 	type_name     *string
 	task_payload  *string
 	cron_spec     *string
-	task_options  **adminpb.TaskOption
+	task_options  **taskpb.TaskOption
 	enable        *bool
 	clearedFields map[string]struct{}
 	done          bool
@@ -49197,12 +49197,12 @@ func (m *TaskMutation) ResetCronSpec() {
 }
 
 // SetTaskOptions sets the "task_options" field.
-func (m *TaskMutation) SetTaskOptions(ao *adminpb.TaskOption) {
-	m.task_options = &ao
+func (m *TaskMutation) SetTaskOptions(to *taskpb.TaskOption) {
+	m.task_options = &to
 }
 
 // TaskOptions returns the value of the "task_options" field in the mutation.
-func (m *TaskMutation) TaskOptions() (r *adminpb.TaskOption, exists bool) {
+func (m *TaskMutation) TaskOptions() (r *taskpb.TaskOption, exists bool) {
 	v := m.task_options
 	if v == nil {
 		return
@@ -49213,7 +49213,7 @@ func (m *TaskMutation) TaskOptions() (r *adminpb.TaskOption, exists bool) {
 // OldTaskOptions returns the old "task_options" field's value of the Task entity.
 // If the Task object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TaskMutation) OldTaskOptions(ctx context.Context) (v *adminpb.TaskOption, err error) {
+func (m *TaskMutation) OldTaskOptions(ctx context.Context) (v *taskpb.TaskOption, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTaskOptions is only allowed on UpdateOne operations")
 	}
@@ -49538,7 +49538,7 @@ func (m *TaskMutation) SetField(name string, value ent.Value) error {
 		m.SetCronSpec(v)
 		return nil
 	case task.FieldTaskOptions:
-		v, ok := value.(*adminpb.TaskOption)
+		v, ok := value.(*taskpb.TaskOption)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

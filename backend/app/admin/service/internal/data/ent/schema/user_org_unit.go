@@ -1,15 +1,15 @@
 package schema
 
 import (
-	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
-
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+
 	"github.com/tx7do/go-crud/entgo/mixin"
+
+	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // UserOrgUnit 用户与组织单元关联表
@@ -100,9 +100,7 @@ func (UserOrgUnit) Mixin() []ent.Mixin {
 
 // Policy for all schemas that embed UserOrgUnit.
 func (UserOrgUnit) Policy() ent.Policy {
-	return privacy.Policy{
-		Query: rule.TenantQueryPolicy(),
-	}
+	return rule.TenantPolicy()
 }
 
 func (UserOrgUnit) Indexes() []ent.Index {

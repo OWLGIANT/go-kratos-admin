@@ -1,9 +1,6 @@
 package schema
 
 import (
-	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
-
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
@@ -11,6 +8,8 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
+
+	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 type UserRole struct {
@@ -91,9 +90,7 @@ func (UserRole) Mixin() []ent.Mixin {
 
 // Policy for all schemas that embed UserRole.
 func (UserRole) Policy() ent.Policy {
-	return privacy.Policy{
-		Query: rule.TenantQueryPolicy(),
-	}
+	return rule.TenantPolicy()
 }
 
 func (UserRole) Indexes() []ent.Index {

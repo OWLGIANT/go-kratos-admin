@@ -10,7 +10,6 @@ import (
 
 	"github.com/tx7do/go-crud/entgo/mixin"
 
-	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
 	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 
 	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
@@ -156,9 +155,7 @@ func (OperationAuditLog) Mixin() []ent.Mixin {
 
 // Policy for all schemas that embed OperationAuditLog.
 func (OperationAuditLog) Policy() ent.Policy {
-	return privacy.Policy{
-		Query: rule.TenantQueryPolicy(),
-	}
+	return rule.TenantPolicy()
 }
 
 // Indexes 索引定义

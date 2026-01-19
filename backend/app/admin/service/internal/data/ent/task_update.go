@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	adminpb "go-wind-admin/api/gen/go/admin/service/v1"
+	taskpb "go-wind-admin/api/gen/go/task/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"go-wind-admin/app/admin/service/internal/data/ent/task"
 	"time"
@@ -252,7 +252,7 @@ func (_u *TaskUpdate) ClearCronSpec() *TaskUpdate {
 }
 
 // SetTaskOptions sets the "task_options" field.
-func (_u *TaskUpdate) SetTaskOptions(v *adminpb.TaskOption) *TaskUpdate {
+func (_u *TaskUpdate) SetTaskOptions(v *taskpb.TaskOption) *TaskUpdate {
 	_u.mutation.SetTaskOptions(v)
 	return _u
 }
@@ -679,7 +679,7 @@ func (_u *TaskUpdateOne) ClearCronSpec() *TaskUpdateOne {
 }
 
 // SetTaskOptions sets the "task_options" field.
-func (_u *TaskUpdateOne) SetTaskOptions(v *adminpb.TaskOption) *TaskUpdateOne {
+func (_u *TaskUpdateOne) SetTaskOptions(v *taskpb.TaskOption) *TaskUpdateOne {
 	_u.mutation.SetTaskOptions(v)
 	return _u
 }

@@ -3,6 +3,7 @@ package rule
 import (
 	"context"
 
+	"entgo.io/ent"
 	"github.com/tx7do/go-crud/entgo/rule"
 
 	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
@@ -16,5 +17,11 @@ func TenantQueryPolicy() privacy.QueryPolicy {
 		//privacy.FilterFunc(func(ctx context.Context, f privacy.Filter) error {
 		//	return rule.PermissionRule(ctx, f)
 		//}), // 业务权限隔离
+	}
+}
+
+func TenantPolicy() ent.Policy {
+	return privacy.Policy{
+		Query: TenantQueryPolicy(),
 	}
 }

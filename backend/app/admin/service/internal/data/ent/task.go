@@ -5,7 +5,7 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	adminpb "go-wind-admin/api/gen/go/admin/service/v1"
+	taskpb "go-wind-admin/api/gen/go/task/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/task"
 	"strings"
 	"time"
@@ -45,7 +45,7 @@ type Task struct {
 	// cron表达式
 	CronSpec *string `json:"cron_spec,omitempty"`
 	// 任务选项
-	TaskOptions *adminpb.TaskOption `json:"task_options,omitempty"`
+	TaskOptions *taskpb.TaskOption `json:"task_options,omitempty"`
 	// 启用/禁用任务
 	Enable       *bool `json:"enable,omitempty"`
 	selectValues sql.SelectValues

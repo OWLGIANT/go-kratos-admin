@@ -9,7 +9,6 @@ import (
 
 	"github.com/tx7do/go-crud/entgo/mixin"
 
-	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
 	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
@@ -95,9 +94,7 @@ func (MembershipPosition) Mixin() []ent.Mixin {
 
 // Policy for all schemas that embed MembershipPosition.
 func (MembershipPosition) Policy() ent.Policy {
-	return privacy.Policy{
-		Query: rule.TenantQueryPolicy(),
-	}
+	return rule.TenantPolicy()
 }
 
 // Indexes of the MembershipPosition.

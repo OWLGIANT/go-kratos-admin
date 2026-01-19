@@ -9,7 +9,6 @@ import (
 
 	"github.com/tx7do/go-crud/entgo/mixin"
 
-	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
 	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
@@ -106,9 +105,7 @@ func (RoleMetadata) Mixin() []ent.Mixin {
 
 // Policy for all schemas that embed RoleMetadata.
 func (RoleMetadata) Policy() ent.Policy {
-	return privacy.Policy{
-		Query: rule.TenantQueryPolicy(),
-	}
+	return rule.TenantPolicy()
 }
 
 // Indexes of the RoleMetadata.

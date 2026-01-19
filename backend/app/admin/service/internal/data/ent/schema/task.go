@@ -10,10 +10,9 @@ import (
 
 	"github.com/tx7do/go-crud/entgo/mixin"
 
-	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
 	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 
-	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	taskV1 "go-wind-admin/api/gen/go/task/service/v1"
 )
 
 // Task holds the schema definition for the Task entity.
@@ -67,7 +66,7 @@ func (Task) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.JSON("task_options", &adminV1.TaskOption{}).
+		field.JSON("task_options", &taskV1.TaskOption{}).
 			Comment("任务选项").
 			Optional(),
 
@@ -92,9 +91,7 @@ func (Task) Mixin() []ent.Mixin {
 
 // Policy for all schemas that embed Task.
 func (Task) Policy() ent.Policy {
-	return privacy.Policy{
-		Query: rule.TenantQueryPolicy(),
-	}
+	return rule.TenantPolicy()
 }
 
 // Indexes of the Task.
