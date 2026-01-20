@@ -66,7 +66,7 @@ func ValidColumn(column string) bool {
 //
 //	import _ "go-wind-admin/app/admin/service/internal/data/ent/runtime"
 var (
-	Hooks  [2]ent.Hook
+	Hooks  [1]ent.Hook
 	Policy ent.Policy
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
 	DefaultTenantID uint32

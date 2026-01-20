@@ -8,8 +8,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
-
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 type OrgUnit struct {
@@ -39,11 +37,6 @@ func (OrgUnit) Fields() []ent.Field {
 			Optional().
 			Nillable().
 			Comment("唯一编码（可用于导入/识别）"),
-
-		field.String("path").
-			Optional().
-			Nillable().
-			Comment("树路径，如：/1/10/"),
 
 		field.Uint32("leader_id").
 			Optional().
@@ -158,16 +151,12 @@ func (OrgUnit) Mixin() []ent.Mixin {
 		mixin.OperatorID{},
 		mixin.SwitchStatus{},
 		mixin.SortOrder{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 		mixin.Remark{},
 		mixin.Description{},
 		mixin.Tree[OrgUnit]{},
+		mixin.TreePath{},
 	}
-}
-
-// Policy for all schemas that embed OrgUnit.
-func (OrgUnit) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 func (OrgUnit) Indexes() []ent.Index {

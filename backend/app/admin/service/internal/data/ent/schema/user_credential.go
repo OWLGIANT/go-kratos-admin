@@ -9,8 +9,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
-
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // UserCredential holds the schema definition for the UserCredential entity.
@@ -189,13 +187,8 @@ func (UserCredential) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.TimeAt{},
 		mixin.AutoIncrementId{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 	}
-}
-
-// Policy for all schemas that embed UserCredential.
-func (UserCredential) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 // Indexes of the UserCredential.

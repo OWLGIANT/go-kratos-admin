@@ -162,12 +162,6 @@ func (_c *PermissionGroupCreate) SetNillableParentID(v *uint32) *PermissionGroup
 	return _c
 }
 
-// SetName sets the "name" field.
-func (_c *PermissionGroupCreate) SetName(v string) *PermissionGroupCreate {
-	_c.mutation.SetName(v)
-	return _c
-}
-
 // SetPath sets the "path" field.
 func (_c *PermissionGroupCreate) SetPath(v string) *PermissionGroupCreate {
 	_c.mutation.SetPath(v)
@@ -179,6 +173,12 @@ func (_c *PermissionGroupCreate) SetNillablePath(v *string) *PermissionGroupCrea
 	if v != nil {
 		_c.SetPath(*v)
 	}
+	return _c
+}
+
+// SetName sets the "name" field.
+func (_c *PermissionGroupCreate) SetName(v string) *PermissionGroupCreate {
+	_c.mutation.SetName(v)
 	return _c
 }
 
@@ -277,6 +277,11 @@ func (_c *PermissionGroupCreate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "PermissionGroup.status": %w`, err)}
 		}
 	}
+	if v, ok := _c.mutation.Path(); ok {
+		if err := permissiongroup.PathValidator(v); err != nil {
+			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "PermissionGroup.path": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "PermissionGroup.name"`)}
 	}
@@ -359,13 +364,13 @@ func (_c *PermissionGroupCreate) createSpec() (*PermissionGroup, *sqlgraph.Creat
 		_spec.SetField(permissiongroup.FieldSortOrder, field.TypeUint32, value)
 		_node.SortOrder = &value
 	}
-	if value, ok := _c.mutation.Name(); ok {
-		_spec.SetField(permissiongroup.FieldName, field.TypeString, value)
-		_node.Name = &value
-	}
 	if value, ok := _c.mutation.Path(); ok {
 		_spec.SetField(permissiongroup.FieldPath, field.TypeString, value)
 		_node.Path = &value
+	}
+	if value, ok := _c.mutation.Name(); ok {
+		_spec.SetField(permissiongroup.FieldName, field.TypeString, value)
+		_node.Name = &value
 	}
 	if value, ok := _c.mutation.Module(); ok {
 		_spec.SetField(permissiongroup.FieldModule, field.TypeString, value)
@@ -636,18 +641,6 @@ func (u *PermissionGroupUpsert) ClearParentID() *PermissionGroupUpsert {
 	return u
 }
 
-// SetName sets the "name" field.
-func (u *PermissionGroupUpsert) SetName(v string) *PermissionGroupUpsert {
-	u.Set(permissiongroup.FieldName, v)
-	return u
-}
-
-// UpdateName sets the "name" field to the value that was provided on create.
-func (u *PermissionGroupUpsert) UpdateName() *PermissionGroupUpsert {
-	u.SetExcluded(permissiongroup.FieldName)
-	return u
-}
-
 // SetPath sets the "path" field.
 func (u *PermissionGroupUpsert) SetPath(v string) *PermissionGroupUpsert {
 	u.Set(permissiongroup.FieldPath, v)
@@ -663,6 +656,18 @@ func (u *PermissionGroupUpsert) UpdatePath() *PermissionGroupUpsert {
 // ClearPath clears the value of the "path" field.
 func (u *PermissionGroupUpsert) ClearPath() *PermissionGroupUpsert {
 	u.SetNull(permissiongroup.FieldPath)
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *PermissionGroupUpsert) SetName(v string) *PermissionGroupUpsert {
+	u.Set(permissiongroup.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *PermissionGroupUpsert) UpdateName() *PermissionGroupUpsert {
+	u.SetExcluded(permissiongroup.FieldName)
 	return u
 }
 
@@ -945,20 +950,6 @@ func (u *PermissionGroupUpsertOne) ClearParentID() *PermissionGroupUpsertOne {
 	})
 }
 
-// SetName sets the "name" field.
-func (u *PermissionGroupUpsertOne) SetName(v string) *PermissionGroupUpsertOne {
-	return u.Update(func(s *PermissionGroupUpsert) {
-		s.SetName(v)
-	})
-}
-
-// UpdateName sets the "name" field to the value that was provided on create.
-func (u *PermissionGroupUpsertOne) UpdateName() *PermissionGroupUpsertOne {
-	return u.Update(func(s *PermissionGroupUpsert) {
-		s.UpdateName()
-	})
-}
-
 // SetPath sets the "path" field.
 func (u *PermissionGroupUpsertOne) SetPath(v string) *PermissionGroupUpsertOne {
 	return u.Update(func(s *PermissionGroupUpsert) {
@@ -977,6 +968,20 @@ func (u *PermissionGroupUpsertOne) UpdatePath() *PermissionGroupUpsertOne {
 func (u *PermissionGroupUpsertOne) ClearPath() *PermissionGroupUpsertOne {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.ClearPath()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *PermissionGroupUpsertOne) SetName(v string) *PermissionGroupUpsertOne {
+	return u.Update(func(s *PermissionGroupUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *PermissionGroupUpsertOne) UpdateName() *PermissionGroupUpsertOne {
+	return u.Update(func(s *PermissionGroupUpsert) {
+		s.UpdateName()
 	})
 }
 
@@ -1428,20 +1433,6 @@ func (u *PermissionGroupUpsertBulk) ClearParentID() *PermissionGroupUpsertBulk {
 	})
 }
 
-// SetName sets the "name" field.
-func (u *PermissionGroupUpsertBulk) SetName(v string) *PermissionGroupUpsertBulk {
-	return u.Update(func(s *PermissionGroupUpsert) {
-		s.SetName(v)
-	})
-}
-
-// UpdateName sets the "name" field to the value that was provided on create.
-func (u *PermissionGroupUpsertBulk) UpdateName() *PermissionGroupUpsertBulk {
-	return u.Update(func(s *PermissionGroupUpsert) {
-		s.UpdateName()
-	})
-}
-
 // SetPath sets the "path" field.
 func (u *PermissionGroupUpsertBulk) SetPath(v string) *PermissionGroupUpsertBulk {
 	return u.Update(func(s *PermissionGroupUpsert) {
@@ -1460,6 +1451,20 @@ func (u *PermissionGroupUpsertBulk) UpdatePath() *PermissionGroupUpsertBulk {
 func (u *PermissionGroupUpsertBulk) ClearPath() *PermissionGroupUpsertBulk {
 	return u.Update(func(s *PermissionGroupUpsert) {
 		s.ClearPath()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *PermissionGroupUpsertBulk) SetName(v string) *PermissionGroupUpsertBulk {
+	return u.Update(func(s *PermissionGroupUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *PermissionGroupUpsertBulk) UpdateName() *PermissionGroupUpsertBulk {
+	return u.Update(func(s *PermissionGroupUpsert) {
+		s.UpdateName()
 	})
 }
 

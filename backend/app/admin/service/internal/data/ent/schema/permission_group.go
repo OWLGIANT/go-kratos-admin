@@ -33,11 +33,6 @@ func (PermissionGroup) Fields() []ent.Field {
 			Nillable().
 			Comment("分组名称（如：用户管理、订单操作）"),
 
-		field.String("path").
-			Optional().
-			Nillable().
-			Comment("树形路径，格式：/1/10/101/（包含自身且首尾带/）"),
-
 		field.String("module").
 			Comment("业务模块标识（如：opm、order、pay）").
 			Optional().
@@ -54,6 +49,7 @@ func (PermissionGroup) Mixin() []ent.Mixin {
 		mixin.SwitchStatus{},
 		mixin.SortOrder{},
 		mixin.Tree[PermissionGroup]{},
+		mixin.TreePath{},
 	}
 }
 

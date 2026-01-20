@@ -8,8 +8,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
-
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // Position holds the schema definition for the Position entity.
@@ -113,14 +111,9 @@ func (Position) Mixin() []ent.Mixin {
 		mixin.OperatorID{},
 		mixin.SortOrder{},
 		mixin.Remark{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 		mixin.SwitchStatus{},
 	}
-}
-
-// Policy for all schemas that embed Position.
-func (Position) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 // Indexes of the Position.

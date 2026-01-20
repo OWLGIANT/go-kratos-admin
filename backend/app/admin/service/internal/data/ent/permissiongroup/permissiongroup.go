@@ -34,10 +34,10 @@ const (
 	FieldSortOrder = "sort_order"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
-	// FieldName holds the string denoting the name field in the database.
-	FieldName = "name"
 	// FieldPath holds the string denoting the path field in the database.
 	FieldPath = "path"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
 	// FieldModule holds the string denoting the module field in the database.
 	FieldModule = "module"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
@@ -69,8 +69,8 @@ var Columns = []string{
 	FieldStatus,
 	FieldSortOrder,
 	FieldParentID,
-	FieldName,
 	FieldPath,
+	FieldName,
 	FieldModule,
 }
 
@@ -87,6 +87,8 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultSortOrder holds the default value on creation for the "sort_order" field.
 	DefaultSortOrder uint32
+	// PathValidator is a validator for the "path" field. It is called by the builders before save.
+	PathValidator func(string) error
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -177,14 +179,14 @@ func ByParentID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldParentID, opts...).ToFunc()
 }
 
-// ByName orders the results by the name field.
-func ByName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldName, opts...).ToFunc()
-}
-
 // ByPath orders the results by the path field.
 func ByPath(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPath, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
 // ByModule orders the results by the module field.

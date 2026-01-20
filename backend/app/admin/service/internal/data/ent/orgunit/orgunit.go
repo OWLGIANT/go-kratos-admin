@@ -39,12 +39,12 @@ const (
 	FieldDescription = "description"
 	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
+	// FieldPath holds the string denoting the path field in the database.
+	FieldPath = "path"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldCode holds the string denoting the code field in the database.
 	FieldCode = "code"
-	// FieldPath holds the string denoting the path field in the database.
-	FieldPath = "path"
 	// FieldLeaderID holds the string denoting the leader_id field in the database.
 	FieldLeaderID = "leader_id"
 	// FieldType holds the string denoting the type field in the database.
@@ -114,9 +114,9 @@ var Columns = []string{
 	FieldRemark,
 	FieldDescription,
 	FieldParentID,
+	FieldPath,
 	FieldName,
 	FieldCode,
-	FieldPath,
 	FieldLeaderID,
 	FieldType,
 	FieldBusinessScopes,
@@ -154,12 +154,14 @@ func ValidColumn(column string) bool {
 //
 //	import _ "go-wind-admin/app/admin/service/internal/data/ent/runtime"
 var (
-	Hooks  [2]ent.Hook
+	Hooks  [1]ent.Hook
 	Policy ent.Policy
 	// DefaultSortOrder holds the default value on creation for the "sort_order" field.
 	DefaultSortOrder uint32
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
 	DefaultTenantID uint32
+	// PathValidator is a validator for the "path" field. It is called by the builders before save.
+	PathValidator func(string) error
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// DefaultIsLegalEntity holds the default value on creation for the "is_legal_entity" field.
@@ -294,6 +296,11 @@ func ByParentID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldParentID, opts...).ToFunc()
 }
 
+// ByPath orders the results by the path field.
+func ByPath(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPath, opts...).ToFunc()
+}
+
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
@@ -302,11 +309,6 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByCode orders the results by the code field.
 func ByCode(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCode, opts...).ToFunc()
-}
-
-// ByPath orders the results by the path field.
-func ByPath(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPath, opts...).ToFunc()
 }
 
 // ByLeaderID orders the results by the leader_id field.

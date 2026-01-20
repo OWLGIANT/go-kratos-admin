@@ -8,8 +8,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
-
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 type PolicyEvaluationLog struct {
@@ -103,13 +101,8 @@ func (PolicyEvaluationLog) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.AutoIncrementId{},
 		mixin.CreatedAt{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 	}
-}
-
-// Policy for all schemas that embed PolicyEvaluationLog.
-func (PolicyEvaluationLog) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 func (PolicyEvaluationLog) Indexes() []ent.Index {

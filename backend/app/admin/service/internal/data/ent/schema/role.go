@@ -8,8 +8,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
-
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // Role holds the schema definition for the Role entity.
@@ -65,14 +63,9 @@ func (Role) Mixin() []ent.Mixin {
 		mixin.Remark{},
 		mixin.Description{},
 		mixin.SortOrder{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 		mixin.SwitchStatus{},
 	}
-}
-
-// Policy for all schemas that embed Role.
-func (Role) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 // Indexes of the Role.

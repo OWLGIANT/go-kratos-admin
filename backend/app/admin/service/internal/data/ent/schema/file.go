@@ -8,8 +8,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
-
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // File holds the schema definition for the File entity.
@@ -111,13 +109,8 @@ func (File) Mixin() []ent.Mixin {
 		mixin.TimeAt{},
 		mixin.OperatorID{},
 		mixin.Remark{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 	}
-}
-
-// Policy for all schemas that embed File.
-func (File) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 func (File) Indexes() []ent.Index {

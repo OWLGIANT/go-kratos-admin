@@ -10,8 +10,6 @@ import (
 
 	"github.com/tx7do/go-crud/entgo/mixin"
 
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
-
 	taskV1 "go-wind-admin/api/gen/go/task/service/v1"
 )
 
@@ -85,13 +83,8 @@ func (Task) Mixin() []ent.Mixin {
 		mixin.TimeAt{},
 		mixin.OperatorID{},
 		mixin.Remark{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 	}
-}
-
-// Policy for all schemas that embed Task.
-func (Task) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 // Indexes of the Task.

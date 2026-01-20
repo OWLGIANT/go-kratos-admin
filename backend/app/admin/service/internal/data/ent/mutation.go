@@ -29782,9 +29782,9 @@ type OrgUnitMutation struct {
 	addtenant_id           *int32
 	remark                 *string
 	description            *string
+	_path                  *string
 	name                   *string
 	code                   *string
-	_path                  *string
 	leader_id              *uint32
 	addleader_id           *int32
 	_type                  *orgunit.Type
@@ -30606,6 +30606,55 @@ func (m *OrgUnitMutation) ResetParentID() {
 	delete(m.clearedFields, orgunit.FieldParentID)
 }
 
+// SetPath sets the "path" field.
+func (m *OrgUnitMutation) SetPath(s string) {
+	m._path = &s
+}
+
+// Path returns the value of the "path" field in the mutation.
+func (m *OrgUnitMutation) Path() (r string, exists bool) {
+	v := m._path
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPath returns the old "path" field's value of the OrgUnit entity.
+// If the OrgUnit object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrgUnitMutation) OldPath(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPath is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPath requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPath: %w", err)
+	}
+	return oldValue.Path, nil
+}
+
+// ClearPath clears the value of the "path" field.
+func (m *OrgUnitMutation) ClearPath() {
+	m._path = nil
+	m.clearedFields[orgunit.FieldPath] = struct{}{}
+}
+
+// PathCleared returns if the "path" field was cleared in this mutation.
+func (m *OrgUnitMutation) PathCleared() bool {
+	_, ok := m.clearedFields[orgunit.FieldPath]
+	return ok
+}
+
+// ResetPath resets all changes to the "path" field.
+func (m *OrgUnitMutation) ResetPath() {
+	m._path = nil
+	delete(m.clearedFields, orgunit.FieldPath)
+}
+
 // SetName sets the "name" field.
 func (m *OrgUnitMutation) SetName(s string) {
 	m.name = &s
@@ -30689,55 +30738,6 @@ func (m *OrgUnitMutation) CodeCleared() bool {
 func (m *OrgUnitMutation) ResetCode() {
 	m.code = nil
 	delete(m.clearedFields, orgunit.FieldCode)
-}
-
-// SetPath sets the "path" field.
-func (m *OrgUnitMutation) SetPath(s string) {
-	m._path = &s
-}
-
-// Path returns the value of the "path" field in the mutation.
-func (m *OrgUnitMutation) Path() (r string, exists bool) {
-	v := m._path
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPath returns the old "path" field's value of the OrgUnit entity.
-// If the OrgUnit object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OrgUnitMutation) OldPath(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPath is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPath requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPath: %w", err)
-	}
-	return oldValue.Path, nil
-}
-
-// ClearPath clears the value of the "path" field.
-func (m *OrgUnitMutation) ClearPath() {
-	m._path = nil
-	m.clearedFields[orgunit.FieldPath] = struct{}{}
-}
-
-// PathCleared returns if the "path" field was cleared in this mutation.
-func (m *OrgUnitMutation) PathCleared() bool {
-	_, ok := m.clearedFields[orgunit.FieldPath]
-	return ok
-}
-
-// ResetPath resets all changes to the "path" field.
-func (m *OrgUnitMutation) ResetPath() {
-	m._path = nil
-	delete(m.clearedFields, orgunit.FieldPath)
 }
 
 // SetLeaderID sets the "leader_id" field.
@@ -31947,14 +31947,14 @@ func (m *OrgUnitMutation) Fields() []string {
 	if m.parent != nil {
 		fields = append(fields, orgunit.FieldParentID)
 	}
+	if m._path != nil {
+		fields = append(fields, orgunit.FieldPath)
+	}
 	if m.name != nil {
 		fields = append(fields, orgunit.FieldName)
 	}
 	if m.code != nil {
 		fields = append(fields, orgunit.FieldCode)
-	}
-	if m._path != nil {
-		fields = append(fields, orgunit.FieldPath)
 	}
 	if m.leader_id != nil {
 		fields = append(fields, orgunit.FieldLeaderID)
@@ -32045,12 +32045,12 @@ func (m *OrgUnitMutation) Field(name string) (ent.Value, bool) {
 		return m.Description()
 	case orgunit.FieldParentID:
 		return m.ParentID()
+	case orgunit.FieldPath:
+		return m.Path()
 	case orgunit.FieldName:
 		return m.Name()
 	case orgunit.FieldCode:
 		return m.Code()
-	case orgunit.FieldPath:
-		return m.Path()
 	case orgunit.FieldLeaderID:
 		return m.LeaderID()
 	case orgunit.FieldType:
@@ -32122,12 +32122,12 @@ func (m *OrgUnitMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldDescription(ctx)
 	case orgunit.FieldParentID:
 		return m.OldParentID(ctx)
+	case orgunit.FieldPath:
+		return m.OldPath(ctx)
 	case orgunit.FieldName:
 		return m.OldName(ctx)
 	case orgunit.FieldCode:
 		return m.OldCode(ctx)
-	case orgunit.FieldPath:
-		return m.OldPath(ctx)
 	case orgunit.FieldLeaderID:
 		return m.OldLeaderID(ctx)
 	case orgunit.FieldType:
@@ -32259,6 +32259,13 @@ func (m *OrgUnitMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetParentID(v)
 		return nil
+	case orgunit.FieldPath:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPath(v)
+		return nil
 	case orgunit.FieldName:
 		v, ok := value.(string)
 		if !ok {
@@ -32272,13 +32279,6 @@ func (m *OrgUnitMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCode(v)
-		return nil
-	case orgunit.FieldPath:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPath(v)
 		return nil
 	case orgunit.FieldLeaderID:
 		v, ok := value.(uint32)
@@ -32599,11 +32599,11 @@ func (m *OrgUnitMutation) ClearedFields() []string {
 	if m.FieldCleared(orgunit.FieldParentID) {
 		fields = append(fields, orgunit.FieldParentID)
 	}
-	if m.FieldCleared(orgunit.FieldCode) {
-		fields = append(fields, orgunit.FieldCode)
-	}
 	if m.FieldCleared(orgunit.FieldPath) {
 		fields = append(fields, orgunit.FieldPath)
+	}
+	if m.FieldCleared(orgunit.FieldCode) {
+		fields = append(fields, orgunit.FieldCode)
 	}
 	if m.FieldCleared(orgunit.FieldLeaderID) {
 		fields = append(fields, orgunit.FieldLeaderID)
@@ -32706,11 +32706,11 @@ func (m *OrgUnitMutation) ClearField(name string) error {
 	case orgunit.FieldParentID:
 		m.ClearParentID()
 		return nil
-	case orgunit.FieldCode:
-		m.ClearCode()
-		return nil
 	case orgunit.FieldPath:
 		m.ClearPath()
+		return nil
+	case orgunit.FieldCode:
+		m.ClearCode()
 		return nil
 	case orgunit.FieldLeaderID:
 		m.ClearLeaderID()
@@ -32810,14 +32810,14 @@ func (m *OrgUnitMutation) ResetField(name string) error {
 	case orgunit.FieldParentID:
 		m.ResetParentID()
 		return nil
+	case orgunit.FieldPath:
+		m.ResetPath()
+		return nil
 	case orgunit.FieldName:
 		m.ResetName()
 		return nil
 	case orgunit.FieldCode:
 		m.ResetCode()
-		return nil
-	case orgunit.FieldPath:
-		m.ResetPath()
 		return nil
 	case orgunit.FieldLeaderID:
 		m.ResetLeaderID()
@@ -36409,8 +36409,8 @@ type PermissionGroupMutation struct {
 	status          *permissiongroup.Status
 	sort_order      *uint32
 	addsort_order   *int32
-	name            *string
 	_path           *string
+	name            *string
 	module          *string
 	clearedFields   map[string]struct{}
 	parent          *uint32
@@ -37088,42 +37088,6 @@ func (m *PermissionGroupMutation) ResetParentID() {
 	delete(m.clearedFields, permissiongroup.FieldParentID)
 }
 
-// SetName sets the "name" field.
-func (m *PermissionGroupMutation) SetName(s string) {
-	m.name = &s
-}
-
-// Name returns the value of the "name" field in the mutation.
-func (m *PermissionGroupMutation) Name() (r string, exists bool) {
-	v := m.name
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldName returns the old "name" field's value of the PermissionGroup entity.
-// If the PermissionGroup object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionGroupMutation) OldName(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldName is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldName requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldName: %w", err)
-	}
-	return oldValue.Name, nil
-}
-
-// ResetName resets all changes to the "name" field.
-func (m *PermissionGroupMutation) ResetName() {
-	m.name = nil
-}
-
 // SetPath sets the "path" field.
 func (m *PermissionGroupMutation) SetPath(s string) {
 	m._path = &s
@@ -37171,6 +37135,42 @@ func (m *PermissionGroupMutation) PathCleared() bool {
 func (m *PermissionGroupMutation) ResetPath() {
 	m._path = nil
 	delete(m.clearedFields, permissiongroup.FieldPath)
+}
+
+// SetName sets the "name" field.
+func (m *PermissionGroupMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *PermissionGroupMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the PermissionGroup entity.
+// If the PermissionGroup object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermissionGroupMutation) OldName(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *PermissionGroupMutation) ResetName() {
+	m.name = nil
 }
 
 // SetModule sets the "module" field.
@@ -37368,11 +37368,11 @@ func (m *PermissionGroupMutation) Fields() []string {
 	if m.parent != nil {
 		fields = append(fields, permissiongroup.FieldParentID)
 	}
-	if m.name != nil {
-		fields = append(fields, permissiongroup.FieldName)
-	}
 	if m._path != nil {
 		fields = append(fields, permissiongroup.FieldPath)
+	}
+	if m.name != nil {
+		fields = append(fields, permissiongroup.FieldName)
 	}
 	if m.module != nil {
 		fields = append(fields, permissiongroup.FieldModule)
@@ -37405,10 +37405,10 @@ func (m *PermissionGroupMutation) Field(name string) (ent.Value, bool) {
 		return m.SortOrder()
 	case permissiongroup.FieldParentID:
 		return m.ParentID()
-	case permissiongroup.FieldName:
-		return m.Name()
 	case permissiongroup.FieldPath:
 		return m.Path()
+	case permissiongroup.FieldName:
+		return m.Name()
 	case permissiongroup.FieldModule:
 		return m.Module()
 	}
@@ -37440,10 +37440,10 @@ func (m *PermissionGroupMutation) OldField(ctx context.Context, name string) (en
 		return m.OldSortOrder(ctx)
 	case permissiongroup.FieldParentID:
 		return m.OldParentID(ctx)
-	case permissiongroup.FieldName:
-		return m.OldName(ctx)
 	case permissiongroup.FieldPath:
 		return m.OldPath(ctx)
+	case permissiongroup.FieldName:
+		return m.OldName(ctx)
 	case permissiongroup.FieldModule:
 		return m.OldModule(ctx)
 	}
@@ -37525,19 +37525,19 @@ func (m *PermissionGroupMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetParentID(v)
 		return nil
-	case permissiongroup.FieldName:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetName(v)
-		return nil
 	case permissiongroup.FieldPath:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPath(v)
+		return nil
+	case permissiongroup.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
 		return nil
 	case permissiongroup.FieldModule:
 		v, ok := value.(string)
@@ -37745,11 +37745,11 @@ func (m *PermissionGroupMutation) ResetField(name string) error {
 	case permissiongroup.FieldParentID:
 		m.ResetParentID()
 		return nil
-	case permissiongroup.FieldName:
-		m.ResetName()
-		return nil
 	case permissiongroup.FieldPath:
 		m.ResetPath()
+		return nil
+	case permissiongroup.FieldName:
+		m.ResetName()
 		return nil
 	case permissiongroup.FieldModule:
 		m.ResetModule()

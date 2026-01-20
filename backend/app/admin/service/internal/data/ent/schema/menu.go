@@ -86,6 +86,7 @@ func (Menu) Mixin() []ent.Mixin {
 		mixin.TimeAt{},
 		mixin.OperatorID{},
 		mixin.Tree[Menu]{},
+		//mixin.TreePath{},
 		mixin.Remark{},
 		mixin.SwitchStatus{},
 	}

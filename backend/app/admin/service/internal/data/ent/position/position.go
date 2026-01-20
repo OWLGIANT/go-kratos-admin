@@ -108,7 +108,7 @@ func ValidColumn(column string) bool {
 //
 //	import _ "go-wind-admin/app/admin/service/internal/data/ent/runtime"
 var (
-	Hooks  [2]ent.Hook
+	Hooks  [1]ent.Hook
 	Policy ent.Policy
 	// DefaultSortOrder holds the default value on creation for the "sort_order" field.
 	DefaultSortOrder uint32

@@ -100,14 +100,14 @@ func ParentID(v uint32) predicate.PermissionGroup {
 	return predicate.PermissionGroup(sql.FieldEQ(FieldParentID, v))
 }
 
-// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
-func Name(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldEQ(FieldName, v))
-}
-
 // Path applies equality check predicate on the "path" field. It's identical to PathEQ.
 func Path(v string) predicate.PermissionGroup {
 	return predicate.PermissionGroup(sql.FieldEQ(FieldPath, v))
+}
+
+// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+func Name(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldEQ(FieldName, v))
 }
 
 // Module applies equality check predicate on the "module" field. It's identical to ModuleEQ.
@@ -590,71 +590,6 @@ func ParentIDNotNil() predicate.PermissionGroup {
 	return predicate.PermissionGroup(sql.FieldNotNull(FieldParentID))
 }
 
-// NameEQ applies the EQ predicate on the "name" field.
-func NameEQ(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldEQ(FieldName, v))
-}
-
-// NameNEQ applies the NEQ predicate on the "name" field.
-func NameNEQ(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldNEQ(FieldName, v))
-}
-
-// NameIn applies the In predicate on the "name" field.
-func NameIn(vs ...string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldIn(FieldName, vs...))
-}
-
-// NameNotIn applies the NotIn predicate on the "name" field.
-func NameNotIn(vs ...string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldNotIn(FieldName, vs...))
-}
-
-// NameGT applies the GT predicate on the "name" field.
-func NameGT(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldGT(FieldName, v))
-}
-
-// NameGTE applies the GTE predicate on the "name" field.
-func NameGTE(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldGTE(FieldName, v))
-}
-
-// NameLT applies the LT predicate on the "name" field.
-func NameLT(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldLT(FieldName, v))
-}
-
-// NameLTE applies the LTE predicate on the "name" field.
-func NameLTE(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldLTE(FieldName, v))
-}
-
-// NameContains applies the Contains predicate on the "name" field.
-func NameContains(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldContains(FieldName, v))
-}
-
-// NameHasPrefix applies the HasPrefix predicate on the "name" field.
-func NameHasPrefix(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldHasPrefix(FieldName, v))
-}
-
-// NameHasSuffix applies the HasSuffix predicate on the "name" field.
-func NameHasSuffix(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldHasSuffix(FieldName, v))
-}
-
-// NameEqualFold applies the EqualFold predicate on the "name" field.
-func NameEqualFold(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldEqualFold(FieldName, v))
-}
-
-// NameContainsFold applies the ContainsFold predicate on the "name" field.
-func NameContainsFold(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldContainsFold(FieldName, v))
-}
-
 // PathEQ applies the EQ predicate on the "path" field.
 func PathEQ(v string) predicate.PermissionGroup {
 	return predicate.PermissionGroup(sql.FieldEQ(FieldPath, v))
@@ -728,6 +663,71 @@ func PathEqualFold(v string) predicate.PermissionGroup {
 // PathContainsFold applies the ContainsFold predicate on the "path" field.
 func PathContainsFold(v string) predicate.PermissionGroup {
 	return predicate.PermissionGroup(sql.FieldContainsFold(FieldPath, v))
+}
+
+// NameEQ applies the EQ predicate on the "name" field.
+func NameEQ(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldEQ(FieldName, v))
+}
+
+// NameNEQ applies the NEQ predicate on the "name" field.
+func NameNEQ(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldNEQ(FieldName, v))
+}
+
+// NameIn applies the In predicate on the "name" field.
+func NameIn(vs ...string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldIn(FieldName, vs...))
+}
+
+// NameNotIn applies the NotIn predicate on the "name" field.
+func NameNotIn(vs ...string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldNotIn(FieldName, vs...))
+}
+
+// NameGT applies the GT predicate on the "name" field.
+func NameGT(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldGT(FieldName, v))
+}
+
+// NameGTE applies the GTE predicate on the "name" field.
+func NameGTE(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldGTE(FieldName, v))
+}
+
+// NameLT applies the LT predicate on the "name" field.
+func NameLT(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldLT(FieldName, v))
+}
+
+// NameLTE applies the LTE predicate on the "name" field.
+func NameLTE(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldLTE(FieldName, v))
+}
+
+// NameContains applies the Contains predicate on the "name" field.
+func NameContains(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldContains(FieldName, v))
+}
+
+// NameHasPrefix applies the HasPrefix predicate on the "name" field.
+func NameHasPrefix(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldHasPrefix(FieldName, v))
+}
+
+// NameHasSuffix applies the HasSuffix predicate on the "name" field.
+func NameHasSuffix(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldHasSuffix(FieldName, v))
+}
+
+// NameEqualFold applies the EqualFold predicate on the "name" field.
+func NameEqualFold(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldEqualFold(FieldName, v))
+}
+
+// NameContainsFold applies the ContainsFold predicate on the "name" field.
+func NameContainsFold(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldContainsFold(FieldName, v))
 }
 
 // ModuleEQ applies the EQ predicate on the "module" field.

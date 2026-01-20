@@ -231,20 +231,6 @@ func (_u *PermissionGroupUpdate) ClearParentID() *PermissionGroupUpdate {
 	return _u
 }
 
-// SetName sets the "name" field.
-func (_u *PermissionGroupUpdate) SetName(v string) *PermissionGroupUpdate {
-	_u.mutation.SetName(v)
-	return _u
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *PermissionGroupUpdate) SetNillableName(v *string) *PermissionGroupUpdate {
-	if v != nil {
-		_u.SetName(*v)
-	}
-	return _u
-}
-
 // SetPath sets the "path" field.
 func (_u *PermissionGroupUpdate) SetPath(v string) *PermissionGroupUpdate {
 	_u.mutation.SetPath(v)
@@ -262,6 +248,20 @@ func (_u *PermissionGroupUpdate) SetNillablePath(v *string) *PermissionGroupUpda
 // ClearPath clears the value of the "path" field.
 func (_u *PermissionGroupUpdate) ClearPath() *PermissionGroupUpdate {
 	_u.mutation.ClearPath()
+	return _u
+}
+
+// SetName sets the "name" field.
+func (_u *PermissionGroupUpdate) SetName(v string) *PermissionGroupUpdate {
+	_u.mutation.SetName(v)
+	return _u
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_u *PermissionGroupUpdate) SetNillableName(v *string) *PermissionGroupUpdate {
+	if v != nil {
+		_u.SetName(*v)
+	}
 	return _u
 }
 
@@ -371,6 +371,11 @@ func (_u *PermissionGroupUpdate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "PermissionGroup.status": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Path(); ok {
+		if err := permissiongroup.PathValidator(v); err != nil {
+			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "PermissionGroup.path": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Name(); ok {
 		if err := permissiongroup.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "PermissionGroup.name": %w`, err)}
@@ -457,14 +462,14 @@ func (_u *PermissionGroupUpdate) sqlSave(ctx context.Context) (_node int, err er
 	if _u.mutation.SortOrderCleared() {
 		_spec.ClearField(permissiongroup.FieldSortOrder, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(permissiongroup.FieldName, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Path(); ok {
 		_spec.SetField(permissiongroup.FieldPath, field.TypeString, value)
 	}
 	if _u.mutation.PathCleared() {
 		_spec.ClearField(permissiongroup.FieldPath, field.TypeString)
+	}
+	if value, ok := _u.mutation.Name(); ok {
+		_spec.SetField(permissiongroup.FieldName, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Module(); ok {
 		_spec.SetField(permissiongroup.FieldModule, field.TypeString, value)
@@ -770,20 +775,6 @@ func (_u *PermissionGroupUpdateOne) ClearParentID() *PermissionGroupUpdateOne {
 	return _u
 }
 
-// SetName sets the "name" field.
-func (_u *PermissionGroupUpdateOne) SetName(v string) *PermissionGroupUpdateOne {
-	_u.mutation.SetName(v)
-	return _u
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *PermissionGroupUpdateOne) SetNillableName(v *string) *PermissionGroupUpdateOne {
-	if v != nil {
-		_u.SetName(*v)
-	}
-	return _u
-}
-
 // SetPath sets the "path" field.
 func (_u *PermissionGroupUpdateOne) SetPath(v string) *PermissionGroupUpdateOne {
 	_u.mutation.SetPath(v)
@@ -801,6 +792,20 @@ func (_u *PermissionGroupUpdateOne) SetNillablePath(v *string) *PermissionGroupU
 // ClearPath clears the value of the "path" field.
 func (_u *PermissionGroupUpdateOne) ClearPath() *PermissionGroupUpdateOne {
 	_u.mutation.ClearPath()
+	return _u
+}
+
+// SetName sets the "name" field.
+func (_u *PermissionGroupUpdateOne) SetName(v string) *PermissionGroupUpdateOne {
+	_u.mutation.SetName(v)
+	return _u
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_u *PermissionGroupUpdateOne) SetNillableName(v *string) *PermissionGroupUpdateOne {
+	if v != nil {
+		_u.SetName(*v)
+	}
 	return _u
 }
 
@@ -923,6 +928,11 @@ func (_u *PermissionGroupUpdateOne) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "PermissionGroup.status": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Path(); ok {
+		if err := permissiongroup.PathValidator(v); err != nil {
+			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "PermissionGroup.path": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Name(); ok {
 		if err := permissiongroup.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "PermissionGroup.name": %w`, err)}
@@ -1026,14 +1036,14 @@ func (_u *PermissionGroupUpdateOne) sqlSave(ctx context.Context) (_node *Permiss
 	if _u.mutation.SortOrderCleared() {
 		_spec.ClearField(permissiongroup.FieldSortOrder, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(permissiongroup.FieldName, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Path(); ok {
 		_spec.SetField(permissiongroup.FieldPath, field.TypeString, value)
 	}
 	if _u.mutation.PathCleared() {
 		_spec.ClearField(permissiongroup.FieldPath, field.TypeString)
+	}
+	if value, ok := _u.mutation.Name(); ok {
+		_spec.SetField(permissiongroup.FieldName, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Module(); ok {
 		_spec.SetField(permissiongroup.FieldModule, field.TypeString, value)

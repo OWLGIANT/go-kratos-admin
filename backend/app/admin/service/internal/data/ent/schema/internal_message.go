@@ -8,8 +8,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
-
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // InternalMessage holds the schema definition for the InternalMessage entity.
@@ -84,13 +82,8 @@ func (InternalMessage) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId{},
 		mixin.TimeAt{},
 		mixin.OperatorID{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 	}
-}
-
-// Policy for all schemas that embed InternalMessage.
-func (InternalMessage) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 func (InternalMessage) Indexes() []ent.Index {

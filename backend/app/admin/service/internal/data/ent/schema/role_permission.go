@@ -8,8 +8,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
-
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // RolePermission 角色与权限多对多关联表
@@ -65,14 +63,9 @@ func (RolePermission) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId{},
 		mixin.TimeAt{},
 		mixin.OperatorID{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 		mixin.SwitchStatus{},
 	}
-}
-
-// Policy for all schemas that embed RolePermission.
-func (RolePermission) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 // Indexes of the RolePermission.

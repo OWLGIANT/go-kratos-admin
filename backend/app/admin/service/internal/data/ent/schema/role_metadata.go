@@ -9,8 +9,6 @@ import (
 
 	"github.com/tx7do/go-crud/entgo/mixin"
 
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
-
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 )
 
@@ -99,13 +97,8 @@ func (RoleMetadata) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId{},
 		mixin.TimeAt{},
 		mixin.OperatorID{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 	}
-}
-
-// Policy for all schemas that embed RoleMetadata.
-func (RoleMetadata) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 // Indexes of the RoleMetadata.

@@ -1423,9 +1423,9 @@ var (
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
+		{Name: "path", Type: field.TypeString, Nullable: true, Size: 1024, Comment: "树路径，规范： 根节点: /，非根节点: /1/2/3/（以 / 开头且以 / 结尾）。禁止空字符串（NULL 表示未设置）。"},
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
 		{Name: "code", Type: field.TypeString, Nullable: true, Comment: "唯一编码（可用于导入/识别）"},
-		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "树路径，如：/1/10/"},
 		{Name: "leader_id", Type: field.TypeUint32, Nullable: true, Comment: "负责人用户ID"},
 		{Name: "type", Type: field.TypeEnum, Comment: "组织类型", Enums: []string{"COMPANY", "DIVISION", "DEPARTMENT", "TEAM", "PROJECT", "COMMITTEE", "REGION", "OTHER"}, Default: "DEPARTMENT"},
 		{Name: "business_scopes", Type: field.TypeJSON, Nullable: true, Comment: "组织的业务范围/服务条线"},
@@ -1470,17 +1470,17 @@ var (
 			{
 				Name:    "uix_org_tenant_parent_name",
 				Unique:  true,
-				Columns: []*schema.Column{SysOrgUnitsColumns[9], SysOrgUnitsColumns[34], SysOrgUnitsColumns[12]},
+				Columns: []*schema.Column{SysOrgUnitsColumns[9], SysOrgUnitsColumns[34], SysOrgUnitsColumns[13]},
 			},
 			{
 				Name:    "uix_org_tenant_parent_path",
 				Unique:  true,
-				Columns: []*schema.Column{SysOrgUnitsColumns[9], SysOrgUnitsColumns[34], SysOrgUnitsColumns[14]},
+				Columns: []*schema.Column{SysOrgUnitsColumns[9], SysOrgUnitsColumns[34], SysOrgUnitsColumns[12]},
 			},
 			{
 				Name:    "idx_org_tenant_path",
 				Unique:  false,
-				Columns: []*schema.Column{SysOrgUnitsColumns[9], SysOrgUnitsColumns[14]},
+				Columns: []*schema.Column{SysOrgUnitsColumns[9], SysOrgUnitsColumns[12]},
 			},
 			{
 				Name:    "idx_org_parent_id",
@@ -1525,7 +1525,7 @@ var (
 			{
 				Name:    "uix_org_tenant_code",
 				Unique:  true,
-				Columns: []*schema.Column{SysOrgUnitsColumns[9], SysOrgUnitsColumns[13]},
+				Columns: []*schema.Column{SysOrgUnitsColumns[9], SysOrgUnitsColumns[14]},
 			},
 			{
 				Name:    "idx_org_created_by_created_at",
@@ -1687,8 +1687,8 @@ var (
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
 		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
 		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
+		{Name: "path", Type: field.TypeString, Nullable: true, Size: 1024, Comment: "树路径，规范： 根节点: /，非根节点: /1/2/3/（以 / 开头且以 / 结尾）。禁止空字符串（NULL 表示未设置）。"},
 		{Name: "name", Type: field.TypeString, Comment: "分组名称（如：用户管理、订单操作）"},
-		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "树形路径，格式：/1/10/101/（包含自身且首尾带/）"},
 		{Name: "module", Type: field.TypeString, Nullable: true, Comment: "业务模块标识（如：opm、order、pay）"},
 		{Name: "parent_id", Type: field.TypeUint32, Nullable: true, Comment: "父节点ID"},
 	}
@@ -1715,7 +1715,7 @@ var (
 			{
 				Name:    "idx_perm_group_name",
 				Unique:  false,
-				Columns: []*schema.Column{SysPermissionGroupsColumns[10]},
+				Columns: []*schema.Column{SysPermissionGroupsColumns[11]},
 			},
 			{
 				Name:    "idx_perm_group_module",

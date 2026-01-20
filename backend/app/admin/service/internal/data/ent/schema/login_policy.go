@@ -8,8 +8,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
-
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // LoginPolicy holds the schema definition for the LoginPolicy entity.
@@ -78,13 +76,8 @@ func (LoginPolicy) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId{},
 		mixin.TimeAt{},
 		mixin.OperatorID{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 	}
-}
-
-// Policy for all schemas that embed LoginPolicy.
-func (LoginPolicy) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 // Indexes of the LoginPolicy.

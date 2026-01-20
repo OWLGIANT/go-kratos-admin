@@ -8,8 +8,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
-
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // User holds the schema definition for the User entity.
@@ -142,13 +140,8 @@ func (User) Mixin() []ent.Mixin {
 		mixin.OperatorID{},
 		mixin.TimeAt{},
 		mixin.Remark{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 	}
-}
-
-// Policy for all schemas that embed User.
-func (User) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 // Indexes of the User.

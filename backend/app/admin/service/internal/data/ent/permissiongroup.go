@@ -38,10 +38,10 @@ type PermissionGroup struct {
 	SortOrder *uint32 `json:"sort_order,omitempty"`
 	// 父节点ID
 	ParentID *uint32 `json:"parent_id,omitempty"`
+	// 树路径，规范： 根节点: /，非根节点: /1/2/3/（以 / 开头且以 / 结尾）。禁止空字符串（NULL 表示未设置）。
+	Path *string `json:"path,omitempty"`
 	// 分组名称（如：用户管理、订单操作）
 	Name *string `json:"name,omitempty"`
-	// 树形路径，格式：/1/10/101/（包含自身且首尾带/）
-	Path *string `json:"path,omitempty"`
 	// 业务模块标识（如：opm、order、pay）
 	Module *string `json:"module,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -88,7 +88,7 @@ func (*PermissionGroup) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case permissiongroup.FieldID, permissiongroup.FieldCreatedBy, permissiongroup.FieldUpdatedBy, permissiongroup.FieldDeletedBy, permissiongroup.FieldSortOrder, permissiongroup.FieldParentID:
 			values[i] = new(sql.NullInt64)
-		case permissiongroup.FieldDescription, permissiongroup.FieldStatus, permissiongroup.FieldName, permissiongroup.FieldPath, permissiongroup.FieldModule:
+		case permissiongroup.FieldDescription, permissiongroup.FieldStatus, permissiongroup.FieldPath, permissiongroup.FieldName, permissiongroup.FieldModule:
 			values[i] = new(sql.NullString)
 		case permissiongroup.FieldCreatedAt, permissiongroup.FieldUpdatedAt, permissiongroup.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -183,19 +183,19 @@ func (_m *PermissionGroup) assignValues(columns []string, values []any) error {
 				_m.ParentID = new(uint32)
 				*_m.ParentID = uint32(value.Int64)
 			}
-		case permissiongroup.FieldName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
-			} else if value.Valid {
-				_m.Name = new(string)
-				*_m.Name = value.String
-			}
 		case permissiongroup.FieldPath:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field path", values[i])
 			} else if value.Valid {
 				_m.Path = new(string)
 				*_m.Path = value.String
+			}
+		case permissiongroup.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				_m.Name = new(string)
+				*_m.Name = value.String
 			}
 		case permissiongroup.FieldModule:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -300,13 +300,13 @@ func (_m *PermissionGroup) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.Name; v != nil {
-		builder.WriteString("name=")
+	if v := _m.Path; v != nil {
+		builder.WriteString("path=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.Path; v != nil {
-		builder.WriteString("path=")
+	if v := _m.Name; v != nil {
+		builder.WriteString("name=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")

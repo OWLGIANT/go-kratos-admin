@@ -43,12 +43,12 @@ type OrgUnit struct {
 	Description *string `json:"description,omitempty"`
 	// 父节点ID
 	ParentID *uint32 `json:"parent_id,omitempty"`
+	// 树路径，规范： 根节点: /，非根节点: /1/2/3/（以 / 开头且以 / 结尾）。禁止空字符串（NULL 表示未设置）。
+	Path *string `json:"path,omitempty"`
 	// 名称
 	Name *string `json:"name,omitempty"`
 	// 唯一编码（可用于导入/识别）
 	Code *string `json:"code,omitempty"`
-	// 树路径，如：/1/10/
-	Path *string `json:"path,omitempty"`
 	// 负责人用户ID
 	LeaderID *uint32 `json:"leader_id,omitempty"`
 	// 组织类型
@@ -137,7 +137,7 @@ func (*OrgUnit) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case orgunit.FieldID, orgunit.FieldCreatedBy, orgunit.FieldUpdatedBy, orgunit.FieldDeletedBy, orgunit.FieldSortOrder, orgunit.FieldTenantID, orgunit.FieldParentID, orgunit.FieldLeaderID, orgunit.FieldLegalEntityOrgID, orgunit.FieldContactUserID:
 			values[i] = new(sql.NullInt64)
-		case orgunit.FieldStatus, orgunit.FieldRemark, orgunit.FieldDescription, orgunit.FieldName, orgunit.FieldCode, orgunit.FieldPath, orgunit.FieldType, orgunit.FieldExternalID, orgunit.FieldRegistrationNumber, orgunit.FieldTaxID, orgunit.FieldAddress, orgunit.FieldPhone, orgunit.FieldEmail, orgunit.FieldTimezone, orgunit.FieldCountry:
+		case orgunit.FieldStatus, orgunit.FieldRemark, orgunit.FieldDescription, orgunit.FieldPath, orgunit.FieldName, orgunit.FieldCode, orgunit.FieldType, orgunit.FieldExternalID, orgunit.FieldRegistrationNumber, orgunit.FieldTaxID, orgunit.FieldAddress, orgunit.FieldPhone, orgunit.FieldEmail, orgunit.FieldTimezone, orgunit.FieldCountry:
 			values[i] = new(sql.NullString)
 		case orgunit.FieldCreatedAt, orgunit.FieldUpdatedAt, orgunit.FieldDeletedAt, orgunit.FieldStartAt, orgunit.FieldEndAt:
 			values[i] = new(sql.NullTime)
@@ -246,6 +246,13 @@ func (_m *OrgUnit) assignValues(columns []string, values []any) error {
 				_m.ParentID = new(uint32)
 				*_m.ParentID = uint32(value.Int64)
 			}
+		case orgunit.FieldPath:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field path", values[i])
+			} else if value.Valid {
+				_m.Path = new(string)
+				*_m.Path = value.String
+			}
 		case orgunit.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -259,13 +266,6 @@ func (_m *OrgUnit) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Code = new(string)
 				*_m.Code = value.String
-			}
-		case orgunit.FieldPath:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field path", values[i])
-			} else if value.Valid {
-				_m.Path = new(string)
-				*_m.Path = value.String
 			}
 		case orgunit.FieldLeaderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -508,6 +508,11 @@ func (_m *OrgUnit) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
+	if v := _m.Path; v != nil {
+		builder.WriteString("path=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
 	if v := _m.Name; v != nil {
 		builder.WriteString("name=")
 		builder.WriteString(*v)
@@ -515,11 +520,6 @@ func (_m *OrgUnit) String() string {
 	builder.WriteString(", ")
 	if v := _m.Code; v != nil {
 		builder.WriteString("code=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.Path; v != nil {
-		builder.WriteString("path=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")

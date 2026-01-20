@@ -252,6 +252,26 @@ func (_u *OrgUnitUpdate) ClearParentID() *OrgUnitUpdate {
 	return _u
 }
 
+// SetPath sets the "path" field.
+func (_u *OrgUnitUpdate) SetPath(v string) *OrgUnitUpdate {
+	_u.mutation.SetPath(v)
+	return _u
+}
+
+// SetNillablePath sets the "path" field if the given value is not nil.
+func (_u *OrgUnitUpdate) SetNillablePath(v *string) *OrgUnitUpdate {
+	if v != nil {
+		_u.SetPath(*v)
+	}
+	return _u
+}
+
+// ClearPath clears the value of the "path" field.
+func (_u *OrgUnitUpdate) ClearPath() *OrgUnitUpdate {
+	_u.mutation.ClearPath()
+	return _u
+}
+
 // SetName sets the "name" field.
 func (_u *OrgUnitUpdate) SetName(v string) *OrgUnitUpdate {
 	_u.mutation.SetName(v)
@@ -283,26 +303,6 @@ func (_u *OrgUnitUpdate) SetNillableCode(v *string) *OrgUnitUpdate {
 // ClearCode clears the value of the "code" field.
 func (_u *OrgUnitUpdate) ClearCode() *OrgUnitUpdate {
 	_u.mutation.ClearCode()
-	return _u
-}
-
-// SetPath sets the "path" field.
-func (_u *OrgUnitUpdate) SetPath(v string) *OrgUnitUpdate {
-	_u.mutation.SetPath(v)
-	return _u
-}
-
-// SetNillablePath sets the "path" field if the given value is not nil.
-func (_u *OrgUnitUpdate) SetNillablePath(v *string) *OrgUnitUpdate {
-	if v != nil {
-		_u.SetPath(*v)
-	}
-	return _u
-}
-
-// ClearPath clears the value of the "path" field.
-func (_u *OrgUnitUpdate) ClearPath() *OrgUnitUpdate {
-	_u.mutation.ClearPath()
 	return _u
 }
 
@@ -797,6 +797,11 @@ func (_u *OrgUnitUpdate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "OrgUnit.status": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Path(); ok {
+		if err := orgunit.PathValidator(v); err != nil {
+			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "OrgUnit.path": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Name(); ok {
 		if err := orgunit.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "OrgUnit.name": %w`, err)}
@@ -897,6 +902,12 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(orgunit.FieldDescription, field.TypeString)
 	}
+	if value, ok := _u.mutation.Path(); ok {
+		_spec.SetField(orgunit.FieldPath, field.TypeString, value)
+	}
+	if _u.mutation.PathCleared() {
+		_spec.ClearField(orgunit.FieldPath, field.TypeString)
+	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(orgunit.FieldName, field.TypeString, value)
 	}
@@ -905,12 +916,6 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.CodeCleared() {
 		_spec.ClearField(orgunit.FieldCode, field.TypeString)
-	}
-	if value, ok := _u.mutation.Path(); ok {
-		_spec.SetField(orgunit.FieldPath, field.TypeString, value)
-	}
-	if _u.mutation.PathCleared() {
-		_spec.ClearField(orgunit.FieldPath, field.TypeString)
 	}
 	if value, ok := _u.mutation.LeaderID(); ok {
 		_spec.SetField(orgunit.FieldLeaderID, field.TypeUint32, value)
@@ -1366,6 +1371,26 @@ func (_u *OrgUnitUpdateOne) ClearParentID() *OrgUnitUpdateOne {
 	return _u
 }
 
+// SetPath sets the "path" field.
+func (_u *OrgUnitUpdateOne) SetPath(v string) *OrgUnitUpdateOne {
+	_u.mutation.SetPath(v)
+	return _u
+}
+
+// SetNillablePath sets the "path" field if the given value is not nil.
+func (_u *OrgUnitUpdateOne) SetNillablePath(v *string) *OrgUnitUpdateOne {
+	if v != nil {
+		_u.SetPath(*v)
+	}
+	return _u
+}
+
+// ClearPath clears the value of the "path" field.
+func (_u *OrgUnitUpdateOne) ClearPath() *OrgUnitUpdateOne {
+	_u.mutation.ClearPath()
+	return _u
+}
+
 // SetName sets the "name" field.
 func (_u *OrgUnitUpdateOne) SetName(v string) *OrgUnitUpdateOne {
 	_u.mutation.SetName(v)
@@ -1397,26 +1422,6 @@ func (_u *OrgUnitUpdateOne) SetNillableCode(v *string) *OrgUnitUpdateOne {
 // ClearCode clears the value of the "code" field.
 func (_u *OrgUnitUpdateOne) ClearCode() *OrgUnitUpdateOne {
 	_u.mutation.ClearCode()
-	return _u
-}
-
-// SetPath sets the "path" field.
-func (_u *OrgUnitUpdateOne) SetPath(v string) *OrgUnitUpdateOne {
-	_u.mutation.SetPath(v)
-	return _u
-}
-
-// SetNillablePath sets the "path" field if the given value is not nil.
-func (_u *OrgUnitUpdateOne) SetNillablePath(v *string) *OrgUnitUpdateOne {
-	if v != nil {
-		_u.SetPath(*v)
-	}
-	return _u
-}
-
-// ClearPath clears the value of the "path" field.
-func (_u *OrgUnitUpdateOne) ClearPath() *OrgUnitUpdateOne {
-	_u.mutation.ClearPath()
 	return _u
 }
 
@@ -1924,6 +1929,11 @@ func (_u *OrgUnitUpdateOne) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "OrgUnit.status": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Path(); ok {
+		if err := orgunit.PathValidator(v); err != nil {
+			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "OrgUnit.path": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Name(); ok {
 		if err := orgunit.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "OrgUnit.name": %w`, err)}
@@ -2041,6 +2051,12 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 	if _u.mutation.DescriptionCleared() {
 		_spec.ClearField(orgunit.FieldDescription, field.TypeString)
 	}
+	if value, ok := _u.mutation.Path(); ok {
+		_spec.SetField(orgunit.FieldPath, field.TypeString, value)
+	}
+	if _u.mutation.PathCleared() {
+		_spec.ClearField(orgunit.FieldPath, field.TypeString)
+	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(orgunit.FieldName, field.TypeString, value)
 	}
@@ -2049,12 +2065,6 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 	}
 	if _u.mutation.CodeCleared() {
 		_spec.ClearField(orgunit.FieldCode, field.TypeString)
-	}
-	if value, ok := _u.mutation.Path(); ok {
-		_spec.SetField(orgunit.FieldPath, field.TypeString, value)
-	}
-	if _u.mutation.PathCleared() {
-		_spec.ClearField(orgunit.FieldPath, field.TypeString)
 	}
 	if value, ok := _u.mutation.LeaderID(); ok {
 		_spec.SetField(orgunit.FieldLeaderID, field.TypeUint32, value)

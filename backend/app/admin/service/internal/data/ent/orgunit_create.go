@@ -190,6 +190,20 @@ func (_c *OrgUnitCreate) SetNillableParentID(v *uint32) *OrgUnitCreate {
 	return _c
 }
 
+// SetPath sets the "path" field.
+func (_c *OrgUnitCreate) SetPath(v string) *OrgUnitCreate {
+	_c.mutation.SetPath(v)
+	return _c
+}
+
+// SetNillablePath sets the "path" field if the given value is not nil.
+func (_c *OrgUnitCreate) SetNillablePath(v *string) *OrgUnitCreate {
+	if v != nil {
+		_c.SetPath(*v)
+	}
+	return _c
+}
+
 // SetName sets the "name" field.
 func (_c *OrgUnitCreate) SetName(v string) *OrgUnitCreate {
 	_c.mutation.SetName(v)
@@ -206,20 +220,6 @@ func (_c *OrgUnitCreate) SetCode(v string) *OrgUnitCreate {
 func (_c *OrgUnitCreate) SetNillableCode(v *string) *OrgUnitCreate {
 	if v != nil {
 		_c.SetCode(*v)
-	}
-	return _c
-}
-
-// SetPath sets the "path" field.
-func (_c *OrgUnitCreate) SetPath(v string) *OrgUnitCreate {
-	_c.mutation.SetPath(v)
-	return _c
-}
-
-// SetNillablePath sets the "path" field if the given value is not nil.
-func (_c *OrgUnitCreate) SetNillablePath(v *string) *OrgUnitCreate {
-	if v != nil {
-		_c.SetPath(*v)
 	}
 	return _c
 }
@@ -570,6 +570,11 @@ func (_c *OrgUnitCreate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "OrgUnit.status": %w`, err)}
 		}
 	}
+	if v, ok := _c.mutation.Path(); ok {
+		if err := orgunit.PathValidator(v); err != nil {
+			return &ValidationError{Name: "path", err: fmt.Errorf(`ent: validator failed for field "OrgUnit.path": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "OrgUnit.name"`)}
 	}
@@ -668,6 +673,10 @@ func (_c *OrgUnitCreate) createSpec() (*OrgUnit, *sqlgraph.CreateSpec) {
 		_spec.SetField(orgunit.FieldDescription, field.TypeString, value)
 		_node.Description = &value
 	}
+	if value, ok := _c.mutation.Path(); ok {
+		_spec.SetField(orgunit.FieldPath, field.TypeString, value)
+		_node.Path = &value
+	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(orgunit.FieldName, field.TypeString, value)
 		_node.Name = &value
@@ -675,10 +684,6 @@ func (_c *OrgUnitCreate) createSpec() (*OrgUnit, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Code(); ok {
 		_spec.SetField(orgunit.FieldCode, field.TypeString, value)
 		_node.Code = &value
-	}
-	if value, ok := _c.mutation.Path(); ok {
-		_spec.SetField(orgunit.FieldPath, field.TypeString, value)
-		_node.Path = &value
 	}
 	if value, ok := _c.mutation.LeaderID(); ok {
 		_spec.SetField(orgunit.FieldLeaderID, field.TypeUint32, value)
@@ -1039,6 +1044,24 @@ func (u *OrgUnitUpsert) ClearParentID() *OrgUnitUpsert {
 	return u
 }
 
+// SetPath sets the "path" field.
+func (u *OrgUnitUpsert) SetPath(v string) *OrgUnitUpsert {
+	u.Set(orgunit.FieldPath, v)
+	return u
+}
+
+// UpdatePath sets the "path" field to the value that was provided on create.
+func (u *OrgUnitUpsert) UpdatePath() *OrgUnitUpsert {
+	u.SetExcluded(orgunit.FieldPath)
+	return u
+}
+
+// ClearPath clears the value of the "path" field.
+func (u *OrgUnitUpsert) ClearPath() *OrgUnitUpsert {
+	u.SetNull(orgunit.FieldPath)
+	return u
+}
+
 // SetName sets the "name" field.
 func (u *OrgUnitUpsert) SetName(v string) *OrgUnitUpsert {
 	u.Set(orgunit.FieldName, v)
@@ -1066,24 +1089,6 @@ func (u *OrgUnitUpsert) UpdateCode() *OrgUnitUpsert {
 // ClearCode clears the value of the "code" field.
 func (u *OrgUnitUpsert) ClearCode() *OrgUnitUpsert {
 	u.SetNull(orgunit.FieldCode)
-	return u
-}
-
-// SetPath sets the "path" field.
-func (u *OrgUnitUpsert) SetPath(v string) *OrgUnitUpsert {
-	u.Set(orgunit.FieldPath, v)
-	return u
-}
-
-// UpdatePath sets the "path" field to the value that was provided on create.
-func (u *OrgUnitUpsert) UpdatePath() *OrgUnitUpsert {
-	u.SetExcluded(orgunit.FieldPath)
-	return u
-}
-
-// ClearPath clears the value of the "path" field.
-func (u *OrgUnitUpsert) ClearPath() *OrgUnitUpsert {
-	u.SetNull(orgunit.FieldPath)
 	return u
 }
 
@@ -1738,6 +1743,27 @@ func (u *OrgUnitUpsertOne) ClearParentID() *OrgUnitUpsertOne {
 	})
 }
 
+// SetPath sets the "path" field.
+func (u *OrgUnitUpsertOne) SetPath(v string) *OrgUnitUpsertOne {
+	return u.Update(func(s *OrgUnitUpsert) {
+		s.SetPath(v)
+	})
+}
+
+// UpdatePath sets the "path" field to the value that was provided on create.
+func (u *OrgUnitUpsertOne) UpdatePath() *OrgUnitUpsertOne {
+	return u.Update(func(s *OrgUnitUpsert) {
+		s.UpdatePath()
+	})
+}
+
+// ClearPath clears the value of the "path" field.
+func (u *OrgUnitUpsertOne) ClearPath() *OrgUnitUpsertOne {
+	return u.Update(func(s *OrgUnitUpsert) {
+		s.ClearPath()
+	})
+}
+
 // SetName sets the "name" field.
 func (u *OrgUnitUpsertOne) SetName(v string) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
@@ -1770,27 +1796,6 @@ func (u *OrgUnitUpsertOne) UpdateCode() *OrgUnitUpsertOne {
 func (u *OrgUnitUpsertOne) ClearCode() *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.ClearCode()
-	})
-}
-
-// SetPath sets the "path" field.
-func (u *OrgUnitUpsertOne) SetPath(v string) *OrgUnitUpsertOne {
-	return u.Update(func(s *OrgUnitUpsert) {
-		s.SetPath(v)
-	})
-}
-
-// UpdatePath sets the "path" field to the value that was provided on create.
-func (u *OrgUnitUpsertOne) UpdatePath() *OrgUnitUpsertOne {
-	return u.Update(func(s *OrgUnitUpsert) {
-		s.UpdatePath()
-	})
-}
-
-// ClearPath clears the value of the "path" field.
-func (u *OrgUnitUpsertOne) ClearPath() *OrgUnitUpsertOne {
-	return u.Update(func(s *OrgUnitUpsert) {
-		s.ClearPath()
 	})
 }
 
@@ -2672,6 +2677,27 @@ func (u *OrgUnitUpsertBulk) ClearParentID() *OrgUnitUpsertBulk {
 	})
 }
 
+// SetPath sets the "path" field.
+func (u *OrgUnitUpsertBulk) SetPath(v string) *OrgUnitUpsertBulk {
+	return u.Update(func(s *OrgUnitUpsert) {
+		s.SetPath(v)
+	})
+}
+
+// UpdatePath sets the "path" field to the value that was provided on create.
+func (u *OrgUnitUpsertBulk) UpdatePath() *OrgUnitUpsertBulk {
+	return u.Update(func(s *OrgUnitUpsert) {
+		s.UpdatePath()
+	})
+}
+
+// ClearPath clears the value of the "path" field.
+func (u *OrgUnitUpsertBulk) ClearPath() *OrgUnitUpsertBulk {
+	return u.Update(func(s *OrgUnitUpsert) {
+		s.ClearPath()
+	})
+}
+
 // SetName sets the "name" field.
 func (u *OrgUnitUpsertBulk) SetName(v string) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
@@ -2704,27 +2730,6 @@ func (u *OrgUnitUpsertBulk) UpdateCode() *OrgUnitUpsertBulk {
 func (u *OrgUnitUpsertBulk) ClearCode() *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.ClearCode()
-	})
-}
-
-// SetPath sets the "path" field.
-func (u *OrgUnitUpsertBulk) SetPath(v string) *OrgUnitUpsertBulk {
-	return u.Update(func(s *OrgUnitUpsert) {
-		s.SetPath(v)
-	})
-}
-
-// UpdatePath sets the "path" field to the value that was provided on create.
-func (u *OrgUnitUpsertBulk) UpdatePath() *OrgUnitUpsertBulk {
-	return u.Update(func(s *OrgUnitUpsert) {
-		s.UpdatePath()
-	})
-}
-
-// ClearPath clears the value of the "path" field.
-func (u *OrgUnitUpsertBulk) ClearPath() *OrgUnitUpsertBulk {
-	return u.Update(func(s *OrgUnitUpsert) {
-		s.ClearPath()
 	})
 }
 

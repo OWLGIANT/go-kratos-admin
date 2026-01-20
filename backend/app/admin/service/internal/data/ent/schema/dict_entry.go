@@ -9,8 +9,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
-
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // DictEntry holds the schema definition for the DictEntry entity.
@@ -66,7 +64,7 @@ func (DictEntry) Mixin() []ent.Mixin {
 		mixin.Description{},
 		mixin.SortOrder{},
 		mixin.IsEnabled{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 	}
 }
 
@@ -79,11 +77,6 @@ func (DictEntry) Edges() []ent.Edge {
 			Annotations(entsql.OnDelete(entsql.Cascade)).
 			StorageKey(edge.Column("type_id")),
 	}
-}
-
-// Policy for all schemas that embed DictEntry.
-func (DictEntry) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 // Indexes of the DictEntry.

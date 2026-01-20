@@ -23,7 +23,7 @@ require (
 	github.com/redis/go-redis/v9 v9.17.2
 	github.com/stretchr/testify v1.11.1
 	github.com/tx7do/go-crud/api v0.0.7
-	github.com/tx7do/go-crud/entgo v0.0.31
+	github.com/tx7do/go-crud/entgo v0.0.35
 	github.com/tx7do/go-crud/gorm v0.0.15
 	github.com/tx7do/go-crud/viewer v0.0.5
 	github.com/tx7do/go-utils v1.1.34
@@ -225,7 +225,7 @@ require (
 	github.com/zclconf/go-cty v1.17.0 // indirect
 	github.com/zclconf/go-cty-yaml v1.2.0 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect
-	go.einride.tech/aip v0.79.0 // indirect
+	go.einride.tech/aip v0.80.0 // indirect
 	go.mongodb.org/mongo-driver v1.17.6 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.64.0 // indirect

@@ -602,9 +602,9 @@ var schemaGraph = func() *sqlgraph.Schema {
 			orgunit.FieldRemark:             {Type: field.TypeString, Column: orgunit.FieldRemark},
 			orgunit.FieldDescription:        {Type: field.TypeString, Column: orgunit.FieldDescription},
 			orgunit.FieldParentID:           {Type: field.TypeUint32, Column: orgunit.FieldParentID},
+			orgunit.FieldPath:               {Type: field.TypeString, Column: orgunit.FieldPath},
 			orgunit.FieldName:               {Type: field.TypeString, Column: orgunit.FieldName},
 			orgunit.FieldCode:               {Type: field.TypeString, Column: orgunit.FieldCode},
-			orgunit.FieldPath:               {Type: field.TypeString, Column: orgunit.FieldPath},
 			orgunit.FieldLeaderID:           {Type: field.TypeUint32, Column: orgunit.FieldLeaderID},
 			orgunit.FieldType:               {Type: field.TypeEnum, Column: orgunit.FieldType},
 			orgunit.FieldBusinessScopes:     {Type: field.TypeJSON, Column: orgunit.FieldBusinessScopes},
@@ -718,8 +718,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permissiongroup.FieldStatus:      {Type: field.TypeEnum, Column: permissiongroup.FieldStatus},
 			permissiongroup.FieldSortOrder:   {Type: field.TypeUint32, Column: permissiongroup.FieldSortOrder},
 			permissiongroup.FieldParentID:    {Type: field.TypeUint32, Column: permissiongroup.FieldParentID},
-			permissiongroup.FieldName:        {Type: field.TypeString, Column: permissiongroup.FieldName},
 			permissiongroup.FieldPath:        {Type: field.TypeString, Column: permissiongroup.FieldPath},
+			permissiongroup.FieldName:        {Type: field.TypeString, Column: permissiongroup.FieldName},
 			permissiongroup.FieldModule:      {Type: field.TypeString, Column: permissiongroup.FieldModule},
 		},
 	}
@@ -3584,6 +3584,11 @@ func (f *OrgUnitFilter) WhereParentID(p entql.Uint32P) {
 	f.Where(p.Field(orgunit.FieldParentID))
 }
 
+// WherePath applies the entql string predicate on the path field.
+func (f *OrgUnitFilter) WherePath(p entql.StringP) {
+	f.Where(p.Field(orgunit.FieldPath))
+}
+
 // WhereName applies the entql string predicate on the name field.
 func (f *OrgUnitFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(orgunit.FieldName))
@@ -3592,11 +3597,6 @@ func (f *OrgUnitFilter) WhereName(p entql.StringP) {
 // WhereCode applies the entql string predicate on the code field.
 func (f *OrgUnitFilter) WhereCode(p entql.StringP) {
 	f.Where(p.Field(orgunit.FieldCode))
-}
-
-// WherePath applies the entql string predicate on the path field.
-func (f *OrgUnitFilter) WherePath(p entql.StringP) {
-	f.Where(p.Field(orgunit.FieldPath))
 }
 
 // WhereLeaderID applies the entql uint32 predicate on the leader_id field.
@@ -4092,14 +4092,14 @@ func (f *PermissionGroupFilter) WhereParentID(p entql.Uint32P) {
 	f.Where(p.Field(permissiongroup.FieldParentID))
 }
 
-// WhereName applies the entql string predicate on the name field.
-func (f *PermissionGroupFilter) WhereName(p entql.StringP) {
-	f.Where(p.Field(permissiongroup.FieldName))
-}
-
 // WherePath applies the entql string predicate on the path field.
 func (f *PermissionGroupFilter) WherePath(p entql.StringP) {
 	f.Where(p.Field(permissiongroup.FieldPath))
+}
+
+// WhereName applies the entql string predicate on the name field.
+func (f *PermissionGroupFilter) WhereName(p entql.StringP) {
+	f.Where(p.Field(permissiongroup.FieldName))
 }
 
 // WhereModule applies the entql string predicate on the module field.

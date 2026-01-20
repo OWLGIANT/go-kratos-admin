@@ -64,7 +64,7 @@ func init() {
 	// api.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	api.IDValidator = apiDescID.Validators[0].(func(uint32) error)
 	apiauditlogMixin := schema.ApiAuditLog{}.Mixin()
-	apiauditlog.Policy = privacy.NewPolicies(schema.ApiAuditLog{})
+	apiauditlog.Policy = privacy.NewPolicies(apiauditlogMixin[2], schema.ApiAuditLog{})
 	apiauditlog.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := apiauditlog.Policy.EvalMutation(ctx, m); err != nil {
@@ -73,9 +73,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	apiauditlogMixinHooks2 := apiauditlogMixin[2].Hooks()
-
-	apiauditlog.Hooks[1] = apiauditlogMixinHooks2[0]
 	apiauditlogMixinFields0 := apiauditlogMixin[0].Fields()
 	_ = apiauditlogMixinFields0
 	apiauditlogMixinFields2 := apiauditlogMixin[2].Fields()
@@ -91,7 +88,7 @@ func init() {
 	// apiauditlog.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	apiauditlog.IDValidator = apiauditlogDescID.Validators[0].(func(uint32) error)
 	dataaccessauditlogMixin := schema.DataAccessAuditLog{}.Mixin()
-	dataaccessauditlog.Policy = privacy.NewPolicies(schema.DataAccessAuditLog{})
+	dataaccessauditlog.Policy = privacy.NewPolicies(dataaccessauditlogMixin[2], schema.DataAccessAuditLog{})
 	dataaccessauditlog.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := dataaccessauditlog.Policy.EvalMutation(ctx, m); err != nil {
@@ -100,9 +97,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	dataaccessauditlogMixinHooks2 := dataaccessauditlogMixin[2].Hooks()
-
-	dataaccessauditlog.Hooks[1] = dataaccessauditlogMixinHooks2[0]
 	dataaccessauditlogMixinFields0 := dataaccessauditlogMixin[0].Fields()
 	_ = dataaccessauditlogMixinFields0
 	dataaccessauditlogMixinFields2 := dataaccessauditlogMixin[2].Fields()
@@ -118,7 +112,7 @@ func init() {
 	// dataaccessauditlog.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	dataaccessauditlog.IDValidator = dataaccessauditlogDescID.Validators[0].(func(uint32) error)
 	dictentryMixin := schema.DictEntry{}.Mixin()
-	dictentry.Policy = privacy.NewPolicies(schema.DictEntry{})
+	dictentry.Policy = privacy.NewPolicies(dictentryMixin[6], schema.DictEntry{})
 	dictentry.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := dictentry.Policy.EvalMutation(ctx, m); err != nil {
@@ -127,9 +121,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	dictentryMixinHooks6 := dictentryMixin[6].Hooks()
-
-	dictentry.Hooks[1] = dictentryMixinHooks6[0]
 	dictentryMixinFields0 := dictentryMixin[0].Fields()
 	_ = dictentryMixinFields0
 	dictentryMixinFields4 := dictentryMixin[4].Fields()
@@ -165,7 +156,7 @@ func init() {
 	// dictentry.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	dictentry.IDValidator = dictentryDescID.Validators[0].(func(uint32) error)
 	dicttypeMixin := schema.DictType{}.Mixin()
-	dicttype.Policy = privacy.NewPolicies(schema.DictType{})
+	dicttype.Policy = privacy.NewPolicies(dicttypeMixin[6], schema.DictType{})
 	dicttype.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := dicttype.Policy.EvalMutation(ctx, m); err != nil {
@@ -174,9 +165,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	dicttypeMixinHooks6 := dicttypeMixin[6].Hooks()
-
-	dicttype.Hooks[1] = dicttypeMixinHooks6[0]
 	dicttypeMixinFields0 := dicttypeMixin[0].Fields()
 	_ = dicttypeMixinFields0
 	dicttypeMixinFields3 := dicttypeMixin[3].Fields()
@@ -212,7 +200,7 @@ func init() {
 	// dicttype.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	dicttype.IDValidator = dicttypeDescID.Validators[0].(func(uint32) error)
 	fileMixin := schema.File{}.Mixin()
-	file.Policy = privacy.NewPolicies(schema.File{})
+	file.Policy = privacy.NewPolicies(fileMixin[4], schema.File{})
 	file.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := file.Policy.EvalMutation(ctx, m); err != nil {
@@ -221,9 +209,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	fileMixinHooks4 := fileMixin[4].Hooks()
-
-	file.Hooks[1] = fileMixinHooks4[0]
 	fileMixinFields0 := fileMixin[0].Fields()
 	_ = fileMixinFields0
 	fileMixinFields4 := fileMixin[4].Fields()
@@ -239,7 +224,7 @@ func init() {
 	// file.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	file.IDValidator = fileDescID.Validators[0].(func(uint32) error)
 	internalmessageMixin := schema.InternalMessage{}.Mixin()
-	internalmessage.Policy = privacy.NewPolicies(schema.InternalMessage{})
+	internalmessage.Policy = privacy.NewPolicies(internalmessageMixin[3], schema.InternalMessage{})
 	internalmessage.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := internalmessage.Policy.EvalMutation(ctx, m); err != nil {
@@ -248,9 +233,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	internalmessageMixinHooks3 := internalmessageMixin[3].Hooks()
-
-	internalmessage.Hooks[1] = internalmessageMixinHooks3[0]
 	internalmessageMixinFields0 := internalmessageMixin[0].Fields()
 	_ = internalmessageMixinFields0
 	internalmessageMixinFields3 := internalmessageMixin[3].Fields()
@@ -266,7 +248,7 @@ func init() {
 	// internalmessage.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	internalmessage.IDValidator = internalmessageDescID.Validators[0].(func(uint32) error)
 	internalmessagecategoryMixin := schema.InternalMessageCategory{}.Mixin()
-	internalmessagecategory.Policy = privacy.NewPolicies(schema.InternalMessageCategory{})
+	internalmessagecategory.Policy = privacy.NewPolicies(internalmessagecategoryMixin[6], schema.InternalMessageCategory{})
 	internalmessagecategory.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := internalmessagecategory.Policy.EvalMutation(ctx, m); err != nil {
@@ -275,9 +257,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	internalmessagecategoryMixinHooks6 := internalmessagecategoryMixin[6].Hooks()
-
-	internalmessagecategory.Hooks[1] = internalmessagecategoryMixinHooks6[0]
 	internalmessagecategoryMixinFields0 := internalmessagecategoryMixin[0].Fields()
 	_ = internalmessagecategoryMixinFields0
 	internalmessagecategoryMixinFields3 := internalmessagecategoryMixin[3].Fields()
@@ -313,7 +292,7 @@ func init() {
 	// internalmessagecategory.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	internalmessagecategory.IDValidator = internalmessagecategoryDescID.Validators[0].(func(uint32) error)
 	internalmessagerecipientMixin := schema.InternalMessageRecipient{}.Mixin()
-	internalmessagerecipient.Policy = privacy.NewPolicies(schema.InternalMessageRecipient{})
+	internalmessagerecipient.Policy = privacy.NewPolicies(internalmessagerecipientMixin[2], schema.InternalMessageRecipient{})
 	internalmessagerecipient.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := internalmessagerecipient.Policy.EvalMutation(ctx, m); err != nil {
@@ -322,9 +301,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	internalmessagerecipientMixinHooks2 := internalmessagerecipientMixin[2].Hooks()
-
-	internalmessagerecipient.Hooks[1] = internalmessagerecipientMixinHooks2[0]
 	internalmessagerecipientMixinFields0 := internalmessagerecipientMixin[0].Fields()
 	_ = internalmessagerecipientMixinFields0
 	internalmessagerecipientMixinFields2 := internalmessagerecipientMixin[2].Fields()
@@ -377,7 +353,7 @@ func init() {
 	// language.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	language.IDValidator = languageDescID.Validators[0].(func(uint32) error)
 	loginauditlogMixin := schema.LoginAuditLog{}.Mixin()
-	loginauditlog.Policy = privacy.NewPolicies(schema.LoginAuditLog{})
+	loginauditlog.Policy = privacy.NewPolicies(loginauditlogMixin[2], schema.LoginAuditLog{})
 	loginauditlog.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := loginauditlog.Policy.EvalMutation(ctx, m); err != nil {
@@ -386,9 +362,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	loginauditlogMixinHooks2 := loginauditlogMixin[2].Hooks()
-
-	loginauditlog.Hooks[1] = loginauditlogMixinHooks2[0]
 	loginauditlogMixinFields0 := loginauditlogMixin[0].Fields()
 	_ = loginauditlogMixinFields0
 	loginauditlogMixinFields2 := loginauditlogMixin[2].Fields()
@@ -404,7 +377,7 @@ func init() {
 	// loginauditlog.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	loginauditlog.IDValidator = loginauditlogDescID.Validators[0].(func(uint32) error)
 	loginpolicyMixin := schema.LoginPolicy{}.Mixin()
-	loginpolicy.Policy = privacy.NewPolicies(schema.LoginPolicy{})
+	loginpolicy.Policy = privacy.NewPolicies(loginpolicyMixin[3], schema.LoginPolicy{})
 	loginpolicy.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := loginpolicy.Policy.EvalMutation(ctx, m); err != nil {
@@ -413,9 +386,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	loginpolicyMixinHooks3 := loginpolicyMixin[3].Hooks()
-
-	loginpolicy.Hooks[1] = loginpolicyMixinHooks3[0]
 	loginpolicyMixinFields0 := loginpolicyMixin[0].Fields()
 	_ = loginpolicyMixinFields0
 	loginpolicyMixinFields3 := loginpolicyMixin[3].Fields()
@@ -431,7 +401,7 @@ func init() {
 	// loginpolicy.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	loginpolicy.IDValidator = loginpolicyDescID.Validators[0].(func(uint32) error)
 	membershipMixin := schema.Membership{}.Mixin()
-	membership.Policy = privacy.NewPolicies(schema.Membership{})
+	membership.Policy = privacy.NewPolicies(membershipMixin[3], schema.Membership{})
 	membership.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := membership.Policy.EvalMutation(ctx, m); err != nil {
@@ -440,9 +410,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	membershipMixinHooks3 := membershipMixin[3].Hooks()
-
-	membership.Hooks[1] = membershipMixinHooks3[0]
 	membershipMixinFields0 := membershipMixin[0].Fields()
 	_ = membershipMixinFields0
 	membershipMixinFields3 := membershipMixin[3].Fields()
@@ -462,7 +429,7 @@ func init() {
 	// membership.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	membership.IDValidator = membershipDescID.Validators[0].(func(uint32) error)
 	membershiporgunitMixin := schema.MembershipOrgUnit{}.Mixin()
-	membershiporgunit.Policy = privacy.NewPolicies(schema.MembershipOrgUnit{})
+	membershiporgunit.Policy = privacy.NewPolicies(membershiporgunitMixin[3], schema.MembershipOrgUnit{})
 	membershiporgunit.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := membershiporgunit.Policy.EvalMutation(ctx, m); err != nil {
@@ -471,9 +438,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	membershiporgunitMixinHooks3 := membershiporgunitMixin[3].Hooks()
-
-	membershiporgunit.Hooks[1] = membershiporgunitMixinHooks3[0]
 	membershiporgunitMixinFields0 := membershiporgunitMixin[0].Fields()
 	_ = membershiporgunitMixinFields0
 	membershiporgunitMixinFields3 := membershiporgunitMixin[3].Fields()
@@ -493,7 +457,7 @@ func init() {
 	// membershiporgunit.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	membershiporgunit.IDValidator = membershiporgunitDescID.Validators[0].(func(uint32) error)
 	membershippositionMixin := schema.MembershipPosition{}.Mixin()
-	membershipposition.Policy = privacy.NewPolicies(schema.MembershipPosition{})
+	membershipposition.Policy = privacy.NewPolicies(membershippositionMixin[3], schema.MembershipPosition{})
 	membershipposition.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := membershipposition.Policy.EvalMutation(ctx, m); err != nil {
@@ -502,9 +466,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	membershippositionMixinHooks3 := membershippositionMixin[3].Hooks()
-
-	membershipposition.Hooks[1] = membershippositionMixinHooks3[0]
 	membershippositionMixinFields0 := membershippositionMixin[0].Fields()
 	_ = membershippositionMixinFields0
 	membershippositionMixinFields3 := membershippositionMixin[3].Fields()
@@ -524,7 +485,7 @@ func init() {
 	// membershipposition.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	membershipposition.IDValidator = membershippositionDescID.Validators[0].(func(uint32) error)
 	membershiproleMixin := schema.MembershipRole{}.Mixin()
-	membershiprole.Policy = privacy.NewPolicies(schema.MembershipRole{})
+	membershiprole.Policy = privacy.NewPolicies(membershiproleMixin[3], schema.MembershipRole{})
 	membershiprole.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := membershiprole.Policy.EvalMutation(ctx, m); err != nil {
@@ -533,9 +494,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	membershiproleMixinHooks3 := membershiproleMixin[3].Hooks()
-
-	membershiprole.Hooks[1] = membershiproleMixinHooks3[0]
 	membershiproleMixinFields0 := membershiproleMixin[0].Fields()
 	_ = membershiproleMixinFields0
 	membershiproleMixinFields3 := membershiproleMixin[3].Fields()
@@ -574,7 +532,7 @@ func init() {
 	// menu.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	menu.IDValidator = menuDescID.Validators[0].(func(uint32) error)
 	operationauditlogMixin := schema.OperationAuditLog{}.Mixin()
-	operationauditlog.Policy = privacy.NewPolicies(schema.OperationAuditLog{})
+	operationauditlog.Policy = privacy.NewPolicies(operationauditlogMixin[2], schema.OperationAuditLog{})
 	operationauditlog.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := operationauditlog.Policy.EvalMutation(ctx, m); err != nil {
@@ -583,9 +541,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	operationauditlogMixinHooks2 := operationauditlogMixin[2].Hooks()
-
-	operationauditlog.Hooks[1] = operationauditlogMixinHooks2[0]
 	operationauditlogMixinFields0 := operationauditlogMixin[0].Fields()
 	_ = operationauditlogMixinFields0
 	operationauditlogMixinFields2 := operationauditlogMixin[2].Fields()
@@ -601,7 +556,7 @@ func init() {
 	// operationauditlog.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	operationauditlog.IDValidator = operationauditlogDescID.Validators[0].(func(uint32) error)
 	orgunitMixin := schema.OrgUnit{}.Mixin()
-	orgunit.Policy = privacy.NewPolicies(schema.OrgUnit{})
+	orgunit.Policy = privacy.NewPolicies(orgunitMixin[5], schema.OrgUnit{})
 	orgunit.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := orgunit.Policy.EvalMutation(ctx, m); err != nil {
@@ -610,9 +565,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	orgunitMixinHooks5 := orgunitMixin[5].Hooks()
-
-	orgunit.Hooks[1] = orgunitMixinHooks5[0]
 	orgunitMixinFields0 := orgunitMixin[0].Fields()
 	_ = orgunitMixinFields0
 	orgunitMixinFields3 := orgunitMixin[3].Fields()
@@ -621,6 +573,8 @@ func init() {
 	_ = orgunitMixinFields4
 	orgunitMixinFields5 := orgunitMixin[5].Fields()
 	_ = orgunitMixinFields5
+	orgunitMixinFields9 := orgunitMixin[9].Fields()
+	_ = orgunitMixinFields9
 	orgunitFields := schema.OrgUnit{}.Fields()
 	_ = orgunitFields
 	// orgunitDescSortOrder is the schema descriptor for sort_order field.
@@ -631,12 +585,16 @@ func init() {
 	orgunitDescTenantID := orgunitMixinFields5[0].Descriptor()
 	// orgunit.DefaultTenantID holds the default value on creation for the tenant_id field.
 	orgunit.DefaultTenantID = orgunitDescTenantID.Default.(uint32)
+	// orgunitDescPath is the schema descriptor for path field.
+	orgunitDescPath := orgunitMixinFields9[0].Descriptor()
+	// orgunit.PathValidator is a validator for the "path" field. It is called by the builders before save.
+	orgunit.PathValidator = orgunitDescPath.Validators[0].(func(string) error)
 	// orgunitDescName is the schema descriptor for name field.
 	orgunitDescName := orgunitFields[0].Descriptor()
 	// orgunit.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	orgunit.NameValidator = orgunitDescName.Validators[0].(func(string) error)
 	// orgunitDescIsLegalEntity is the schema descriptor for is_legal_entity field.
-	orgunitDescIsLegalEntity := orgunitFields[7].Descriptor()
+	orgunitDescIsLegalEntity := orgunitFields[6].Descriptor()
 	// orgunit.DefaultIsLegalEntity holds the default value on creation for the is_legal_entity field.
 	orgunit.DefaultIsLegalEntity = orgunitDescIsLegalEntity.Default.(bool)
 	// orgunitDescID is the schema descriptor for id field.
@@ -668,7 +626,7 @@ func init() {
 	// permissionapi.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	permissionapi.IDValidator = permissionapiDescID.Validators[0].(func(uint32) error)
 	permissionauditlogMixin := schema.PermissionAuditLog{}.Mixin()
-	permissionauditlog.Policy = privacy.NewPolicies(schema.PermissionAuditLog{})
+	permissionauditlog.Policy = privacy.NewPolicies(permissionauditlogMixin[2], schema.PermissionAuditLog{})
 	permissionauditlog.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := permissionauditlog.Policy.EvalMutation(ctx, m); err != nil {
@@ -677,9 +635,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	permissionauditlogMixinHooks2 := permissionauditlogMixin[2].Hooks()
-
-	permissionauditlog.Hooks[1] = permissionauditlogMixinHooks2[0]
 	permissionauditlogMixinFields0 := permissionauditlogMixin[0].Fields()
 	_ = permissionauditlogMixinFields0
 	permissionauditlogMixinFields2 := permissionauditlogMixin[2].Fields()
@@ -701,12 +656,18 @@ func init() {
 	_ = permissiongroupMixinFields4
 	permissiongroupMixinFields5 := permissiongroupMixin[5].Fields()
 	_ = permissiongroupMixinFields5
+	permissiongroupMixinFields7 := permissiongroupMixin[7].Fields()
+	_ = permissiongroupMixinFields7
 	permissiongroupFields := schema.PermissionGroup{}.Fields()
 	_ = permissiongroupFields
 	// permissiongroupDescSortOrder is the schema descriptor for sort_order field.
 	permissiongroupDescSortOrder := permissiongroupMixinFields5[0].Descriptor()
 	// permissiongroup.DefaultSortOrder holds the default value on creation for the sort_order field.
 	permissiongroup.DefaultSortOrder = permissiongroupDescSortOrder.Default.(uint32)
+	// permissiongroupDescPath is the schema descriptor for path field.
+	permissiongroupDescPath := permissiongroupMixinFields7[0].Descriptor()
+	// permissiongroup.PathValidator is a validator for the "path" field. It is called by the builders before save.
+	permissiongroup.PathValidator = permissiongroupDescPath.Validators[0].(func(string) error)
 	// permissiongroupDescName is the schema descriptor for name field.
 	permissiongroupDescName := permissiongroupFields[0].Descriptor()
 	// permissiongroup.NameValidator is a validator for the "name" field. It is called by the builders before save.
@@ -748,7 +709,7 @@ func init() {
 	// permissionpolicy.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	permissionpolicy.IDValidator = permissionpolicyDescID.Validators[0].(func(uint32) error)
 	policyevaluationlogMixin := schema.PolicyEvaluationLog{}.Mixin()
-	policyevaluationlog.Policy = privacy.NewPolicies(schema.PolicyEvaluationLog{})
+	policyevaluationlog.Policy = privacy.NewPolicies(policyevaluationlogMixin[2], schema.PolicyEvaluationLog{})
 	policyevaluationlog.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := policyevaluationlog.Policy.EvalMutation(ctx, m); err != nil {
@@ -757,9 +718,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	policyevaluationlogMixinHooks2 := policyevaluationlogMixin[2].Hooks()
-
-	policyevaluationlog.Hooks[1] = policyevaluationlogMixinHooks2[0]
 	policyevaluationlogMixinFields0 := policyevaluationlogMixin[0].Fields()
 	_ = policyevaluationlogMixinFields0
 	policyevaluationlogMixinFields2 := policyevaluationlogMixin[2].Fields()
@@ -779,7 +737,7 @@ func init() {
 	// policyevaluationlog.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	policyevaluationlog.IDValidator = policyevaluationlogDescID.Validators[0].(func(uint32) error)
 	positionMixin := schema.Position{}.Mixin()
-	position.Policy = privacy.NewPolicies(schema.Position{})
+	position.Policy = privacy.NewPolicies(positionMixin[5], schema.Position{})
 	position.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := position.Policy.EvalMutation(ctx, m); err != nil {
@@ -788,9 +746,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	positionMixinHooks5 := positionMixin[5].Hooks()
-
-	position.Hooks[1] = positionMixinHooks5[0]
 	positionMixinFields0 := positionMixin[0].Fields()
 	_ = positionMixinFields0
 	positionMixinFields3 := positionMixin[3].Fields()
@@ -830,7 +785,7 @@ func init() {
 	// position.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	position.IDValidator = positionDescID.Validators[0].(func(uint32) error)
 	roleMixin := schema.Role{}.Mixin()
-	role.Policy = privacy.NewPolicies(schema.Role{})
+	role.Policy = privacy.NewPolicies(roleMixin[6], schema.Role{})
 	role.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := role.Policy.EvalMutation(ctx, m); err != nil {
@@ -839,9 +794,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	roleMixinHooks6 := roleMixin[6].Hooks()
-
-	role.Hooks[1] = roleMixinHooks6[0]
 	roleMixinFields0 := roleMixin[0].Fields()
 	_ = roleMixinFields0
 	roleMixinFields5 := roleMixin[5].Fields()
@@ -881,7 +833,7 @@ func init() {
 	// role.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	role.IDValidator = roleDescID.Validators[0].(func(uint32) error)
 	rolemetadataMixin := schema.RoleMetadata{}.Mixin()
-	rolemetadata.Policy = privacy.NewPolicies(schema.RoleMetadata{})
+	rolemetadata.Policy = privacy.NewPolicies(rolemetadataMixin[3], schema.RoleMetadata{})
 	rolemetadata.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := rolemetadata.Policy.EvalMutation(ctx, m); err != nil {
@@ -890,9 +842,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	rolemetadataMixinHooks3 := rolemetadataMixin[3].Hooks()
-
-	rolemetadata.Hooks[1] = rolemetadataMixinHooks3[0]
 	rolemetadataMixinFields0 := rolemetadataMixin[0].Fields()
 	_ = rolemetadataMixinFields0
 	rolemetadataMixinFields3 := rolemetadataMixin[3].Fields()
@@ -920,7 +869,7 @@ func init() {
 	// rolemetadata.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	rolemetadata.IDValidator = rolemetadataDescID.Validators[0].(func(uint32) error)
 	rolepermissionMixin := schema.RolePermission{}.Mixin()
-	rolepermission.Policy = privacy.NewPolicies(schema.RolePermission{})
+	rolepermission.Policy = privacy.NewPolicies(rolepermissionMixin[3], schema.RolePermission{})
 	rolepermission.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := rolepermission.Policy.EvalMutation(ctx, m); err != nil {
@@ -929,9 +878,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	rolepermissionMixinHooks3 := rolepermissionMixin[3].Hooks()
-
-	rolepermission.Hooks[1] = rolepermissionMixinHooks3[0]
 	rolepermissionMixinFields0 := rolepermissionMixin[0].Fields()
 	_ = rolepermissionMixinFields0
 	rolepermissionMixinFields3 := rolepermissionMixin[3].Fields()
@@ -953,7 +899,7 @@ func init() {
 	// rolepermission.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	rolepermission.IDValidator = rolepermissionDescID.Validators[0].(func(uint32) error)
 	taskMixin := schema.Task{}.Mixin()
-	task.Policy = privacy.NewPolicies(schema.Task{})
+	task.Policy = privacy.NewPolicies(taskMixin[4], schema.Task{})
 	task.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := task.Policy.EvalMutation(ctx, m); err != nil {
@@ -962,9 +908,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	taskMixinHooks4 := taskMixin[4].Hooks()
-
-	task.Hooks[1] = taskMixinHooks4[0]
 	taskMixinFields0 := taskMixin[0].Fields()
 	_ = taskMixinFields0
 	taskMixinFields4 := taskMixin[4].Fields()
@@ -1001,7 +944,7 @@ func init() {
 	// tenant.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	tenant.IDValidator = tenantDescID.Validators[0].(func(uint32) error)
 	userMixin := schema.User{}.Mixin()
-	user.Policy = privacy.NewPolicies(schema.User{})
+	user.Policy = privacy.NewPolicies(userMixin[4], schema.User{})
 	user.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := user.Policy.EvalMutation(ctx, m); err != nil {
@@ -1010,9 +953,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	userMixinHooks4 := userMixin[4].Hooks()
-
-	user.Hooks[1] = userMixinHooks4[0]
 	userMixinFields0 := userMixin[0].Fields()
 	_ = userMixinFields0
 	userMixinFields4 := userMixin[4].Fields()
@@ -1060,7 +1000,7 @@ func init() {
 	// user.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	user.IDValidator = userDescID.Validators[0].(func(uint32) error)
 	usercredentialMixin := schema.UserCredential{}.Mixin()
-	usercredential.Policy = privacy.NewPolicies(schema.UserCredential{})
+	usercredential.Policy = privacy.NewPolicies(usercredentialMixin[2], schema.UserCredential{})
 	usercredential.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := usercredential.Policy.EvalMutation(ctx, m); err != nil {
@@ -1069,9 +1009,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	usercredentialMixinHooks2 := usercredentialMixin[2].Hooks()
-
-	usercredential.Hooks[1] = usercredentialMixinHooks2[0]
 	usercredentialMixinFields1 := usercredentialMixin[1].Fields()
 	_ = usercredentialMixinFields1
 	usercredentialMixinFields2 := usercredentialMixin[2].Fields()
@@ -1107,7 +1044,7 @@ func init() {
 	// usercredential.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	usercredential.IDValidator = usercredentialDescID.Validators[0].(func(uint32) error)
 	userorgunitMixin := schema.UserOrgUnit{}.Mixin()
-	userorgunit.Policy = privacy.NewPolicies(schema.UserOrgUnit{})
+	userorgunit.Policy = privacy.NewPolicies(userorgunitMixin[3], schema.UserOrgUnit{})
 	userorgunit.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := userorgunit.Policy.EvalMutation(ctx, m); err != nil {
@@ -1116,9 +1053,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	userorgunitMixinHooks3 := userorgunitMixin[3].Hooks()
-
-	userorgunit.Hooks[1] = userorgunitMixinHooks3[0]
 	userorgunitMixinFields0 := userorgunitMixin[0].Fields()
 	_ = userorgunitMixinFields0
 	userorgunitMixinFields3 := userorgunitMixin[3].Fields()
@@ -1138,7 +1072,7 @@ func init() {
 	// userorgunit.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	userorgunit.IDValidator = userorgunitDescID.Validators[0].(func(uint32) error)
 	userpositionMixin := schema.UserPosition{}.Mixin()
-	userposition.Policy = privacy.NewPolicies(schema.UserPosition{})
+	userposition.Policy = privacy.NewPolicies(userpositionMixin[3], schema.UserPosition{})
 	userposition.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := userposition.Policy.EvalMutation(ctx, m); err != nil {
@@ -1147,9 +1081,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	userpositionMixinHooks3 := userpositionMixin[3].Hooks()
-
-	userposition.Hooks[1] = userpositionMixinHooks3[0]
 	userpositionMixinFields0 := userpositionMixin[0].Fields()
 	_ = userpositionMixinFields0
 	userpositionMixinFields3 := userpositionMixin[3].Fields()
@@ -1169,7 +1100,7 @@ func init() {
 	// userposition.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	userposition.IDValidator = userpositionDescID.Validators[0].(func(uint32) error)
 	userroleMixin := schema.UserRole{}.Mixin()
-	userrole.Policy = privacy.NewPolicies(schema.UserRole{})
+	userrole.Policy = privacy.NewPolicies(userroleMixin[3], schema.UserRole{})
 	userrole.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := userrole.Policy.EvalMutation(ctx, m); err != nil {
@@ -1178,9 +1109,6 @@ func init() {
 			return next.Mutate(ctx, m)
 		})
 	}
-	userroleMixinHooks3 := userroleMixin[3].Hooks()
-
-	userrole.Hooks[1] = userroleMixinHooks3[0]
 	userroleMixinFields0 := userroleMixin[0].Fields()
 	_ = userroleMixinFields0
 	userroleMixinFields3 := userroleMixin[3].Fields()

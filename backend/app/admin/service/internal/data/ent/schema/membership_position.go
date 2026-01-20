@@ -8,8 +8,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
-
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // MembershipPosition 成员与岗位关联表
@@ -87,14 +85,9 @@ func (MembershipPosition) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId{},
 		mixin.TimeAt{},
 		mixin.OperatorID{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 		mixin.Remark{},
 	}
-}
-
-// Policy for all schemas that embed MembershipPosition.
-func (MembershipPosition) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 // Indexes of the MembershipPosition.

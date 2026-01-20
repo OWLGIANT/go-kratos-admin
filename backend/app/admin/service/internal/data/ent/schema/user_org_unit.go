@@ -8,8 +8,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
-
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // UserOrgUnit 用户与组织单元关联表
@@ -93,14 +91,9 @@ func (UserOrgUnit) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId{},
 		mixin.TimeAt{},
 		mixin.OperatorID{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 		mixin.Remark{},
 	}
-}
-
-// Policy for all schemas that embed UserOrgUnit.
-func (UserOrgUnit) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 func (UserOrgUnit) Indexes() []ent.Index {

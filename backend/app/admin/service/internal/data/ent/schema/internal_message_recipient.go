@@ -8,8 +8,6 @@ import (
 	"entgo.io/ent/schema/index"
 
 	"github.com/tx7do/go-crud/entgo/mixin"
-
-	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // InternalMessageRecipient holds the schema definition for the InternalMessageRecipient entity.
@@ -71,13 +69,8 @@ func (InternalMessageRecipient) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.AutoIncrementId{},
 		mixin.TimeAt{},
-		mixin.TenantID{},
+		mixin.TenantID[uint32]{},
 	}
-}
-
-// Policy for all schemas that embed InternalMessageRecipient.
-func (InternalMessageRecipient) Policy() ent.Policy {
-	return rule.TenantPolicy()
 }
 
 func (InternalMessageRecipient) Indexes() []ent.Index {
