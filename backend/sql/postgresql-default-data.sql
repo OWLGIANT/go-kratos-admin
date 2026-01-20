@@ -48,9 +48,10 @@ VALUES (1, 'USERNAME', 'admin', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eX
 ;
 SELECT setval('sys_user_credentials_id_seq', (SELECT MAX(id) FROM sys_user_credentials));
 
-insert into sys_user_roles (id, tenant_id, user_id, role_id, start_at, end_at, assigned_at, assigned_by, is_primary, status, created_at)
+INSERT INTO sys_user_roles (id, tenant_id, user_id, role_id, start_at, end_at, assigned_at, assigned_by, is_primary, status, created_at)
 VALUES (1, 0, 1, 1, null, null, now(), null, true, 'ACTIVE', now())
 ;
+SELECT setval('sys_user_roles_id_seq', (SELECT MAX(id) FROM sys_user_roles));
 
 -- 权限分组
 INSERT INTO sys_permission_groups (id, parent_id, path, name, module, sort_order, created_at)
@@ -127,7 +128,7 @@ SELECT now(),
               30, 32,
               40, 41,
               50, 51,
-              60, 61, 62, 63, 64,])
+              60, 61, 62, 63, 64])
 ;
 
 -- 默认的角色
@@ -137,9 +138,9 @@ VALUES (1, 0, 1, '平台管理员', 'platform:admin', 'ON', true, true, '拥有�
 ;
 SELECT setval('sys_roles_id_seq', (SELECT MAX(id) FROM sys_roles));
 
-INSERT INTO public.sys_role_metadata(id, tenant_id, role_id, is_template, scope, sync_policy, created_at)
-VALUES (1, 0, 1, false, 'PLATFORM', 'AUTO', now()),
-       (2, 0, 2, true, 'TENANT', 'AUTO', now())
+INSERT INTO public.sys_role_metadata(id, tenant_id, role_id, is_template, scope, sync_policy, custom_overrides, created_at)
+VALUES (1, 0, 1, false, 'PLATFORM', 'AUTO',  '{}', now()),
+       (2, 0, 2, true, 'TENANT', 'AUTO', '{}', now())
 ;
 SELECT setval('sys_role_metadata_id_seq', (SELECT MAX(id) FROM sys_role_metadata));
 

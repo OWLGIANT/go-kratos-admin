@@ -1,8 +1,6 @@
 package data
 
 import (
-	"context"
-
 	"entgo.io/ent/dialect/sql"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -42,7 +40,7 @@ func NewEntClient(ctx *bootstrap.Context) (*entCrud.EntClient[*ent.Client], func
 
 		// 运行数据库迁移工具
 		if cfg.Data.Database.GetMigrate() {
-			if err := client.Schema.Create(context.Background(), migrate.WithForeignKeys(true)); err != nil {
+			if err := client.Schema.Create(ctx.Context(), migrate.WithForeignKeys(true)); err != nil {
 				l.Fatalf("failed creating schema resources: %v", err)
 			}
 		}
