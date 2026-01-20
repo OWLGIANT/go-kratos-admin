@@ -188,9 +188,6 @@ func (r *UserCredentialRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data 
 		SetNillableProviderAccountID(data.ProviderAccountId).
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(data.CreatedAt))
 
-	if data.TenantId == nil {
-		builder.SetTenantID(data.GetTenantId())
-	}
 	if data.CreatedAt == nil {
 		builder.SetCreatedAt(time.Now())
 	}

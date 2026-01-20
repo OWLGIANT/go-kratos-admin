@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	"sort"
 	"time"
 
@@ -205,12 +206,31 @@ func (r *OrgUnitRepo) ListOrgUnitsByIds(ctx context.Context, ids []uint32) ([]*u
 	return dtos, nil
 }
 
-func (r *OrgUnitRepo) Create(ctx context.Context, req *userV1.CreateOrgUnitRequest) error {
+func (r *OrgUnitRepo) Create(ctx context.Context, req *userV1.CreateOrgUnitRequest) (err error) {
 	if req == nil || req.Data == nil {
 		return userV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().OrgUnit.Create().
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = permissionV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	builder := tx.OrgUnit.Create().
 		SetNillableTenantID(req.Data.TenantId).
 		SetName(req.Data.GetName()).
 		SetNillableCode(req.Data.Code).
@@ -240,9 +260,6 @@ func (r *OrgUnitRepo) Create(ctx context.Context, req *userV1.CreateOrgUnitReque
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
 
-	if req.Data.TenantId == nil {
-		builder.SetTenantID(req.Data.GetTenantId())
-	}
 	if req.Data.CreatedAt == nil {
 		builder.SetCreatedAt(time.Now())
 	}
@@ -257,9 +274,14 @@ func (r *OrgUnitRepo) Create(ctx context.Context, req *userV1.CreateOrgUnitReque
 		builder.SetID(req.GetData().GetId())
 	}
 
-	if err := builder.Exec(ctx); err != nil {
+	var entity *ent.OrgUnit
+	if entity, err = builder.Save(ctx); err != nil {
 		r.log.Errorf("insert org unit failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("insert org unit failed")
+	}
+
+	if err = r.setTreePath(ctx, tx, entity); err != nil {
+		return err
 	}
 
 	return nil
@@ -360,4 +382,29 @@ func (r *OrgUnitRepo) Delete(ctx context.Context, req *userV1.DeleteOrgUnitReque
 	}
 
 	return nil
+}
+
+func (r *OrgUnitRepo) setTreePath(ctx context.Context, tx *ent.Tx, entity *ent.OrgUnit) (err error) {
+	var parentPath string
+	if entity.ParentID != nil {
+		var parentEntity *ent.OrgUnit
+		parentEntity, err = tx.OrgUnit.Query().
+			Where(
+				orgunit.IDEQ(*entity.ParentID),
+			).
+			Select(orgunit.FieldPath).
+			Only(ctx)
+		if err != nil {
+			return err
+		} else {
+			if parentEntity.Path != nil {
+				parentPath = *parentEntity.Path
+			}
+		}
+	}
+	err = tx.OrgUnit.UpdateOneID(entity.ID).
+		SetPath(entCrud.ComputeTreePath(parentPath, entity.ID)).
+		Exec(ctx)
+
+	return err
 }

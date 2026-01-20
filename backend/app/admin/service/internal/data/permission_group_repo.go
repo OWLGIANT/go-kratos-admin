@@ -181,21 +181,44 @@ func (r *PermissionGroupRepo) Get(ctx context.Context, req *permissionV1.GetPerm
 }
 
 // Create 创建 Permission
-func (r *PermissionGroupRepo) Create(ctx context.Context, req *permissionV1.CreatePermissionGroupRequest) (*permissionV1.PermissionGroup, error) {
+func (r *PermissionGroupRepo) Create(ctx context.Context, req *permissionV1.CreatePermissionGroupRequest) (dto *permissionV1.PermissionGroup, err error) {
 	if req == nil || req.Data == nil {
 		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.newPermissionCreate(req.Data)
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = permissionV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
 
-	var err error
+	builder := tx.PermissionGroup.Create()
+	builder = r.newPermissionCreateWithBuilder(builder, req.Data)
+
 	var entity *ent.PermissionGroup
 	if entity, err = builder.Save(ctx); err != nil {
 		r.log.Errorf("insert permission group failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("insert permission group failed")
 	}
 
-	dto := r.mapper.ToDTO(entity)
+	if err = r.setTreePath(ctx, tx, entity); err != nil {
+		return nil, err
+	}
+
+	dto = r.mapper.ToDTO(entity)
 
 	return dto, nil
 }
@@ -230,7 +253,11 @@ func (r *PermissionGroupRepo) BatchCreate(ctx context.Context, permissionGroups 
 
 // newPermissionCreate 创建 Permission Create 构造器
 func (r *PermissionGroupRepo) newPermissionCreate(permissionGroup *permissionV1.PermissionGroup) *ent.PermissionGroupCreate {
-	builder := r.entClient.Client().PermissionGroup.Create().
+	return r.newPermissionCreateWithBuilder(r.entClient.Client().PermissionGroup.Create(), permissionGroup)
+}
+
+func (r *PermissionGroupRepo) newPermissionCreateWithBuilder(builder *ent.PermissionGroupCreate, permissionGroup *permissionV1.PermissionGroup) *ent.PermissionGroupCreate {
+	builder.
 		SetName(permissionGroup.GetName()).
 		SetNillableStatus(r.statusConverter.ToEntity(permissionGroup.Status)).
 		SetNillableModule(permissionGroup.Module).
@@ -404,4 +431,29 @@ func (r *PermissionGroupRepo) ListByIDs(ctx context.Context, ids []uint32) ([]*p
 	}
 
 	return dtos, nil
+}
+
+func (r *PermissionGroupRepo) setTreePath(ctx context.Context, tx *ent.Tx, entity *ent.PermissionGroup) (err error) {
+	var parentPath string
+	if entity.ParentID != nil {
+		var parentEntity *ent.PermissionGroup
+		parentEntity, err = tx.PermissionGroup.Query().
+			Where(
+				permissiongroup.IDEQ(*entity.ParentID),
+			).
+			Select(permissiongroup.FieldPath).
+			Only(ctx)
+		if err != nil {
+			return err
+		} else {
+			if parentEntity.Path != nil {
+				parentPath = *parentEntity.Path
+			}
+		}
+	}
+	err = tx.PermissionGroup.UpdateOneID(entity.ID).
+		SetPath(entCrud.ComputeTreePath(parentPath, entity.ID)).
+		Exec(ctx)
+
+	return err
 }

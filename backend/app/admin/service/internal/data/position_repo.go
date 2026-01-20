@@ -197,9 +197,6 @@ func (r *PositionRepo) Create(ctx context.Context, req *userV1.CreatePositionReq
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
 
-	if req.Data.TenantId == nil {
-		builder.SetTenantID(req.Data.GetTenantId())
-	}
 	if req.Data.CreatedAt == nil {
 		builder.SetCreatedAt(time.Now())
 	}
