@@ -96,10 +96,12 @@ pnpm dev
 | 用户管理 | 管理和查询用户，支持高级查询和按部门联动用户，用户可禁用/启用、设置/取消主管、重置密码、配置多角色、多部门和上级主管、一键登录指定用户等功能。 |
 | 租户管理 | 管理租户，新增租户后自动初始化租户部门、默认角色和管理员。支持配置套餐、禁用/启用、一键登录租户管理员功能。                   |
 | 角色管理 | 管理角色和角色分组，支持按角色联动用户，设置菜单和数据权限，批量添加和移除员工。                                 |
+| 权限管理 | 管理权限分组、菜单、权限点，支持树形列表展示。                                                  |
 | 组织管理 | 管理组织，支持树形列表展示。                                                           |
 | 部门管理 | 管理部门，支持树形列表展示。                                                           |
-| 权限管理 | 管理权限分组、菜单、权限点，支持树形列表展示。                                                  |
+| 职位管理 | 用户职务管理，职务可作为用户的一个标签。                                                           |
 | 接口管理 | 管理接口，支持接口同步功能，主要用于新增权限点时选择接口，支持树形列表展示、操作日志请求参数和响应结果配置。                   |
+| 菜单管理 | 配置系统菜单，操作权限，按钮权限标识等，包括目录、菜单、按钮。                                                                  |
 | 字典管理 | 管理数据字典大类及其小类，支持按字典大类联动字典小类、服务端多列排序、数据导入和导出。                              |
 | 任务调度 | 管理和查看任务及其任务运行日志，支持任务新增、修改、删除、启动、暂停、立即执行。                                 |
 | 文件管理 | 管理文件上传，支持文件查询、上传到OSS或本地、下载、复制文件地址、删除文件、图片支持查看大图功能。                       |
@@ -127,12 +129,8 @@ pnpm dev
         <td><img src="./docs/images/admin_tenant_create.png" alt="后台创建租户界面"/></td>
     </tr>
     <tr>
-        <td><img src="./docs/images/admin_organization_list.png" alt="后台组织列表界面"/></td>
-        <td><img src="./docs/images/admin_organization_create.png" alt="后台创建组织界面"/></td>
-    </tr>
-    <tr>
-        <td><img src="./docs/images/admin_department_list.png" alt="后台部门列表界面"/></td>
-        <td><img src="./docs/images/admin_department_create.png" alt="后台创建部门界面"/></td>
+        <td><img src="./docs/images/admin_org_unit_list.png" alt="组织单位列表界面"/></td>
+        <td><img src="./docs/images/admin_org_unit_create.png" alt="创建组织单位界面"/></td>
     </tr>
     <tr>
         <td><img src="./docs/images/admin_position_list.png" alt="后台职位列表界面"/></td>
@@ -141,6 +139,10 @@ pnpm dev
     <tr>
         <td><img src="./docs/images/admin_role_list.png" alt="后台角色列表界面"/></td>
         <td><img src="./docs/images/admin_role_create.png" alt="后台创建角色界面"/></td>
+    </tr>
+    <tr>
+        <td><img src="./docs/images/admin_permission_list.png" alt="后台权限列表界面"/></td>
+        <td><img src="./docs/images/admin_permission_create.png" alt="后台创建权限界面"/></td>
     </tr>
     <tr>
         <td><img src="./docs/images/admin_menu_list.png" alt="后台目录列表界面"/></td>
@@ -159,14 +161,15 @@ pnpm dev
         <td><img src="./docs/images/admin_internal_message_publish.png" alt="后台发布站内信消息界面"/></td>
     </tr>
     <tr>
-        <td><img src="./docs/images/admin_login_restriction_list.png" alt="后台登录限制列表界面"/></td>
-        <td><img src="./docs/images/admin_api_resource_list.png" alt="后台API资源列表界面"/></td>
+        <td><img src="./docs/images/admin_login_policy_list.png" alt="登录策略列表界面"/></td>
+        <td><img src="./docs/images/admin_login_policy_create.png" alt="登录策略创建界面"/></td>
     </tr>
     <tr>
-        <td><img src="./docs/images/admin_operation_log_list.png" alt="后台登录日志界面"/></td>
-        <td><img src="./docs/images/admin_login_log_list.png" alt="后台操作日志界面"/></td>
+        <td><img src="./docs/images/admin_login_audit_log_list.png" alt="后台登录日志界面"/></td>
+        <td><img src="./docs/images/admin_api_audit_log_list.png" alt="后台操作日志界面"/></td>
     </tr>
     <tr>
+        <td><img src="./docs/images/admin_api_list.png" alt="API列表界面"/></td>
         <td><img src="./docs/images/api_swagger_ui.png" alt="后端内置Swagger UI界面"/></td>
     </tr>
 </table>
