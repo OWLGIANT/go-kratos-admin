@@ -1,37 +1,33 @@
-# 开箱即用的 GoWind Admin｜风行，企业级前后端一体中后台框架
+# GoWind Admin｜風行 — すぐ使える企業向けフルスタック管理システム
 
-> **让中后台开发如风般自由 — GoWind Admin**
+> **中台開発を風のように自由に — GoWind Admin**
 
-风行（GoWind Admin）是一款开箱即用的企业级Golang全栈后台管理系统。
+風行（GoWind Admin）は、箱から出してすぐ使える企業向けのGolangフルスタック管理システムです。
 
-系统后端基于GO微服务框架[go-kratos](https://go-kratos.dev/)，前端基于Vue微服务框架[Vben Admin](https://doc.vben.pro/)，兼顾微服务的扩展性与单体部署的便捷性。
+バックエンドはGOマイクロサービスフレームワークの [go-kratos](https://go-kratos.dev/) を基盤とし、フロントエンドは Vue ベースのマイクロフロントフレームワーク [Vben Admin](https://doc.vben.pro/) を採用しています。マイクロサービスの拡張性と単体デプロイの利便性の両方に対応します。
 
-尽管依托微服务框架设计，但系统前后端均支持单体架构模式开发与部署，灵活适配不同团队规模及项目复杂度需求，平衡灵活性与易用性。
+システムはマイクロサービス設計を前提としつつ、前後とも単体（モノリシック）構成での開発・デプロイをサポートし、チーム規模やプロジェクトの複雑性に合わせて柔軟に運用できます。
 
-产品具备上手简易、功能完备的核心优势，依托风行对企业级场景的深度适配能力，可助力开发者快速落地各类企业级管理系统项目，大幅提升开发效率。
+主要機能が揃っており、企業向け要件に最適化されているため、迅速なプロジェクト立ち上げと開発効率向上に貢献します。
 
-[English](./README.en-US.md) | **中文** | [日本語](./README.ja-JP.md)
+[English](./README.en-US.md) | [中文](./README.md) | **日本語**
 
-## 演示地址
+## デモ
 
-> 前端地址：<http://124.221.26.30:8080/>
->
-> 后端Swagger地址：<http://124.221.26.30:7788/docs/>
->
-> 默认账号密码: `admin` / `admin`
+- フロントエンド: <http://124.221.26.30:8080/>
+- バックエンド Swagger: <http://124.221.26.30:7788/docs/>
+- デフォルトユーザー: `admin` / `admin`
 
-## 风行·核心技术栈
+## コア技術スタック
 
-秉持高效、稳定、可扩展的技术选型理念，系统核心技术栈如下：
+- バックエンド: [Golang](https://go.dev/) + [go-kratos](https://go-kratos.dev/) + [wire](https://github.com/google/wire) + [ent](https://entgo.io/docs/getting-started/)
+- フロントエンド: [Vue](https://vuejs.org/) + [TypeScript](https://www.typescriptlang.org/) + [Ant Design Vue](https://antdv.com/) + [Vben Admin](https://doc.vben.pro/)
 
-- 后端基于 [Golang](https://go.dev/) + [go-kratos](https://go-kratos.dev/) + [wire](https://github.com/google/wire) + [ent](https://entgo.io/docs/getting-started/)
-- 前端基于 [Vue](https://vuejs.org/) + [TypeScript](https://www.typescriptlang.org/) + [Ant Design Vue](https://antdv.com/) + [Vben Admin](https://doc.vben.pro/)
+## クイックスタート
 
-## 风行·快速上手指南
+### バックエンド
 
-### 后端
-
-一键安装`golang`和`docker`等前置依赖：
+必要な前提ソフトウェア（golang, docker など）を一括インストール：
 
 ```bash
 # Ubuntu
@@ -50,135 +46,136 @@
 ./backend/script/prepare_macos.sh
 ```
 
-一键安装三方组件和`go-wind-admin`服务：
+依存サービスと go-wind-admin を一括でインストール：
 
 ```bash
 ./backend/script/docker_compose_install.sh
 ```
 
-### 前端
+### フロントエンド
 
-#### 1. 安装 Node.js（npm 随 Node.js 自带）：
+#### Node.js のインストール（npm は Node.js に同梱）：
 
-访问Node.js官方下载页：<https://nodejs.org/>，下载对应系统（Windows/macOS/Linux）的LTS稳定版本并安装。
+Node.js 公式ダウンロードページ：<https://nodejs.org/> にアクセスし、対応するシステム（Windows/macOS/Linux）の LTS 安定版をダウンロードしてインストールします。
 
-安装完成后，打开终端/命令提示符，输入以下命令验证安装成功：
+インストール完了後、ターミナル / コマンドプロンプトを開き、以下のコマンドでインストールの成功を確認します：
 
 ```bash
-node -v  # 输出Node.js版本号即成功
-npm -v   # 输出npm版本号即成功
+node -v  # Node.jsのバージョン番号が表示されれば成功
+npm -v   # npmのバージョン番号が表示されれば成功
 ```
 
-#### 2. 安装 pnpm：
+#### 2. pnpm のインストール：
 
 ```bash
 npm install -g pnpm
 ```
 
-#### 3. 启动前端服务：
+#### 3. フロントエンドサービスの起動：
 
-进入 frontend 目录，执行以下命令，完成前端依赖安装、编译并启动开发模式：
+frontend ディレクトリに移動し、以下のコマンドを実行して、フロントエンドの依存関係のインストール、コンパイル、開発モードの起動を完了します：
+bash
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-### 访问测试
+### アクセステスト
 
-- 前端地址：<http://localhost:5666>， 登录账号：`admin`，密码：`admin`
-- 后端文档地址：<http://localhost:7788/docs/openapi.yaml>
+- フロントエンドアドレス：<http://localhost:5666>， ログインアカウント：`admin`，パスワード：`admin`
+- バックエンドドキュメントアドレス：<http://localhost:7788/docs/openapi.yaml>
 
-## 风行·核心功能列表
+## 風行・核心機能リスト
 
-| 功能   | 说明                                                                       |
+| 機能   | 説明                                                                       |
 |------|--------------------------------------------------------------------------|
-| 用户管理 | 管理和查询用户，支持高级查询和按部门联动用户，用户可禁用/启用、设置/取消主管、重置密码、配置多角色、多部门和上级主管、一键登录指定用户等功能。 |
-| 租户管理 | 管理租户，新增租户后自动初始化租户部门、默认角色和管理员。支持配置套餐、禁用/启用、一键登录租户管理员功能。                   |
-| 角色管理 | 管理角色和角色分组，支持按角色联动用户，设置菜单和数据权限，批量添加和移除员工。                                 |
-| 权限管理 | 管理权限分组、菜单、权限点，支持树形列表展示。                                                  |
-| 组织管理 | 管理组织，支持树形列表展示。                                                           |
-| 部门管理 | 管理部门，支持树形列表展示。                                                           |
-| 职位管理 | 用户职务管理，职务可作为用户的一个标签。                                                           |
-| 接口管理 | 管理接口，支持接口同步功能，主要用于新增权限点时选择接口，支持树形列表展示、操作日志请求参数和响应结果配置。                   |
-| 菜单管理 | 配置系统菜单，操作权限，按钮权限标识等，包括目录、菜单、按钮。                                                                  |
-| 字典管理 | 管理数据字典大类及其小类，支持按字典大类联动字典小类、服务端多列排序、数据导入和导出。                              |
-| 任务调度 | 管理和查看任务及其任务运行日志，支持任务新增、修改、删除、启动、暂停、立即执行。                                 |
-| 文件管理 | 管理文件上传，支持文件查询、上传到OSS或本地、下载、复制文件地址、删除文件、图片支持查看大图功能。                       |
-| 消息分类 | 管理消息分类，支持2级自定义消息分类，用于消息管理消息分类选择。                                         |
-| 消息管理 | 管理消息，支持发送指定用户消息，可查看用户是否已读和已读时间。                                          |
-| 站内信  | 站内消息管理，支持消息详细查看、删除、标为已读、全部已读功能。                                          |
-| 个人中心 | 个人信息展示和修改，查看最后登录信息，密码修改等功能。                                              |
-| 缓存管理 | 缓存列表查询，支持根据缓存键清除缓存。                                                      |
-| 登录日志 | 登录日志列表查询，记录用户登录成功和失败日志，支持IP归属地记录。                                        |
-| 操作日志 | 操作日志列表查询，记录用户操作正常和异常日志，支持IP归属地记录，查看操作日志详情。                               |
+| ユーザー管理 | ユーザーの管理とクエリを行い、高度なクエリや部署に連動したユーザー検索をサポート。ユーザーの無効化 / 有効化、上司の設定 / 解除、パスワードリセット、複数ロール・複数部署・上位上司の設定、指定ユーザーでのワンクリックログインなどの機能を提供。 |
+| テナント管理 | テナントの管理を行い、新規テナント追加後に自動的にテナント部署、デフォルトロール、管理者を初期化。プランの設定、無効化 / 有効化、テナント管理者でのワンクリックログイン機能をサポート。                  |
+| ロール管理 | ロールとロールグループの管理を行い、ロールに連動したユーザー検索、メニューとデータ権限の設定、従業員の一括追加・削除をサポート。                                 |
+| 権限管理 | 権限グループ、メニュー、権限ポイントの管理を行い、ツリーリストでの表示をサポート。                                                 |
+| 組織管理 | 組織の管理を行い、ツリーリストでの表示をサポート。                                                        |
+| 部署管理 | 部署の管理を行い、ツリーリストでの表示をサポート。                                                          |
+| 役職管理 | ユーザーの役職管理を行い、役職はユーザーのタグとして使用可能。                                                  |
+| インターフェース管理 | インターフェースの管理を行い、インターフェース同期機能をサポート。主に新規権限ポイント追加時のインターフェース選択に使用し、ツリーリスト表示、操作ログのリクエストパラメーターとレスポンス結果の設定をサポート。                   |
+| メニュー管理 | システムメニュー、操作権限、ボタン権限識別子などの設定を行い、ディレクトリ、メニュー、ボタンを含む。                                          |
+| ディクショナリ管理 | データディクショナリの大分類と小分類の管理を行い、ディクショナリ大分類に連動した小分類検索、サーバー側の多列ソート、データのインポート・エクスポートをサポート。                              |
+| タスクスケジューリング | タスクとタスク実行ログの管理・参照を行い、タスクの新規追加、修正、削除、起動、一時停止、即時実行をサポート。                                |
+| ファイル管理 | ファイルアップロードの管理を行い、ファイルクエリ、OSS またはローカルへのアップロード、ダウンロード、ファイルアドレスのコピー、ファイル削除、画像の拡大表示をサポート。                       |
+| メッセージ分類 | メッセージ分類の管理を行い、2 段階のカスタムメッセージ分類をサポートし、メッセージ管理におけるメッセージ分類選択に使用。                                         |
+| メッセージ管理 | メッセージの管理を行い、指定ユーザーへのメッセージ送信をサポートし、ユーザーの既読状況と既読時間の参照が可能。                                          |
+| 内部メッセージ  | 内部メッセージの管理を行い、メッセージの詳細参照、削除、既読マーク、一括既読をサポート。                                          |
+| マイページ | 個人情報の表示・修正、最終ログイン情報の参照、パスワードの変更などの機能を提供。                                              |
+| キャッシュ管理 | キャッシュリストのクエリを行い、キャッシュキーに基づくキャッシュクリアをサポート。                                                      |
+| ログインログ | ログインログリストのクエリを行い、ユーザーのログイン成功・失敗ログを記録し、IP アドレスの所属地記録をサポート。                                        |
+| 操作ログ | 操作ログリストのクエリを行い、ユーザーの操作正常・異常ログを記録し、IP アドレスの所属地記録、操作ログの詳細参照をサポート。                               |
 
-## 风行·后台截图展示
+## 風行・バックエンドスクリーンショット展示
 
 <table>
-    <tr>
-        <td><img src="./docs/images/admin_login_page.png" alt="后台用户登录界面"/></td>
-        <td><img src="./docs/images/admin_dashboard.png" alt="后台分析界面"/></td>
-    </tr>
-    <tr>
-        <td><img src="./docs/images/admin_user_list.png" alt="后台用户列表界面"/></td>
-        <td><img src="./docs/images/admin_user_create.png" alt="后台创建用户界面"/></td>
-    </tr>
-    <tr>
-        <td><img src="./docs/images/admin_tenant_list.png" alt="后台租户列表界面"/></td>
-        <td><img src="./docs/images/admin_tenant_create.png" alt="后台创建租户界面"/></td>
-    </tr>
-    <tr>
-        <td><img src="./docs/images/admin_org_unit_list.png" alt="组织单位列表界面"/></td>
-        <td><img src="./docs/images/admin_org_unit_create.png" alt="创建组织单位界面"/></td>
-    </tr>
-    <tr>
-        <td><img src="./docs/images/admin_position_list.png" alt="后台职位列表界面"/></td>
-        <td><img src="./docs/images/admin_position_create.png" alt="后台创建职位界面"/></td>
-    </tr>
-    <tr>
-        <td><img src="./docs/images/admin_role_list.png" alt="后台角色列表界面"/></td>
-        <td><img src="./docs/images/admin_role_create.png" alt="后台创建角色界面"/></td>
-    </tr>
-    <tr>
-        <td><img src="./docs/images/admin_permission_list.png" alt="后台权限列表界面"/></td>
-        <td><img src="./docs/images/admin_permission_create.png" alt="后台创建权限界面"/></td>
-    </tr>
-    <tr>
-        <td><img src="./docs/images/admin_menu_list.png" alt="后台目录列表界面"/></td>
-        <td><img src="./docs/images/admin_menu_create.png" alt="后台创建目录界面"/></td>
-    </tr>
-    <tr>
-        <td><img src="./docs/images/admin_task_list.png" alt="后台调度任务列表界面"/></td>
-        <td><img src="./docs/images/admin_task_create.png" alt="后台创建调度任务界面"/></td>
-    </tr>
-    <tr>
-        <td><img src="./docs/images/admin_dict_list.png" alt="后台数据字典列表界面"/></td>
-        <td><img src="./docs/images/admin_dict_entry_create.png" alt="后台创建数据字典条目界面"/></td>
-    </tr>
-    <tr>
-        <td><img src="./docs/images/admin_internal_message_list.png" alt="后台站内信消息列表界面"/></td>
-        <td><img src="./docs/images/admin_internal_message_publish.png" alt="后台发布站内信消息界面"/></td>
-    </tr>
-    <tr>
-        <td><img src="./docs/images/admin_login_policy_list.png" alt="登录策略列表界面"/></td>
-        <td><img src="./docs/images/admin_login_policy_create.png" alt="登录策略创建界面"/></td>
-    </tr>
-    <tr>
-        <td><img src="./docs/images/admin_login_audit_log_list.png" alt="后台登录日志界面"/></td>
-        <td><img src="./docs/images/admin_api_audit_log_list.png" alt="后台操作日志界面"/></td>
-    </tr>
-    <tr>
-        <td><img src="./docs/images/admin_api_list.png" alt="API列表界面"/></td>
-        <td><img src="./docs/images/api_swagger_ui.png" alt="后端内置Swagger UI界面"/></td>
-    </tr>
+<tr>
+<td><img src="./docs/images/admin_login_page.png" alt="バックエンドユーザーログイン画面"/></td>
+<td><img src="./docs/images/admin_dashboard.png" alt="バックエンド分析画面"/></td>
+</tr>
+<tr>
+<td><img src="./docs/images/admin_user_list.png" alt="バックエンドユーザーリスト画面"/></td>
+<td><img src="./docs/images/admin_user_create.png" alt="バックエンドユーザー作成画面"/></td>
+</tr>
+<tr>
+<td><img src="./docs/images/admin_tenant_list.png" alt="バックエンドテナントリスト画面"/></td>
+<td><img src="./docs/images/admin_tenant_create.png" alt="バックエンドテナント作成画面"/></td>
+</tr>
+<tr>
+<td><img src="./docs/images/admin_org_unit_list.png" alt="組織単位リスト画面"/></td>
+<td><img src="./docs/images/admin_org_unit_create.png" alt="組織単位作成画面"/></td>
+</tr>
+<tr>
+<td><img src="./docs/images/admin_position_list.png" alt="バックエンド役職リスト画面"/></td>
+<td><img src="./docs/images/admin_position_create.png" alt="バックエンド役職作成画面"/></td>
+</tr>
+<tr>
+<td><img src="./docs/images/admin_role_list.png" alt="バックエンドロールリスト画面"/></td>
+<td><img src="./docs/images/admin_role_create.png" alt="バックエンドロール作成画面"/></td>
+</tr>
+<tr>
+<td><img src="./docs/images/admin_permission_list.png" alt="バックエンド権限リスト画面"/></td>
+<td><img src="./docs/images/admin_permission_create.png" alt="バックエンド権限作成画面"/></td>
+</tr>
+<tr>
+<td><img src="./docs/images/admin_menu_list.png" alt="バックエンドディレクトリリスト画面"/></td>
+<td><img src="./docs/images/admin_menu_create.png" alt="バックエンドディレクトリ作成画面"/></td>
+</tr>
+<tr>
+<td><img src="./docs/images/admin_task_list.png" alt="バックエンドスケジューリングタスクリスト画面"/></td>
+<td><img src="./docs/images/admin_task_create.png" alt="バックエンドスケジューリングタスク作成画面"/></td>
+</tr>
+<tr>
+<td><img src="./docs/images/admin_dict_list.png" alt="バックエンドデータディクショナリリスト画面"/></td>
+<td><img src="./docs/images/admin_dict_entry_create.png" alt="バックエンドデータディクショナリエントリ作成画面"/></td>
+</tr>
+<tr>
+<td><img src="./docs/images/admin_internal_message_list.png" alt="バックエンド内部メッセージリスト画面"/></td>
+<td><img src="./docs/images/admin_internal_message_publish.png" alt="バックエンド内部メッセージ発行画面"/></td>
+</tr>
+<tr>
+<td><img src="./docs/images/admin_login_policy_list.png" alt="ログインポリシーリスト画面"/></td>
+<td><img src="./docs/images/admin_login_policy_create.png" alt="ログインポリシー作成画面"/></td>
+</tr>
+<tr>
+<td><img src="./docs/images/admin_login_audit_log_list.png" alt="バックエンドログインログ画面"/></td>
+<td><img src="./docs/images/admin_api_audit_log_list.png" alt="バックエンド操作ログ画面"/></td>
+</tr>
+<tr>
+<td><img src="./docs/images/admin_api_list.png" alt="APIリスト画面"/></td>
+<td><img src="./docs/images/api_swagger_ui.png" alt="バックエンド内蔵Swagger UI画面"/></td>
+</tr>
 </table>
 
-## 联系我们
+## お問い合わせ
 
-- 微信个人号：`yang_lin_bo`（备注：`go-wind-admin`）
-- 掘金专栏：[go-wind-admin](https://juejin.cn/column/7541283508041826367)
+- WeChat 個人アカウント：`yang_lin_bo`（備考：`go-wind-admin`）
+- 掘金コラム：[go-wind-admin](https://juejin.cn/column/7541283508041826367)
 
-## [感谢JetBrains提供的免费GoLand & WebStorm](https://jb.gg/OpenSource)
+## [JetBrains が提供する無料の GoLand & WebStorm を使用させていただきました](https://jb.gg/OpenSource)
 
 [![avatar](https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.svg)](https://jb.gg/OpenSource)

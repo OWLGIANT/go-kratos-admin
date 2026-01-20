@@ -1,184 +1,249 @@
--- Description: 初始化默认用户、角色、菜单和API资源数据
--- Note: 需要有表结构之后再执行此脚本。另，请确保在执行此脚本前已备份相关数据，以防数据丢失。
+-- Description: 初始化默认用户、角色、菜单和API资源数据(MYSQL版)
+-- Note: 需要有表结构之后再执行此脚本；执行前备份数据，MySQL需支持JSON字段（5.7+）
+DELIMITER // -- 临时修改语句结束符，适配存储过程
+SET FOREIGN_KEY_CHECKS = 0; -- 关闭外键检查，允许TRUNCATE关联表
+START TRANSACTION; -- 开启事务，保证数据原子性
 
-USE `gwa`;
+-- 一次性清理相关表（修复原脚本重复truncate sys_permissions的错误）
+TRUNCATE TABLE sys_user_credentials AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_users AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_user_org_units AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_user_positions AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_user_roles AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_tenants AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_org_units AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_positions AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_roles AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_role_permissions AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_menus AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_apis AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_permissions AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_permission_groups AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_permission_apis AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_permission_menus AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_permission_policies AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_memberships AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_membership_org_units AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_membership_positions AUTO_INCREMENT = 1;
+TRUNCATE TABLE sys_membership_roles AUTO_INCREMENT = 1;
 
--- 插入4个权限的用户
-TRUNCATE TABLE `sys_users`;
-INSERT INTO `sys_users` (username, nickname, realname, email, authority, role_ids, gender, tenant_id, created_at)
-VALUES ('admin', '鹳狸猿', '喵个咪', 'admin@gmail.com', 'SYS_ADMIN', '[1]', 'MALE', NULL, NOW()),
-       ('tenant_admin', '租户管理', '张管理员', 'tenant@company.com', 'TENANT_ADMIN', '[2]', 'MALE', 1, NOW()),
-       ('normal_user', '普通用户', '李用户', 'user@company.com', 'CUSTOMER_USER', '[3]', 'FEMALE', NULL, NOW()),
-       ('guest_user', '临时访客', '王访客', 'guest@company.com', 'GUEST', '[4]', 'SECRET', NULL, NOW());
+-- ==============================================
+-- 1. 插入默认用户
+-- ==============================================
+INSERT INTO sys_users (id, tenant_id, username, nickname, realname, email, gender, created_at)
+VALUES
+    -- 1. 系统管理员（ADMIN）
+    (1, 0, 'admin', '鹳狸猿', '喵个咪', 'admin@gmail.com', 'MALE', NOW());
+-- 重置自增（后续新增从MAX(id)+1开始）
+ALTER TABLE sys_users AUTO_INCREMENT = (SELECT MAX(id) + 1 FROM sys_users);
 
--- 插入4个用户的凭证（密码统一为admin）
-TRUNCATE TABLE `sys_user_credentials`;
-INSERT INTO `sys_user_credentials` (user_id, identity_type, identifier, credential_type, credential, status, is_primary, created_at)
-VALUES (1, 'USERNAME', 'admin', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', 1, NOW()),
-       (1, 'EMAIL', 'admin@gmail.com', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', 0, NOW()),
-       (2, 'USERNAME', 'tenant_admin', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', 1, NOW()),
-       (2, 'EMAIL', 'tenant@company.com', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', 0, NOW()),
-       (3, 'USERNAME', 'normal_user', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', 1, NOW()),
-       (3, 'EMAIL', 'user@company.com', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', 0, NOW()),
-       (4, 'USERNAME', 'guest_user', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', 1, NOW()),
-       (4, 'EMAIL', 'guest@company.com', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', 0, NOW());
+-- ==============================================
+-- 2. 插入用户登录凭证（密码：admin）
+-- ==============================================
+INSERT INTO sys_user_credentials (user_id, identity_type, identifier, credential_type, credential, status,
+                                  is_primary, created_at)
+VALUES (1, 'USERNAME', 'admin', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
+        'ENABLED', true, NOW()),
+       (1, 'EMAIL', 'admin@gmail.com', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
+        'ENABLED', false, NOW());
+ALTER TABLE sys_user_credentials AUTO_INCREMENT = (SELECT MAX(id) + 1 FROM sys_user_credentials);
 
--- 默认的角色
-TRUNCATE TABLE `sys_roles`;
-INSERT INTO `sys_roles` (id, parent_id, created_by, sort_order, name, code, status, remark, menus, apis, created_at)
-VALUES (1, NULL, 0, 1, '超级管理员', 'super', 'ON', '拥有系统所有功能的操作权限，可管理租户、用户、角色及所有资源',
-        '[1, 2, 10, 11, 20, 21, 22, 23, 24, 25, 30, 31, 32, 40, 41, 42, 50, 51, 52, 60, 61, 62, 63, 64, 65]', '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113]', NOW()),
-       (2, NULL, 0, 2, '租户管理员', 'tenant_admin', 'ON', '管理当前租户下的用户、角色及资源，无跨租户操作权限', '[1, 2, 20, 21, 22, 23, 24, 25, 50, 51, 52]', '[105, 104, 35, 34, 16, 106, 93, 14, 1, 92, 91, 85, 79, 46, 24, 23, 78, 56, 55, 8, 7, 52, 51, 6, 5, 4, 31, 30, 20, 19, 53, 15]', NOW()),
-       (3, NULL, 0, 3, '普通用户', 'user', 'ON', '可访问和使用租户内授权的资源，无管理权限', '[]', '[]', NOW()),
-       (4, NULL, 0, 4, '访客用户', 'guest', 'ON', '仅可访问公开资源，无修改和管理权限，会话过期后自动失效', '[]', '[]', NOW()),
-       (5, NULL, 0, 5, '审计员', 'auditor', 'ON', '仅可查看系统操作日志和数据记录，无修改权限', '[]', '[]', NOW());
+-- ==============================================
+-- 3. 插入用户-角色关联
+-- ==============================================
+INSERT INTO sys_user_roles (id, tenant_id, user_id, role_id, start_at, end_at, assigned_at, assigned_by, is_primary, status, created_at)
+VALUES (1, 0, 1, 1, null, null, NOW(), null, true, 'ACTIVE', NOW());
+ALTER TABLE sys_user_roles AUTO_INCREMENT = (SELECT MAX(id) + 1 FROM sys_user_roles);
 
--- 后台目录
-TRUNCATE TABLE `sys_menus`;
-INSERT INTO `sys_menus` (id, parent_id, type, name, path, redirect, component, status, created_at, meta)
-VALUES (1, NULL, 'FOLDER', 'Dashboard', '/', NULL, 'BasicLayout', 'ON', NOW(), '{"order":-1, "title":"page.dashboard.title", "icon":"lucide:layout-dashboard", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (2, 1, 'MENU', 'Analytics', '/analytics', NULL, 'dashboard/analytics/index.vue', 'ON', NOW(), '{"order":-1, "title":"page.dashboard.analytics", "icon":"lucide:area-chart", "affixTab": true, "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (10, NULL, 'FOLDER', 'TenantManagement', '/tenant', NULL, 'BasicLayout', 'ON', NOW(), '{"order":2000, "title":"menu.tenant.moduleName", "icon":"lucide:building-2", "keepAlive":true, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (11, 10, 'MENU', 'TenantMemberManagement', 'members', NULL, 'app/tenant/tenant/index.vue', 'ON', NOW(), '{"order":1, "title":"menu.tenant.member", "icon":"lucide:building-2", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (20, NULL, 'FOLDER', 'OrganizationalPersonnelManagement', '/opm', NULL, 'BasicLayout', 'ON', NOW(), '{"order":2001, "title":"menu.opm.moduleName", "icon":"lucide:users", "keepAlive":true, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (21, 20, 'MENU', 'OrganizationManagement', 'organizations', NULL, 'app/opm/org/index.vue', 'ON', NOW(), '{"order":1, "title":"menu.opm.org", "icon":"lucide:building-2", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (22, 20, 'MENU', 'DepartmentManagement', 'departments', NULL, 'app/opm/dept/index.vue', 'ON', NOW(), '{"order":2, "title":"menu.opm.dept", "icon":"lucide:folder-tree", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (23, 20, 'MENU', 'PositionManagement', 'positions', NULL, 'app/opm/position/index.vue', 'ON', NOW(), '{"order":3, "title":"menu.opm.position", "icon":"lucide:briefcase", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (24, 20, 'MENU', 'UserManagement', 'users', NULL, 'app/opm/users/index.vue', 'ON', NOW(), '{"order":4, "title":"menu.opm.user", "icon":"lucide:users", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (25, 20, 'MENU', 'UserDetail', 'users/detail/:id', NULL, 'app/opm/users/detail/index.vue', 'ON', NOW(), '{"order":1, "title":"menu.opm.userDetail", "icon":"", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":true, "hideInTab":false}'),
-       (30, NULL, 'FOLDER', 'PermissionManagement', '/permission', NULL, 'BasicLayout', 'ON', NOW(), '{"order":2002, "title":"menu.permission.moduleName", "icon":"lucide:shield-check", "keepAlive":true, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (31, 30, 'MENU', 'RoleManagement', 'roles', NULL, 'app/permission/role/index.vue', 'ON', NOW(), '{"order":1, "title":"menu.permission.role", "icon":"lucide:shield-user", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (32, 30, 'MENU', 'MenuManagement', 'menus', NULL, 'app/permission/menu/index.vue', 'ON', NOW(), '{"order":2, "title":"menu.permission.menu", "icon":"lucide:square-menu", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (40, NULL, 'FOLDER', 'InternalMessageManagement', '/internal_message', NULL, 'BasicLayout', 'ON', NOW(), '{"order":2003, "title":"menu.internalMessage.moduleName", "icon":"lucide:mail", "keepAlive":true, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (41, 40, 'MENU', 'InternalMessageList', 'messages', NULL, 'app/internal_message/message/index.vue', 'ON', NOW(), '{"order": 1, "title":"menu.internalMessage.internalMessage", "icon":"lucide:message-circle-more", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (42, 40, 'MENU', 'InternalMessageCategoryManagement', 'categories', NULL, 'app/internal_message/category/index.vue', 'ON', NOW(), '{"order":2, "title":"menu.internalMessage.internalMessageCategory", "icon":"lucide:calendar-check", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (50, NULL, 'FOLDER', 'LogAuditManagement', '/log', NULL, 'BasicLayout', 'ON', NOW(), '{"order":2004, "title":"menu.log.moduleName", "icon":"lucide:activity", "keepAlive":true, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (51, 50, 'MENU', 'LoginAuditLog', 'login', NULL, 'app/log/admin_login_log/index.vue', 'ON', NOW(), '{"order":1, "title":"menu.log.adminLoginLog", "icon":"lucide:user-lock", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (52, 50, 'MENU', 'ApiAuditLog', 'api', NULL, 'app/log/api_audit_log/index.vue', 'ON', NOW(), '{"order":2, "title":"menu.log.apiAuditLog", "icon":"lucide:file-clock", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (60, NULL, 'FOLDER', 'System', '/system', NULL, 'BasicLayout', 'ON', NOW(), '{"order":2005, "title":"menu.system.moduleName", "icon":"lucide:settings", "keepAlive":true, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (61, 60, 'MENU', 'DictManagement', 'dict', NULL, 'app/system/dict/index.vue', 'ON', NOW(), '{"order":1, "title":"menu.system.dict", "icon":"lucide:library-big", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (62, 60, 'MENU', 'FileManagement', 'files', NULL, 'app/system/files/index.vue', 'ON', NOW(), '{"order":2, "title":"menu.system.file", "icon":"lucide:file-search", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (63, 60, 'MENU', 'TaskManagement', 'tasks', NULL, 'app/system/task/index.vue', 'ON', NOW(), '{"order":3, "title":"menu.system.task", "icon":"lucide:list-todo", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (64, 60, 'MENU', 'APIManagement', 'apis', NULL, 'app/permission/api/index.vue', 'ON', NOW(), '{"order":4, "title":"menu.permission.api", "icon":"lucide:route", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (65, 60, 'MENU', 'LoginPolicyManagement', 'admin_login_restriction', NULL, 'app/system/admin_login_restriction/index.vue', 'ON', NOW(), '{"order":5, "title":"menu.system.adminLoginRestriction", "icon":"lucide:shield-x", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}');
+-- ==============================================
+-- 4. 插入权限分组
+-- ==============================================
+INSERT INTO sys_permission_groups (id, parent_id, path, name, module, sort_order, created_at)
+VALUES (1, NULL, '/1/', '系统管理', 'sys', 1, NOW()),
+       (2, 1, '/1/2/', '系统权限', 'sys', 1, NOW()),
+       (3, 1, '/1/3/', '租户管理', 'sys', 2, NOW()),
+       (4, 1, '/1/4/', '审计管理', 'sys', 3, NOW()),
+       (5, 1, '/1/5/', '安全策略', 'sys', 4, NOW());
+ALTER TABLE sys_permission_groups AUTO_INCREMENT = (SELECT MAX(id) + 1 FROM sys_permission_groups);
 
--- API资源表数据
-TRUNCATE TABLE `sys_apis`;
-INSERT INTO `sys_apis` (
-    `id`, `created_at`, `updated_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by`,
-    `description`, `module`, `module_description`, `operation`, `path`, `method`, `scope`
-) VALUES
-      (1, NOW(), NULL, NULL, NULL, NULL, NULL, '登出', 'AuthenticationService', '用户后台登录认证服务', 'AuthenticationService_Logout', '/admin/v1/logout', 'POST', 'ADMIN'),
-      (2, NOW(), NULL, NULL, NULL, NULL, NULL, '删除登录策略', 'LoginPolicyService', '登录策略管理服务', 'LoginPolicyService_Delete', '/admin/v1/login-restrictions/{id}', 'DELETE', 'ADMIN'),
-      (3, NOW(), NULL, NULL, NULL, NULL, NULL, '查询登录策略详情', 'LoginPolicyService', '登录策略管理服务', 'LoginPolicyService_Get', '/admin/v1/login-restrictions/{id}', 'GET', 'ADMIN'),
-      (4, NOW(), NULL, NULL, NULL, NULL, NULL, '更新登录策略', 'LoginPolicyService', '登录策略管理服务', 'LoginPolicyService_Update', '/admin/v1/login-restrictions/{id}', 'PUT', 'ADMIN'),
-      (5, NOW(), NULL, NULL, NULL, NULL, NULL, '删除字典条目', 'DictService', '数据字典管理服务', 'DictService_DeleteDictEntry', '/admin/v1/dict-entries', 'DELETE', 'ADMIN'),
-      (6, NOW(), NULL, NULL, NULL, NULL, NULL, '分页查询字典条目列表', 'DictService', '数据字典管理服务', 'DictService_ListDictEntry', '/admin/v1/dict-entries', 'GET', 'ADMIN'),
-      (7, NOW(), NULL, NULL, NULL, NULL, NULL, '创建字典条目', 'DictService', '数据字典管理服务', 'DictService_CreateDictEntry', '/admin/v1/dict-entries', 'POST', 'ADMIN'),
-      (8, NOW(), NULL, NULL, NULL, NULL, NULL, '创建组织', 'OrganizationService', '组织管理服务', 'OrganizationService_Create', '/admin/v1/organizations', 'POST', 'ADMIN'),
-      (9, NOW(), NULL, NULL, NULL, NULL, NULL, '查询组织列表', 'OrganizationService', '组织管理服务', 'OrganizationService_List', '/admin/v1/organizations', 'GET', 'ADMIN'),
-      (10, NOW(), NULL, NULL, NULL, NULL, NULL, '删除租户', 'TenantService', '租户管理服务', 'TenantService_Delete', '/admin/v1/tenants/{id}', 'DELETE', 'ADMIN'),
-      (11, NOW(), NULL, NULL, NULL, NULL, NULL, '获取租户数据', 'TenantService', '租户管理服务', 'TenantService_Get', '/admin/v1/tenants/{id}', 'GET', 'ADMIN'),
-      (12, NOW(), NULL, NULL, NULL, NULL, NULL, '更新租户', 'TenantService', '租户管理服务', 'TenantService_Update', '/admin/v1/tenants/{id}', 'PUT', 'ADMIN'),
-      (13, NOW(), NULL, NULL, NULL, NULL, NULL, '查询角色列表', 'RoleService', '角色管理服务', 'RoleService_List', '/admin/v1/roles', 'GET', 'ADMIN'),
-      (14, NOW(), NULL, NULL, NULL, NULL, NULL, '创建角色', 'RoleService', '角色管理服务', 'RoleService_Create', '/admin/v1/roles', 'POST', 'ADMIN'),
-      (15, NOW(), NULL, NULL, NULL, NULL, NULL, '停止所有的调度任务', 'TaskService', '调度任务管理服务', 'TaskService_StopAllTask', '/admin/v1/tasks:stop', 'POST', 'ADMIN'),
-      (16, NOW(), NULL, NULL, NULL, NULL, NULL, '任务类型名称列表', 'TaskService', '调度任务管理服务', 'TaskService_ListTaskTypeName', '/admin/v1/tasks:type-names', 'GET', 'ADMIN'),
-      (17, NOW(), NULL, NULL, NULL, NULL, NULL, '查询登录策略列表', 'LoginPolicyService', '登录策略管理服务', 'LoginPolicyService_List', '/admin/v1/login-restrictions', 'GET', 'ADMIN'),
-      (18, NOW(), NULL, NULL, NULL, NULL, NULL, '创建登录策略', 'LoginPolicyService', '登录策略管理服务', 'LoginPolicyService_Create', '/admin/v1/login-restrictions', 'POST', 'ADMIN'),
-      (19, NOW(), NULL, NULL, NULL, NULL, NULL, '获取用户的收件箱列表 (通知类)', 'InternalMessageRecipientService', '站内信消息管理服务', 'InternalMessageRecipientService_ListUserInbox', '/admin/v1/internal-message/inbox', 'GET', 'ADMIN'),
-      (20, NOW(), NULL, NULL, NULL, NULL, NULL, '重启所有的调度任务', 'TaskService', '调度任务管理服务', 'TaskService_RestartAllTask', '/admin/v1/tasks:restart', 'POST', 'ADMIN'),
-      (21, NOW(), NULL, NULL, NULL, NULL, NULL, '查询部门列表', 'DepartmentService', '部门管理服务', 'DepartmentService_List', '/admin/v1/departments', 'GET', 'ADMIN'),
-      (22, NOW(), NULL, NULL, NULL, NULL, NULL, '创建部门', 'DepartmentService', '部门管理服务', 'DepartmentService_Create', '/admin/v1/departments', 'POST', 'ADMIN'),
-      (23, NOW(), NULL, NULL, NULL, NULL, NULL, '查询站内信消息列表', 'InternalMessageService', '站内信消息管理服务', 'InternalMessageService_ListMessage', '/admin/v1/internal-message/messages', 'GET', 'ADMIN'),
-      (24, NOW(), NULL, NULL, NULL, NULL, NULL, '修改用户密码', 'UserProfileService', '用户个人资料服务', 'UserProfileService_ChangePassword', '/admin/v1/me/password', 'POST', 'ADMIN'),
-      (25, NOW(), NULL, NULL, NULL, NULL, NULL, 'UEditor API', 'UEditorService', 'UEditor后端服务', 'UEditorService_UEditorAPI', '/admin/v1/ueditor', 'GET', 'ADMIN'),
-      (26, NOW(), NULL, NULL, NULL, NULL, NULL, '上传文件', 'UEditorService', 'UEditor后端服务', 'UEditorService_UploadFile', '/admin/v1/ueditor', 'POST', 'ADMIN'),
-      (27, NOW(), NULL, NULL, NULL, NULL, NULL, '删除字典类型', 'DictService', '数据字典管理服务', 'DictService_DeleteDictType', '/admin/v1/dict-types', 'DELETE', 'ADMIN'),
-      (28, NOW(), NULL, NULL, NULL, NULL, NULL, '分页查询字典类型列表', 'DictService', '数据字典管理服务', 'DictService_ListDictType', '/admin/v1/dict-types', 'GET', 'ADMIN'),
-      (29, NOW(), NULL, NULL, NULL, NULL, NULL, '创建字典类型', 'DictService', '数据字典管理服务', 'DictService_CreateDictType', '/admin/v1/dict-types', 'POST', 'ADMIN'),
-      (30, NOW(), NULL, NULL, NULL, NULL, NULL, '删除角色', 'RoleService', '角色管理服务', 'RoleService_Delete', '/admin/v1/roles/{id}', 'DELETE', 'ADMIN'),
-      (31, NOW(), NULL, NULL, NULL, NULL, NULL, '查询角色详情', 'RoleService', '角色管理服务', 'RoleService_Get', '/admin/v1/roles/{id}', 'GET', 'ADMIN'),
-      (32, NOW(), NULL, NULL, NULL, NULL, NULL, '更新角色', 'RoleService', '角色管理服务', 'RoleService_Update', '/admin/v1/roles/{id}', 'PUT', 'ADMIN'),
-      (33, NOW(), NULL, NULL, NULL, NULL, NULL, '创建租户', 'TenantService', '租户管理服务', 'TenantService_Create', '/admin/v1/tenants', 'POST', 'ADMIN'),
-      (34, NOW(), NULL, NULL, NULL, NULL, NULL, '获取租户列表', 'TenantService', '租户管理服务', 'TenantService_List', '/admin/v1/tenants', 'GET', 'ADMIN'),
-      (35, NOW(), NULL, NULL, NULL, NULL, NULL, '查询调度任务列表', 'TaskService', '调度任务管理服务', 'TaskService_List', '/admin/v1/tasks', 'GET', 'ADMIN'),
-      (36, NOW(), NULL, NULL, NULL, NULL, NULL, '创建调度任务', 'TaskService', '调度任务管理服务', 'TaskService_Create', '/admin/v1/tasks', 'POST', 'ADMIN'),
-      (37, NOW(), NULL, NULL, NULL, NULL, NULL, '绑定手机号码/邮箱', 'UserProfileService', '用户个人资料服务', 'UserProfileService_BindContact', '/admin/v1/me/contact', 'POST', 'ADMIN'),
-      (38, NOW(), NULL, NULL, NULL, NULL, NULL, '更新部门', 'DepartmentService', '部门管理服务', 'DepartmentService_Update', '/admin/v1/departments/{id}', 'PUT', 'ADMIN'),
-      (39, NOW(), NULL, NULL, NULL, NULL, NULL, '删除部门', 'DepartmentService', '部门管理服务', 'DepartmentService_Delete', '/admin/v1/departments/{id}', 'DELETE', 'ADMIN'),
-      (40, NOW(), NULL, NULL, NULL, NULL, NULL, '查询部门详情', 'DepartmentService', '部门管理服务', 'DepartmentService_Get', '/admin/v1/departments/{id}', 'GET', 'ADMIN'),
-      (41, NOW(), NULL, NULL, NULL, NULL, NULL, '查询文件列表', 'FileService', '文件管理服务', 'FileService_List', '/admin/v1/files', 'GET', 'ADMIN'),
-      (42, NOW(), NULL, NULL, NULL, NULL, NULL, '创建文件', 'FileService', '文件管理服务', 'FileService_Create', '/admin/v1/files', 'POST', 'ADMIN'),
-      (43, NOW(), NULL, NULL, NULL, NULL, NULL, '删除菜单', 'MenuService', '后台菜单管理服务', 'MenuService_Delete', '/admin/v1/menus/{id}', 'DELETE', 'ADMIN'),
-      (44, NOW(), NULL, NULL, NULL, NULL, NULL, '查询菜单详情', 'MenuService', '后台菜单管理服务', 'MenuService_Get', '/admin/v1/menus/{id}', 'GET', 'ADMIN'),
-      (45, NOW(), NULL, NULL, NULL, NULL, NULL, '更新菜单', 'MenuService', '后台菜单管理服务', 'MenuService_Update', '/admin/v1/menus/{id}', 'PUT', 'ADMIN'),
-      (46, NOW(), NULL, NULL, NULL, NULL, NULL, '登录', 'AuthenticationService', '用户后台登录认证服务', 'AuthenticationService_Login', '/admin/v1/login', 'POST', 'ADMIN'),
-      (47, NOW(), NULL, NULL, NULL, NULL, NULL, '启动所有的调度任务', 'TaskService', '调度任务管理服务', 'TaskService_StartAllTask', '/admin/v1/tasks:start', 'POST', 'ADMIN'),
-      (48, NOW(), NULL, NULL, NULL, NULL, NULL, '控制调度任务', 'TaskService', '调度任务管理服务', 'TaskService_ControlTask', '/admin/v1/tasks:control', 'POST', 'ADMIN'),
-      (49, NOW(), NULL, NULL, NULL, NULL, NULL, '删除调度任务', 'TaskService', '调度任务管理服务', 'TaskService_Delete', '/admin/v1/tasks/{id}', 'DELETE', 'ADMIN'),
-      (50, NOW(), NULL, NULL, NULL, NULL, NULL, '查询调度任务详情', 'TaskService', '调度任务管理服务', 'TaskService_Get', '/admin/v1/tasks/{id}', 'GET', 'ADMIN'),
-      (51, NOW(), NULL, NULL, NULL, NULL, NULL, '更新调度任务', 'TaskService', '调度任务管理服务', 'TaskService_Update', '/admin/v1/tasks/{id}', 'PUT', 'ADMIN'),
-      (52, NOW(), NULL, NULL, NULL, NULL, NULL, '查询站内信消息分类列表', 'InternalMessageCategoryService', '站内信消息分类管理服务', 'InternalMessageCategoryService_List', '/admin/v1/internal-message/categories', 'GET', 'ADMIN'),
-      (53, NOW(), NULL, NULL, NULL, NULL, NULL, '创建站内信消息分类', 'InternalMessageCategoryService', '站内信消息分类管理服务', 'InternalMessageCategoryService_Create', '/admin/v1/internal-message/categories', 'POST', 'ADMIN'),
-      (54, NOW(), NULL, NULL, NULL, NULL, NULL, '查询API资源列表', 'ApiService', 'API资源管理服务', 'ApiService_List', '/admin/v1/apis', 'GET', 'ADMIN'),
-      (55, NOW(), NULL, NULL, NULL, NULL, NULL, '创建API资源', 'ApiService', 'API资源管理服务', 'ApiService_Create', '/admin/v1/apis', 'POST', 'ADMIN'),
-      (56, NOW(), NULL, NULL, NULL, NULL, NULL, '删除用户', 'UserService', '用户管理服务', 'UserService_Delete', '/admin/v1/users/{id}', 'DELETE', 'ADMIN'),
-      (57, NOW(), NULL, NULL, NULL, NULL, NULL, '获取用户数据', 'UserService', '用户管理服务', 'UserService_Get', '/admin/v1/users/{id}', 'GET', 'ADMIN'),
-      (58, NOW(), NULL, NULL, NULL, NULL, NULL, '更新用户', 'UserService', '用户管理服务', 'UserService_Update', '/admin/v1/users/{id}', 'PUT', 'ADMIN'),
-      (59, NOW(), NULL, NULL, NULL, NULL, NULL, '删除组织', 'OrganizationService', '组织管理服务', 'OrganizationService_Delete', '/admin/v1/organizations/{id}', 'DELETE', 'ADMIN'),
-      (60, NOW(), NULL, NULL, NULL, NULL, NULL, '查询组织详情', 'OrganizationService', '组织管理服务', 'OrganizationService_Get', '/admin/v1/organizations/{id}', 'GET', 'ADMIN'),
-      (61, NOW(), NULL, NULL, NULL, NULL, NULL, '更新组织', 'OrganizationService', '组织管理服务', 'OrganizationService_Update', '/admin/v1/organizations/{id}', 'PUT', 'ADMIN'),
-      (62, NOW(), NULL, NULL, NULL, NULL, NULL, '刷新认证令牌', 'AuthenticationService', '用户后台登录认证服务', 'AuthenticationService_RefreshToken', '/admin/v1/refresh_token', 'POST', 'ADMIN'),
-      (63, NOW(), NULL, NULL, NULL, NULL, NULL, '撤销某条消息', 'InternalMessageService', '站内信消息管理服务', 'InternalMessageService_RevokeMessage', '/admin/v1/internal-message/revoke', 'POST', 'ADMIN'),
-      (64, NOW(), NULL, NULL, NULL, NULL, NULL, '查询字典类型详情', 'DictService', '数据字典管理服务', 'DictService_GetDictType', '/admin/v1/dict-types/code/{code}', 'GET', 'ADMIN'),
-      (65, NOW(), NULL, NULL, NULL, NULL, NULL, '创建租户及管理员用户', 'TenantService', '租户管理服务', 'TenantService_CreateTenantWithAdminUser', '/admin/v1/tenants_with_admin', 'POST', 'ADMIN'),
-      (66, NOW(), NULL, NULL, NULL, NULL, NULL, '发送消息', 'InternalMessageService', '站内信消息管理服务', 'InternalMessageService_SendMessage', '/admin/v1/internal-message/send', 'POST', 'ADMIN'),
-      (67, NOW(), NULL, NULL, NULL, NULL, NULL, '用户是否存在', 'UserService', '用户管理服务', 'UserService_UserExists', '/admin/v1/users:exists', 'GET', 'ADMIN'),
-      (68, NOW(), NULL, NULL, NULL, NULL, NULL, '查询职位列表', 'PositionService', '职位管理服务', 'PositionService_List', '/admin/v1/positions', 'GET', 'ADMIN'),
-      (69, NOW(), NULL, NULL, NULL, NULL, NULL, '创建职位', 'PositionService', '职位管理服务', 'PositionService_Create', '/admin/v1/positions', 'POST', 'ADMIN'),
-      (70, NOW(), NULL, NULL, NULL, NULL, NULL, '删除用户收件箱中的通知记录', 'InternalMessageRecipientService', '站内信消息管理服务', 'InternalMessageRecipientService_DeleteNotificationFromInbox', '/admin/v1/internal-message/inbox/delete', 'POST', 'ADMIN'),
-      (71, NOW(), NULL, NULL, NULL, NULL, NULL, '查询职位详情', 'PositionService', '职位管理服务', 'PositionService_Get', '/admin/v1/positions/{id}', 'GET', 'ADMIN'),
-      (72, NOW(), NULL, NULL, NULL, NULL, NULL, '更新职位', 'PositionService', '职位管理服务', 'PositionService_Update', '/admin/v1/positions/{id}', 'PUT', 'ADMIN'),
-      (73, NOW(), NULL, NULL, NULL, NULL, NULL, '删除职位', 'PositionService', '职位管理服务', 'PositionService_Delete', '/admin/v1/positions/{id}', 'DELETE', 'ADMIN'),
-      (74, NOW(), NULL, NULL, NULL, NULL, NULL, '将通知标记为已读', 'InternalMessageRecipientService', '站内信消息管理服务', 'InternalMessageRecipientService_MarkNotificationAsRead', '/admin/v1/internal-message/read', 'POST', 'ADMIN'),
-      (75, NOW(), NULL, NULL, NULL, NULL, NULL, '修改用户密码', 'UserService', '用户管理服务', 'UserService_EditUserPassword', '/admin/v1/users/{userId}/password', 'POST', 'ADMIN'),
-      (76, NOW(), NULL, NULL, NULL, NULL, NULL, '查询路由列表', 'RouterService', '网站后台动态路由服务', 'RouterService_ListRoute', '/admin/v1/routes', 'GET', 'ADMIN'),
-      (77, NOW(), NULL, NULL, NULL, NULL, NULL, '查询API审计日志详情', 'ApiAuditLogService', 'API审计日志管理服务', 'ApiAuditLogService_Get', '/admin/v1/api-audit-logs/{id}', 'GET', 'ADMIN'),
-      (78, NOW(), NULL, NULL, NULL, NULL, NULL, '查询调度任务详情', 'TaskService', '调度任务管理服务', 'TaskService_Get', '/admin/v1/tasks/type-name/{typeName}', 'GET', 'ADMIN'),
-      (79, NOW(), NULL, NULL, NULL, NULL, NULL, '查询API审计日志列表', 'ApiAuditLogService', 'API审计日志管理服务', 'ApiAuditLogService_List', '/admin/v1/api-audit-logs', 'GET', 'ADMIN'),
-      (80, NOW(), NULL, NULL, NULL, NULL, NULL, '删除站内信消息分类', 'InternalMessageCategoryService', '站内信消息分类管理服务', 'InternalMessageCategoryService_Delete', '/admin/v1/internal-message/categories/{id}', 'DELETE', 'ADMIN'),
-      (81, NOW(), NULL, NULL, NULL, NULL, NULL, '查询站内信消息分类详情', 'InternalMessageCategoryService', '站内信消息分类管理服务', 'InternalMessageCategoryService_Get', '/admin/v1/internal-message/categories/{id}', 'GET', 'ADMIN'),
-      (82, NOW(), NULL, NULL, NULL, NULL, NULL, '更新站内信消息分类', 'InternalMessageCategoryService', '站内信消息分类管理服务', 'InternalMessageCategoryService_Update', '/admin/v1/internal-message/categories/{id}', 'PUT', 'ADMIN'),
-      (83, NOW(), NULL, NULL, NULL, NULL, NULL, '同步API资源', 'ApiService', 'API资源管理服务', 'ApiService_SyncApis', '/admin/v1/apis/sync', 'POST', 'ADMIN'),
-      (84, NOW(), NULL, NULL, NULL, NULL, NULL, '查询字典类型详情', 'DictService', '数据字典管理服务', 'DictService_GetDictType', '/admin/v1/dict-types/{id}', 'GET', 'ADMIN'),
-      (85, NOW(), NULL, NULL, NULL, NULL, NULL, '更新字典类型', 'DictService', '数据字典管理服务', 'DictService_UpdateDictType', '/admin/v1/dict-types/{id}', 'PUT', 'ADMIN'),
-      (86, NOW(), NULL, NULL, NULL, NULL, NULL, '删除站内信消息', 'InternalMessageService', '站内信消息管理服务', 'InternalMessageService_DeleteMessage', '/admin/v1/internal-message/messages/{id}', 'DELETE', 'ADMIN'),
-      (87, NOW(), NULL, NULL, NULL, NULL, NULL, '查询站内信消息详情', 'InternalMessageService', '站内信消息管理服务', 'InternalMessageService_GetMessage', '/admin/v1/internal-message/messages/{id}', 'GET', 'ADMIN'),
-      (88, NOW(), NULL, NULL, NULL, NULL, NULL, '更新站内信消息', 'InternalMessageService', '站内信消息管理服务', 'InternalMessageService_UpdateMessage', '/admin/v1/internal-message/messages/{id}', 'PUT', 'ADMIN'),
-      (89, NOW(), NULL, NULL, NULL, NULL, NULL, '查询菜单列表', 'MenuService', '后台菜单管理服务', 'MenuService_List', '/admin/v1/menus', 'GET', 'ADMIN'),
-      (90, NOW(), NULL, NULL, NULL, NULL, NULL, '创建菜单', 'MenuService', '后台菜单管理服务', 'MenuService_Create', '/admin/v1/menus', 'POST', 'ADMIN'),
-      (91, NOW(), NULL, NULL, NULL, NULL, NULL, '查询路由数据', 'ApiService', 'API资源管理服务', 'ApiService_GetWalkRouteData', '/admin/v1/apis/walk-route', 'GET', 'ADMIN'),
-      (92, NOW(), NULL, NULL, NULL, NULL, NULL, '获取用户数据', 'UserService', '用户管理服务', 'UserService_Get', '/admin/v1/users/username/{userName}', 'GET', 'ADMIN'),
-      (93, NOW(), NULL, NULL, NULL, NULL, NULL, '查询登录审计日志列表', 'LoginAuditLogService', '登录审计日志管理服务', 'LoginAuditLogService_List', '/admin/v1/login-audit-logs', 'GET', 'ADMIN'),
-      (94, NOW(), NULL, NULL, NULL, NULL, NULL, '删除API资源', 'ApiService', 'API资源管理服务', 'ApiService_Delete', '/admin/v1/apis/{id}', 'DELETE', 'ADMIN'),
-      (95, NOW(), NULL, NULL, NULL, NULL, NULL, '查询API资源详情', 'ApiService', 'API资源管理服务', 'ApiService_Get', '/admin/v1/apis/{id}', 'GET', 'ADMIN'),
-      (96, NOW(), NULL, NULL, NULL, NULL, NULL, '更新API资源', 'ApiService', 'API资源管理服务', 'ApiService_Update', '/admin/v1/apis/{id}', 'PUT', 'ADMIN'),
-      (97, NOW(), NULL, NULL, NULL, NULL, NULL, '获取对象存储（OSS）上传用的预签名链接', 'OssService', 'OSS服务', 'OssService_OssUploadUrl', '/admin/v1/file:upload-url', 'POST', 'ADMIN'),
-      (98, NOW(), NULL, NULL, NULL, NULL, NULL, '查询登录审计日志详情', 'LoginAuditLogService', '登录审计日志管理服务', 'LoginAuditLogService_Get', '/admin/v1/login-audit-logs/{id}', 'GET', 'ADMIN'),
-      (99, NOW(), NULL, NULL, NULL, NULL, NULL, '删除头像', 'UserProfileService', '用户个人资料服务', 'UserProfileService_DeleteAvatar', '/admin/v1/me/avatar', 'DELETE', 'ADMIN'),
-      (100, NOW(), NULL, NULL, NULL, NULL, NULL, '上传头像', 'UserProfileService', '用户个人资料服务', 'UserProfileService_UploadAvatar', '/admin/v1/me/avatar', 'POST', 'ADMIN'),
-      (101, NOW(), NULL, NULL, NULL, NULL, NULL, '查询权限码列表', 'RouterService', '网站后台动态路由服务', 'RouterService_ListPermissionCode', '/admin/v1/perm-codes', 'GET', 'ADMIN'),
-      (102, NOW(), NULL, NULL, NULL, NULL, NULL, '租户是否存在', 'TenantService', '租户管理服务', 'TenantService_TenantExists', '/admin/v1/tenants_exists', 'GET', 'ADMIN'),
-      (103, NOW(), NULL, NULL, NULL, NULL, NULL, '删除文件', 'FileService', '文件管理服务', 'FileService_Delete', '/admin/v1/files/{id}', 'DELETE', 'ADMIN'),
-      (104, NOW(), NULL, NULL, NULL, NULL, NULL, '查询文件详情', 'FileService', '文件管理服务', 'FileService_Get', '/admin/v1/files/{id}', 'GET', 'ADMIN'),
-      (105, NOW(), NULL, NULL, NULL, NULL, NULL, '更新文件', 'FileService', '文件管理服务', 'FileService_Update', '/admin/v1/files/{id}', 'PUT', 'ADMIN'),
-      (106, NOW(), NULL, NULL, NULL, NULL, NULL, '更新字典条目', 'DictService', '数据字典管理服务', 'DictService_UpdateDictEntry', '/admin/v1/dict-entries/{id}', 'PUT', 'ADMIN'),
-      (107, NOW(), NULL, NULL, NULL, NULL, NULL, '获取用户资料', 'UserProfileService', '用户个人资料服务', 'UserProfileService_GetUser', '/admin/v1/me', 'GET', 'ADMIN'),
-      (108, NOW(), NULL, NULL, NULL, NULL, NULL, '更新用户资料', 'UserProfileService', '用户个人资料服务', 'UserProfileService_UpdateUser', '/admin/v1/me', 'PUT', 'ADMIN'),
-      (109, NOW(), NULL, NULL, NULL, NULL, NULL, 'POST方法上传文件', 'OssService', 'OSS服务', 'OssService_PostUploadFile', '/admin/v1/file:upload', 'POST', 'ADMIN'),
-      (110, NOW(), NULL, NULL, NULL, NULL, NULL, 'PUT方法上传文件', 'OssService', 'OSS服务', 'OssService_PutUploadFile', '/admin/v1/file:upload', 'PUT', 'ADMIN'),
-      (111, NOW(), NULL, NULL, NULL, NULL, NULL, '获取用户列表', 'UserService', '用户管理服务', 'UserService_List', '/admin/v1/users', 'GET', 'ADMIN'),
-      (112, NOW(), NULL, NULL, NULL, NULL, NULL, '创建用户', 'UserService', '用户管理服务', 'UserService_Create', '/admin/v1/users', 'POST', 'ADMIN'),
-      (113, NOW(), NULL, NULL, NULL, NULL, NULL, '验证手机号码/邮箱', 'UserProfileService', '用户个人资料服务', 'UserProfileService_VerifyContact', '/admin/v1/me/contact/verify', 'POST', 'ADMIN')
-;
+-- ==============================================
+-- 5. 插入权限点
+-- ==============================================
+INSERT INTO sys_permissions (id, group_id, name, code, description, status, created_at)
+VALUES (1, 2, '访问后台', 'sys:access_backend', '允许用户访问系统后台管理界面', 'ON', NOW()),
+       (2, 2, '平台管理员权限', 'sys:platform_admin', '拥有系统所有功能的操作权限，可管理租户、用户、角色及所有资源', 'ON', NOW()),
+       (3, 3, '租户管理员权限', 'sys:tenant_manager', '拥有租户内所有功能的操作权限，可管理用户、角色及租户内所有资源', 'ON', NOW()),
+       (4, 3, '管理租户', 'sys:manage_tenants', '允许创建/修改/删除租户', 'ON', NOW()),
+       (5, 4, '查看审计日志', 'sys:audit_logs', '允许查看系统操作日志', 'ON', NOW());
+ALTER TABLE sys_permissions AUTO_INCREMENT = (SELECT MAX(id) + 1 FROM sys_permissions);
+
+-- ==============================================
+-- 6. 批量插入【平台管理员权限-API】关联（替代PG的unnest，生成api_id:1-128）
+-- ==============================================
+CREATE PROCEDURE batch_insert_perm_api1()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    WHILE i <= 128 DO
+        INSERT INTO sys_permission_apis (created_at, permission_id, api_id) VALUES (NOW(), 2, i);
+        SET i = i + 1;
+END WHILE;
+END //
+CALL batch_insert_perm_api1() //
+DROP PROCEDURE IF EXISTS batch_insert_perm_api1 //
+
+-- ==============================================
+-- 7. 批量插入【平台管理员权限-菜单】关联（替代PG的unnest，menu_id数组）
+-- ==============================================
+CREATE PROCEDURE batch_insert_perm_menu1()
+BEGIN
+    -- 定义menu_id数组
+    SET @menu_ids = '1,2,10,11,20,21,22,23,24,30,31,32,33,34,40,41,42,50,51,52,60,61,62,63,64';
+    SET @i = 1;
+    SET @len = LENGTH(@menu_ids) - LENGTH(REPLACE(@menu_ids, ',', '')) + 1;
+    WHILE @i <= @len DO
+        SET @menu_id = SUBSTRING_INDEX(SUBSTRING_INDEX(@menu_ids, ',', @i), ',', -1);
+INSERT INTO sys_permission_menus (created_at, permission_id, menu_id) VALUES (NOW(), 2, @menu_id);
+SET @i = @i + 1;
+END WHILE;
+END //
+CALL batch_insert_perm_menu1() //
+DROP PROCEDURE IF EXISTS batch_insert_perm_menu1 //
+
+-- ==============================================
+-- 8. 批量插入【租户管理员权限-API】关联（替代PG的unnest，生成api_id:1-125）
+-- ==============================================
+CREATE PROCEDURE batch_insert_perm_api2()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    WHILE i <= 125 DO
+        INSERT INTO sys_permission_apis (created_at, permission_id, api_id) VALUES (NOW(), 3, i);
+        SET i = i + 1;
+END WHILE;
+END //
+CALL batch_insert_perm_api2() //
+DROP PROCEDURE IF EXISTS batch_insert_perm_api2 //
+
+-- ==============================================
+-- 9. 批量插入【租户管理员权限-菜单】关联（替代PG的unnest，menu_id数组）
+-- ==============================================
+CREATE PROCEDURE batch_insert_perm_menu2()
+BEGIN
+    -- 定义menu_id数组（修复原脚本末尾多余逗号）
+    SET @menu_ids = '1,2,20,21,22,23,24,30,32,40,41,50,51,60,61,62,63,64';
+    SET @i = 1;
+    SET @len = LENGTH(@menu_ids) - LENGTH(REPLACE(@menu_ids, ',', '')) + 1;
+    WHILE @i <= @len DO
+        SET @menu_id = SUBSTRING_INDEX(SUBSTRING_INDEX(@menu_ids, ',', @i), ',', -1);
+INSERT INTO sys_permission_menus (created_at, permission_id, menu_id) VALUES (NOW(), 3, @menu_id);
+SET @i = @i + 1;
+END WHILE;
+END //
+CALL batch_insert_perm_menu2() //
+DROP PROCEDURE IF EXISTS batch_insert_perm_menu2 //
+
+    -- ==============================================
+-- 10. 插入默认角色
+-- ==============================================
+    INSERT INTO sys_roles(id, tenant_id, sort_order, name, code, status, is_protected, is_system, description, created_at)
+    VALUES (1, 0, 1, '平台管理员', 'platform:admin', 'ON', true, true, '拥有系统所有功能的操作权限，可管理租户、用户、角色及所有资源', NOW()),
+    (2, 0, 2, '租户管理员模板', 'template:tenant:manager', 'ON', true, true, '租户管理员角色，拥有租户内所有功能的操作权限，可管理用户、角色及租户内所有资源', NOW());
+ALTER TABLE sys_roles AUTO_INCREMENT = (SELECT MAX(id) + 1 FROM sys_roles);
+
+-- ==============================================
+-- 11. 插入角色元数据
+-- ==============================================
+INSERT INTO sys_role_metadata(id, tenant_id, role_id, is_template, scope, sync_policy, created_at)
+VALUES (1, 0, 1, false, 'PLATFORM', 'AUTO', NOW()),
+       (2, 0, 2, true, 'TENANT', 'AUTO', NOW());
+ALTER TABLE sys_role_metadata AUTO_INCREMENT = (SELECT MAX(id) + 1 FROM sys_role_metadata);
+
+-- ==============================================
+-- 12. 插入角色-权限关联
+-- ==============================================
+INSERT INTO sys_role_permissions (created_at, role_id, permission_id)
+SELECT NOW(), 1, id FROM sys_permissions WHERE id IN (1,2,4);
+INSERT INTO sys_role_permissions (created_at, role_id, permission_id)
+SELECT NOW(), 2, id FROM sys_permissions WHERE id IN (1,3);
+
+-- ==============================================
+-- 13. 插入用户-租户关联关系
+-- ==============================================
+INSERT INTO sys_memberships (id, tenant_id, user_id, org_unit_id, position_id, role_id, is_primary, status)
+VALUES (1, 0, 1, null, null, 1, true, 'ACTIVE');
+ALTER TABLE sys_memberships AUTO_INCREMENT = (SELECT MAX(id) + 1 FROM sys_memberships);
+
+-- ==============================================
+-- 14. 插入租户成员-角色关联关系（修复原脚本少逗号错误）
+-- ==============================================
+INSERT INTO sys_membership_roles (id, membership_id, tenant_id, role_id, is_primary, status)
+VALUES (1, 1, 0, 1, true, 'ACTIVE');
+ALTER TABLE sys_membership_roles AUTO_INCREMENT = (SELECT MAX(id) + 1 FROM sys_membership_roles);
+
+-- ==============================================
+-- 15. 插入后台菜单/目录（JSON字段meta直接适配MySQL）
+-- ==============================================
+INSERT INTO sys_menus(id, parent_id, type, name, path, redirect, component, status, created_at, meta)
+VALUES (1, null, 'CATALOG', 'Dashboard', '/dashboard', null, 'BasicLayout', 'ON', NOW(),
+        '{"order":-1, "title":"page.dashboard.title", "icon":"lucide:layout-dashboard", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (2, 1, 'MENU', 'Analytics', 'analytics', null, 'dashboard/analytics/index.vue', 'ON', NOW(),
+        '{"order":-1, "title":"page.dashboard.analytics", "icon":"lucide:area-chart", "affixTab": true, "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+
+       (10, null, 'CATALOG', 'TenantManagement', '/tenant', null, 'BasicLayout', 'ON', NOW(),
+        '{"order":2000, "title":"menu.tenant.moduleName", "icon":"lucide:building-2", "keepAlive":true, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (11, 10, 'MENU', 'TenantMemberManagement', 'tenants', null, 'app/tenant/tenant/index.vue', 'ON', NOW(),
+        '{"order":1, "title":"menu.tenant.member", "icon":"lucide:building-2", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+
+       (20, null, 'CATALOG', 'OrganizationalPersonnelManagement', '/opm', null, 'BasicLayout', 'ON', NOW(),
+        '{"order":2001, "title":"menu.opm.moduleName", "icon":"lucide:users", "keepAlive":true, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (21, 20, 'MENU', 'OrgUnitManagement', 'org-units', null, 'app/opm/org_unit/index.vue', 'ON', NOW(),
+        '{"order":1, "title":"menu.opm.orgUnit", "icon":"lucide:building-2", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (22, 20, 'MENU', 'PositionManagement', 'positions', null, 'app/opm/position/index.vue', 'ON', NOW(),
+        '{"order":3, "title":"menu.opm.position", "icon":"lucide:briefcase", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (23, 20, 'MENU', 'UserManagement', 'users', null, 'app/opm/users/index.vue', 'ON', NOW(),
+        '{"order":4, "title":"menu.opm.user", "icon":"lucide:users", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (24, 20, 'MENU', 'UserDetail', 'users/detail/:id', null, 'app/opm/users/detail/index.vue', 'ON', NOW(),
+        '{"order":1, "title":"menu.opm.userDetail", "icon":"", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":true, "hideInTab":false}'),
+
+       (30, null, 'CATALOG', 'PermissionManagement', '/permission', null, 'BasicLayout', 'ON', NOW(),
+        '{"order":2002, "title":"menu.permission.moduleName", "icon":"lucide:shield-check", "keepAlive":true, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (31, 30, 'MENU', 'PermissionPointsManagement', 'permissions', null, 'app/permission/permission/index.vue', 'ON', NOW(),
+        '{"order":1, "title":"menu.permission.permission", "icon":"lucide:shield-ellipsis", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (32, 30, 'MENU', 'RoleManagement', 'roles', null, 'app/permission/role/index.vue', 'ON', NOW(),
+        '{"order":2, "title":"menu.permission.role", "icon":"lucide:shield-user", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (33, 30, 'MENU', 'MenuManagement', 'menus', null, 'app/permission/menu/index.vue', 'ON', NOW(),
+        '{"order":3, "title":"menu.permission.menu", "icon":"lucide:square-menu", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (34, 30, 'MENU', 'APIManagement', 'apis', null, 'app/permission/api/index.vue', 'ON', NOW(),
+        '{"order":4, "title":"menu.permission.api", "icon":"lucide:route", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+
+       (40, null, 'CATALOG', 'InternalMessageManagement', '/internal-message', null, 'BasicLayout', 'ON', NOW(),
+        '{"order":2003, "title":"menu.internalMessage.moduleName", "icon":"lucide:mail", "keepAlive":true, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (41, 40, 'MENU', 'InternalMessageList', 'messages', null, 'app/internal_message/message/index.vue', 'ON', NOW(),
+        '{"order": 1, "title":"menu.internalMessage.internalMessage", "icon":"lucide:message-circle-more", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (42, 40, 'MENU', 'InternalMessageCategoryManagement', 'categories', null,
+        'app/internal_message/category/index.vue', 'ON', NOW(),
+        '{"order":2, "title":"menu.internalMessage.internalMessageCategory", "icon":"lucide:calendar-check", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+
+       (50, null, 'CATALOG', 'LogAuditManagement', '/log', null, 'BasicLayout', 'ON', NOW(),
+        '{"order":2004, "title":"menu.log.moduleName", "icon":"lucide:activity", "keepAlive":true, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (51, 50, 'MENU', 'LoginAuditLog', 'login-audit-logs', null, 'app/log/login_audit_log/index.vue', 'ON', NOW(),
+        '{"order":1, "title":"menu.log.loginAuditLog", "icon":"lucide:user-lock", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (52, 50, 'MENU', 'ApiAuditLog', 'api-audit-logs', null, 'app/log/api_audit_log/index.vue', 'ON', NOW(),
+        '{"order":2, "title":"menu.log.apiAuditLog", "icon":"lucide:file-clock", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+
+       (60, null, 'CATALOG', 'System', '/system', null, 'BasicLayout', 'ON', NOW(),
+        '{"order":2005, "title":"menu.system.moduleName", "icon":"lucide:settings", "keepAlive":true, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (61, 60, 'MENU', 'DictManagement', 'dict', null, 'app/system/dict/index.vue', 'ON', NOW(),
+        '{"order":1, "title":"menu.system.dict", "icon":"lucide:library-big", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (62, 60, 'MENU', 'FileManagement', 'files', null, 'app/system/files/index.vue', 'ON', NOW(),
+        '{"order":2, "title":"menu.system.file", "icon":"lucide:file-search", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (63, 60, 'MENU', 'TaskManagement', 'tasks', null, 'app/system/task/index.vue', 'ON', NOW(),
+        '{"order":3, "title":"menu.system.task", "icon":"lucide:list-todo", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (64, 60, 'MENU', 'LoginPolicyManagement', 'login-policies', null,
+        'app/system/login_policy/index.vue', 'ON', NOW(),
+        '{"order":5, "title":"menu.system.loginPolicy", "icon":"lucide:shield-x", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}');
+ALTER TABLE sys_menus AUTO_INCREMENT = (SELECT MAX(id) + 1 FROM sys_menus);
+
+-- 事务提交+恢复外键检查+还原语句结束符
+COMMIT;
+SET FOREIGN_KEY_CHECKS = 1;
+DELIMITER ;

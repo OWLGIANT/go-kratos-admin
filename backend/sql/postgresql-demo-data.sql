@@ -18,23 +18,11 @@ VALUES (1, '测试租户', 'super', 'PAID', 'APPROVED', 'ON', 2, now())
 ;
 SELECT setval('sys_tenants_id_seq', (SELECT MAX(id) FROM sys_tenants));
 
--- 测试角色
-INSERT INTO public.sys_roles(id, tenant_id, sort_order, name, code, status, description, created_at)
-VALUES 
-       (2, 0, 2, '安全审计员', 'security_auditor', 'ON', '仅可查看系统操作日志和数据记录，无修改权限', now()),
-       (3, 0, 3, '租户管理员', 'tenant_admin', 'ON', '管理当前租户下的用户、角色及资源，无跨租户操作权限', now())
-;
-SELECT setval('sys_roles_id_seq', (SELECT MAX(id) FROM sys_roles));
-
--- 插入4个权限的用户
+-- 插入租户管理员用户
 INSERT INTO public.sys_users (id, tenant_id, username, nickname, realname, email, gender, created_at)
 VALUES
     -- 2. 租户管理员（TENANT_ADMIN）
-    (2, 1, 'tenant_admin', '租户管理', '张管理员', 'tenant@company.com', 'MALE', now()),
-    -- 3. 普通用户（USER）
-    (3, 0, 'normal_user', '普通用户', '李用户', 'user@company.com', 'FEMALE', now()),
-    -- 4. 访客（GUEST）
-    (4, 0, 'guest_user', '临时访客', '王访客', 'guest@company.com', 'SECRET', now())
+    (2, 1, 'tenant_admin', '租户管理', '张管理员', 'tenant@company.com', 'MALE', now())
 ;
 SELECT setval('sys_users_id_seq', (SELECT MAX(id) FROM sys_users));
 
@@ -47,18 +35,6 @@ VALUES
         'ENABLED', true, now()),
        (2, 'EMAIL', 'tenant@company.com', 'PASSWORD_HASH',
         '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', false, now()),
-
-       -- 普通用户（对应users表id=3）
-       (3, 'USERNAME', 'normal_user', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
-        'ENABLED', true, now()),
-       (3, 'EMAIL', 'user@company.com', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
-        'ENABLED', false, now()),
-
-       -- 访客（对应users表id=4）
-       (4, 'USERNAME', 'guest_user', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
-        'ENABLED', true, now()),
-       (4, 'EMAIL', 'guest@company.com', 'PASSWORD_HASH',
-        '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', false, now())
 ;
 SELECT setval('sys_user_credentials_id_seq', (SELECT MAX(id) FROM sys_user_credentials));
 
@@ -112,11 +88,7 @@ SELECT setval('sys_positions_id_seq', (SELECT COALESCE(MAX(id), 1) FROM sys_posi
 INSERT INTO public.sys_memberships (id, tenant_id, user_id, org_unit_id, position_id, role_id, is_primary, status)
 VALUES
     -- 租户管理员（TENANT_ADMIN）
-    (2, 1, 2, null, null, 2, true, 'ACTIVE'),
-    -- 普通用户（USER）
-    (3, 0, 3, null, null, 3, true, 'ACTIVE'),
-    -- 访客（GUEST）
-    (4, 0, 4, null, null, 4, true, 'ACTIVE')
+    (2, 1, 2, null, null, 2, true, 'ACTIVE')
 ;
 SELECT setval('sys_memberships_id_seq', (SELECT MAX(id) FROM sys_memberships));
 
@@ -124,11 +96,7 @@ SELECT setval('sys_memberships_id_seq', (SELECT MAX(id) FROM sys_memberships));
 INSERT INTO sys_membership_roles (id, membership_id, tenant_id, role_id, is_primary, status)
 VALUES
     -- 租户管理员（TENANT_ADMIN）
-    (2, 2, 1, 2, true, 'ACTIVE'),
-    -- 普通用户（USER）
-    (3, 3, 0, 3, true, 'ACTIVE'),
-    -- 访客（GUEST）
-    (4, 4, 0, 4, true, 'ACTIVE')
+    (2, 2, 1, 2, true, 'ACTIVE')
 SELECT setval('sys_membership_roles_id_seq', (SELECT MAX(id) FROM sys_membership_roles));
 
 -- 调度任务
@@ -187,38 +155,33 @@ VALUES
 ;
 SELECT setval('sys_dict_entries_id_seq', (SELECT MAX(id) FROM sys_dict_entries));
 
--- 站内信分类 - 主分类
-INSERT INTO public.internal_message_categories (id, parent_id, code, name, remark, sort_order, is_enabled, created_at)
+-- 站内信分类
+INSERT INTO public.internal_message_categories (id, code, name, remark, sort_order, is_enabled, created_at)
 VALUES
-    -- 订单相关主分类
-    (1, null, 'order', '订单通知', '包含订单支付、发货、退款等全流程通知', 1, true, NOW()),
-    -- 系统相关主分类
-    (2, null, 'system', '系统通知', '系统公告、维护提醒、版本更新等平台级通知', 2, true, NOW()),
-    -- 活动相关主分类
-    (3, null, 'activity', '活动通知', '营销活动报名、开始、结束等提醒', 3, true, NOW()),
-    -- 用户相关主分类
-    (4, null, 'user', '用户通知', '账号安全、信息变更、权限调整等个人相关通知', 4, true, NOW())
-;
--- 站内信分类 - 子分类
-INSERT INTO public.internal_message_categories (id, parent_id, code, name, remark, sort_order, is_enabled, created_at)
-VALUES
-    -- 订单主分类（id=1）的子分类
-    (101, 1, 'order_paid', '支付成功', '订单支付完成时触发的通知', 1, true, NOW()),
-    (102, 1, 'order_unpaid', '支付超时', '订单未在规定时间内支付的提醒', 2, true, NOW()),
-    (103, 1, 'order_shipped', '已发货', '商家发货后通知用户', 3, true, NOW()),
-    (104, 1, 'order_refunded', '已退款', '订单退款流程完成的通知', 4, true, NOW()),
-    -- 系统主分类（id=2）的子分类
-    (201, 2, 'system_announcement', '系统公告', '平台规则更新、重要通知等', 1, true, NOW()),
-    (202, 2, 'system_maintenance', '维护通知', '系统计划内维护的时间提醒', 2, true, NOW()),
-    (203, 2, 'system_upgrade', '版本更新', '客户端或功能升级的提示', 3, true, NOW()),
-    -- 活动主分类（id=3）的子分类
-    (301, 3, 'activity_signup', '报名成功', '用户报名活动后确认通知', 1, true, NOW()),
-    (302, 3, 'activity_start', '活动开始', '活动即将开始的倒计时提醒', 2, true, NOW()),
-    (303, 3, 'activity_end', '活动结束', '活动结束及结果公示通知', 3, true, NOW()),
-    -- 用户主分类（id=4）的子分类
-    (401, 4, 'user_login_abnormal', '异地登录', '账号在陌生设备登录的安全提醒', 1, true, NOW()),
-    (402, 4, 'user_profile_updated', '资料变更', '用户手机号、邮箱等信息修改后通知', 2, true, NOW()),
-    (403, 4, 'user_permission_changed', '权限变更', '账号角色或功能权限调整通知', 3, true, NOW())
+    -- 订单相关分类（原主分类+子分类平级展示）
+    (1, 'order', '订单通知', '包含订单支付、发货、退款等全流程通知', 1, true, NOW()),
+    (101, 'order_paid', '支付成功', '订单支付完成时触发的通知', 2, true, NOW()),
+    (102, 'order_unpaid', '支付超时', '订单未在规定时间内支付的提醒', 3, true, NOW()),
+    (103, 'order_shipped', '已发货', '商家发货后通知用户', 4, true, NOW()),
+    (104, 'order_refunded', '已退款', '订单退款流程完成的通知', 5, true, NOW()),
+
+    -- 系统相关分类
+    (2, 'system', '系统通知', '系统公告、维护提醒、版本更新等平台级通知', 6, true, NOW()),
+    (201, 'system_announcement', '系统公告', '平台规则更新、重要通知等', 7, true, NOW()),
+    (202, 'system_maintenance', '维护通知', '系统计划内维护的时间提醒', 8, true, NOW()),
+    (203, 'system_upgrade', '版本更新', '客户端或功能升级的提示', 9, true, NOW()),
+
+    -- 活动相关分类
+    (3, 'activity', '活动通知', '营销活动报名、开始、结束等提醒', 10, true, NOW()),
+    (301, 'activity_signup', '报名成功', '用户报名活动后确认通知', 11, true, NOW()),
+    (302, 'activity_start', '活动开始', '活动即将开始的倒计时提醒', 12, true, NOW()),
+    (303, 'activity_end', '活动结束', '活动结束及结果公示通知', 13, true, NOW()),
+
+    -- 用户相关分类
+    (4, 'user', '用户通知', '账号安全、信息变更、权限调整等个人相关通知', 14, true, NOW()),
+    (401, 'user_login_abnormal', '异地登录', '账号在陌生设备登录的安全提醒', 15, true, NOW()),
+    (402, 'user_profile_updated', '资料变更', '用户手机号、邮箱等信息修改后通知', 16, true, NOW()),
+    (403, 'user_permission_changed', '权限变更', '账号角色或功能权限调整通知', 17, true, NOW())
 ;
 SELECT setval('internal_message_categories_id_seq', (SELECT MAX(id) FROM internal_message_categories));
 

@@ -26,7 +26,7 @@ var DefaultPermissionGroups = []*permissionV1.PermissionGroup{
 	{
 		//Id:        trans.Ptr(uint32(1)),
 		Name:      trans.Ptr("系统管理"),
-		Path:      trans.Ptr("/1/"),
+		Path:      trans.Ptr("/"),
 		Module:    trans.Ptr(SystemPermissionModule),
 		SortOrder: trans.Ptr(uint32(1)),
 		Status:    trans.Ptr(permissionV1.PermissionGroup_ON),
