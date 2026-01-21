@@ -1,5 +1,10 @@
 package slice
 
+import (
+	"fmt"
+	"strconv"
+)
+
 // MergeInPlace 原地合并（不创建新切片，覆盖原切片）
 func MergeInPlace(slice1, slice2 []uint32) []uint32 {
 	// 计算需要的总容量
@@ -95,6 +100,47 @@ func Intersect[T comparable](a, b []T) []T {
 				out = append(out, v)
 				seen[v] = struct{}{}
 			}
+		}
+	}
+	return out
+}
+
+// NumberSliceToStrings 将数值型切片转换为 string 切片。
+// 支持：int,int8,int16,int32,int64,uint,uint8,uint16,uint32,uint64,float32,float64。
+// 对未知类型回退使用 fmt.Sprint。
+func NumberSliceToStrings[T ~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~float32 | ~float64](s []T) []string {
+	if len(s) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(s))
+	for _, v := range s {
+		switch x := any(v).(type) {
+		case int:
+			out = append(out, strconv.FormatInt(int64(x), 10))
+		case int8:
+			out = append(out, strconv.FormatInt(int64(x), 10))
+		case int16:
+			out = append(out, strconv.FormatInt(int64(x), 10))
+		case int32:
+			out = append(out, strconv.FormatInt(int64(x), 10))
+		case int64:
+			out = append(out, strconv.FormatInt(x, 10))
+		case uint:
+			out = append(out, strconv.FormatUint(uint64(x), 10))
+		case uint8:
+			out = append(out, strconv.FormatUint(uint64(x), 10))
+		case uint16:
+			out = append(out, strconv.FormatUint(uint64(x), 10))
+		case uint32:
+			out = append(out, strconv.FormatUint(uint64(x), 10))
+		case uint64:
+			out = append(out, strconv.FormatUint(x, 10))
+		case float32:
+			out = append(out, strconv.FormatFloat(float64(x), 'f', -1, 32))
+		case float64:
+			out = append(out, strconv.FormatFloat(x, 'f', -1, 64))
+		default:
+			out = append(out, fmt.Sprint(v))
 		}
 	}
 	return out

@@ -99,6 +99,195 @@ export type AdminErrorReason =
   | "NETWORK_READ_TIMEOUT_ERROR"
   // 599
   | "NETWORK_CONNECT_TIMEOUT_ERROR";
+// 查询路由列表 - 回应
+export type ListRouteResponse = {
+  items: permissionservicev1_MenuRouteItem[] | undefined;
+};
+
+// 路由项
+export type permissionservicev1_MenuRouteItem = {
+  children: permissionservicev1_MenuRouteItem[] | undefined;
+  //
+  // Behaviors: OPTIONAL
+  path?: string;
+  //
+  // Behaviors: OPTIONAL
+  redirect?: string;
+  //
+  // Behaviors: OPTIONAL
+  alias?: string;
+  //
+  // Behaviors: OPTIONAL
+  name?: string;
+  //
+  // Behaviors: OPTIONAL
+  component?: string;
+  //
+  // Behaviors: OPTIONAL
+  meta?: permissionservicev1_MenuMeta;
+};
+
+// 路由元信息
+export type permissionservicev1_MenuMeta = {
+  //
+  // Behaviors: OPTIONAL
+  activeIcon?: string;
+  //
+  // Behaviors: OPTIONAL
+  activePath?: string;
+  //
+  // Behaviors: OPTIONAL
+  affixTab?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  affixTabOrder?: number;
+  //
+  // Behaviors: OPTIONAL
+  authority: string[] | undefined;
+  //
+  // Behaviors: OPTIONAL
+  badge?: string;
+  //
+  // Behaviors: OPTIONAL
+  badgeType?: string;
+  //
+  // Behaviors: OPTIONAL
+  badgeVariants?: string;
+  //
+  // Behaviors: OPTIONAL
+  hideChildrenInMenu?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  hideInBreadcrumb?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  hideInMenu?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  hideInTab?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  icon?: string;
+  //
+  // Behaviors: OPTIONAL
+  iframeSrc?: string;
+  //
+  // Behaviors: OPTIONAL
+  ignoreAccess?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  keepAlive?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  link?: string;
+  //
+  // Behaviors: OPTIONAL
+  loaded?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  maxNumOfOpenTab?: number;
+  //
+  // Behaviors: OPTIONAL
+  menuVisibleWithForbidden?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  openInNewWindow?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  order?: number;
+  //
+  // Behaviors: OPTIONAL
+  title?: string;
+};
+
+// 查询权限码列表 - 回应
+export type ListPermissionCodeResponse = {
+  codes: string[] | undefined;
+};
+
+export type InitialContextResponse = {
+  menus: permissionservicev1_MenuRouteItem[] | undefined;
+  permissions: string[] | undefined;
+};
+
+// 后台前端初始化数据与配置服务
+export interface AdminPortalService {
+  // 查询前端路由表
+  GetNavigation(request: wellKnownEmpty): Promise<ListRouteResponse>;
+  // 查询权限码列表
+  GetMyPermissionCode(request: wellKnownEmpty): Promise<ListPermissionCodeResponse>;
+  // 一次性获取进入后台所需的所有上下文
+  GetInitialContext(request: wellKnownEmpty): Promise<InitialContextResponse>;
+}
+
+type RequestType = {
+  path: string;
+  method: string;
+  body: string | null;
+};
+
+type RequestHandler = (request: RequestType, meta: { service: string, method: string }) => Promise<unknown>;
+
+export function createAdminPortalServiceClient(
+  handler: RequestHandler
+): AdminPortalService {
+  return {
+    GetNavigation(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/routes`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "AdminPortalService",
+        method: "GetNavigation",
+      }) as Promise<ListRouteResponse>;
+    },
+    GetMyPermissionCode(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/perm-codes`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "AdminPortalService",
+        method: "GetMyPermissionCode",
+      }) as Promise<ListPermissionCodeResponse>;
+    },
+    GetInitialContext(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/initial-context`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "AdminPortalService",
+        method: "GetInitialContext",
+      }) as Promise<InitialContextResponse>;
+    },
+  };
+}
+// An empty JSON object
+type wellKnownEmpty = Record<never, never>;
+
 // API资源管理服务
 export interface ApiService {
   // 查询API资源列表
@@ -116,14 +305,6 @@ export interface ApiService {
   // 查询路由数据
   GetWalkRouteData(request: wellKnownEmpty): Promise<permissionservicev1_ListApiResponse>;
 }
-
-type RequestType = {
-  path: string;
-  method: string;
-  body: string | null;
-};
-
-type RequestHandler = (request: RequestType, meta: { service: string, method: string }) => Promise<unknown>;
 
 export function createApiServiceClient(
   handler: RequestHandler
@@ -536,9 +717,6 @@ export type permissionservicev1_GetApiRequest = {
 export type permissionservicev1_CreateApiRequest = {
   data: permissionservicev1_Api | undefined;
 };
-
-// An empty JSON object
-type wellKnownEmpty = Record<never, never>;
 
 // 更新 - 请求
 export type permissionservicev1_UpdateApiRequest = {
@@ -3027,7 +3205,7 @@ export type permissionservicev1_Menu = {
   component?: string;
   //
   // Behaviors: OPTIONAL
-  meta?: permissionservicev1_RouteMeta;
+  meta?: permissionservicev1_MenuMeta;
   parentId?: number;
   children: permissionservicev1_Menu[] | undefined;
   createdBy?: number;
@@ -3049,79 +3227,6 @@ export type permissionservicev1_Menu_Type =
   | "BUTTON"
   | "EMBEDDED"
   | "LINK";
-// 路由元数据
-export type permissionservicev1_RouteMeta = {
-  //
-  // Behaviors: OPTIONAL
-  activeIcon?: string;
-  //
-  // Behaviors: OPTIONAL
-  activePath?: string;
-  //
-  // Behaviors: OPTIONAL
-  affixTab?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  affixTabOrder?: number;
-  //
-  // Behaviors: OPTIONAL
-  authority: string[] | undefined;
-  //
-  // Behaviors: OPTIONAL
-  badge?: string;
-  //
-  // Behaviors: OPTIONAL
-  badgeType?: string;
-  //
-  // Behaviors: OPTIONAL
-  badgeVariants?: string;
-  //
-  // Behaviors: OPTIONAL
-  hideChildrenInMenu?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  hideInBreadcrumb?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  hideInMenu?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  hideInTab?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  icon?: string;
-  //
-  // Behaviors: OPTIONAL
-  iframeSrc?: string;
-  //
-  // Behaviors: OPTIONAL
-  ignoreAccess?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  keepAlive?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  link?: string;
-  //
-  // Behaviors: OPTIONAL
-  loaded?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  maxNumOfOpenTab?: number;
-  //
-  // Behaviors: OPTIONAL
-  menuVisibleWithForbidden?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  openInNewWindow?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  order?: number;
-  //
-  // Behaviors: OPTIONAL
-  title?: string;
-};
-
 // 查询菜单详情 - 请求
 export type permissionservicev1_GetMenuRequest = {
   id?: number;
@@ -4975,87 +5080,6 @@ export type userservicev1_UpdateRoleRequest = {
 // 删除角色 - 请求
 export type userservicev1_DeleteRoleRequest = {
   id: number | undefined;
-};
-
-// 网站后台动态路由服务
-export interface RouterService {
-  // 查询路由列表
-  ListRoute(request: wellKnownEmpty): Promise<permissionservicev1_ListRouteResponse>;
-  // 查询权限码列表
-  ListPermissionCode(request: wellKnownEmpty): Promise<permissionservicev1_ListPermissionCodeResponse>;
-}
-
-export function createRouterServiceClient(
-  handler: RequestHandler
-): RouterService {
-  return {
-    ListRoute(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/routes`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "RouterService",
-        method: "ListRoute",
-      }) as Promise<permissionservicev1_ListRouteResponse>;
-    },
-    ListPermissionCode(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/perm-codes`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "RouterService",
-        method: "ListPermissionCode",
-      }) as Promise<permissionservicev1_ListPermissionCodeResponse>;
-    },
-  };
-}
-// 查询路由列表 - 回应
-export type permissionservicev1_ListRouteResponse = {
-  items: permissionservicev1_RouteItem[] | undefined;
-};
-
-// 路由项
-export type permissionservicev1_RouteItem = {
-  children: permissionservicev1_RouteItem[] | undefined;
-  //
-  // Behaviors: OPTIONAL
-  path?: string;
-  //
-  // Behaviors: OPTIONAL
-  redirect?: string;
-  //
-  // Behaviors: OPTIONAL
-  alias?: string;
-  //
-  // Behaviors: OPTIONAL
-  name?: string;
-  //
-  // Behaviors: OPTIONAL
-  component?: string;
-  //
-  // Behaviors: OPTIONAL
-  meta?: permissionservicev1_RouteMeta;
-};
-
-// 查询权限码列表 - 回应
-export type permissionservicev1_ListPermissionCodeResponse = {
-  codes: string[] | undefined;
 };
 
 // 调度任务管理服务

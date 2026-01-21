@@ -141,7 +141,7 @@ type Menu struct {
 	Alias         *string                `protobuf:"bytes,12,opt,name=alias,proto3,oneof" json:"alias,omitempty"`                                          // 路由别名
 	Name          *string                `protobuf:"bytes,13,opt,name=name,proto3,oneof" json:"name,omitempty"`                                            // 路由命名，然后我们可以使用 name 而不是 path 来传递 to 属性给 <router-link>。
 	Component     *string                `protobuf:"bytes,14,opt,name=component,proto3,oneof" json:"component,omitempty"`                                  // 指向的组件
-	Meta          *RouteMeta             `protobuf:"bytes,15,opt,name=meta,proto3,oneof" json:"meta,omitempty"`                                            // 路由元信息
+	Meta          *MenuMeta              `protobuf:"bytes,15,opt,name=meta,proto3,oneof" json:"meta,omitempty"`                                            // 路由元信息
 	ParentId      *uint32                `protobuf:"varint,50,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`                   // 父节点ID
 	Children      []*Menu                `protobuf:"bytes,51,rep,name=children,proto3" json:"children,omitempty"`                                          // 子节点树
 	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`               // 创建者ID
@@ -240,7 +240,7 @@ func (x *Menu) GetComponent() string {
 	return ""
 }
 
-func (x *Menu) GetMeta() *RouteMeta {
+func (x *Menu) GetMeta() *MenuMeta {
 	if x != nil {
 		return x.Meta
 	}
@@ -303,6 +303,320 @@ func (x *Menu) GetDeletedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+// 路由元信息
+type MenuMeta struct {
+	state                    protoimpl.MessageState `protogen:"open.v1"`
+	ActiveIcon               *string                `protobuf:"bytes,1,opt,name=activeIcon,proto3,oneof" json:"activeIcon,omitempty"`                               // 激活图标，用于：菜单、tab
+	ActivePath               *string                `protobuf:"bytes,2,opt,name=activePath,proto3,oneof" json:"activePath,omitempty"`                               // 当前激活的菜单，有时候不想激活现有菜单，需要激活父级菜单时使用
+	AffixTab                 *bool                  `protobuf:"varint,3,opt,name=affixTab,proto3,oneof" json:"affixTab,omitempty"`                                  // 是否固定标签页
+	AffixTabOrder            *int32                 `protobuf:"varint,4,opt,name=affixTabOrder,proto3,oneof" json:"affixTabOrder,omitempty"`                        // 固定标签页的顺序
+	Authority                []string               `protobuf:"bytes,5,rep,name=authority,proto3" json:"authority,omitempty"`                                       // 权限列表，需要特定的角色标识才可以访问
+	Badge                    *string                `protobuf:"bytes,6,opt,name=badge,proto3,oneof" json:"badge,omitempty"`                                         // 徽标
+	BadgeType                *string                `protobuf:"bytes,7,opt,name=badgeType,proto3,oneof" json:"badgeType,omitempty"`                                 // 徽标类型
+	BadgeVariants            *string                `protobuf:"bytes,8,opt,name=badgeVariants,proto3,oneof" json:"badgeVariants,omitempty"`                         // 徽标颜色
+	HideChildrenInMenu       *bool                  `protobuf:"varint,9,opt,name=hideChildrenInMenu,proto3,oneof" json:"hideChildrenInMenu,omitempty"`              // 当前路由的子级在菜单中不展现
+	HideInBreadcrumb         *bool                  `protobuf:"varint,10,opt,name=hideInBreadcrumb,proto3,oneof" json:"hideInBreadcrumb,omitempty"`                 // 当前路由在面包屑中不展现
+	HideInMenu               *bool                  `protobuf:"varint,11,opt,name=hideInMenu,proto3,oneof" json:"hideInMenu,omitempty"`                             // 当前路由在菜单中不展现
+	HideInTab                *bool                  `protobuf:"varint,12,opt,name=hideInTab,proto3,oneof" json:"hideInTab,omitempty"`                               // 当前路由在标签页不展现
+	Icon                     *string                `protobuf:"bytes,13,opt,name=icon,proto3,oneof" json:"icon,omitempty"`                                          // 图标，用于：菜单、标签页
+	IframeSrc                *string                `protobuf:"bytes,14,opt,name=iframeSrc,proto3,oneof" json:"iframeSrc,omitempty"`                                // iframe 地址
+	IgnoreAccess             *bool                  `protobuf:"varint,15,opt,name=ignoreAccess,proto3,oneof" json:"ignoreAccess,omitempty"`                         // 忽略权限，直接可以访问
+	KeepAlive                *bool                  `protobuf:"varint,16,opt,name=keepAlive,proto3,oneof" json:"keepAlive,omitempty"`                               // 开启KeepAlive缓存
+	Link                     *string                `protobuf:"bytes,17,opt,name=link,proto3,oneof" json:"link,omitempty"`                                          // 外链-跳转路径
+	Loaded                   *bool                  `protobuf:"varint,18,opt,name=loaded,proto3,oneof" json:"loaded,omitempty"`                                     // 路由是否已经加载过
+	MaxNumOfOpenTab          *int32                 `protobuf:"varint,19,opt,name=maxNumOfOpenTab,proto3,oneof" json:"maxNumOfOpenTab,omitempty"`                   // 标签页最大打开数量
+	MenuVisibleWithForbidden *bool                  `protobuf:"varint,20,opt,name=menuVisibleWithForbidden,proto3,oneof" json:"menuVisibleWithForbidden,omitempty"` // 菜单可以看到，但是访问会被重定向到403
+	OpenInNewWindow          *bool                  `protobuf:"varint,21,opt,name=openInNewWindow,proto3,oneof" json:"openInNewWindow,omitempty"`                   // 在新窗口打开
+	Order                    *int32                 `protobuf:"varint,22,opt,name=order,proto3,oneof" json:"order,omitempty"`                                       // 排序编号，用于路由->菜单排序
+	Title                    *string                `protobuf:"bytes,23,opt,name=title,proto3,oneof" json:"title,omitempty"`                                        // 标题名称，路由上显示的标题
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *MenuMeta) Reset() {
+	*x = MenuMeta{}
+	mi := &file_permission_service_v1_menu_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MenuMeta) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MenuMeta) ProtoMessage() {}
+
+func (x *MenuMeta) ProtoReflect() protoreflect.Message {
+	mi := &file_permission_service_v1_menu_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MenuMeta.ProtoReflect.Descriptor instead.
+func (*MenuMeta) Descriptor() ([]byte, []int) {
+	return file_permission_service_v1_menu_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *MenuMeta) GetActiveIcon() string {
+	if x != nil && x.ActiveIcon != nil {
+		return *x.ActiveIcon
+	}
+	return ""
+}
+
+func (x *MenuMeta) GetActivePath() string {
+	if x != nil && x.ActivePath != nil {
+		return *x.ActivePath
+	}
+	return ""
+}
+
+func (x *MenuMeta) GetAffixTab() bool {
+	if x != nil && x.AffixTab != nil {
+		return *x.AffixTab
+	}
+	return false
+}
+
+func (x *MenuMeta) GetAffixTabOrder() int32 {
+	if x != nil && x.AffixTabOrder != nil {
+		return *x.AffixTabOrder
+	}
+	return 0
+}
+
+func (x *MenuMeta) GetAuthority() []string {
+	if x != nil {
+		return x.Authority
+	}
+	return nil
+}
+
+func (x *MenuMeta) GetBadge() string {
+	if x != nil && x.Badge != nil {
+		return *x.Badge
+	}
+	return ""
+}
+
+func (x *MenuMeta) GetBadgeType() string {
+	if x != nil && x.BadgeType != nil {
+		return *x.BadgeType
+	}
+	return ""
+}
+
+func (x *MenuMeta) GetBadgeVariants() string {
+	if x != nil && x.BadgeVariants != nil {
+		return *x.BadgeVariants
+	}
+	return ""
+}
+
+func (x *MenuMeta) GetHideChildrenInMenu() bool {
+	if x != nil && x.HideChildrenInMenu != nil {
+		return *x.HideChildrenInMenu
+	}
+	return false
+}
+
+func (x *MenuMeta) GetHideInBreadcrumb() bool {
+	if x != nil && x.HideInBreadcrumb != nil {
+		return *x.HideInBreadcrumb
+	}
+	return false
+}
+
+func (x *MenuMeta) GetHideInMenu() bool {
+	if x != nil && x.HideInMenu != nil {
+		return *x.HideInMenu
+	}
+	return false
+}
+
+func (x *MenuMeta) GetHideInTab() bool {
+	if x != nil && x.HideInTab != nil {
+		return *x.HideInTab
+	}
+	return false
+}
+
+func (x *MenuMeta) GetIcon() string {
+	if x != nil && x.Icon != nil {
+		return *x.Icon
+	}
+	return ""
+}
+
+func (x *MenuMeta) GetIframeSrc() string {
+	if x != nil && x.IframeSrc != nil {
+		return *x.IframeSrc
+	}
+	return ""
+}
+
+func (x *MenuMeta) GetIgnoreAccess() bool {
+	if x != nil && x.IgnoreAccess != nil {
+		return *x.IgnoreAccess
+	}
+	return false
+}
+
+func (x *MenuMeta) GetKeepAlive() bool {
+	if x != nil && x.KeepAlive != nil {
+		return *x.KeepAlive
+	}
+	return false
+}
+
+func (x *MenuMeta) GetLink() string {
+	if x != nil && x.Link != nil {
+		return *x.Link
+	}
+	return ""
+}
+
+func (x *MenuMeta) GetLoaded() bool {
+	if x != nil && x.Loaded != nil {
+		return *x.Loaded
+	}
+	return false
+}
+
+func (x *MenuMeta) GetMaxNumOfOpenTab() int32 {
+	if x != nil && x.MaxNumOfOpenTab != nil {
+		return *x.MaxNumOfOpenTab
+	}
+	return 0
+}
+
+func (x *MenuMeta) GetMenuVisibleWithForbidden() bool {
+	if x != nil && x.MenuVisibleWithForbidden != nil {
+		return *x.MenuVisibleWithForbidden
+	}
+	return false
+}
+
+func (x *MenuMeta) GetOpenInNewWindow() bool {
+	if x != nil && x.OpenInNewWindow != nil {
+		return *x.OpenInNewWindow
+	}
+	return false
+}
+
+func (x *MenuMeta) GetOrder() int32 {
+	if x != nil && x.Order != nil {
+		return *x.Order
+	}
+	return 0
+}
+
+func (x *MenuMeta) GetTitle() string {
+	if x != nil && x.Title != nil {
+		return *x.Title
+	}
+	return ""
+}
+
+// 路由项
+type MenuRouteItem struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Children      []*MenuRouteItem       `protobuf:"bytes,1,rep,name=children,proto3" json:"children,omitempty"`          // 子节点树
+	Path          *string                `protobuf:"bytes,10,opt,name=path,proto3,oneof" json:"path,omitempty"`           // 路由路径
+	Redirect      *string                `protobuf:"bytes,11,opt,name=redirect,proto3,oneof" json:"redirect,omitempty"`   // 重定向地址
+	Alias         *string                `protobuf:"bytes,12,opt,name=alias,proto3,oneof" json:"alias,omitempty"`         // 路由别名
+	Name          *string                `protobuf:"bytes,13,opt,name=name,proto3,oneof" json:"name,omitempty"`           // 路由命名，然后我们可以使用 name 而不是 path 来传递 to 属性给 <router-link>。
+	Component     *string                `protobuf:"bytes,14,opt,name=component,proto3,oneof" json:"component,omitempty"` // 指向的组件
+	Meta          *MenuMeta              `protobuf:"bytes,15,opt,name=meta,proto3,oneof" json:"meta,omitempty"`           // 路由元信息
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MenuRouteItem) Reset() {
+	*x = MenuRouteItem{}
+	mi := &file_permission_service_v1_menu_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MenuRouteItem) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MenuRouteItem) ProtoMessage() {}
+
+func (x *MenuRouteItem) ProtoReflect() protoreflect.Message {
+	mi := &file_permission_service_v1_menu_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MenuRouteItem.ProtoReflect.Descriptor instead.
+func (*MenuRouteItem) Descriptor() ([]byte, []int) {
+	return file_permission_service_v1_menu_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *MenuRouteItem) GetChildren() []*MenuRouteItem {
+	if x != nil {
+		return x.Children
+	}
+	return nil
+}
+
+func (x *MenuRouteItem) GetPath() string {
+	if x != nil && x.Path != nil {
+		return *x.Path
+	}
+	return ""
+}
+
+func (x *MenuRouteItem) GetRedirect() string {
+	if x != nil && x.Redirect != nil {
+		return *x.Redirect
+	}
+	return ""
+}
+
+func (x *MenuRouteItem) GetAlias() string {
+	if x != nil && x.Alias != nil {
+		return *x.Alias
+	}
+	return ""
+}
+
+func (x *MenuRouteItem) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *MenuRouteItem) GetComponent() string {
+	if x != nil && x.Component != nil {
+		return *x.Component
+	}
+	return ""
+}
+
+func (x *MenuRouteItem) GetMeta() *MenuMeta {
+	if x != nil {
+		return x.Meta
+	}
+	return nil
+}
+
 // 查询菜单列表 - 回应
 type ListMenuResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -314,7 +628,7 @@ type ListMenuResponse struct {
 
 func (x *ListMenuResponse) Reset() {
 	*x = ListMenuResponse{}
-	mi := &file_permission_service_v1_menu_proto_msgTypes[1]
+	mi := &file_permission_service_v1_menu_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -326,7 +640,7 @@ func (x *ListMenuResponse) String() string {
 func (*ListMenuResponse) ProtoMessage() {}
 
 func (x *ListMenuResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_menu_proto_msgTypes[1]
+	mi := &file_permission_service_v1_menu_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -339,7 +653,7 @@ func (x *ListMenuResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMenuResponse.ProtoReflect.Descriptor instead.
 func (*ListMenuResponse) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_menu_proto_rawDescGZIP(), []int{1}
+	return file_permission_service_v1_menu_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ListMenuResponse) GetItems() []*Menu {
@@ -370,7 +684,7 @@ type GetMenuRequest struct {
 
 func (x *GetMenuRequest) Reset() {
 	*x = GetMenuRequest{}
-	mi := &file_permission_service_v1_menu_proto_msgTypes[2]
+	mi := &file_permission_service_v1_menu_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -382,7 +696,7 @@ func (x *GetMenuRequest) String() string {
 func (*GetMenuRequest) ProtoMessage() {}
 
 func (x *GetMenuRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_menu_proto_msgTypes[2]
+	mi := &file_permission_service_v1_menu_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -395,7 +709,7 @@ func (x *GetMenuRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMenuRequest.ProtoReflect.Descriptor instead.
 func (*GetMenuRequest) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_menu_proto_rawDescGZIP(), []int{2}
+	return file_permission_service_v1_menu_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetMenuRequest) GetQueryBy() isGetMenuRequest_QueryBy {
@@ -441,7 +755,7 @@ type CreateMenuRequest struct {
 
 func (x *CreateMenuRequest) Reset() {
 	*x = CreateMenuRequest{}
-	mi := &file_permission_service_v1_menu_proto_msgTypes[3]
+	mi := &file_permission_service_v1_menu_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -453,7 +767,7 @@ func (x *CreateMenuRequest) String() string {
 func (*CreateMenuRequest) ProtoMessage() {}
 
 func (x *CreateMenuRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_menu_proto_msgTypes[3]
+	mi := &file_permission_service_v1_menu_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -466,7 +780,7 @@ func (x *CreateMenuRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateMenuRequest.ProtoReflect.Descriptor instead.
 func (*CreateMenuRequest) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_menu_proto_rawDescGZIP(), []int{3}
+	return file_permission_service_v1_menu_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CreateMenuRequest) GetData() *Menu {
@@ -489,7 +803,7 @@ type UpdateMenuRequest struct {
 
 func (x *UpdateMenuRequest) Reset() {
 	*x = UpdateMenuRequest{}
-	mi := &file_permission_service_v1_menu_proto_msgTypes[4]
+	mi := &file_permission_service_v1_menu_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -501,7 +815,7 @@ func (x *UpdateMenuRequest) String() string {
 func (*UpdateMenuRequest) ProtoMessage() {}
 
 func (x *UpdateMenuRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_menu_proto_msgTypes[4]
+	mi := &file_permission_service_v1_menu_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -514,7 +828,7 @@ func (x *UpdateMenuRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateMenuRequest.ProtoReflect.Descriptor instead.
 func (*UpdateMenuRequest) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_menu_proto_rawDescGZIP(), []int{4}
+	return file_permission_service_v1_menu_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *UpdateMenuRequest) GetId() uint32 {
@@ -556,7 +870,7 @@ type DeleteMenuRequest struct {
 
 func (x *DeleteMenuRequest) Reset() {
 	*x = DeleteMenuRequest{}
-	mi := &file_permission_service_v1_menu_proto_msgTypes[5]
+	mi := &file_permission_service_v1_menu_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -568,7 +882,7 @@ func (x *DeleteMenuRequest) String() string {
 func (*DeleteMenuRequest) ProtoMessage() {}
 
 func (x *DeleteMenuRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_menu_proto_msgTypes[5]
+	mi := &file_permission_service_v1_menu_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -581,7 +895,7 @@ func (x *DeleteMenuRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteMenuRequest.ProtoReflect.Descriptor instead.
 func (*DeleteMenuRequest) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_menu_proto_rawDescGZIP(), []int{5}
+	return file_permission_service_v1_menu_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DeleteMenuRequest) GetOperatorId() uint32 {
@@ -602,7 +916,7 @@ var File_permission_service_v1_menu_proto protoreflect.FileDescriptor
 
 const file_permission_service_v1_menu_proto_rawDesc = "" +
 	"\n" +
-	" permission/service/v1/menu.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a\"permission/service/v1/router.proto\"\xd6\v\n" +
+	" permission/service/v1/menu.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xd5\v\n" +
 	"\x04Menu\x12&\n" +
 	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b菜单IDH\x00R\x02id\x88\x01\x01\x12S\n" +
 	"\x06status\x18\x02 \x01(\x0e2\".permission.service.v1.Menu.StatusB\x12\xbaG\x0f\x92\x02\f菜单状态H\x01R\x06status\x88\x01\x01\x12M\n" +
@@ -612,8 +926,8 @@ const file_permission_service_v1_menu_proto_rawDesc = "" +
 	"\bredirect\x18\v \x01(\tB\x18\xe0A\x01\xbaG\x12\x92\x02\x0f重定向地址H\x04R\bredirect\x88\x01\x01\x120\n" +
 	"\x05alias\x18\f \x01(\tB\x15\xe0A\x01\xbaG\x0f\x92\x02\f路由别名H\x05R\x05alias\x88\x01\x01\x12\x85\x01\n" +
 	"\x04name\x18\r \x01(\tBl\xe0A\x01\xbaGf\x92\x02c路由命名，然后我们可以使用 name 而不是 path 来传递 to 属性给 <router-link>。H\x06R\x04name\x88\x01\x01\x12;\n" +
-	"\tcomponent\x18\x0e \x01(\tB\x18\xe0A\x01\xbaG\x12\x92\x02\x0f指向的组件H\aR\tcomponent\x88\x01\x01\x12S\n" +
-	"\x04meta\x18\x0f \x01(\v2 .permission.service.v1.RouteMetaB\x18\xe0A\x01\xbaG\x12\x92\x02\x0f路由元信息H\bR\x04meta\x88\x01\x01\x123\n" +
+	"\tcomponent\x18\x0e \x01(\tB\x18\xe0A\x01\xbaG\x12\x92\x02\x0f指向的组件H\aR\tcomponent\x88\x01\x01\x12R\n" +
+	"\x04meta\x18\x0f \x01(\v2\x1f.permission.service.v1.MenuMetaB\x18\xe0A\x01\xbaG\x12\x92\x02\x0f路由元信息H\bR\x04meta\x88\x01\x01\x123\n" +
 	"\tparent_id\x182 \x01(\rB\x11\xbaG\x0e\x92\x02\v父节点IDH\tR\bparentId\x88\x01\x01\x12K\n" +
 	"\bchildren\x183 \x03(\v2\x1b.permission.service.v1.MenuB\x12\xbaG\x0f\x92\x02\f子节点树R\bchildren\x125\n" +
 	"\n" +
@@ -656,7 +970,81 @@ const file_permission_service_v1_menu_proto_rawDesc = "" +
 	"\v_deleted_byB\r\n" +
 	"\v_created_atB\r\n" +
 	"\v_updated_atB\r\n" +
-	"\v_deleted_at\"[\n" +
+	"\v_deleted_at\"\xeb\x11\n" +
+	"\bMenuMeta\x12R\n" +
+	"\n" +
+	"activeIcon\x18\x01 \x01(\tB-\xe0A\x01\xbaG'\x92\x02$激活图标，用于：菜单、tabH\x00R\n" +
+	"activeIcon\x88\x01\x01\x12\x8b\x01\n" +
+	"\n" +
+	"activePath\x18\x02 \x01(\tBf\xe0A\x01\xbaG`\x92\x02]当前激活的菜单，有时候不想激活现有菜单，需要激活父级菜单时使用H\x01R\n" +
+	"activePath\x88\x01\x01\x12?\n" +
+	"\baffixTab\x18\x03 \x01(\bB\x1e\xe0A\x01\xbaG\x18\x92\x02\x15是否固定标签页H\x02R\baffixTab\x88\x01\x01\x12L\n" +
+	"\raffixTabOrder\x18\x04 \x01(\x05B!\xe0A\x01\xbaG\x1b\x92\x02\x18固定标签页的顺序H\x03R\raffixTabOrder\x88\x01\x01\x12`\n" +
+	"\tauthority\x18\x05 \x03(\tBB\xe0A\x01\xbaG<\x92\x029权限列表，需要特定的角色标识才可以访问R\tauthority\x12*\n" +
+	"\x05badge\x18\x06 \x01(\tB\x0f\xe0A\x01\xbaG\t\x92\x02\x06徽标H\x04R\x05badge\x88\x01\x01\x12K\n" +
+	"\tbadgeType\x18\a \x01(\tB(\xe0A\x01\xbaG\"\xc2\x01\x05\x12\x03dot\xc2\x01\b\x12\x06normal\x92\x02\f徽标类型H\x05R\tbadgeType\x88\x01\x01\x12\x80\x01\n" +
+	"\rbadgeVariants\x18\b \x01(\tBU\xe0A\x01\xbaGO\xc2\x01\t\x12\adefault\xc2\x01\r\x12\vdestructive\xc2\x01\t\x12\aprimary\xc2\x01\t\x12\asuccess\xc2\x01\t\x12\awarning\x92\x02\f徽标颜色H\x06R\rbadgeVariants\x88\x01\x01\x12h\n" +
+	"\x12hideChildrenInMenu\x18\t \x01(\bB3\xe0A\x01\xbaG-\x92\x02*当前路由的子级在菜单中不展现H\aR\x12hideChildrenInMenu\x88\x01\x01\x12^\n" +
+	"\x10hideInBreadcrumb\x18\n" +
+	" \x01(\bB-\xe0A\x01\xbaG'\x92\x02$当前路由在面包屑中不展现H\bR\x10hideInBreadcrumb\x88\x01\x01\x12O\n" +
+	"\n" +
+	"hideInMenu\x18\v \x01(\bB*\xe0A\x01\xbaG$\x92\x02!当前路由在菜单中不展现H\tR\n" +
+	"hideInMenu\x88\x01\x01\x12M\n" +
+	"\thideInTab\x18\f \x01(\bB*\xe0A\x01\xbaG$\x92\x02!当前路由在标签页不展现H\n" +
+	"R\thideInTab\x88\x01\x01\x12F\n" +
+	"\x04icon\x18\r \x01(\tB-\xe0A\x01\xbaG'\x92\x02$图标，用于：菜单、标签页H\vR\x04icon\x88\x01\x01\x129\n" +
+	"\tiframeSrc\x18\x0e \x01(\tB\x16\xe0A\x01\xbaG\x10\x92\x02\riframe 地址H\fR\tiframeSrc\x88\x01\x01\x12S\n" +
+	"\fignoreAccess\x18\x0f \x01(\bB*\xe0A\x01\xbaG$\x92\x02!忽略权限，直接可以访问H\rR\fignoreAccess\x88\x01\x01\x12A\n" +
+	"\tkeepAlive\x18\x10 \x01(\bB\x1e\xe0A\x01\xbaG\x18\x92\x02\x15开启KeepAlive缓存H\x0eR\tkeepAlive\x88\x01\x01\x125\n" +
+	"\x04link\x18\x11 \x01(\tB\x1c\xe0A\x01\xbaG\x16\x92\x02\x13外链-跳转路径H\x0fR\x04link\x88\x01\x01\x12A\n" +
+	"\x06loaded\x18\x12 \x01(\bB$\xe0A\x01\xbaG\x1e\x92\x02\x1b路由是否已经加载过H\x10R\x06loaded\x88\x01\x01\x12S\n" +
+	"\x0fmaxNumOfOpenTab\x18\x13 \x01(\x05B$\xe0A\x01\xbaG\x1e\x92\x02\x1b标签页最大打开数量H\x11R\x0fmaxNumOfOpenTab\x88\x01\x01\x12\x80\x01\n" +
+	"\x18menuVisibleWithForbidden\x18\x14 \x01(\bB?\xe0A\x01\xbaG9\x92\x026菜单可以看到，但是访问会被重定向到403H\x12R\x18menuVisibleWithForbidden\x88\x01\x01\x12J\n" +
+	"\x0fopenInNewWindow\x18\x15 \x01(\bB\x1b\xe0A\x01\xbaG\x15\x92\x02\x12在新窗口打开H\x13R\x0fopenInNewWindow\x88\x01\x01\x12M\n" +
+	"\x05order\x18\x16 \x01(\x05B2\xe0A\x01\xbaG,\x92\x02)排序编号，用于路由->菜单排序H\x14R\x05order\x88\x01\x01\x12K\n" +
+	"\x05title\x18\x17 \x01(\tB0\xe0A\x01\xbaG*\x92\x02'标题名称，路由上显示的标题H\x15R\x05title\x88\x01\x01B\r\n" +
+	"\v_activeIconB\r\n" +
+	"\v_activePathB\v\n" +
+	"\t_affixTabB\x10\n" +
+	"\x0e_affixTabOrderB\b\n" +
+	"\x06_badgeB\f\n" +
+	"\n" +
+	"_badgeTypeB\x10\n" +
+	"\x0e_badgeVariantsB\x15\n" +
+	"\x13_hideChildrenInMenuB\x13\n" +
+	"\x11_hideInBreadcrumbB\r\n" +
+	"\v_hideInMenuB\f\n" +
+	"\n" +
+	"_hideInTabB\a\n" +
+	"\x05_iconB\f\n" +
+	"\n" +
+	"_iframeSrcB\x0f\n" +
+	"\r_ignoreAccessB\f\n" +
+	"\n" +
+	"_keepAliveB\a\n" +
+	"\x05_linkB\t\n" +
+	"\a_loadedB\x12\n" +
+	"\x10_maxNumOfOpenTabB\x1b\n" +
+	"\x19_menuVisibleWithForbiddenB\x12\n" +
+	"\x10_openInNewWindowB\b\n" +
+	"\x06_orderB\b\n" +
+	"\x06_title\"\xdb\x04\n" +
+	"\rMenuRouteItem\x12T\n" +
+	"\bchildren\x18\x01 \x03(\v2$.permission.service.v1.MenuRouteItemB\x12\xbaG\x0f\x92\x02\f子节点树R\bchildren\x12.\n" +
+	"\x04path\x18\n" +
+	" \x01(\tB\x15\xe0A\x01\xbaG\x0f\x92\x02\f路由路径H\x00R\x04path\x88\x01\x01\x129\n" +
+	"\bredirect\x18\v \x01(\tB\x18\xe0A\x01\xbaG\x12\x92\x02\x0f重定向地址H\x01R\bredirect\x88\x01\x01\x120\n" +
+	"\x05alias\x18\f \x01(\tB\x15\xe0A\x01\xbaG\x0f\x92\x02\f路由别名H\x02R\x05alias\x88\x01\x01\x12\x85\x01\n" +
+	"\x04name\x18\r \x01(\tBl\xe0A\x01\xbaGf\x92\x02c路由命名，然后我们可以使用 name 而不是 path 来传递 to 属性给 <router-link>。H\x03R\x04name\x88\x01\x01\x12;\n" +
+	"\tcomponent\x18\x0e \x01(\tB\x18\xe0A\x01\xbaG\x12\x92\x02\x0f指向的组件H\x04R\tcomponent\x88\x01\x01\x12R\n" +
+	"\x04meta\x18\x0f \x01(\v2\x1f.permission.service.v1.MenuMetaB\x18\xe0A\x01\xbaG\x12\x92\x02\x0f路由元信息H\x05R\x04meta\x88\x01\x01B\a\n" +
+	"\x05_pathB\v\n" +
+	"\t_redirectB\b\n" +
+	"\x06_aliasB\a\n" +
+	"\x05_nameB\f\n" +
+	"\n" +
+	"_componentB\a\n" +
+	"\x05_meta\"[\n" +
 	"\x10ListMenuResponse\x121\n" +
 	"\x05items\x18\x01 \x03(\v2\x1b.permission.service.v1.MenuR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xc1\x01\n" +
@@ -703,50 +1091,53 @@ func file_permission_service_v1_menu_proto_rawDescGZIP() []byte {
 }
 
 var file_permission_service_v1_menu_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_permission_service_v1_menu_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_permission_service_v1_menu_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_permission_service_v1_menu_proto_goTypes = []any{
 	(Menu_Type)(0),                // 0: permission.service.v1.Menu.Type
 	(Menu_Status)(0),              // 1: permission.service.v1.Menu.Status
 	(*Menu)(nil),                  // 2: permission.service.v1.Menu
-	(*ListMenuResponse)(nil),      // 3: permission.service.v1.ListMenuResponse
-	(*GetMenuRequest)(nil),        // 4: permission.service.v1.GetMenuRequest
-	(*CreateMenuRequest)(nil),     // 5: permission.service.v1.CreateMenuRequest
-	(*UpdateMenuRequest)(nil),     // 6: permission.service.v1.UpdateMenuRequest
-	(*DeleteMenuRequest)(nil),     // 7: permission.service.v1.DeleteMenuRequest
-	(*RouteMeta)(nil),             // 8: permission.service.v1.RouteMeta
-	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil), // 10: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),      // 11: pagination.PagingRequest
-	(*emptypb.Empty)(nil),         // 12: google.protobuf.Empty
+	(*MenuMeta)(nil),              // 3: permission.service.v1.MenuMeta
+	(*MenuRouteItem)(nil),         // 4: permission.service.v1.MenuRouteItem
+	(*ListMenuResponse)(nil),      // 5: permission.service.v1.ListMenuResponse
+	(*GetMenuRequest)(nil),        // 6: permission.service.v1.GetMenuRequest
+	(*CreateMenuRequest)(nil),     // 7: permission.service.v1.CreateMenuRequest
+	(*UpdateMenuRequest)(nil),     // 8: permission.service.v1.UpdateMenuRequest
+	(*DeleteMenuRequest)(nil),     // 9: permission.service.v1.DeleteMenuRequest
+	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil), // 11: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),      // 12: pagination.PagingRequest
+	(*emptypb.Empty)(nil),         // 13: google.protobuf.Empty
 }
 var file_permission_service_v1_menu_proto_depIdxs = []int32{
 	1,  // 0: permission.service.v1.Menu.status:type_name -> permission.service.v1.Menu.Status
 	0,  // 1: permission.service.v1.Menu.type:type_name -> permission.service.v1.Menu.Type
-	8,  // 2: permission.service.v1.Menu.meta:type_name -> permission.service.v1.RouteMeta
+	3,  // 2: permission.service.v1.Menu.meta:type_name -> permission.service.v1.MenuMeta
 	2,  // 3: permission.service.v1.Menu.children:type_name -> permission.service.v1.Menu
-	9,  // 4: permission.service.v1.Menu.created_at:type_name -> google.protobuf.Timestamp
-	9,  // 5: permission.service.v1.Menu.updated_at:type_name -> google.protobuf.Timestamp
-	9,  // 6: permission.service.v1.Menu.deleted_at:type_name -> google.protobuf.Timestamp
-	2,  // 7: permission.service.v1.ListMenuResponse.items:type_name -> permission.service.v1.Menu
-	10, // 8: permission.service.v1.GetMenuRequest.view_mask:type_name -> google.protobuf.FieldMask
-	2,  // 9: permission.service.v1.CreateMenuRequest.data:type_name -> permission.service.v1.Menu
-	2,  // 10: permission.service.v1.UpdateMenuRequest.data:type_name -> permission.service.v1.Menu
-	10, // 11: permission.service.v1.UpdateMenuRequest.update_mask:type_name -> google.protobuf.FieldMask
-	11, // 12: permission.service.v1.MenuService.List:input_type -> pagination.PagingRequest
-	4,  // 13: permission.service.v1.MenuService.Get:input_type -> permission.service.v1.GetMenuRequest
-	5,  // 14: permission.service.v1.MenuService.Create:input_type -> permission.service.v1.CreateMenuRequest
-	6,  // 15: permission.service.v1.MenuService.Update:input_type -> permission.service.v1.UpdateMenuRequest
-	7,  // 16: permission.service.v1.MenuService.Delete:input_type -> permission.service.v1.DeleteMenuRequest
-	3,  // 17: permission.service.v1.MenuService.List:output_type -> permission.service.v1.ListMenuResponse
-	2,  // 18: permission.service.v1.MenuService.Get:output_type -> permission.service.v1.Menu
-	12, // 19: permission.service.v1.MenuService.Create:output_type -> google.protobuf.Empty
-	12, // 20: permission.service.v1.MenuService.Update:output_type -> google.protobuf.Empty
-	12, // 21: permission.service.v1.MenuService.Delete:output_type -> google.protobuf.Empty
-	17, // [17:22] is the sub-list for method output_type
-	12, // [12:17] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	10, // 4: permission.service.v1.Menu.created_at:type_name -> google.protobuf.Timestamp
+	10, // 5: permission.service.v1.Menu.updated_at:type_name -> google.protobuf.Timestamp
+	10, // 6: permission.service.v1.Menu.deleted_at:type_name -> google.protobuf.Timestamp
+	4,  // 7: permission.service.v1.MenuRouteItem.children:type_name -> permission.service.v1.MenuRouteItem
+	3,  // 8: permission.service.v1.MenuRouteItem.meta:type_name -> permission.service.v1.MenuMeta
+	2,  // 9: permission.service.v1.ListMenuResponse.items:type_name -> permission.service.v1.Menu
+	11, // 10: permission.service.v1.GetMenuRequest.view_mask:type_name -> google.protobuf.FieldMask
+	2,  // 11: permission.service.v1.CreateMenuRequest.data:type_name -> permission.service.v1.Menu
+	2,  // 12: permission.service.v1.UpdateMenuRequest.data:type_name -> permission.service.v1.Menu
+	11, // 13: permission.service.v1.UpdateMenuRequest.update_mask:type_name -> google.protobuf.FieldMask
+	12, // 14: permission.service.v1.MenuService.List:input_type -> pagination.PagingRequest
+	6,  // 15: permission.service.v1.MenuService.Get:input_type -> permission.service.v1.GetMenuRequest
+	7,  // 16: permission.service.v1.MenuService.Create:input_type -> permission.service.v1.CreateMenuRequest
+	8,  // 17: permission.service.v1.MenuService.Update:input_type -> permission.service.v1.UpdateMenuRequest
+	9,  // 18: permission.service.v1.MenuService.Delete:input_type -> permission.service.v1.DeleteMenuRequest
+	5,  // 19: permission.service.v1.MenuService.List:output_type -> permission.service.v1.ListMenuResponse
+	2,  // 20: permission.service.v1.MenuService.Get:output_type -> permission.service.v1.Menu
+	13, // 21: permission.service.v1.MenuService.Create:output_type -> google.protobuf.Empty
+	13, // 22: permission.service.v1.MenuService.Update:output_type -> google.protobuf.Empty
+	13, // 23: permission.service.v1.MenuService.Delete:output_type -> google.protobuf.Empty
+	19, // [19:24] is the sub-list for method output_type
+	14, // [14:19] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_permission_service_v1_menu_proto_init() }
@@ -754,20 +1145,21 @@ func file_permission_service_v1_menu_proto_init() {
 	if File_permission_service_v1_menu_proto != nil {
 		return
 	}
-	file_permission_service_v1_router_proto_init()
 	file_permission_service_v1_menu_proto_msgTypes[0].OneofWrappers = []any{}
-	file_permission_service_v1_menu_proto_msgTypes[2].OneofWrappers = []any{
+	file_permission_service_v1_menu_proto_msgTypes[1].OneofWrappers = []any{}
+	file_permission_service_v1_menu_proto_msgTypes[2].OneofWrappers = []any{}
+	file_permission_service_v1_menu_proto_msgTypes[4].OneofWrappers = []any{
 		(*GetMenuRequest_Id)(nil),
 	}
-	file_permission_service_v1_menu_proto_msgTypes[4].OneofWrappers = []any{}
-	file_permission_service_v1_menu_proto_msgTypes[5].OneofWrappers = []any{}
+	file_permission_service_v1_menu_proto_msgTypes[6].OneofWrappers = []any{}
+	file_permission_service_v1_menu_proto_msgTypes[7].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_permission_service_v1_menu_proto_rawDesc), len(file_permission_service_v1_menu_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -64,7 +64,7 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	userTokenCacheRepo := data.NewUserTokenRepo(context, client, authenticator)
 	authenticationService := service.NewAuthenticationService(context, userRepo, userCredentialRepo, roleRepo, tenantRepo, membershipRepo, orgUnitRepo, permissionRepo, userTokenCacheRepo, authenticator)
 	menuRepo := data.NewMenuRepo(context, entClient)
-	routerService := service.NewRouterService(context, menuRepo, roleRepo, userRepo)
+	adminPortalService := service.NewRouterService(context, menuRepo, roleRepo, userRepo)
 	dictTypeRepo := data.NewDictTypeRepo(context, entClient)
 	dictEntryRepo := data.NewDictEntryRepo(context, entClient)
 	dictService := service.NewDictService(context, dictTypeRepo, dictEntryRepo)
@@ -106,7 +106,7 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	internalMessageService := service.NewInternalMessageService(context, internalMessageRepo, internalMessageCategoryRepo, internalMessageRecipientRepo, userRepo, sseServer, userTokenCacheRepo)
 	internalMessageCategoryService := service.NewInternalMessageCategoryService(context, internalMessageCategoryRepo)
 	internalMessageRecipientService := service.NewInternalMessageRecipientService(context, internalMessageRepo, internalMessageRecipientRepo)
-	httpServer, err := server.NewRestServer(context, v, authorizer, authenticationService, routerService, dictService, ossService, uEditorService, fileService, taskService, loginPolicyService, tenantService, userService, userProfileService, roleService, positionService, orgUnitService, menuService, apiService, permissionService, permissionGroupService, permissionAuditLogService, policyEvaluationLogService, loginAuditLogService, apiAuditLogService, operationAuditLogService, dataAccessAuditLogService, internalMessageService, internalMessageCategoryService, internalMessageRecipientService)
+	httpServer, err := server.NewRestServer(context, v, authorizer, authenticationService, adminPortalService, dictService, ossService, uEditorService, fileService, taskService, loginPolicyService, tenantService, userService, userProfileService, roleService, positionService, orgUnitService, menuService, apiService, permissionService, permissionGroupService, permissionAuditLogService, policyEvaluationLogService, loginAuditLogService, apiAuditLogService, operationAuditLogService, dataAccessAuditLogService, internalMessageService, internalMessageCategoryService, internalMessageRecipientService)
 	if err != nil {
 		cleanup2()
 		cleanup()

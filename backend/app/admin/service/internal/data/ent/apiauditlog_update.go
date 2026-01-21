@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	servicev1 "go-wind-admin/api/gen/go/audit/service/v1"
+	auditpb "go-wind-admin/api/gen/go/audit/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 
@@ -97,7 +97,7 @@ func (_u *ApiAuditLogUpdate) ClearIPAddress() *ApiAuditLogUpdate {
 }
 
 // SetGeoLocation sets the "geo_location" field.
-func (_u *ApiAuditLogUpdate) SetGeoLocation(v *servicev1.GeoLocation) *ApiAuditLogUpdate {
+func (_u *ApiAuditLogUpdate) SetGeoLocation(v *auditpb.GeoLocation) *ApiAuditLogUpdate {
 	_u.mutation.SetGeoLocation(v)
 	return _u
 }
@@ -109,7 +109,7 @@ func (_u *ApiAuditLogUpdate) ClearGeoLocation() *ApiAuditLogUpdate {
 }
 
 // SetDeviceInfo sets the "device_info" field.
-func (_u *ApiAuditLogUpdate) SetDeviceInfo(v *servicev1.DeviceInfo) *ApiAuditLogUpdate {
+func (_u *ApiAuditLogUpdate) SetDeviceInfo(v *auditpb.DeviceInfo) *ApiAuditLogUpdate {
 	_u.mutation.SetDeviceInfo(v)
 	return _u
 }
@@ -828,7 +828,7 @@ func (_u *ApiAuditLogUpdateOne) ClearIPAddress() *ApiAuditLogUpdateOne {
 }
 
 // SetGeoLocation sets the "geo_location" field.
-func (_u *ApiAuditLogUpdateOne) SetGeoLocation(v *servicev1.GeoLocation) *ApiAuditLogUpdateOne {
+func (_u *ApiAuditLogUpdateOne) SetGeoLocation(v *auditpb.GeoLocation) *ApiAuditLogUpdateOne {
 	_u.mutation.SetGeoLocation(v)
 	return _u
 }
@@ -840,7 +840,7 @@ func (_u *ApiAuditLogUpdateOne) ClearGeoLocation() *ApiAuditLogUpdateOne {
 }
 
 // SetDeviceInfo sets the "device_info" field.
-func (_u *ApiAuditLogUpdateOne) SetDeviceInfo(v *servicev1.DeviceInfo) *ApiAuditLogUpdateOne {
+func (_u *ApiAuditLogUpdateOne) SetDeviceInfo(v *auditpb.DeviceInfo) *ApiAuditLogUpdateOne {
 	_u.mutation.SetDeviceInfo(v)
 	return _u
 }

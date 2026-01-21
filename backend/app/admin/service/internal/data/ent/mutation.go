@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	servicev1 "go-wind-admin/api/gen/go/audit/service/v1"
+	auditpb "go-wind-admin/api/gen/go/audit/service/v1"
 	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
 	taskpb "go-wind-admin/api/gen/go/task/service/v1"
 	userpb "go-wind-admin/api/gen/go/user/service/v1"
@@ -1505,8 +1505,8 @@ type ApiAuditLogMutation struct {
 	adduser_id      *int32
 	username        *string
 	ip_address      *string
-	geo_location    **servicev1.GeoLocation
-	device_info     **servicev1.DeviceInfo
+	geo_location    **auditpb.GeoLocation
+	device_info     **auditpb.DeviceInfo
 	referer         *string
 	app_version     *string
 	http_method     *string
@@ -1927,12 +1927,12 @@ func (m *ApiAuditLogMutation) ResetIPAddress() {
 }
 
 // SetGeoLocation sets the "geo_location" field.
-func (m *ApiAuditLogMutation) SetGeoLocation(sl *servicev1.GeoLocation) {
-	m.geo_location = &sl
+func (m *ApiAuditLogMutation) SetGeoLocation(al *auditpb.GeoLocation) {
+	m.geo_location = &al
 }
 
 // GeoLocation returns the value of the "geo_location" field in the mutation.
-func (m *ApiAuditLogMutation) GeoLocation() (r *servicev1.GeoLocation, exists bool) {
+func (m *ApiAuditLogMutation) GeoLocation() (r *auditpb.GeoLocation, exists bool) {
 	v := m.geo_location
 	if v == nil {
 		return
@@ -1943,7 +1943,7 @@ func (m *ApiAuditLogMutation) GeoLocation() (r *servicev1.GeoLocation, exists bo
 // OldGeoLocation returns the old "geo_location" field's value of the ApiAuditLog entity.
 // If the ApiAuditLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiAuditLogMutation) OldGeoLocation(ctx context.Context) (v *servicev1.GeoLocation, err error) {
+func (m *ApiAuditLogMutation) OldGeoLocation(ctx context.Context) (v *auditpb.GeoLocation, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldGeoLocation is only allowed on UpdateOne operations")
 	}
@@ -1976,12 +1976,12 @@ func (m *ApiAuditLogMutation) ResetGeoLocation() {
 }
 
 // SetDeviceInfo sets the "device_info" field.
-func (m *ApiAuditLogMutation) SetDeviceInfo(si *servicev1.DeviceInfo) {
-	m.device_info = &si
+func (m *ApiAuditLogMutation) SetDeviceInfo(ai *auditpb.DeviceInfo) {
+	m.device_info = &ai
 }
 
 // DeviceInfo returns the value of the "device_info" field in the mutation.
-func (m *ApiAuditLogMutation) DeviceInfo() (r *servicev1.DeviceInfo, exists bool) {
+func (m *ApiAuditLogMutation) DeviceInfo() (r *auditpb.DeviceInfo, exists bool) {
 	v := m.device_info
 	if v == nil {
 		return
@@ -1992,7 +1992,7 @@ func (m *ApiAuditLogMutation) DeviceInfo() (r *servicev1.DeviceInfo, exists bool
 // OldDeviceInfo returns the old "device_info" field's value of the ApiAuditLog entity.
 // If the ApiAuditLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiAuditLogMutation) OldDeviceInfo(ctx context.Context) (v *servicev1.DeviceInfo, err error) {
+func (m *ApiAuditLogMutation) OldDeviceInfo(ctx context.Context) (v *auditpb.DeviceInfo, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeviceInfo is only allowed on UpdateOne operations")
 	}
@@ -3332,14 +3332,14 @@ func (m *ApiAuditLogMutation) SetField(name string, value ent.Value) error {
 		m.SetIPAddress(v)
 		return nil
 	case apiauditlog.FieldGeoLocation:
-		v, ok := value.(*servicev1.GeoLocation)
+		v, ok := value.(*auditpb.GeoLocation)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetGeoLocation(v)
 		return nil
 	case apiauditlog.FieldDeviceInfo:
-		v, ok := value.(*servicev1.DeviceInfo)
+		v, ok := value.(*auditpb.DeviceInfo)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -3896,8 +3896,8 @@ type DataAccessAuditLogMutation struct {
 	adduser_id       *int32
 	username         *string
 	ip_address       *string
-	geo_location     **servicev1.GeoLocation
-	device_info      **servicev1.DeviceInfo
+	geo_location     **auditpb.GeoLocation
+	device_info      **auditpb.DeviceInfo
 	request_id       *string
 	trace_id         *string
 	data_source      *string
@@ -4317,12 +4317,12 @@ func (m *DataAccessAuditLogMutation) ResetIPAddress() {
 }
 
 // SetGeoLocation sets the "geo_location" field.
-func (m *DataAccessAuditLogMutation) SetGeoLocation(sl *servicev1.GeoLocation) {
-	m.geo_location = &sl
+func (m *DataAccessAuditLogMutation) SetGeoLocation(al *auditpb.GeoLocation) {
+	m.geo_location = &al
 }
 
 // GeoLocation returns the value of the "geo_location" field in the mutation.
-func (m *DataAccessAuditLogMutation) GeoLocation() (r *servicev1.GeoLocation, exists bool) {
+func (m *DataAccessAuditLogMutation) GeoLocation() (r *auditpb.GeoLocation, exists bool) {
 	v := m.geo_location
 	if v == nil {
 		return
@@ -4333,7 +4333,7 @@ func (m *DataAccessAuditLogMutation) GeoLocation() (r *servicev1.GeoLocation, ex
 // OldGeoLocation returns the old "geo_location" field's value of the DataAccessAuditLog entity.
 // If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DataAccessAuditLogMutation) OldGeoLocation(ctx context.Context) (v *servicev1.GeoLocation, err error) {
+func (m *DataAccessAuditLogMutation) OldGeoLocation(ctx context.Context) (v *auditpb.GeoLocation, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldGeoLocation is only allowed on UpdateOne operations")
 	}
@@ -4366,12 +4366,12 @@ func (m *DataAccessAuditLogMutation) ResetGeoLocation() {
 }
 
 // SetDeviceInfo sets the "device_info" field.
-func (m *DataAccessAuditLogMutation) SetDeviceInfo(si *servicev1.DeviceInfo) {
-	m.device_info = &si
+func (m *DataAccessAuditLogMutation) SetDeviceInfo(ai *auditpb.DeviceInfo) {
+	m.device_info = &ai
 }
 
 // DeviceInfo returns the value of the "device_info" field in the mutation.
-func (m *DataAccessAuditLogMutation) DeviceInfo() (r *servicev1.DeviceInfo, exists bool) {
+func (m *DataAccessAuditLogMutation) DeviceInfo() (r *auditpb.DeviceInfo, exists bool) {
 	v := m.device_info
 	if v == nil {
 		return
@@ -4382,7 +4382,7 @@ func (m *DataAccessAuditLogMutation) DeviceInfo() (r *servicev1.DeviceInfo, exis
 // OldDeviceInfo returns the old "device_info" field's value of the DataAccessAuditLog entity.
 // If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DataAccessAuditLogMutation) OldDeviceInfo(ctx context.Context) (v *servicev1.DeviceInfo, err error) {
+func (m *DataAccessAuditLogMutation) OldDeviceInfo(ctx context.Context) (v *auditpb.DeviceInfo, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeviceInfo is only allowed on UpdateOne operations")
 	}
@@ -5666,14 +5666,14 @@ func (m *DataAccessAuditLogMutation) SetField(name string, value ent.Value) erro
 		m.SetIPAddress(v)
 		return nil
 	case dataaccessauditlog.FieldGeoLocation:
-		v, ok := value.(*servicev1.GeoLocation)
+		v, ok := value.(*auditpb.GeoLocation)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetGeoLocation(v)
 		return nil
 	case dataaccessauditlog.FieldDeviceInfo:
-		v, ok := value.(*servicev1.DeviceInfo)
+		v, ok := value.(*auditpb.DeviceInfo)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -16214,9 +16214,9 @@ type LoginAuditLogMutation struct {
 	adduser_id         *int32
 	username           *string
 	ip_address         *string
-	geo_location       **servicev1.GeoLocation
+	geo_location       **auditpb.GeoLocation
 	session_id         *string
-	device_info        **servicev1.DeviceInfo
+	device_info        **auditpb.DeviceInfo
 	request_id         *string
 	trace_id           *string
 	action_type        *loginauditlog.ActionType
@@ -16629,12 +16629,12 @@ func (m *LoginAuditLogMutation) ResetIPAddress() {
 }
 
 // SetGeoLocation sets the "geo_location" field.
-func (m *LoginAuditLogMutation) SetGeoLocation(sl *servicev1.GeoLocation) {
-	m.geo_location = &sl
+func (m *LoginAuditLogMutation) SetGeoLocation(al *auditpb.GeoLocation) {
+	m.geo_location = &al
 }
 
 // GeoLocation returns the value of the "geo_location" field in the mutation.
-func (m *LoginAuditLogMutation) GeoLocation() (r *servicev1.GeoLocation, exists bool) {
+func (m *LoginAuditLogMutation) GeoLocation() (r *auditpb.GeoLocation, exists bool) {
 	v := m.geo_location
 	if v == nil {
 		return
@@ -16645,7 +16645,7 @@ func (m *LoginAuditLogMutation) GeoLocation() (r *servicev1.GeoLocation, exists 
 // OldGeoLocation returns the old "geo_location" field's value of the LoginAuditLog entity.
 // If the LoginAuditLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *LoginAuditLogMutation) OldGeoLocation(ctx context.Context) (v *servicev1.GeoLocation, err error) {
+func (m *LoginAuditLogMutation) OldGeoLocation(ctx context.Context) (v *auditpb.GeoLocation, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldGeoLocation is only allowed on UpdateOne operations")
 	}
@@ -16727,12 +16727,12 @@ func (m *LoginAuditLogMutation) ResetSessionID() {
 }
 
 // SetDeviceInfo sets the "device_info" field.
-func (m *LoginAuditLogMutation) SetDeviceInfo(si *servicev1.DeviceInfo) {
-	m.device_info = &si
+func (m *LoginAuditLogMutation) SetDeviceInfo(ai *auditpb.DeviceInfo) {
+	m.device_info = &ai
 }
 
 // DeviceInfo returns the value of the "device_info" field in the mutation.
-func (m *LoginAuditLogMutation) DeviceInfo() (r *servicev1.DeviceInfo, exists bool) {
+func (m *LoginAuditLogMutation) DeviceInfo() (r *auditpb.DeviceInfo, exists bool) {
 	v := m.device_info
 	if v == nil {
 		return
@@ -16743,7 +16743,7 @@ func (m *LoginAuditLogMutation) DeviceInfo() (r *servicev1.DeviceInfo, exists bo
 // OldDeviceInfo returns the old "device_info" field's value of the LoginAuditLog entity.
 // If the LoginAuditLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *LoginAuditLogMutation) OldDeviceInfo(ctx context.Context) (v *servicev1.DeviceInfo, err error) {
+func (m *LoginAuditLogMutation) OldDeviceInfo(ctx context.Context) (v *auditpb.DeviceInfo, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeviceInfo is only allowed on UpdateOne operations")
 	}
@@ -17637,7 +17637,7 @@ func (m *LoginAuditLogMutation) SetField(name string, value ent.Value) error {
 		m.SetIPAddress(v)
 		return nil
 	case loginauditlog.FieldGeoLocation:
-		v, ok := value.(*servicev1.GeoLocation)
+		v, ok := value.(*auditpb.GeoLocation)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -17651,7 +17651,7 @@ func (m *LoginAuditLogMutation) SetField(name string, value ent.Value) error {
 		m.SetSessionID(v)
 		return nil
 	case loginauditlog.FieldDeviceInfo:
-		v, ok := value.(*servicev1.DeviceInfo)
+		v, ok := value.(*auditpb.DeviceInfo)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -26370,7 +26370,7 @@ type MenuMutation struct {
 	alias           *string
 	name            *string
 	component       *string
-	meta            **permissionpb.RouteMeta
+	meta            **permissionpb.MenuMeta
 	clearedFields   map[string]struct{}
 	parent          *uint32
 	clearedparent   bool
@@ -27272,12 +27272,12 @@ func (m *MenuMutation) ResetComponent() {
 }
 
 // SetMeta sets the "meta" field.
-func (m *MenuMutation) SetMeta(pm *permissionpb.RouteMeta) {
+func (m *MenuMutation) SetMeta(pm *permissionpb.MenuMeta) {
 	m.meta = &pm
 }
 
 // Meta returns the value of the "meta" field in the mutation.
-func (m *MenuMutation) Meta() (r *permissionpb.RouteMeta, exists bool) {
+func (m *MenuMutation) Meta() (r *permissionpb.MenuMeta, exists bool) {
 	v := m.meta
 	if v == nil {
 		return
@@ -27288,7 +27288,7 @@ func (m *MenuMutation) Meta() (r *permissionpb.RouteMeta, exists bool) {
 // OldMeta returns the old "meta" field's value of the Menu entity.
 // If the Menu object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldMeta(ctx context.Context) (v *permissionpb.RouteMeta, err error) {
+func (m *MenuMutation) OldMeta(ctx context.Context) (v *permissionpb.MenuMeta, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldMeta is only allowed on UpdateOne operations")
 	}
@@ -27680,7 +27680,7 @@ func (m *MenuMutation) SetField(name string, value ent.Value) error {
 		m.SetComponent(v)
 		return nil
 	case menu.FieldMeta:
-		v, ok := value.(*permissionpb.RouteMeta)
+		v, ok := value.(*permissionpb.MenuMeta)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -28044,8 +28044,8 @@ type OperationAuditLogMutation struct {
 	success         *bool
 	failure_reason  *string
 	ip_address      *string
-	geo_location    **servicev1.GeoLocation
-	device_info     **servicev1.DeviceInfo
+	geo_location    **auditpb.GeoLocation
+	device_info     **auditpb.DeviceInfo
 	log_hash        *string
 	signature       *[]byte
 	clearedFields   map[string]struct{}
@@ -28936,12 +28936,12 @@ func (m *OperationAuditLogMutation) ResetIPAddress() {
 }
 
 // SetGeoLocation sets the "geo_location" field.
-func (m *OperationAuditLogMutation) SetGeoLocation(sl *servicev1.GeoLocation) {
-	m.geo_location = &sl
+func (m *OperationAuditLogMutation) SetGeoLocation(al *auditpb.GeoLocation) {
+	m.geo_location = &al
 }
 
 // GeoLocation returns the value of the "geo_location" field in the mutation.
-func (m *OperationAuditLogMutation) GeoLocation() (r *servicev1.GeoLocation, exists bool) {
+func (m *OperationAuditLogMutation) GeoLocation() (r *auditpb.GeoLocation, exists bool) {
 	v := m.geo_location
 	if v == nil {
 		return
@@ -28952,7 +28952,7 @@ func (m *OperationAuditLogMutation) GeoLocation() (r *servicev1.GeoLocation, exi
 // OldGeoLocation returns the old "geo_location" field's value of the OperationAuditLog entity.
 // If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OperationAuditLogMutation) OldGeoLocation(ctx context.Context) (v *servicev1.GeoLocation, err error) {
+func (m *OperationAuditLogMutation) OldGeoLocation(ctx context.Context) (v *auditpb.GeoLocation, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldGeoLocation is only allowed on UpdateOne operations")
 	}
@@ -28985,12 +28985,12 @@ func (m *OperationAuditLogMutation) ResetGeoLocation() {
 }
 
 // SetDeviceInfo sets the "device_info" field.
-func (m *OperationAuditLogMutation) SetDeviceInfo(si *servicev1.DeviceInfo) {
-	m.device_info = &si
+func (m *OperationAuditLogMutation) SetDeviceInfo(ai *auditpb.DeviceInfo) {
+	m.device_info = &ai
 }
 
 // DeviceInfo returns the value of the "device_info" field in the mutation.
-func (m *OperationAuditLogMutation) DeviceInfo() (r *servicev1.DeviceInfo, exists bool) {
+func (m *OperationAuditLogMutation) DeviceInfo() (r *auditpb.DeviceInfo, exists bool) {
 	v := m.device_info
 	if v == nil {
 		return
@@ -29001,7 +29001,7 @@ func (m *OperationAuditLogMutation) DeviceInfo() (r *servicev1.DeviceInfo, exist
 // OldDeviceInfo returns the old "device_info" field's value of the OperationAuditLog entity.
 // If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *OperationAuditLogMutation) OldDeviceInfo(ctx context.Context) (v *servicev1.DeviceInfo, err error) {
+func (m *OperationAuditLogMutation) OldDeviceInfo(ctx context.Context) (v *auditpb.DeviceInfo, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeviceInfo is only allowed on UpdateOne operations")
 	}
@@ -29431,14 +29431,14 @@ func (m *OperationAuditLogMutation) SetField(name string, value ent.Value) error
 		m.SetIPAddress(v)
 		return nil
 	case operationauditlog.FieldGeoLocation:
-		v, ok := value.(*servicev1.GeoLocation)
+		v, ok := value.(*auditpb.GeoLocation)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetGeoLocation(v)
 		return nil
 	case operationauditlog.FieldDeviceInfo:
-		v, ok := value.(*servicev1.DeviceInfo)
+		v, ok := value.(*auditpb.DeviceInfo)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

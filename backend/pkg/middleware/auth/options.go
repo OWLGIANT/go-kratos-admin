@@ -8,17 +8,17 @@ import (
 
 // AccessTokenChecker 定义访问令牌检查接口
 type AccessTokenChecker interface {
-	IsExistAccessToken(ctx context.Context, userID uint32, accessToken string) bool
+	// IsValidAccessToken 检查访问令牌是否有效
+	IsValidAccessToken(ctx context.Context, userID uint32, accessToken string) bool
+
+	// IsBlockedAccessToken 检查访问令牌是否被阻止
+	IsBlockedAccessToken(ctx context.Context, userID uint32, accessToken string) bool
 }
 
 type AccessTokenCheckerFunc func(ctx context.Context, userID uint32, accessToken string) bool
 
-func (f AccessTokenCheckerFunc) IsExistAccessToken(ctx context.Context, userID uint32, accessToken string) bool {
+func (f AccessTokenCheckerFunc) IsValidAccessToken(ctx context.Context, userID uint32, accessToken string) bool {
 	return f(ctx, userID, accessToken)
-}
-
-type AccessTokenBlocker interface {
-	IsBlockedAccessToken(ctx context.Context, userID uint32, accessToken string) bool
 }
 
 type AccessTokenBlockerFunc func(ctx context.Context, userID uint32, accessToken string) bool
@@ -27,11 +27,40 @@ func (f AccessTokenBlockerFunc) IsBlockedAccessToken(ctx context.Context, userID
 	return f(ctx, userID, accessToken)
 }
 
+// composedChecker 将单独的 valid/block 函数组合成一个 AccessTokenChecker
+type composedChecker struct {
+	valid   AccessTokenCheckerFunc
+	blocker AccessTokenBlockerFunc
+}
+
+// NewAccessTokenCheckerFromFuncs 构造组合检查器
+func NewAccessTokenCheckerFromFuncs(valid AccessTokenCheckerFunc, blocker AccessTokenBlockerFunc) AccessTokenChecker {
+	return &composedChecker{
+		valid:   valid,
+		blocker: blocker,
+	}
+}
+
+func (c *composedChecker) IsValidAccessToken(ctx context.Context, userID uint32, accessToken string) bool {
+	if c.valid == nil {
+		// 默认认为有效（或根据需要返回 false）
+		return true
+	}
+	return c.valid(ctx, userID, accessToken)
+}
+
+func (c *composedChecker) IsBlockedAccessToken(ctx context.Context, userID uint32, accessToken string) bool {
+	if c.blocker == nil {
+		// 默认不被阻止
+		return false
+	}
+	return c.blocker(ctx, userID, accessToken)
+}
+
 type options struct {
 	log *log.Helper
 
 	accessTokenChecker                AccessTokenChecker // 访问令牌检查器
-	accessTokenBlocker                AccessTokenBlocker // 访问令牌阻止器
 	enableCheckTokenExpiration        bool               // 是否启用访问令牌过期检查
 	enableCheckRefreshTokenExpiration bool               // 是否启用刷新令牌过期检查
 	enableCheckScopes                 bool               // 是否启用作用域检查
@@ -54,24 +83,9 @@ func WithAccessTokenChecker(checker AccessTokenChecker) Option {
 	}
 }
 
-// WithAccessTokenCheckerFunc 设置访问令牌检查器函数
-func WithAccessTokenCheckerFunc(fnc AccessTokenCheckerFunc) Option {
+func WithAccessTokenCheckerFromFuncs(valid AccessTokenCheckerFunc, blocker AccessTokenBlockerFunc) Option {
 	return func(opts *options) {
-		opts.accessTokenChecker = fnc
-	}
-}
-
-// WithAccessTokenBlocker 设置访问令牌阻止器
-func WithAccessTokenBlocker(blocker AccessTokenBlocker) Option {
-	return func(opts *options) {
-		opts.accessTokenBlocker = blocker
-	}
-}
-
-// WithAccessTokenBlockerFunc 设置访问令牌阻止器函数
-func WithAccessTokenBlockerFunc(fnc AccessTokenBlockerFunc) Option {
-	return func(opts *options) {
-		opts.accessTokenBlocker = fnc
+		opts.accessTokenChecker = NewAccessTokenCheckerFromFuncs(valid, blocker)
 	}
 }
 

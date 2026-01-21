@@ -275,7 +275,7 @@ func (r *MenuRepo) Update(ctx context.Context, req *permissionV1.UpdateMenuReque
 	return err
 }
 
-func (r *MenuRepo) updateMetaField(builder *ent.MenuUpdate, meta *permissionV1.RouteMeta, metaPaths []string) {
+func (r *MenuRepo) updateMetaField(builder *ent.MenuUpdate, meta *permissionV1.MenuMeta, metaPaths []string) {
 	//builder.SetMeta(meta)
 
 	// 删除空值

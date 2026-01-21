@@ -234,7 +234,7 @@ func (_c *MenuCreate) SetNillableComponent(v *string) *MenuCreate {
 }
 
 // SetMeta sets the "meta" field.
-func (_c *MenuCreate) SetMeta(v *permissionpb.RouteMeta) *MenuCreate {
+func (_c *MenuCreate) SetMeta(v *permissionpb.MenuMeta) *MenuCreate {
 	_c.mutation.SetMeta(v)
 	return _c
 }
@@ -786,7 +786,7 @@ func (u *MenuUpsert) ClearComponent() *MenuUpsert {
 }
 
 // SetMeta sets the "meta" field.
-func (u *MenuUpsert) SetMeta(v *permissionpb.RouteMeta) *MenuUpsert {
+func (u *MenuUpsert) SetMeta(v *permissionpb.MenuMeta) *MenuUpsert {
 	u.Set(menu.FieldMeta, v)
 	return u
 }
@@ -1163,7 +1163,7 @@ func (u *MenuUpsertOne) ClearComponent() *MenuUpsertOne {
 }
 
 // SetMeta sets the "meta" field.
-func (u *MenuUpsertOne) SetMeta(v *permissionpb.RouteMeta) *MenuUpsertOne {
+func (u *MenuUpsertOne) SetMeta(v *permissionpb.MenuMeta) *MenuUpsertOne {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetMeta(v)
 	})
@@ -1709,7 +1709,7 @@ func (u *MenuUpsertBulk) ClearComponent() *MenuUpsertBulk {
 }
 
 // SetMeta sets the "meta" field.
-func (u *MenuUpsertBulk) SetMeta(v *permissionpb.RouteMeta) *MenuUpsertBulk {
+func (u *MenuUpsertBulk) SetMeta(v *permissionpb.MenuMeta) *MenuUpsertBulk {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetMeta(v)
 	})

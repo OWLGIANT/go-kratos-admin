@@ -71,7 +71,7 @@ func (Menu) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.JSON("meta", &permissionV1.RouteMeta{}).
+		field.JSON("meta", &permissionV1.MenuMeta{}).
 			Comment("前端页面组件").
 			Optional().
 			Annotations(

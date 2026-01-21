@@ -145,6 +145,82 @@ func (x *Menu) Redact() string {
 	return x.String()
 }
 
+// Redact method implementation for MenuMeta
+func (x *MenuMeta) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: ActiveIcon
+
+	// Safe field: ActivePath
+
+	// Safe field: AffixTab
+
+	// Safe field: AffixTabOrder
+
+	// Safe field: Authority
+
+	// Safe field: Badge
+
+	// Safe field: BadgeType
+
+	// Safe field: BadgeVariants
+
+	// Safe field: HideChildrenInMenu
+
+	// Safe field: HideInBreadcrumb
+
+	// Safe field: HideInMenu
+
+	// Safe field: HideInTab
+
+	// Safe field: Icon
+
+	// Safe field: IframeSrc
+
+	// Safe field: IgnoreAccess
+
+	// Safe field: KeepAlive
+
+	// Safe field: Link
+
+	// Safe field: Loaded
+
+	// Safe field: MaxNumOfOpenTab
+
+	// Safe field: MenuVisibleWithForbidden
+
+	// Safe field: OpenInNewWindow
+
+	// Safe field: Order
+
+	// Safe field: Title
+	return x.String()
+}
+
+// Redact method implementation for MenuRouteItem
+func (x *MenuRouteItem) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: Children
+
+	// Safe field: Path
+
+	// Safe field: Redirect
+
+	// Safe field: Alias
+
+	// Safe field: Name
+
+	// Safe field: Component
+
+	// Safe field: Meta
+	return x.String()
+}
+
 // Redact method implementation for ListMenuResponse
 func (x *ListMenuResponse) Redact() string {
 	if x == nil {

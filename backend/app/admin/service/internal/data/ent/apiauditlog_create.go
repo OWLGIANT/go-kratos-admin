@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	servicev1 "go-wind-admin/api/gen/go/audit/service/v1"
+	auditpb "go-wind-admin/api/gen/go/audit/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"time"
 
@@ -94,13 +94,13 @@ func (_c *ApiAuditLogCreate) SetNillableIPAddress(v *string) *ApiAuditLogCreate 
 }
 
 // SetGeoLocation sets the "geo_location" field.
-func (_c *ApiAuditLogCreate) SetGeoLocation(v *servicev1.GeoLocation) *ApiAuditLogCreate {
+func (_c *ApiAuditLogCreate) SetGeoLocation(v *auditpb.GeoLocation) *ApiAuditLogCreate {
 	_c.mutation.SetGeoLocation(v)
 	return _c
 }
 
 // SetDeviceInfo sets the "device_info" field.
-func (_c *ApiAuditLogCreate) SetDeviceInfo(v *servicev1.DeviceInfo) *ApiAuditLogCreate {
+func (_c *ApiAuditLogCreate) SetDeviceInfo(v *auditpb.DeviceInfo) *ApiAuditLogCreate {
 	_c.mutation.SetDeviceInfo(v)
 	return _c
 }
@@ -698,7 +698,7 @@ func (u *ApiAuditLogUpsert) ClearIPAddress() *ApiAuditLogUpsert {
 }
 
 // SetGeoLocation sets the "geo_location" field.
-func (u *ApiAuditLogUpsert) SetGeoLocation(v *servicev1.GeoLocation) *ApiAuditLogUpsert {
+func (u *ApiAuditLogUpsert) SetGeoLocation(v *auditpb.GeoLocation) *ApiAuditLogUpsert {
 	u.Set(apiauditlog.FieldGeoLocation, v)
 	return u
 }
@@ -716,7 +716,7 @@ func (u *ApiAuditLogUpsert) ClearGeoLocation() *ApiAuditLogUpsert {
 }
 
 // SetDeviceInfo sets the "device_info" field.
-func (u *ApiAuditLogUpsert) SetDeviceInfo(v *servicev1.DeviceInfo) *ApiAuditLogUpsert {
+func (u *ApiAuditLogUpsert) SetDeviceInfo(v *auditpb.DeviceInfo) *ApiAuditLogUpsert {
 	u.Set(apiauditlog.FieldDeviceInfo, v)
 	return u
 }
@@ -1230,7 +1230,7 @@ func (u *ApiAuditLogUpsertOne) ClearIPAddress() *ApiAuditLogUpsertOne {
 }
 
 // SetGeoLocation sets the "geo_location" field.
-func (u *ApiAuditLogUpsertOne) SetGeoLocation(v *servicev1.GeoLocation) *ApiAuditLogUpsertOne {
+func (u *ApiAuditLogUpsertOne) SetGeoLocation(v *auditpb.GeoLocation) *ApiAuditLogUpsertOne {
 	return u.Update(func(s *ApiAuditLogUpsert) {
 		s.SetGeoLocation(v)
 	})
@@ -1251,7 +1251,7 @@ func (u *ApiAuditLogUpsertOne) ClearGeoLocation() *ApiAuditLogUpsertOne {
 }
 
 // SetDeviceInfo sets the "device_info" field.
-func (u *ApiAuditLogUpsertOne) SetDeviceInfo(v *servicev1.DeviceInfo) *ApiAuditLogUpsertOne {
+func (u *ApiAuditLogUpsertOne) SetDeviceInfo(v *auditpb.DeviceInfo) *ApiAuditLogUpsertOne {
 	return u.Update(func(s *ApiAuditLogUpsert) {
 		s.SetDeviceInfo(v)
 	})
@@ -1996,7 +1996,7 @@ func (u *ApiAuditLogUpsertBulk) ClearIPAddress() *ApiAuditLogUpsertBulk {
 }
 
 // SetGeoLocation sets the "geo_location" field.
-func (u *ApiAuditLogUpsertBulk) SetGeoLocation(v *servicev1.GeoLocation) *ApiAuditLogUpsertBulk {
+func (u *ApiAuditLogUpsertBulk) SetGeoLocation(v *auditpb.GeoLocation) *ApiAuditLogUpsertBulk {
 	return u.Update(func(s *ApiAuditLogUpsert) {
 		s.SetGeoLocation(v)
 	})
@@ -2017,7 +2017,7 @@ func (u *ApiAuditLogUpsertBulk) ClearGeoLocation() *ApiAuditLogUpsertBulk {
 }
 
 // SetDeviceInfo sets the "device_info" field.
-func (u *ApiAuditLogUpsertBulk) SetDeviceInfo(v *servicev1.DeviceInfo) *ApiAuditLogUpsertBulk {
+func (u *ApiAuditLogUpsertBulk) SetDeviceInfo(v *auditpb.DeviceInfo) *ApiAuditLogUpsertBulk {
 	return u.Update(func(s *ApiAuditLogUpsert) {
 		s.SetDeviceInfo(v)
 	})

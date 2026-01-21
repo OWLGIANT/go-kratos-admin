@@ -347,6 +347,380 @@ var _ interface {
 	ErrorName() string
 } = MenuValidationError{}
 
+// Validate checks the field values on MenuMeta with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *MenuMeta) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on MenuMeta with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in MenuMetaMultiError, or nil
+// if none found.
+func (m *MenuMeta) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *MenuMeta) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.ActiveIcon != nil {
+		// no validation rules for ActiveIcon
+	}
+
+	if m.ActivePath != nil {
+		// no validation rules for ActivePath
+	}
+
+	if m.AffixTab != nil {
+		// no validation rules for AffixTab
+	}
+
+	if m.AffixTabOrder != nil {
+		// no validation rules for AffixTabOrder
+	}
+
+	if m.Badge != nil {
+		// no validation rules for Badge
+	}
+
+	if m.BadgeType != nil {
+		// no validation rules for BadgeType
+	}
+
+	if m.BadgeVariants != nil {
+		// no validation rules for BadgeVariants
+	}
+
+	if m.HideChildrenInMenu != nil {
+		// no validation rules for HideChildrenInMenu
+	}
+
+	if m.HideInBreadcrumb != nil {
+		// no validation rules for HideInBreadcrumb
+	}
+
+	if m.HideInMenu != nil {
+		// no validation rules for HideInMenu
+	}
+
+	if m.HideInTab != nil {
+		// no validation rules for HideInTab
+	}
+
+	if m.Icon != nil {
+		// no validation rules for Icon
+	}
+
+	if m.IframeSrc != nil {
+		// no validation rules for IframeSrc
+	}
+
+	if m.IgnoreAccess != nil {
+		// no validation rules for IgnoreAccess
+	}
+
+	if m.KeepAlive != nil {
+		// no validation rules for KeepAlive
+	}
+
+	if m.Link != nil {
+		// no validation rules for Link
+	}
+
+	if m.Loaded != nil {
+		// no validation rules for Loaded
+	}
+
+	if m.MaxNumOfOpenTab != nil {
+		// no validation rules for MaxNumOfOpenTab
+	}
+
+	if m.MenuVisibleWithForbidden != nil {
+		// no validation rules for MenuVisibleWithForbidden
+	}
+
+	if m.OpenInNewWindow != nil {
+		// no validation rules for OpenInNewWindow
+	}
+
+	if m.Order != nil {
+		// no validation rules for Order
+	}
+
+	if m.Title != nil {
+		// no validation rules for Title
+	}
+
+	if len(errors) > 0 {
+		return MenuMetaMultiError(errors)
+	}
+
+	return nil
+}
+
+// MenuMetaMultiError is an error wrapping multiple validation errors returned
+// by MenuMeta.ValidateAll() if the designated constraints aren't met.
+type MenuMetaMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m MenuMetaMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m MenuMetaMultiError) AllErrors() []error { return m }
+
+// MenuMetaValidationError is the validation error returned by
+// MenuMeta.Validate if the designated constraints aren't met.
+type MenuMetaValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MenuMetaValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MenuMetaValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MenuMetaValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MenuMetaValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MenuMetaValidationError) ErrorName() string { return "MenuMetaValidationError" }
+
+// Error satisfies the builtin error interface
+func (e MenuMetaValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMenuMeta.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MenuMetaValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MenuMetaValidationError{}
+
+// Validate checks the field values on MenuRouteItem with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *MenuRouteItem) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on MenuRouteItem with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in MenuRouteItemMultiError, or
+// nil if none found.
+func (m *MenuRouteItem) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *MenuRouteItem) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetChildren() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, MenuRouteItemValidationError{
+						field:  fmt.Sprintf("Children[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, MenuRouteItemValidationError{
+						field:  fmt.Sprintf("Children[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return MenuRouteItemValidationError{
+					field:  fmt.Sprintf("Children[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if m.Path != nil {
+		// no validation rules for Path
+	}
+
+	if m.Redirect != nil {
+		// no validation rules for Redirect
+	}
+
+	if m.Alias != nil {
+		// no validation rules for Alias
+	}
+
+	if m.Name != nil {
+		// no validation rules for Name
+	}
+
+	if m.Component != nil {
+		// no validation rules for Component
+	}
+
+	if m.Meta != nil {
+
+		if all {
+			switch v := interface{}(m.GetMeta()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, MenuRouteItemValidationError{
+						field:  "Meta",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, MenuRouteItemValidationError{
+						field:  "Meta",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetMeta()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return MenuRouteItemValidationError{
+					field:  "Meta",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return MenuRouteItemMultiError(errors)
+	}
+
+	return nil
+}
+
+// MenuRouteItemMultiError is an error wrapping multiple validation errors
+// returned by MenuRouteItem.ValidateAll() if the designated constraints
+// aren't met.
+type MenuRouteItemMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m MenuRouteItemMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m MenuRouteItemMultiError) AllErrors() []error { return m }
+
+// MenuRouteItemValidationError is the validation error returned by
+// MenuRouteItem.Validate if the designated constraints aren't met.
+type MenuRouteItemValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e MenuRouteItemValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e MenuRouteItemValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e MenuRouteItemValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e MenuRouteItemValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e MenuRouteItemValidationError) ErrorName() string { return "MenuRouteItemValidationError" }
+
+// Error satisfies the builtin error interface
+func (e MenuRouteItemValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sMenuRouteItem.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = MenuRouteItemValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = MenuRouteItemValidationError{}
+
 // Validate checks the field values on ListMenuResponse with the rules defined
 // in the proto definition for this message. If any rules are violated, the
 // first error encountered is returned, or nil if there are no violations.

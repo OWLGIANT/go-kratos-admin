@@ -101,21 +101,10 @@ func (s *redactedPermissionServiceServer) Delete(ctx context.Context, in *Delete
 	return res, err
 }
 
-// SyncApis is the redacted wrapper for the actual PermissionServiceServer.SyncApis method
+// SyncPermissions is the redacted wrapper for the actual PermissionServiceServer.SyncPermissions method
 // Unary RPC
-func (s *redactedPermissionServiceServer) SyncApis(ctx context.Context, in *emptypb.Empty) (*emptypb.Empty, error) {
-	res, err := s.srv.SyncApis(ctx, in)
-	if !s.bypass.CheckInternal(ctx) {
-		// Apply redaction to the response
-		redact.Apply(res)
-	}
-	return res, err
-}
-
-// SyncMenus is the redacted wrapper for the actual PermissionServiceServer.SyncMenus method
-// Unary RPC
-func (s *redactedPermissionServiceServer) SyncMenus(ctx context.Context, in *emptypb.Empty) (*emptypb.Empty, error) {
-	res, err := s.srv.SyncMenus(ctx, in)
+func (s *redactedPermissionServiceServer) SyncPermissions(ctx context.Context, in *emptypb.Empty) (*emptypb.Empty, error) {
+	res, err := s.srv.SyncPermissions(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)

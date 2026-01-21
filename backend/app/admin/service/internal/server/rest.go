@@ -80,7 +80,7 @@ func NewRestServer(
 	authorizer *data.Authorizer,
 
 	authenticationService *service.AuthenticationService,
-	routerService *service.RouterService,
+	portalService *service.AdminPortalService,
 	dictService *service.DictService,
 	ossService *service.OssService,
 	uEditorService *service.UEditorService,
@@ -131,7 +131,7 @@ func NewRestServer(
 
 	adminV1.RegisterUserProfileServiceHTTPServer(srv, userProfileService)
 
-	adminV1.RegisterRouterServiceHTTPServer(srv, routerService)
+	adminV1.RegisterAdminPortalServiceHTTPServer(srv, portalService)
 	adminV1.RegisterDictServiceHTTPServer(srv, dictService)
 	adminV1.RegisterTaskServiceHTTPServer(srv, taskService)
 	adminV1.RegisterLoginPolicyServiceHTTPServer(srv, loginPolicyService)

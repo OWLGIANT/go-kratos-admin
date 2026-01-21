@@ -51,7 +51,7 @@ type Menu struct {
 	// 前端页面组件
 	Component *string `json:"component,omitempty"`
 	// 前端页面组件
-	Meta *permissionpb.RouteMeta `json:"meta,omitempty"`
+	Meta *permissionpb.MenuMeta `json:"meta,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MenuQuery when eager-loading is set.
 	Edges        MenuEdges `json:"edges"`

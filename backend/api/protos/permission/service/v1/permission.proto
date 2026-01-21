@@ -29,11 +29,8 @@ service PermissionService {
   // 删除权限点
   rpc Delete (DeletePermissionRequest) returns (google.protobuf.Empty) {}
 
-  // 同步API资源
-  rpc SyncApis (google.protobuf.Empty) returns (google.protobuf.Empty) {}
-
-  // 同步菜单资源
-  rpc SyncMenus (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  // 同步权限点
+  rpc SyncPermissions (google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }
 
 // 数据权限范围

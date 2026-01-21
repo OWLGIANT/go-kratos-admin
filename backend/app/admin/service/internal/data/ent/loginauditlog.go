@@ -5,7 +5,7 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	servicev1 "go-wind-admin/api/gen/go/audit/service/v1"
+	auditpb "go-wind-admin/api/gen/go/audit/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/loginauditlog"
 	"strings"
 	"time"
@@ -31,11 +31,11 @@ type LoginAuditLog struct {
 	// IP地址
 	IPAddress *string `json:"ip_address,omitempty"`
 	// 地理位置(来自IP库)
-	GeoLocation *servicev1.GeoLocation `json:"geo_location,omitempty"`
+	GeoLocation *auditpb.GeoLocation `json:"geo_location,omitempty"`
 	// 会话ID
 	SessionID *string `json:"session_id,omitempty"`
 	// 设备信息
-	DeviceInfo *servicev1.DeviceInfo `json:"device_info,omitempty"`
+	DeviceInfo *auditpb.DeviceInfo `json:"device_info,omitempty"`
 	// 全局请求ID
 	RequestID *string `json:"request_id,omitempty"`
 	// 全局链路追踪ID

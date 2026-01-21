@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	servicev1 "go-wind-admin/api/gen/go/audit/service/v1"
+	auditpb "go-wind-admin/api/gen/go/audit/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/dataaccessauditlog"
 	"time"
 
@@ -94,13 +94,13 @@ func (_c *DataAccessAuditLogCreate) SetNillableIPAddress(v *string) *DataAccessA
 }
 
 // SetGeoLocation sets the "geo_location" field.
-func (_c *DataAccessAuditLogCreate) SetGeoLocation(v *servicev1.GeoLocation) *DataAccessAuditLogCreate {
+func (_c *DataAccessAuditLogCreate) SetGeoLocation(v *auditpb.GeoLocation) *DataAccessAuditLogCreate {
 	_c.mutation.SetGeoLocation(v)
 	return _c
 }
 
 // SetDeviceInfo sets the "device_info" field.
-func (_c *DataAccessAuditLogCreate) SetDeviceInfo(v *servicev1.DeviceInfo) *DataAccessAuditLogCreate {
+func (_c *DataAccessAuditLogCreate) SetDeviceInfo(v *auditpb.DeviceInfo) *DataAccessAuditLogCreate {
 	_c.mutation.SetDeviceInfo(v)
 	return _c
 }
@@ -690,7 +690,7 @@ func (u *DataAccessAuditLogUpsert) ClearIPAddress() *DataAccessAuditLogUpsert {
 }
 
 // SetGeoLocation sets the "geo_location" field.
-func (u *DataAccessAuditLogUpsert) SetGeoLocation(v *servicev1.GeoLocation) *DataAccessAuditLogUpsert {
+func (u *DataAccessAuditLogUpsert) SetGeoLocation(v *auditpb.GeoLocation) *DataAccessAuditLogUpsert {
 	u.Set(dataaccessauditlog.FieldGeoLocation, v)
 	return u
 }
@@ -708,7 +708,7 @@ func (u *DataAccessAuditLogUpsert) ClearGeoLocation() *DataAccessAuditLogUpsert 
 }
 
 // SetDeviceInfo sets the "device_info" field.
-func (u *DataAccessAuditLogUpsert) SetDeviceInfo(v *servicev1.DeviceInfo) *DataAccessAuditLogUpsert {
+func (u *DataAccessAuditLogUpsert) SetDeviceInfo(v *auditpb.DeviceInfo) *DataAccessAuditLogUpsert {
 	u.Set(dataaccessauditlog.FieldDeviceInfo, v)
 	return u
 }
@@ -1204,7 +1204,7 @@ func (u *DataAccessAuditLogUpsertOne) ClearIPAddress() *DataAccessAuditLogUpsert
 }
 
 // SetGeoLocation sets the "geo_location" field.
-func (u *DataAccessAuditLogUpsertOne) SetGeoLocation(v *servicev1.GeoLocation) *DataAccessAuditLogUpsertOne {
+func (u *DataAccessAuditLogUpsertOne) SetGeoLocation(v *auditpb.GeoLocation) *DataAccessAuditLogUpsertOne {
 	return u.Update(func(s *DataAccessAuditLogUpsert) {
 		s.SetGeoLocation(v)
 	})
@@ -1225,7 +1225,7 @@ func (u *DataAccessAuditLogUpsertOne) ClearGeoLocation() *DataAccessAuditLogUpse
 }
 
 // SetDeviceInfo sets the "device_info" field.
-func (u *DataAccessAuditLogUpsertOne) SetDeviceInfo(v *servicev1.DeviceInfo) *DataAccessAuditLogUpsertOne {
+func (u *DataAccessAuditLogUpsertOne) SetDeviceInfo(v *auditpb.DeviceInfo) *DataAccessAuditLogUpsertOne {
 	return u.Update(func(s *DataAccessAuditLogUpsert) {
 		s.SetDeviceInfo(v)
 	})
@@ -1949,7 +1949,7 @@ func (u *DataAccessAuditLogUpsertBulk) ClearIPAddress() *DataAccessAuditLogUpser
 }
 
 // SetGeoLocation sets the "geo_location" field.
-func (u *DataAccessAuditLogUpsertBulk) SetGeoLocation(v *servicev1.GeoLocation) *DataAccessAuditLogUpsertBulk {
+func (u *DataAccessAuditLogUpsertBulk) SetGeoLocation(v *auditpb.GeoLocation) *DataAccessAuditLogUpsertBulk {
 	return u.Update(func(s *DataAccessAuditLogUpsert) {
 		s.SetGeoLocation(v)
 	})
@@ -1970,7 +1970,7 @@ func (u *DataAccessAuditLogUpsertBulk) ClearGeoLocation() *DataAccessAuditLogUps
 }
 
 // SetDeviceInfo sets the "device_info" field.
-func (u *DataAccessAuditLogUpsertBulk) SetDeviceInfo(v *servicev1.DeviceInfo) *DataAccessAuditLogUpsertBulk {
+func (u *DataAccessAuditLogUpsertBulk) SetDeviceInfo(v *auditpb.DeviceInfo) *DataAccessAuditLogUpsertBulk {
 	return u.Update(func(s *DataAccessAuditLogUpsert) {
 		s.SetDeviceInfo(v)
 	})

@@ -727,15 +727,14 @@ const file_permission_service_v1_permission_proto_rawDesc = "" +
 	"\x04SELF\x10\x02\x12\r\n" +
 	"\tUNIT_ONLY\x10\x03\x12\x12\n" +
 	"\x0eUNIT_AND_CHILD\x10\x04\x12\x12\n" +
-	"\x0eSELECTED_UNITS\x10\x052\xb9\x04\n" +
+	"\x0eSELECTED_UNITS\x10\x052\x81\x04\n" +
 	"\x11PermissionService\x12R\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a-.permission.service.v1.ListPermissionResponse\"\x00\x12W\n" +
 	"\x03Get\x12+.permission.service.v1.GetPermissionRequest\x1a!.permission.service.v1.Permission\"\x00\x12R\n" +
 	"\x06Create\x12..permission.service.v1.CreatePermissionRequest\x1a\x16.google.protobuf.Empty\"\x00\x12R\n" +
 	"\x06Update\x12..permission.service.v1.UpdatePermissionRequest\x1a\x16.google.protobuf.Empty\"\x00\x12R\n" +
-	"\x06Delete\x12..permission.service.v1.DeletePermissionRequest\x1a\x16.google.protobuf.Empty\"\x00\x12<\n" +
-	"\bSyncApis\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x00\x12=\n" +
-	"\tSyncMenus\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x00B\xdf\x01\n" +
+	"\x06Delete\x12..permission.service.v1.DeletePermissionRequest\x1a\x16.google.protobuf.Empty\"\x00\x12C\n" +
+	"\x0fSyncPermissions\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x00B\xdf\x01\n" +
 	"\x19com.permission.service.v1B\x0fPermissionProtoP\x01Z;go-wind-admin/api/gen/go/permission/service/v1;permissionpb\xa2\x02\x03PSX\xaa\x02\x15Permission.Service.V1\xca\x02\x15Permission\\Service\\V1\xe2\x02!Permission\\Service\\V1\\GPBMetadata\xea\x02\x17Permission::Service::V1b\x06proto3"
 
 var (
@@ -781,17 +780,15 @@ var file_permission_service_v1_permission_proto_depIdxs = []int32{
 	5,  // 11: permission.service.v1.PermissionService.Create:input_type -> permission.service.v1.CreatePermissionRequest
 	6,  // 12: permission.service.v1.PermissionService.Update:input_type -> permission.service.v1.UpdatePermissionRequest
 	7,  // 13: permission.service.v1.PermissionService.Delete:input_type -> permission.service.v1.DeletePermissionRequest
-	11, // 14: permission.service.v1.PermissionService.SyncApis:input_type -> google.protobuf.Empty
-	11, // 15: permission.service.v1.PermissionService.SyncMenus:input_type -> google.protobuf.Empty
-	3,  // 16: permission.service.v1.PermissionService.List:output_type -> permission.service.v1.ListPermissionResponse
-	2,  // 17: permission.service.v1.PermissionService.Get:output_type -> permission.service.v1.Permission
-	11, // 18: permission.service.v1.PermissionService.Create:output_type -> google.protobuf.Empty
-	11, // 19: permission.service.v1.PermissionService.Update:output_type -> google.protobuf.Empty
-	11, // 20: permission.service.v1.PermissionService.Delete:output_type -> google.protobuf.Empty
-	11, // 21: permission.service.v1.PermissionService.SyncApis:output_type -> google.protobuf.Empty
-	11, // 22: permission.service.v1.PermissionService.SyncMenus:output_type -> google.protobuf.Empty
-	16, // [16:23] is the sub-list for method output_type
-	9,  // [9:16] is the sub-list for method input_type
+	11, // 14: permission.service.v1.PermissionService.SyncPermissions:input_type -> google.protobuf.Empty
+	3,  // 15: permission.service.v1.PermissionService.List:output_type -> permission.service.v1.ListPermissionResponse
+	2,  // 16: permission.service.v1.PermissionService.Get:output_type -> permission.service.v1.Permission
+	11, // 17: permission.service.v1.PermissionService.Create:output_type -> google.protobuf.Empty
+	11, // 18: permission.service.v1.PermissionService.Update:output_type -> google.protobuf.Empty
+	11, // 19: permission.service.v1.PermissionService.Delete:output_type -> google.protobuf.Empty
+	11, // 20: permission.service.v1.PermissionService.SyncPermissions:output_type -> google.protobuf.Empty
+	15, // [15:21] is the sub-list for method output_type
+	9,  // [9:15] is the sub-list for method input_type
 	9,  // [9:9] is the sub-list for extension type_name
 	9,  // [9:9] is the sub-list for extension extendee
 	0,  // [0:9] is the sub-list for field type_name

@@ -326,7 +326,7 @@ func (_u *MenuUpdate) ClearComponent() *MenuUpdate {
 }
 
 // SetMeta sets the "meta" field.
-func (_u *MenuUpdate) SetMeta(v *permissionpb.RouteMeta) *MenuUpdate {
+func (_u *MenuUpdate) SetMeta(v *permissionpb.MenuMeta) *MenuUpdate {
 	_u.mutation.SetMeta(v)
 	return _u
 }
@@ -939,7 +939,7 @@ func (_u *MenuUpdateOne) ClearComponent() *MenuUpdateOne {
 }
 
 // SetMeta sets the "meta" field.
-func (_u *MenuUpdateOne) SetMeta(v *permissionpb.RouteMeta) *MenuUpdateOne {
+func (_u *MenuUpdateOne) SetMeta(v *permissionpb.MenuMeta) *MenuUpdateOne {
 	_u.mutation.SetMeta(v)
 	return _u
 }

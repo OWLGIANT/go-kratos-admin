@@ -24,8 +24,8 @@ import (
 	"go-wind-admin/pkg/utils/slice"
 )
 
-type RouterService struct {
-	adminV1.RouterServiceHTTPServer
+type AdminPortalService struct {
+	adminV1.AdminPortalServiceHTTPServer
 
 	log *log.Helper
 
@@ -39,16 +39,16 @@ func NewRouterService(
 	menuRepo *data.MenuRepo,
 	roleRepo *data.RoleRepo,
 	userRepo data.UserRepo,
-) *RouterService {
-	return &RouterService{
-		log:      ctx.NewLoggerHelper("router/service/admin-service"),
+) *AdminPortalService {
+	return &AdminPortalService{
+		log:      ctx.NewLoggerHelper("admin-portal/service/admin-service"),
 		menuRepo: menuRepo,
 		roleRepo: roleRepo,
 		userRepo: userRepo,
 	}
 }
 
-func (s *RouterService) menuListToQueryString(menus []uint32, onlyButton bool) string {
+func (s *AdminPortalService) menuListToQueryString(menus []uint32, onlyButton bool) string {
 	var ids []string
 	for _, menu := range menus {
 		ids = append(ids, fmt.Sprintf("\"%d\"", menu))
@@ -73,7 +73,7 @@ func (s *RouterService) menuListToQueryString(menus []uint32, onlyButton bool) s
 }
 
 // queryMultipleRolesMenusByRoleCodes 使用RoleCodes查询菜单，即多个角色的菜单
-func (s *RouterService) queryMultipleRolesMenusByRoleCodes(ctx context.Context, roleCodes []string) ([]uint32, error) {
+func (s *AdminPortalService) queryMultipleRolesMenusByRoleCodes(ctx context.Context, roleCodes []string) ([]uint32, error) {
 	roleIDs, err := s.roleRepo.ListRoleIDsByRoleCodes(ctx, roleCodes)
 	if err != nil {
 		return nil, adminV1.ErrorInternalServerError("query roles failed")
@@ -92,7 +92,7 @@ func (s *RouterService) queryMultipleRolesMenusByRoleCodes(ctx context.Context, 
 }
 
 // queryMultipleRolesMenusByRoleIds 使用RoleIDs查询菜单，即多个角色的菜单
-func (s *RouterService) queryMultipleRolesMenusByRoleIds(ctx context.Context, roleIDs []uint32) ([]uint32, error) {
+func (s *AdminPortalService) queryMultipleRolesMenusByRoleIds(ctx context.Context, roleIDs []uint32) ([]uint32, error) {
 	menus, err := s.roleRepo.GetRolesPermissionMenuIDs(ctx, roleIDs)
 	if err != nil {
 		return nil, adminV1.ErrorInternalServerError("query roles menus failed")
@@ -103,7 +103,7 @@ func (s *RouterService) queryMultipleRolesMenusByRoleIds(ctx context.Context, ro
 	return menus, nil
 }
 
-func (s *RouterService) ListPermissionCode(ctx context.Context, _ *emptypb.Empty) (*permissionV1.ListPermissionCodeResponse, error) {
+func (s *AdminPortalService) GetMyPermissionCode(ctx context.Context, _ *emptypb.Empty) (*adminV1.ListPermissionCodeResponse, error) {
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
@@ -152,17 +152,17 @@ func (s *RouterService) ListPermissionCode(ctx context.Context, _ *emptypb.Empty
 		codes = append(codes, menus.Items[menu].GetMeta().GetAuthority()...)
 	}
 
-	return &permissionV1.ListPermissionCodeResponse{
+	return &adminV1.ListPermissionCodeResponse{
 		Codes: codes,
 	}, nil
 }
 
-func (s *RouterService) fillRouteItem(menus []*permissionV1.Menu) []*permissionV1.RouteItem {
+func (s *AdminPortalService) fillRouteItem(menus []*permissionV1.Menu) []*permissionV1.MenuRouteItem {
 	if len(menus) == 0 {
 		return nil
 	}
 
-	var routers []*permissionV1.RouteItem
+	var routers []*permissionV1.MenuRouteItem
 
 	for _, v := range menus {
 		if v.GetStatus() != permissionV1.Menu_ON {
@@ -172,7 +172,7 @@ func (s *RouterService) fillRouteItem(menus []*permissionV1.Menu) []*permissionV
 			continue
 		}
 
-		item := &permissionV1.RouteItem{
+		item := &permissionV1.MenuRouteItem{
 			Path:      v.Path,
 			Component: v.Component,
 			Name:      v.Name,
@@ -191,7 +191,7 @@ func (s *RouterService) fillRouteItem(menus []*permissionV1.Menu) []*permissionV
 	return routers
 }
 
-func (s *RouterService) ListRoute(ctx context.Context, _ *emptypb.Empty) (*permissionV1.ListRouteResponse, error) {
+func (s *AdminPortalService) GetNavigation(ctx context.Context, _ *emptypb.Empty) (*adminV1.ListRouteResponse, error) {
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
@@ -231,7 +231,7 @@ func (s *RouterService) ListRoute(ctx context.Context, _ *emptypb.Empty) (*permi
 		return nil, adminV1.ErrorInternalServerError("list route failed")
 	}
 
-	resp := &permissionV1.ListRouteResponse{Items: s.fillRouteItem(menuList.Items)}
+	resp := &adminV1.ListRouteResponse{Items: s.fillRouteItem(menuList.Items)}
 
 	return resp, nil
 }

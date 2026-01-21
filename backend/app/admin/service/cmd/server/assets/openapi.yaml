@@ -938,6 +938,19 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/initial-context:
+        get:
+            tags:
+                - AdminPortalService
+            description: 一次性获取进入后台所需的所有上下文
+            operationId: AdminPortalService_GetInitialContext
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/InitialContextResponse'
     /admin/v1/internal-message/categories:
         get:
             tags:
@@ -2201,9 +2214,9 @@ paths:
     /admin/v1/perm-codes:
         get:
             tags:
-                - RouterService
+                - AdminPortalService
             description: 查询权限码列表
-            operationId: RouterService_ListPermissionCode
+            operationId: AdminPortalService_GetMyPermissionCode
             responses:
                 "200":
                     description: OK
@@ -3106,9 +3119,9 @@ paths:
     /admin/v1/routes:
         get:
             tags:
-                - RouterService
-            description: 查询路由列表
-            operationId: RouterService_ListRoute
+                - AdminPortalService
+            description: 查询前端路由表
+            operationId: AdminPortalService_GetNavigation
             responses:
                 "200":
                     description: OK
@@ -4664,6 +4677,17 @@ components:
                     type: string
                     description: 经度（微度）
             description: 地理位置
+        InitialContextResponse:
+            type: object
+            properties:
+                menus:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MenuRouteItem'
+                permissions:
+                    type: array
+                    items:
+                        type: string
         InternalMessage:
             type: object
             properties:
@@ -5089,7 +5113,7 @@ components:
                 items:
                     type: array
                     items:
-                        $ref: '#/components/schemas/RouteItem'
+                        $ref: '#/components/schemas/MenuRouteItem'
             description: 查询路由列表 - 回应
         ListTaskResponse:
             type: object
@@ -5445,7 +5469,7 @@ components:
                     type: string
                     description: 指向的组件
                 meta:
-                    $ref: '#/components/schemas/RouteMeta'
+                    $ref: '#/components/schemas/MenuMeta'
                 parentId:
                     type: integer
                     description: 父节点ID
@@ -5480,6 +5504,119 @@ components:
                     description: 删除时间
                     format: date-time
             description: 菜单
+        MenuMeta:
+            type: object
+            properties:
+                activeIcon:
+                    type: string
+                    description: 激活图标，用于：菜单、tab
+                activePath:
+                    type: string
+                    description: 当前激活的菜单，有时候不想激活现有菜单，需要激活父级菜单时使用
+                affixTab:
+                    type: boolean
+                    description: 是否固定标签页
+                affixTabOrder:
+                    type: integer
+                    description: 固定标签页的顺序
+                    format: int32
+                authority:
+                    type: array
+                    items:
+                        type: string
+                    description: 权限列表，需要特定的角色标识才可以访问
+                badge:
+                    type: string
+                    description: 徽标
+                badgeType:
+                    enum:
+                        - dot
+                        - normal
+                    type: string
+                    description: 徽标类型
+                badgeVariants:
+                    enum:
+                        - default
+                        - destructive
+                        - primary
+                        - success
+                        - warning
+                    type: string
+                    description: 徽标颜色
+                hideChildrenInMenu:
+                    type: boolean
+                    description: 当前路由的子级在菜单中不展现
+                hideInBreadcrumb:
+                    type: boolean
+                    description: 当前路由在面包屑中不展现
+                hideInMenu:
+                    type: boolean
+                    description: 当前路由在菜单中不展现
+                hideInTab:
+                    type: boolean
+                    description: 当前路由在标签页不展现
+                icon:
+                    type: string
+                    description: 图标，用于：菜单、标签页
+                iframeSrc:
+                    type: string
+                    description: iframe 地址
+                ignoreAccess:
+                    type: boolean
+                    description: 忽略权限，直接可以访问
+                keepAlive:
+                    type: boolean
+                    description: 开启KeepAlive缓存
+                link:
+                    type: string
+                    description: 外链-跳转路径
+                loaded:
+                    type: boolean
+                    description: 路由是否已经加载过
+                maxNumOfOpenTab:
+                    type: integer
+                    description: 标签页最大打开数量
+                    format: int32
+                menuVisibleWithForbidden:
+                    type: boolean
+                    description: 菜单可以看到，但是访问会被重定向到403
+                openInNewWindow:
+                    type: boolean
+                    description: 在新窗口打开
+                order:
+                    type: integer
+                    description: 排序编号，用于路由->菜单排序
+                    format: int32
+                title:
+                    type: string
+                    description: 标题名称，路由上显示的标题
+            description: 路由元信息
+        MenuRouteItem:
+            type: object
+            properties:
+                children:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MenuRouteItem'
+                    description: 子节点树
+                path:
+                    type: string
+                    description: 路由路径
+                redirect:
+                    type: string
+                    description: 重定向地址
+                alias:
+                    type: string
+                    description: 路由别名
+                name:
+                    type: string
+                    description: 路由命名，然后我们可以使用 name 而不是 path 来传递 to 属性给 <router-link>。
+                component:
+                    type: string
+                    description: 指向的组件
+                meta:
+                    $ref: '#/components/schemas/MenuMeta'
+            description: 路由项
         OperationAuditLog:
             type: object
             properties:
@@ -6246,119 +6383,6 @@ components:
                     description: 删除时间
                     format: date-time
             description: 角色
-        RouteItem:
-            type: object
-            properties:
-                children:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/RouteItem'
-                    description: 子节点树
-                path:
-                    type: string
-                    description: 路由路径
-                redirect:
-                    type: string
-                    description: 重定向地址
-                alias:
-                    type: string
-                    description: 路由别名
-                name:
-                    type: string
-                    description: 路由命名，然后我们可以使用 name 而不是 path 来传递 to 属性给 <router-link>。
-                component:
-                    type: string
-                    description: 指向的组件
-                meta:
-                    $ref: '#/components/schemas/RouteMeta'
-            description: 路由项
-        RouteMeta:
-            type: object
-            properties:
-                activeIcon:
-                    type: string
-                    description: 激活图标，用于：菜单、tab
-                activePath:
-                    type: string
-                    description: 当前激活的菜单，有时候不想激活现有菜单，需要激活父级菜单时使用
-                affixTab:
-                    type: boolean
-                    description: 是否固定标签页
-                affixTabOrder:
-                    type: integer
-                    description: 固定标签页的顺序
-                    format: int32
-                authority:
-                    type: array
-                    items:
-                        type: string
-                    description: 权限列表，需要特定的角色标识才可以访问
-                badge:
-                    type: string
-                    description: 徽标
-                badgeType:
-                    enum:
-                        - dot
-                        - normal
-                    type: string
-                    description: 徽标类型
-                badgeVariants:
-                    enum:
-                        - default
-                        - destructive
-                        - primary
-                        - success
-                        - warning
-                    type: string
-                    description: 徽标颜色
-                hideChildrenInMenu:
-                    type: boolean
-                    description: 当前路由的子级在菜单中不展现
-                hideInBreadcrumb:
-                    type: boolean
-                    description: 当前路由在面包屑中不展现
-                hideInMenu:
-                    type: boolean
-                    description: 当前路由在菜单中不展现
-                hideInTab:
-                    type: boolean
-                    description: 当前路由在标签页不展现
-                icon:
-                    type: string
-                    description: 图标，用于：菜单、标签页
-                iframeSrc:
-                    type: string
-                    description: iframe 地址
-                ignoreAccess:
-                    type: boolean
-                    description: 忽略权限，直接可以访问
-                keepAlive:
-                    type: boolean
-                    description: 开启KeepAlive缓存
-                link:
-                    type: string
-                    description: 外链-跳转路径
-                loaded:
-                    type: boolean
-                    description: 路由是否已经加载过
-                maxNumOfOpenTab:
-                    type: integer
-                    description: 标签页最大打开数量
-                    format: int32
-                menuVisibleWithForbidden:
-                    type: boolean
-                    description: 菜单可以看到，但是访问会被重定向到403
-                openInNewWindow:
-                    type: boolean
-                    description: 在新窗口打开
-                order:
-                    type: integer
-                    description: 排序编号，用于路由->菜单排序
-                    format: int32
-                title:
-                    type: string
-                    description: 标题名称，路由上显示的标题
-            description: 路由元数据
         SendMessageRequest:
             type: object
             properties:
@@ -7313,6 +7337,8 @@ components:
 security:
     - OAuth2PasswordBearer: []
 tags:
+    - name: AdminPortalService
+      description: 后台前端初始化数据与配置服务
     - name: ApiAuditLogService
       description: API审计日志管理服务
     - name: ApiService
@@ -7355,8 +7381,6 @@ tags:
       description: 职位管理服务
     - name: RoleService
       description: 角色管理服务
-    - name: RouterService
-      description: 网站后台动态路由服务
     - name: TaskService
       description: 调度任务管理服务
     - name: TenantService

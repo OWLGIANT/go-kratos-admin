@@ -74,23 +74,14 @@ func Server(opts ...Option) middleware.Middleware {
 					return nil, ErrExtractSubjectFailed
 				}
 
-				if !op.accessTokenChecker.IsExistAccessToken(ctx, tokenPayload.UserId, token) {
+				// 校验访问令牌是否有效
+				if !op.accessTokenChecker.IsValidAccessToken(ctx, tokenPayload.UserId, token) {
 					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
 					return nil, ErrAccessTokenExpired
 				}
-			}
 
-			// 检查访问令牌是否被阻止
-			if op.accessTokenBlocker != nil {
-				token := tr.RequestHeader().Get(authnEngine.HeaderAuthorize)
-				if len(token) > 7 && token[0:6] == authnEngine.BearerWord {
-					token = token[7:]
-				} else {
-					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
-					return nil, ErrExtractSubjectFailed
-				}
-
-				if op.accessTokenBlocker.IsBlockedAccessToken(ctx, tokenPayload.UserId, token) {
+				// 检查访问令牌是否被封禁
+				if op.accessTokenChecker.IsBlockedAccessToken(ctx, tokenPayload.UserId, token) {
 					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
 					return nil, ErrAccessTokenExpired
 				}
