@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -24,6 +25,7 @@ var (
 	_ status.Status
 	_ timestamppb.Timestamp
 	_ fieldmaskpb.FieldMask
+	_ emptypb.Empty
 	_ validate.FieldRules
 	_ pagination.Sorting
 )
@@ -61,6 +63,17 @@ func (s *redactedDataAccessAuditLogServiceServer) List(ctx context.Context, in *
 // Unary RPC
 func (s *redactedDataAccessAuditLogServiceServer) Get(ctx context.Context, in *GetDataAccessAuditLogRequest) (*DataAccessAuditLog, error) {
 	res, err := s.srv.Get(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
+}
+
+// Create is the redacted wrapper for the actual DataAccessAuditLogServiceServer.Create method
+// Unary RPC
+func (s *redactedDataAccessAuditLogServiceServer) Create(ctx context.Context, in *CreateDataAccessAuditLogRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.Create(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)

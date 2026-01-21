@@ -12,6 +12,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -20,8 +21,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PermissionAuditLogService_List_FullMethodName = "/permission.service.v1.PermissionAuditLogService/List"
-	PermissionAuditLogService_Get_FullMethodName  = "/permission.service.v1.PermissionAuditLogService/Get"
+	PermissionAuditLogService_List_FullMethodName   = "/permission.service.v1.PermissionAuditLogService/List"
+	PermissionAuditLogService_Get_FullMethodName    = "/permission.service.v1.PermissionAuditLogService/Get"
+	PermissionAuditLogService_Create_FullMethodName = "/permission.service.v1.PermissionAuditLogService/Create"
 )
 
 // PermissionAuditLogServiceClient is the client API for PermissionAuditLogService service.
@@ -34,6 +36,8 @@ type PermissionAuditLogServiceClient interface {
 	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListPermissionAuditLogResponse, error)
 	// 查询权限变更审计日志详情
 	Get(ctx context.Context, in *GetPermissionAuditLogRequest, opts ...grpc.CallOption) (*PermissionAuditLog, error)
+	// 创建权限变更审计日志
+	Create(ctx context.Context, in *CreatePermissionAuditLogRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type permissionAuditLogServiceClient struct {
@@ -64,6 +68,16 @@ func (c *permissionAuditLogServiceClient) Get(ctx context.Context, in *GetPermis
 	return out, nil
 }
 
+func (c *permissionAuditLogServiceClient) Create(ctx context.Context, in *CreatePermissionAuditLogRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, PermissionAuditLogService_Create_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PermissionAuditLogServiceServer is the server API for PermissionAuditLogService service.
 // All implementations must embed UnimplementedPermissionAuditLogServiceServer
 // for forward compatibility.
@@ -74,6 +88,8 @@ type PermissionAuditLogServiceServer interface {
 	List(context.Context, *v1.PagingRequest) (*ListPermissionAuditLogResponse, error)
 	// 查询权限变更审计日志详情
 	Get(context.Context, *GetPermissionAuditLogRequest) (*PermissionAuditLog, error)
+	// 创建权限变更审计日志
+	Create(context.Context, *CreatePermissionAuditLogRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedPermissionAuditLogServiceServer()
 }
 
@@ -89,6 +105,9 @@ func (UnimplementedPermissionAuditLogServiceServer) List(context.Context, *v1.Pa
 }
 func (UnimplementedPermissionAuditLogServiceServer) Get(context.Context, *GetPermissionAuditLogRequest) (*PermissionAuditLog, error) {
 	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedPermissionAuditLogServiceServer) Create(context.Context, *CreatePermissionAuditLogRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedPermissionAuditLogServiceServer) mustEmbedUnimplementedPermissionAuditLogServiceServer() {
 }
@@ -148,6 +167,24 @@ func _PermissionAuditLogService_Get_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PermissionAuditLogService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreatePermissionAuditLogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PermissionAuditLogServiceServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PermissionAuditLogService_Create_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PermissionAuditLogServiceServer).Create(ctx, req.(*CreatePermissionAuditLogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PermissionAuditLogService_ServiceDesc is the grpc.ServiceDesc for PermissionAuditLogService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -162,6 +199,10 @@ var PermissionAuditLogService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _PermissionAuditLogService_Get_Handler,
+		},
+		{
+			MethodName: "Create",
+			Handler:    _PermissionAuditLogService_Create_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -70,6 +70,17 @@ func (s *redactedPolicyEvaluationLogServiceServer) Get(ctx context.Context, in *
 	return res, err
 }
 
+// Create is the redacted wrapper for the actual PolicyEvaluationLogServiceServer.Create method
+// Unary RPC
+func (s *redactedPolicyEvaluationLogServiceServer) Create(ctx context.Context, in *CreatePolicyEvaluationLogRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.Create(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
+}
+
 // Redact method implementation for PolicyEvaluationLog
 func (x *PolicyEvaluationLog) Redact() string {
 	if x == nil {

@@ -12,6 +12,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -20,8 +21,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PolicyEvaluationLogService_List_FullMethodName = "/permission.service.v1.PolicyEvaluationLogService/List"
-	PolicyEvaluationLogService_Get_FullMethodName  = "/permission.service.v1.PolicyEvaluationLogService/Get"
+	PolicyEvaluationLogService_List_FullMethodName   = "/permission.service.v1.PolicyEvaluationLogService/List"
+	PolicyEvaluationLogService_Get_FullMethodName    = "/permission.service.v1.PolicyEvaluationLogService/Get"
+	PolicyEvaluationLogService_Create_FullMethodName = "/permission.service.v1.PolicyEvaluationLogService/Create"
 )
 
 // PolicyEvaluationLogServiceClient is the client API for PolicyEvaluationLogService service.
@@ -34,6 +36,8 @@ type PolicyEvaluationLogServiceClient interface {
 	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListPolicyEvaluationLogResponse, error)
 	// 查询策略评估日志详情
 	Get(ctx context.Context, in *GetPolicyEvaluationLogRequest, opts ...grpc.CallOption) (*PolicyEvaluationLog, error)
+	// 创建策略评估日志
+	Create(ctx context.Context, in *CreatePolicyEvaluationLogRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type policyEvaluationLogServiceClient struct {
@@ -64,6 +68,16 @@ func (c *policyEvaluationLogServiceClient) Get(ctx context.Context, in *GetPolic
 	return out, nil
 }
 
+func (c *policyEvaluationLogServiceClient) Create(ctx context.Context, in *CreatePolicyEvaluationLogRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, PolicyEvaluationLogService_Create_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PolicyEvaluationLogServiceServer is the server API for PolicyEvaluationLogService service.
 // All implementations must embed UnimplementedPolicyEvaluationLogServiceServer
 // for forward compatibility.
@@ -74,6 +88,8 @@ type PolicyEvaluationLogServiceServer interface {
 	List(context.Context, *v1.PagingRequest) (*ListPolicyEvaluationLogResponse, error)
 	// 查询策略评估日志详情
 	Get(context.Context, *GetPolicyEvaluationLogRequest) (*PolicyEvaluationLog, error)
+	// 创建策略评估日志
+	Create(context.Context, *CreatePolicyEvaluationLogRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedPolicyEvaluationLogServiceServer()
 }
 
@@ -89,6 +105,9 @@ func (UnimplementedPolicyEvaluationLogServiceServer) List(context.Context, *v1.P
 }
 func (UnimplementedPolicyEvaluationLogServiceServer) Get(context.Context, *GetPolicyEvaluationLogRequest) (*PolicyEvaluationLog, error) {
 	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedPolicyEvaluationLogServiceServer) Create(context.Context, *CreatePolicyEvaluationLogRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedPolicyEvaluationLogServiceServer) mustEmbedUnimplementedPolicyEvaluationLogServiceServer() {
 }
@@ -148,6 +167,24 @@ func _PolicyEvaluationLogService_Get_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PolicyEvaluationLogService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreatePolicyEvaluationLogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PolicyEvaluationLogServiceServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PolicyEvaluationLogService_Create_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PolicyEvaluationLogServiceServer).Create(ctx, req.(*CreatePolicyEvaluationLogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PolicyEvaluationLogService_ServiceDesc is the grpc.ServiceDesc for PolicyEvaluationLogService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -162,6 +199,10 @@ var PolicyEvaluationLogService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _PolicyEvaluationLogService_Get_Handler,
+		},
+		{
+			MethodName: "Create",
+			Handler:    _PolicyEvaluationLogService_Create_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

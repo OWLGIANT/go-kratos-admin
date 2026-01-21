@@ -21,6 +21,9 @@ service PermissionAuditLogService {
 
   // 查询权限变更审计日志详情
   rpc Get (GetPermissionAuditLogRequest) returns (PermissionAuditLog) {}
+
+  // 创建权限变更审计日志
+  rpc Create (CreatePermissionAuditLogRequest) returns (google.protobuf.Empty) {}
 }
 
 // 权限变更审计日志

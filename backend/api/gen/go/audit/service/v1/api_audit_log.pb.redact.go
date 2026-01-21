@@ -12,6 +12,7 @@ import (
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -26,6 +27,7 @@ var (
 	_ timestamppb.Timestamp
 	_ fieldmaskpb.FieldMask
 	_ durationpb.Duration
+	_ emptypb.Empty
 	_ validate.FieldRules
 	_ pagination.Sorting
 )
@@ -63,6 +65,17 @@ func (s *redactedApiAuditLogServiceServer) List(ctx context.Context, in *paginat
 // Unary RPC
 func (s *redactedApiAuditLogServiceServer) Get(ctx context.Context, in *GetApiAuditLogRequest) (*ApiAuditLog, error) {
 	res, err := s.srv.Get(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
+}
+
+// Create is the redacted wrapper for the actual ApiAuditLogServiceServer.Create method
+// Unary RPC
+func (s *redactedApiAuditLogServiceServer) Create(ctx context.Context, in *CreateApiAuditLogRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.Create(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)

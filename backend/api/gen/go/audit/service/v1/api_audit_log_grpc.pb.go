@@ -12,6 +12,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -20,8 +21,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ApiAuditLogService_List_FullMethodName = "/audit.service.v1.ApiAuditLogService/List"
-	ApiAuditLogService_Get_FullMethodName  = "/audit.service.v1.ApiAuditLogService/Get"
+	ApiAuditLogService_List_FullMethodName   = "/audit.service.v1.ApiAuditLogService/List"
+	ApiAuditLogService_Get_FullMethodName    = "/audit.service.v1.ApiAuditLogService/Get"
+	ApiAuditLogService_Create_FullMethodName = "/audit.service.v1.ApiAuditLogService/Create"
 )
 
 // ApiAuditLogServiceClient is the client API for ApiAuditLogService service.
@@ -34,6 +36,8 @@ type ApiAuditLogServiceClient interface {
 	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListApiAuditLogResponse, error)
 	// 查询接口审计日志详情
 	Get(ctx context.Context, in *GetApiAuditLogRequest, opts ...grpc.CallOption) (*ApiAuditLog, error)
+	// 创建接口审计日志
+	Create(ctx context.Context, in *CreateApiAuditLogRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type apiAuditLogServiceClient struct {
@@ -64,6 +68,16 @@ func (c *apiAuditLogServiceClient) Get(ctx context.Context, in *GetApiAuditLogRe
 	return out, nil
 }
 
+func (c *apiAuditLogServiceClient) Create(ctx context.Context, in *CreateApiAuditLogRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ApiAuditLogService_Create_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ApiAuditLogServiceServer is the server API for ApiAuditLogService service.
 // All implementations must embed UnimplementedApiAuditLogServiceServer
 // for forward compatibility.
@@ -74,6 +88,8 @@ type ApiAuditLogServiceServer interface {
 	List(context.Context, *v1.PagingRequest) (*ListApiAuditLogResponse, error)
 	// 查询接口审计日志详情
 	Get(context.Context, *GetApiAuditLogRequest) (*ApiAuditLog, error)
+	// 创建接口审计日志
+	Create(context.Context, *CreateApiAuditLogRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedApiAuditLogServiceServer()
 }
 
@@ -89,6 +105,9 @@ func (UnimplementedApiAuditLogServiceServer) List(context.Context, *v1.PagingReq
 }
 func (UnimplementedApiAuditLogServiceServer) Get(context.Context, *GetApiAuditLogRequest) (*ApiAuditLog, error) {
 	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedApiAuditLogServiceServer) Create(context.Context, *CreateApiAuditLogRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedApiAuditLogServiceServer) mustEmbedUnimplementedApiAuditLogServiceServer() {}
 func (UnimplementedApiAuditLogServiceServer) testEmbeddedByValue()                            {}
@@ -147,6 +166,24 @@ func _ApiAuditLogService_Get_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ApiAuditLogService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateApiAuditLogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ApiAuditLogServiceServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ApiAuditLogService_Create_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ApiAuditLogServiceServer).Create(ctx, req.(*CreateApiAuditLogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ApiAuditLogService_ServiceDesc is the grpc.ServiceDesc for ApiAuditLogService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -161,6 +198,10 @@ var ApiAuditLogService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _ApiAuditLogService_Get_Handler,
+		},
+		{
+			MethodName: "Create",
+			Handler:    _ApiAuditLogService_Create_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

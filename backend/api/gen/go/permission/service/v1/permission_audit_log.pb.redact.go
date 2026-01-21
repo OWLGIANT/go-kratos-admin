@@ -70,6 +70,17 @@ func (s *redactedPermissionAuditLogServiceServer) Get(ctx context.Context, in *G
 	return res, err
 }
 
+// Create is the redacted wrapper for the actual PermissionAuditLogServiceServer.Create method
+// Unary RPC
+func (s *redactedPermissionAuditLogServiceServer) Create(ctx context.Context, in *CreatePermissionAuditLogRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.Create(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
+}
+
 // Redact method implementation for PermissionAuditLog
 func (x *PermissionAuditLog) Redact() string {
 	if x == nil {

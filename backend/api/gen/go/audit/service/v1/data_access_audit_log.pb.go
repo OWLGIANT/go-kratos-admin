@@ -12,6 +12,7 @@ import (
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
@@ -508,7 +509,7 @@ var File_audit_service_v1_data_access_audit_log_proto protoreflect.FileDescripto
 
 const file_audit_service_v1_data_access_audit_log_proto_rawDesc = "" +
 	"\n" +
-	",audit/service/v1/data_access_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x17validate/validate.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1daudit/service/v1/common.proto\"\x8f\x14\n" +
+	",audit/service/v1/data_access_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x17validate/validate.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1daudit/service/v1/common.proto\"\x8f\x14\n" +
 	"\x12DataAccessAuditLog\x12,\n" +
 	"\x02id\x18\x01 \x01(\rB\x17\xbaG\x14\x92\x02\x11API审计日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
 	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x128\n" +
@@ -606,10 +607,11 @@ const file_audit_service_v1_data_access_audit_log_proto_rawDesc = "" +
 	"\n" +
 	"_view_mask\"[\n" +
 	"\x1fCreateDataAccessAuditLogRequest\x128\n" +
-	"\x04data\x18\x01 \x01(\v2$.audit.service.v1.DataAccessAuditLogR\x04data2\xd1\x01\n" +
+	"\x04data\x18\x01 \x01(\v2$.audit.service.v1.DataAccessAuditLogR\x04data2\xa8\x02\n" +
 	"\x19DataAccessAuditLogService\x12U\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a0.audit.service.v1.ListDataAccessAuditLogResponse\"\x00\x12]\n" +
-	"\x03Get\x12..audit.service.v1.GetDataAccessAuditLogRequest\x1a$.audit.service.v1.DataAccessAuditLog\"\x00B\xc4\x01\n" +
+	"\x03Get\x12..audit.service.v1.GetDataAccessAuditLogRequest\x1a$.audit.service.v1.DataAccessAuditLog\"\x00\x12U\n" +
+	"\x06Create\x121.audit.service.v1.CreateDataAccessAuditLogRequest\x1a\x16.google.protobuf.Empty\"\x00B\xc4\x01\n" +
 	"\x14com.audit.service.v1B\x17DataAccessAuditLogProtoP\x01Z1go-wind-admin/api/gen/go/audit/service/v1;auditpb\xa2\x02\x03ASX\xaa\x02\x10Audit.Service.V1\xca\x02\x10Audit\\Service\\V1\xe2\x02\x1cAudit\\Service\\V1\\GPBMetadata\xea\x02\x12Audit::Service::V1b\x06proto3"
 
 var (
@@ -636,6 +638,7 @@ var file_audit_service_v1_data_access_audit_log_proto_goTypes = []any{
 	(*timestamppb.Timestamp)(nil),           // 6: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),           // 7: google.protobuf.FieldMask
 	(*v1.PagingRequest)(nil),                // 8: pagination.PagingRequest
+	(*emptypb.Empty)(nil),                   // 9: google.protobuf.Empty
 }
 var file_audit_service_v1_data_access_audit_log_proto_depIdxs = []int32{
 	0, // 0: audit.service.v1.DataAccessAuditLog.access_type:type_name -> audit.service.v1.DataAccessAuditLog.AccessType
@@ -646,10 +649,12 @@ var file_audit_service_v1_data_access_audit_log_proto_depIdxs = []int32{
 	1, // 5: audit.service.v1.CreateDataAccessAuditLogRequest.data:type_name -> audit.service.v1.DataAccessAuditLog
 	8, // 6: audit.service.v1.DataAccessAuditLogService.List:input_type -> pagination.PagingRequest
 	3, // 7: audit.service.v1.DataAccessAuditLogService.Get:input_type -> audit.service.v1.GetDataAccessAuditLogRequest
-	2, // 8: audit.service.v1.DataAccessAuditLogService.List:output_type -> audit.service.v1.ListDataAccessAuditLogResponse
-	1, // 9: audit.service.v1.DataAccessAuditLogService.Get:output_type -> audit.service.v1.DataAccessAuditLog
-	8, // [8:10] is the sub-list for method output_type
-	6, // [6:8] is the sub-list for method input_type
+	4, // 8: audit.service.v1.DataAccessAuditLogService.Create:input_type -> audit.service.v1.CreateDataAccessAuditLogRequest
+	2, // 9: audit.service.v1.DataAccessAuditLogService.List:output_type -> audit.service.v1.ListDataAccessAuditLogResponse
+	1, // 10: audit.service.v1.DataAccessAuditLogService.Get:output_type -> audit.service.v1.DataAccessAuditLog
+	9, // 11: audit.service.v1.DataAccessAuditLogService.Create:output_type -> google.protobuf.Empty
+	9, // [9:12] is the sub-list for method output_type
+	6, // [6:9] is the sub-list for method input_type
 	6, // [6:6] is the sub-list for extension type_name
 	6, // [6:6] is the sub-list for extension extendee
 	0, // [0:6] is the sub-list for field type_name

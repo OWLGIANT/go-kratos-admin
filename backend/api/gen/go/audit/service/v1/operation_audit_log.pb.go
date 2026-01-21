@@ -11,6 +11,7 @@ import (
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
@@ -467,7 +468,7 @@ var File_audit_service_v1_operation_audit_log_proto protoreflect.FileDescriptor
 
 const file_audit_service_v1_operation_audit_log_proto_rawDesc = "" +
 	"\n" +
-	"*audit/service/v1/operation_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1daudit/service/v1/common.proto\x1a#audit/service/v1/geo_location.proto\"\xe2\x0e\n" +
+	"*audit/service/v1/operation_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1daudit/service/v1/common.proto\x1a#audit/service/v1/geo_location.proto\"\xe2\x0e\n" +
 	"\x11OperationAuditLog\x12,\n" +
 	"\x02id\x18\x01 \x01(\rB\x17\xbaG\x14\x92\x02\x11API审计日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
 	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x128\n" +
@@ -550,10 +551,11 @@ const file_audit_service_v1_operation_audit_log_proto_rawDesc = "" +
 	"\n" +
 	"_view_mask\"Y\n" +
 	"\x1eCreateOperationAuditLogRequest\x127\n" +
-	"\x04data\x18\x01 \x01(\v2#.audit.service.v1.OperationAuditLogR\x04data2\xcd\x01\n" +
+	"\x04data\x18\x01 \x01(\v2#.audit.service.v1.OperationAuditLogR\x04data2\xa3\x02\n" +
 	"\x18OperationAuditLogService\x12T\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a/.audit.service.v1.ListOperationAuditLogResponse\"\x00\x12[\n" +
-	"\x03Get\x12-.audit.service.v1.GetOperationAuditLogRequest\x1a#.audit.service.v1.OperationAuditLog\"\x00B\xc3\x01\n" +
+	"\x03Get\x12-.audit.service.v1.GetOperationAuditLogRequest\x1a#.audit.service.v1.OperationAuditLog\"\x00\x12T\n" +
+	"\x06Create\x120.audit.service.v1.CreateOperationAuditLogRequest\x1a\x16.google.protobuf.Empty\"\x00B\xc3\x01\n" +
 	"\x14com.audit.service.v1B\x16OperationAuditLogProtoP\x01Z1go-wind-admin/api/gen/go/audit/service/v1;auditpb\xa2\x02\x03ASX\xaa\x02\x10Audit.Service.V1\xca\x02\x10Audit\\Service\\V1\xe2\x02\x1cAudit\\Service\\V1\\GPBMetadata\xea\x02\x12Audit::Service::V1b\x06proto3"
 
 var (
@@ -581,24 +583,27 @@ var file_audit_service_v1_operation_audit_log_proto_goTypes = []any{
 	(*timestamppb.Timestamp)(nil),          // 7: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),          // 8: google.protobuf.FieldMask
 	(*v1.PagingRequest)(nil),               // 9: pagination.PagingRequest
+	(*emptypb.Empty)(nil),                  // 10: google.protobuf.Empty
 }
 var file_audit_service_v1_operation_audit_log_proto_depIdxs = []int32{
-	0, // 0: audit.service.v1.OperationAuditLog.action:type_name -> audit.service.v1.OperationAuditLog.ActionType
-	5, // 1: audit.service.v1.OperationAuditLog.sensitive_level:type_name -> audit.service.v1.SensitiveLevel
-	6, // 2: audit.service.v1.OperationAuditLog.geo_location:type_name -> audit.service.v1.GeoLocation
-	7, // 3: audit.service.v1.OperationAuditLog.created_at:type_name -> google.protobuf.Timestamp
-	1, // 4: audit.service.v1.ListOperationAuditLogResponse.items:type_name -> audit.service.v1.OperationAuditLog
-	8, // 5: audit.service.v1.GetOperationAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
-	1, // 6: audit.service.v1.CreateOperationAuditLogRequest.data:type_name -> audit.service.v1.OperationAuditLog
-	9, // 7: audit.service.v1.OperationAuditLogService.List:input_type -> pagination.PagingRequest
-	3, // 8: audit.service.v1.OperationAuditLogService.Get:input_type -> audit.service.v1.GetOperationAuditLogRequest
-	2, // 9: audit.service.v1.OperationAuditLogService.List:output_type -> audit.service.v1.ListOperationAuditLogResponse
-	1, // 10: audit.service.v1.OperationAuditLogService.Get:output_type -> audit.service.v1.OperationAuditLog
-	9, // [9:11] is the sub-list for method output_type
-	7, // [7:9] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	0,  // 0: audit.service.v1.OperationAuditLog.action:type_name -> audit.service.v1.OperationAuditLog.ActionType
+	5,  // 1: audit.service.v1.OperationAuditLog.sensitive_level:type_name -> audit.service.v1.SensitiveLevel
+	6,  // 2: audit.service.v1.OperationAuditLog.geo_location:type_name -> audit.service.v1.GeoLocation
+	7,  // 3: audit.service.v1.OperationAuditLog.created_at:type_name -> google.protobuf.Timestamp
+	1,  // 4: audit.service.v1.ListOperationAuditLogResponse.items:type_name -> audit.service.v1.OperationAuditLog
+	8,  // 5: audit.service.v1.GetOperationAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
+	1,  // 6: audit.service.v1.CreateOperationAuditLogRequest.data:type_name -> audit.service.v1.OperationAuditLog
+	9,  // 7: audit.service.v1.OperationAuditLogService.List:input_type -> pagination.PagingRequest
+	3,  // 8: audit.service.v1.OperationAuditLogService.Get:input_type -> audit.service.v1.GetOperationAuditLogRequest
+	4,  // 9: audit.service.v1.OperationAuditLogService.Create:input_type -> audit.service.v1.CreateOperationAuditLogRequest
+	2,  // 10: audit.service.v1.OperationAuditLogService.List:output_type -> audit.service.v1.ListOperationAuditLogResponse
+	1,  // 11: audit.service.v1.OperationAuditLogService.Get:output_type -> audit.service.v1.OperationAuditLog
+	10, // 12: audit.service.v1.OperationAuditLogService.Create:output_type -> google.protobuf.Empty
+	10, // [10:13] is the sub-list for method output_type
+	7,  // [7:10] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_audit_service_v1_operation_audit_log_proto_init() }

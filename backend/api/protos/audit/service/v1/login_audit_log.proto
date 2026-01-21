@@ -6,6 +6,7 @@ import "gnostic/openapi/v3/annotations.proto";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";
+import "google/protobuf/empty.proto";
 
 import "pagination/v1/pagination.proto";
 
@@ -19,6 +20,9 @@ service LoginAuditLogService {
 
   // 查询登录审计日志详情
   rpc Get (GetLoginAuditLogRequest) returns (LoginAuditLog) {}
+
+  // 创建登录审计日志
+  rpc Create (CreateLoginAuditLogRequest) returns (google.protobuf.Empty) {}
 }
 
 // 登录审计日志

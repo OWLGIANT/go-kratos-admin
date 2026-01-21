@@ -21,6 +21,9 @@ service PolicyEvaluationLogService {
 
   // 查询策略评估日志详情
   rpc Get (GetPolicyEvaluationLogRequest) returns (PolicyEvaluationLog) {}
+
+  // 创建策略评估日志
+  rpc Create (CreatePolicyEvaluationLogRequest) returns (google.protobuf.Empty) {}
 }
 
 // 策略评估日志

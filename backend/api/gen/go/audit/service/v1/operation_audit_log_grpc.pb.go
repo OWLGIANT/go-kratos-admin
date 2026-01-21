@@ -12,6 +12,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -20,8 +21,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	OperationAuditLogService_List_FullMethodName = "/audit.service.v1.OperationAuditLogService/List"
-	OperationAuditLogService_Get_FullMethodName  = "/audit.service.v1.OperationAuditLogService/Get"
+	OperationAuditLogService_List_FullMethodName   = "/audit.service.v1.OperationAuditLogService/List"
+	OperationAuditLogService_Get_FullMethodName    = "/audit.service.v1.OperationAuditLogService/Get"
+	OperationAuditLogService_Create_FullMethodName = "/audit.service.v1.OperationAuditLogService/Create"
 )
 
 // OperationAuditLogServiceClient is the client API for OperationAuditLogService service.
@@ -34,6 +36,8 @@ type OperationAuditLogServiceClient interface {
 	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListOperationAuditLogResponse, error)
 	// 查询操作审计日志详情
 	Get(ctx context.Context, in *GetOperationAuditLogRequest, opts ...grpc.CallOption) (*OperationAuditLog, error)
+	// 创建操作审计日志
+	Create(ctx context.Context, in *CreateOperationAuditLogRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type operationAuditLogServiceClient struct {
@@ -64,6 +68,16 @@ func (c *operationAuditLogServiceClient) Get(ctx context.Context, in *GetOperati
 	return out, nil
 }
 
+func (c *operationAuditLogServiceClient) Create(ctx context.Context, in *CreateOperationAuditLogRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, OperationAuditLogService_Create_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OperationAuditLogServiceServer is the server API for OperationAuditLogService service.
 // All implementations must embed UnimplementedOperationAuditLogServiceServer
 // for forward compatibility.
@@ -74,6 +88,8 @@ type OperationAuditLogServiceServer interface {
 	List(context.Context, *v1.PagingRequest) (*ListOperationAuditLogResponse, error)
 	// 查询操作审计日志详情
 	Get(context.Context, *GetOperationAuditLogRequest) (*OperationAuditLog, error)
+	// 创建操作审计日志
+	Create(context.Context, *CreateOperationAuditLogRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedOperationAuditLogServiceServer()
 }
 
@@ -89,6 +105,9 @@ func (UnimplementedOperationAuditLogServiceServer) List(context.Context, *v1.Pag
 }
 func (UnimplementedOperationAuditLogServiceServer) Get(context.Context, *GetOperationAuditLogRequest) (*OperationAuditLog, error) {
 	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedOperationAuditLogServiceServer) Create(context.Context, *CreateOperationAuditLogRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedOperationAuditLogServiceServer) mustEmbedUnimplementedOperationAuditLogServiceServer() {
 }
@@ -148,6 +167,24 @@ func _OperationAuditLogService_Get_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OperationAuditLogService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateOperationAuditLogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OperationAuditLogServiceServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OperationAuditLogService_Create_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OperationAuditLogServiceServer).Create(ctx, req.(*CreateOperationAuditLogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OperationAuditLogService_ServiceDesc is the grpc.ServiceDesc for OperationAuditLogService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -162,6 +199,10 @@ var OperationAuditLogService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _OperationAuditLogService_Get_Handler,
+		},
+		{
+			MethodName: "Create",
+			Handler:    _OperationAuditLogService_Create_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

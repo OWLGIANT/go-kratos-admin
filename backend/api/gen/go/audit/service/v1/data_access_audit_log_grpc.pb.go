@@ -12,6 +12,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -20,8 +21,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	DataAccessAuditLogService_List_FullMethodName = "/audit.service.v1.DataAccessAuditLogService/List"
-	DataAccessAuditLogService_Get_FullMethodName  = "/audit.service.v1.DataAccessAuditLogService/Get"
+	DataAccessAuditLogService_List_FullMethodName   = "/audit.service.v1.DataAccessAuditLogService/List"
+	DataAccessAuditLogService_Get_FullMethodName    = "/audit.service.v1.DataAccessAuditLogService/Get"
+	DataAccessAuditLogService_Create_FullMethodName = "/audit.service.v1.DataAccessAuditLogService/Create"
 )
 
 // DataAccessAuditLogServiceClient is the client API for DataAccessAuditLogService service.
@@ -34,6 +36,8 @@ type DataAccessAuditLogServiceClient interface {
 	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListDataAccessAuditLogResponse, error)
 	// 查询数据访问审计日志详情
 	Get(ctx context.Context, in *GetDataAccessAuditLogRequest, opts ...grpc.CallOption) (*DataAccessAuditLog, error)
+	// 创建数据访问审计日志
+	Create(ctx context.Context, in *CreateDataAccessAuditLogRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type dataAccessAuditLogServiceClient struct {
@@ -64,6 +68,16 @@ func (c *dataAccessAuditLogServiceClient) Get(ctx context.Context, in *GetDataAc
 	return out, nil
 }
 
+func (c *dataAccessAuditLogServiceClient) Create(ctx context.Context, in *CreateDataAccessAuditLogRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, DataAccessAuditLogService_Create_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // DataAccessAuditLogServiceServer is the server API for DataAccessAuditLogService service.
 // All implementations must embed UnimplementedDataAccessAuditLogServiceServer
 // for forward compatibility.
@@ -74,6 +88,8 @@ type DataAccessAuditLogServiceServer interface {
 	List(context.Context, *v1.PagingRequest) (*ListDataAccessAuditLogResponse, error)
 	// 查询数据访问审计日志详情
 	Get(context.Context, *GetDataAccessAuditLogRequest) (*DataAccessAuditLog, error)
+	// 创建数据访问审计日志
+	Create(context.Context, *CreateDataAccessAuditLogRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedDataAccessAuditLogServiceServer()
 }
 
@@ -89,6 +105,9 @@ func (UnimplementedDataAccessAuditLogServiceServer) List(context.Context, *v1.Pa
 }
 func (UnimplementedDataAccessAuditLogServiceServer) Get(context.Context, *GetDataAccessAuditLogRequest) (*DataAccessAuditLog, error) {
 	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedDataAccessAuditLogServiceServer) Create(context.Context, *CreateDataAccessAuditLogRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedDataAccessAuditLogServiceServer) mustEmbedUnimplementedDataAccessAuditLogServiceServer() {
 }
@@ -148,6 +167,24 @@ func _DataAccessAuditLogService_Get_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _DataAccessAuditLogService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateDataAccessAuditLogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DataAccessAuditLogServiceServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: DataAccessAuditLogService_Create_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DataAccessAuditLogServiceServer).Create(ctx, req.(*CreateDataAccessAuditLogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // DataAccessAuditLogService_ServiceDesc is the grpc.ServiceDesc for DataAccessAuditLogService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -162,6 +199,10 @@ var DataAccessAuditLogService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _DataAccessAuditLogService_Get_Handler,
+		},
+		{
+			MethodName: "Create",
+			Handler:    _DataAccessAuditLogService_Create_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

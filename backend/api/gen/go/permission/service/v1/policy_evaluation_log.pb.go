@@ -13,7 +13,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/durationpb"
-	_ "google.golang.org/protobuf/types/known/emptypb"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
@@ -435,10 +435,11 @@ const file_permission_service_v1_policy_evaluation_log_proto_rawDesc = "" +
 	"\n" +
 	"_view_mask\"b\n" +
 	" CreatePolicyEvaluationLogRequest\x12>\n" +
-	"\x04data\x18\x01 \x01(\v2*.permission.service.v1.PolicyEvaluationLogR\x04data2\xe4\x01\n" +
+	"\x04data\x18\x01 \x01(\v2*.permission.service.v1.PolicyEvaluationLogR\x04data2\xc1\x02\n" +
 	"\x1aPolicyEvaluationLogService\x12[\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a6.permission.service.v1.ListPolicyEvaluationLogResponse\"\x00\x12i\n" +
-	"\x03Get\x124.permission.service.v1.GetPolicyEvaluationLogRequest\x1a*.permission.service.v1.PolicyEvaluationLog\"\x00B\xe8\x01\n" +
+	"\x03Get\x124.permission.service.v1.GetPolicyEvaluationLogRequest\x1a*.permission.service.v1.PolicyEvaluationLog\"\x00\x12[\n" +
+	"\x06Create\x127.permission.service.v1.CreatePolicyEvaluationLogRequest\x1a\x16.google.protobuf.Empty\"\x00B\xe8\x01\n" +
 	"\x19com.permission.service.v1B\x18PolicyEvaluationLogProtoP\x01Z;go-wind-admin/api/gen/go/permission/service/v1;permissionpb\xa2\x02\x03PSX\xaa\x02\x15Permission.Service.V1\xca\x02\x15Permission\\Service\\V1\xe2\x02!Permission\\Service\\V1\\GPBMetadata\xea\x02\x17Permission::Service::V1b\x06proto3"
 
 var (
@@ -462,6 +463,7 @@ var file_permission_service_v1_policy_evaluation_log_proto_goTypes = []any{
 	(*timestamppb.Timestamp)(nil),            // 4: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),            // 5: google.protobuf.FieldMask
 	(*v1.PagingRequest)(nil),                 // 6: pagination.PagingRequest
+	(*emptypb.Empty)(nil),                    // 7: google.protobuf.Empty
 }
 var file_permission_service_v1_policy_evaluation_log_proto_depIdxs = []int32{
 	4, // 0: permission.service.v1.PolicyEvaluationLog.created_at:type_name -> google.protobuf.Timestamp
@@ -470,10 +472,12 @@ var file_permission_service_v1_policy_evaluation_log_proto_depIdxs = []int32{
 	0, // 3: permission.service.v1.CreatePolicyEvaluationLogRequest.data:type_name -> permission.service.v1.PolicyEvaluationLog
 	6, // 4: permission.service.v1.PolicyEvaluationLogService.List:input_type -> pagination.PagingRequest
 	2, // 5: permission.service.v1.PolicyEvaluationLogService.Get:input_type -> permission.service.v1.GetPolicyEvaluationLogRequest
-	1, // 6: permission.service.v1.PolicyEvaluationLogService.List:output_type -> permission.service.v1.ListPolicyEvaluationLogResponse
-	0, // 7: permission.service.v1.PolicyEvaluationLogService.Get:output_type -> permission.service.v1.PolicyEvaluationLog
-	6, // [6:8] is the sub-list for method output_type
-	4, // [4:6] is the sub-list for method input_type
+	3, // 6: permission.service.v1.PolicyEvaluationLogService.Create:input_type -> permission.service.v1.CreatePolicyEvaluationLogRequest
+	1, // 7: permission.service.v1.PolicyEvaluationLogService.List:output_type -> permission.service.v1.ListPolicyEvaluationLogResponse
+	0, // 8: permission.service.v1.PolicyEvaluationLogService.Get:output_type -> permission.service.v1.PolicyEvaluationLog
+	7, // 9: permission.service.v1.PolicyEvaluationLogService.Create:output_type -> google.protobuf.Empty
+	7, // [7:10] is the sub-list for method output_type
+	4, // [4:7] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
 	4, // [4:4] is the sub-list for extension extendee
 	0, // [0:4] is the sub-list for field type_name

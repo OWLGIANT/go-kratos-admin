@@ -7,6 +7,7 @@ import "gnostic/openapi/v3/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
 
 import "validate/validate.proto";
 
@@ -22,6 +23,9 @@ service ApiAuditLogService {
 
   // 查询接口审计日志详情
   rpc Get (GetApiAuditLogRequest) returns (ApiAuditLog) {}
+
+  // 创建接口审计日志
+  rpc Create (CreateApiAuditLogRequest) returns (google.protobuf.Empty) {}
 }
 
 // 接口审计日志

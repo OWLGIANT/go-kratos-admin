@@ -13,7 +13,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/durationpb"
-	_ "google.golang.org/protobuf/types/known/emptypb"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
@@ -494,10 +494,11 @@ const file_permission_service_v1_permission_audit_log_proto_rawDesc = "" +
 	"\n" +
 	"_view_mask\"`\n" +
 	"\x1fCreatePermissionAuditLogRequest\x12=\n" +
-	"\x04data\x18\x01 \x01(\v2).permission.service.v1.PermissionAuditLogR\x04data2\xe0\x01\n" +
+	"\x04data\x18\x01 \x01(\v2).permission.service.v1.PermissionAuditLogR\x04data2\xbc\x02\n" +
 	"\x19PermissionAuditLogService\x12Z\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a5.permission.service.v1.ListPermissionAuditLogResponse\"\x00\x12g\n" +
-	"\x03Get\x123.permission.service.v1.GetPermissionAuditLogRequest\x1a).permission.service.v1.PermissionAuditLog\"\x00B\xe7\x01\n" +
+	"\x03Get\x123.permission.service.v1.GetPermissionAuditLogRequest\x1a).permission.service.v1.PermissionAuditLog\"\x00\x12Z\n" +
+	"\x06Create\x126.permission.service.v1.CreatePermissionAuditLogRequest\x1a\x16.google.protobuf.Empty\"\x00B\xe7\x01\n" +
 	"\x19com.permission.service.v1B\x17PermissionAuditLogProtoP\x01Z;go-wind-admin/api/gen/go/permission/service/v1;permissionpb\xa2\x02\x03PSX\xaa\x02\x15Permission.Service.V1\xca\x02\x15Permission\\Service\\V1\xe2\x02!Permission\\Service\\V1\\GPBMetadata\xea\x02\x17Permission::Service::V1b\x06proto3"
 
 var (
@@ -523,6 +524,7 @@ var file_permission_service_v1_permission_audit_log_proto_goTypes = []any{
 	(*timestamppb.Timestamp)(nil),           // 5: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),           // 6: google.protobuf.FieldMask
 	(*v1.PagingRequest)(nil),                // 7: pagination.PagingRequest
+	(*emptypb.Empty)(nil),                   // 8: google.protobuf.Empty
 }
 var file_permission_service_v1_permission_audit_log_proto_depIdxs = []int32{
 	0, // 0: permission.service.v1.PermissionAuditLog.action:type_name -> permission.service.v1.PermissionAuditLog.ActionType
@@ -532,10 +534,12 @@ var file_permission_service_v1_permission_audit_log_proto_depIdxs = []int32{
 	1, // 4: permission.service.v1.CreatePermissionAuditLogRequest.data:type_name -> permission.service.v1.PermissionAuditLog
 	7, // 5: permission.service.v1.PermissionAuditLogService.List:input_type -> pagination.PagingRequest
 	3, // 6: permission.service.v1.PermissionAuditLogService.Get:input_type -> permission.service.v1.GetPermissionAuditLogRequest
-	2, // 7: permission.service.v1.PermissionAuditLogService.List:output_type -> permission.service.v1.ListPermissionAuditLogResponse
-	1, // 8: permission.service.v1.PermissionAuditLogService.Get:output_type -> permission.service.v1.PermissionAuditLog
-	7, // [7:9] is the sub-list for method output_type
-	5, // [5:7] is the sub-list for method input_type
+	4, // 7: permission.service.v1.PermissionAuditLogService.Create:input_type -> permission.service.v1.CreatePermissionAuditLogRequest
+	2, // 8: permission.service.v1.PermissionAuditLogService.List:output_type -> permission.service.v1.ListPermissionAuditLogResponse
+	1, // 9: permission.service.v1.PermissionAuditLogService.Get:output_type -> permission.service.v1.PermissionAuditLog
+	8, // 10: permission.service.v1.PermissionAuditLogService.Create:output_type -> google.protobuf.Empty
+	8, // [8:11] is the sub-list for method output_type
+	5, // [5:8] is the sub-list for method input_type
 	5, // [5:5] is the sub-list for extension type_name
 	5, // [5:5] is the sub-list for extension extendee
 	0, // [0:5] is the sub-list for field type_name
