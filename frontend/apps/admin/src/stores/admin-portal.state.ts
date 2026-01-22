@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { createAdminPortalServiceClient } from '#/generated/api/admin/service/v1';
 import { requestClientRequestHandler } from '#/utils/request';
 
-export const useRouterStore = defineStore('router', () => {
+export const useAdminPortalStore = defineStore('admin-portal', () => {
   const service = createAdminPortalServiceClient(requestClientRequestHandler);
 
   /**

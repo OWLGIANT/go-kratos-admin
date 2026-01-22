@@ -36,13 +36,20 @@ type DictEntryRepo struct {
 		predicate.DictEntry,
 		dictV1.DictEntry, ent.DictEntry,
 	]
+
+	i18n *DictEntryI18nRepo
 }
 
-func NewDictEntryRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *DictEntryRepo {
+func NewDictEntryRepo(
+	ctx *bootstrap.Context,
+	entClient *entCrud.EntClient[*ent.Client],
+	i18n *DictEntryI18nRepo,
+) *DictEntryRepo {
 	repo := &DictEntryRepo{
-		log:       ctx.NewLoggerHelper("dict-item/repo/admin-service"),
+		log:       ctx.NewLoggerHelper("dict-entry/repo/admin-service"),
 		entClient: entClient,
 		mapper:    mapper.NewCopierMapper[dictV1.DictEntry, ent.DictEntry](),
+		i18n:      i18n,
 	}
 
 	repo.init()
@@ -100,6 +107,36 @@ func (r *DictEntryRepo) List(ctx context.Context, req *paginationV1.PagingReques
 	}, nil
 }
 
+func (r *DictEntryRepo) Get(ctx context.Context, req *dictV1.GetDictEntryRequest) (*dictV1.DictEntry, error) {
+	if req == nil {
+		return nil, dictV1.ErrorBadRequest("invalid parameter")
+	}
+
+	builder := r.entClient.Client().DictEntry.Query()
+
+	var whereCond []func(s *sql.Selector)
+	switch req.QueryBy.(type) {
+	default:
+	case *dictV1.GetDictEntryRequest_Id:
+		whereCond = append(whereCond, dictentry.IDEQ(req.GetId()))
+	case *dictV1.GetDictEntryRequest_Value:
+		builder.Where(dictentry.EntryValueEQ(req.GetValue()))
+	}
+
+	dto, err := r.repository.Get(ctx, builder, req.GetViewMask(), whereCond...)
+	if err != nil {
+		return nil, err
+	}
+
+	i18ns, err := r.i18n.Get(ctx, dto.GetId())
+	if err != nil {
+		return nil, err
+	}
+	dto.I18N = i18ns
+
+	return dto, err
+}
+
 func (r *DictEntryRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 	exist, err := r.entClient.Client().DictEntry.Query().
 		Where(dictentry.IDEQ(id)).
@@ -111,20 +148,36 @@ func (r *DictEntryRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 	return exist, nil
 }
 
-func (r *DictEntryRepo) Create(ctx context.Context, req *dictV1.CreateDictEntryRequest) error {
+func (r *DictEntryRepo) Create(ctx context.Context, req *dictV1.CreateDictEntryRequest) (err error) {
 	if req == nil || req.Data == nil {
 		return dictV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().DictEntry.Create().
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return dictV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = dictV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	builder := tx.DictEntry.Create().
 		SetNillableTenantID(req.Data.TenantId).
-		SetNillableEntryLabel(req.Data.EntryLabel).
 		SetNillableEntryValue(req.Data.EntryValue).
 		SetNillableNumericValue(req.Data.NumericValue).
-		SetNillableLanguageCode(req.Data.LanguageCode).
 		SetNillableIsEnabled(req.Data.IsEnabled).
 		SetNillableSortOrder(req.Data.SortOrder).
-		SetNillableDescription(req.Data.Description).
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
 
@@ -139,22 +192,37 @@ func (r *DictEntryRepo) Create(ctx context.Context, req *dictV1.CreateDictEntryR
 		builder.SetID(req.GetData().GetId())
 	}
 
-	if err := builder.Exec(ctx); err != nil {
+	var entity *ent.DictEntry
+	if entity, err = builder.Save(ctx); err != nil {
 		r.log.Errorf("insert dict entry failed: %s", err.Error())
 		return dictV1.ErrorInternalServerError("insert dict entry failed")
+	}
+
+	if req.Data.I18N != nil {
+		if err = r.i18n.ReplaceByEntryID(
+			ctx,
+			tx,
+			req.Data.GetTenantId(),
+			req.Data.GetCreatedBy(),
+			entity.ID,
+			req.Data.I18N,
+		); err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-func (r *DictEntryRepo) Update(ctx context.Context, req *dictV1.UpdateDictEntryRequest) error {
+func (r *DictEntryRepo) Update(ctx context.Context, req *dictV1.UpdateDictEntryRequest) (err error) {
 	if req == nil || req.Data == nil {
 		return dictV1.ErrorBadRequest("invalid parameter")
 	}
 
 	// 如果不存在则创建
 	if req.GetAllowMissing() {
-		exist, err := r.IsExist(ctx, req.GetId())
+		var exist bool
+		exist, err = r.IsExist(ctx, req.GetId())
 		if err != nil {
 			return err
 		}
@@ -166,17 +234,33 @@ func (r *DictEntryRepo) Update(ctx context.Context, req *dictV1.UpdateDictEntryR
 		}
 	}
 
-	builder := r.entClient.Client().Debug().DictEntry.Update()
-	err := r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return dictV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = dictV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	builder := tx.DictEntry.UpdateOneID(req.GetId())
+	dto, err := r.repository.UpdateOne(ctx, builder, req.Data, req.GetUpdateMask(),
 		func(dto *dictV1.DictEntry) {
 			builder.
-				SetNillableEntryLabel(req.Data.EntryLabel).
 				SetNillableEntryValue(req.Data.EntryValue).
 				SetNillableNumericValue(req.Data.NumericValue).
-				SetNillableLanguageCode(req.Data.LanguageCode).
 				SetNillableIsEnabled(req.Data.IsEnabled).
 				SetNillableSortOrder(req.Data.SortOrder).
-				SetNillableDescription(req.Data.Description).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
 
@@ -188,6 +272,21 @@ func (r *DictEntryRepo) Update(ctx context.Context, req *dictV1.UpdateDictEntryR
 			s.Where(sql.EQ(dictentry.FieldID, req.GetId()))
 		},
 	)
+	if err != nil {
+		r.log.Errorf("update dict entry failed: %s", err.Error())
+		return dictV1.ErrorInternalServerError("update dict entry failed")
+	}
+
+	if err = r.i18n.ReplaceByEntryID(
+		ctx,
+		tx,
+		req.Data.GetTenantId(),
+		req.Data.GetCreatedBy(),
+		dto.GetId(),
+		req.Data.I18N,
+	); err != nil {
+		return err
+	}
 
 	return err
 }

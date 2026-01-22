@@ -20,43 +20,118 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
-const OperationOssServiceOssUploadUrl = "/admin.service.v1.OssService/OssUploadUrl"
+const OperationOssServiceDeleteOssFile = "/admin.service.v1.OssService/DeleteOssFile"
+const OperationOssServiceGetDownloadUrl = "/admin.service.v1.OssService/GetDownloadUrl"
+const OperationOssServiceGetUploadPresignedUrl = "/admin.service.v1.OssService/GetUploadPresignedUrl"
+const OperationOssServiceListOssFile = "/admin.service.v1.OssService/ListOssFile"
 
 type OssServiceHTTPServer interface {
-	// OssUploadUrl 获取对象存储（OSS）上传用的预签名链接
-	OssUploadUrl(context.Context, *v1.OssUploadUrlRequest) (*v1.OssUploadUrlResponse, error)
+	// DeleteOssFile 删除一个文件
+	DeleteOssFile(context.Context, *v1.DeleteOssFileRequest) (*v1.DeleteOssFileResponse, error)
+	// GetDownloadUrl 获取对象存储（OSS）下载链接
+	GetDownloadUrl(context.Context, *v1.GetDownloadInfoRequest) (*v1.GetDownloadInfoResponse, error)
+	// GetUploadPresignedUrl 获取对象存储（OSS）上传用的预签名链接
+	GetUploadPresignedUrl(context.Context, *v1.GetUploadPresignedUrlRequest) (*v1.GetUploadPresignedUrlResponse, error)
+	// ListOssFile 获取文件夹下面的文件列表
+	ListOssFile(context.Context, *v1.ListOssFileRequest) (*v1.ListOssFileResponse, error)
 }
 
 func RegisterOssServiceHTTPServer(s *http.Server, srv OssServiceHTTPServer) {
 	r := s.Route("/")
-	r.POST("/admin/v1/file:upload-url", _OssService_OssUploadUrl0_HTTP_Handler(srv))
+	r.POST("/admin/v1/file/oss/upload-presign-url", _OssService_GetUploadPresignedUrl0_HTTP_Handler(srv))
+	r.GET("/admin/v1/file/oss/download-url", _OssService_GetDownloadUrl0_HTTP_Handler(srv))
+	r.GET("/admin/v1/file/oss/file-list", _OssService_ListOssFile0_HTTP_Handler(srv))
+	r.DELETE("/admin/v1/file/oss/delete-file", _OssService_DeleteOssFile0_HTTP_Handler(srv))
 }
 
-func _OssService_OssUploadUrl0_HTTP_Handler(srv OssServiceHTTPServer) func(ctx http.Context) error {
+func _OssService_GetUploadPresignedUrl0_HTTP_Handler(srv OssServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in v1.OssUploadUrlRequest
+		var in v1.GetUploadPresignedUrlRequest
 		if err := ctx.Bind(&in); err != nil {
 			return err
 		}
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
-		http.SetOperation(ctx, OperationOssServiceOssUploadUrl)
+		http.SetOperation(ctx, OperationOssServiceGetUploadPresignedUrl)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.OssUploadUrl(ctx, req.(*v1.OssUploadUrlRequest))
+			return srv.GetUploadPresignedUrl(ctx, req.(*v1.GetUploadPresignedUrlRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*v1.OssUploadUrlResponse)
+		reply := out.(*v1.GetUploadPresignedUrlResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _OssService_GetDownloadUrl0_HTTP_Handler(srv OssServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.GetDownloadInfoRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationOssServiceGetDownloadUrl)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GetDownloadUrl(ctx, req.(*v1.GetDownloadInfoRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v1.GetDownloadInfoResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _OssService_ListOssFile0_HTTP_Handler(srv OssServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.ListOssFileRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationOssServiceListOssFile)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListOssFile(ctx, req.(*v1.ListOssFileRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v1.ListOssFileResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _OssService_DeleteOssFile0_HTTP_Handler(srv OssServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v1.DeleteOssFileRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationOssServiceDeleteOssFile)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteOssFile(ctx, req.(*v1.DeleteOssFileRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v1.DeleteOssFileResponse)
 		return ctx.Result(200, reply)
 	}
 }
 
 type OssServiceHTTPClient interface {
-	// OssUploadUrl 获取对象存储（OSS）上传用的预签名链接
-	OssUploadUrl(ctx context.Context, req *v1.OssUploadUrlRequest, opts ...http.CallOption) (rsp *v1.OssUploadUrlResponse, err error)
+	// DeleteOssFile 删除一个文件
+	DeleteOssFile(ctx context.Context, req *v1.DeleteOssFileRequest, opts ...http.CallOption) (rsp *v1.DeleteOssFileResponse, err error)
+	// GetDownloadUrl 获取对象存储（OSS）下载链接
+	GetDownloadUrl(ctx context.Context, req *v1.GetDownloadInfoRequest, opts ...http.CallOption) (rsp *v1.GetDownloadInfoResponse, err error)
+	// GetUploadPresignedUrl 获取对象存储（OSS）上传用的预签名链接
+	GetUploadPresignedUrl(ctx context.Context, req *v1.GetUploadPresignedUrlRequest, opts ...http.CallOption) (rsp *v1.GetUploadPresignedUrlResponse, err error)
+	// ListOssFile 获取文件夹下面的文件列表
+	ListOssFile(ctx context.Context, req *v1.ListOssFileRequest, opts ...http.CallOption) (rsp *v1.ListOssFileResponse, err error)
 }
 
 type OssServiceHTTPClientImpl struct {
@@ -67,14 +142,56 @@ func NewOssServiceHTTPClient(client *http.Client) OssServiceHTTPClient {
 	return &OssServiceHTTPClientImpl{client}
 }
 
-// OssUploadUrl 获取对象存储（OSS）上传用的预签名链接
-func (c *OssServiceHTTPClientImpl) OssUploadUrl(ctx context.Context, in *v1.OssUploadUrlRequest, opts ...http.CallOption) (*v1.OssUploadUrlResponse, error) {
-	var out v1.OssUploadUrlResponse
-	pattern := "/admin/v1/file:upload-url"
+// DeleteOssFile 删除一个文件
+func (c *OssServiceHTTPClientImpl) DeleteOssFile(ctx context.Context, in *v1.DeleteOssFileRequest, opts ...http.CallOption) (*v1.DeleteOssFileResponse, error) {
+	var out v1.DeleteOssFileResponse
+	pattern := "/admin/v1/file/oss/delete-file"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationOssServiceDeleteOssFile))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GetDownloadUrl 获取对象存储（OSS）下载链接
+func (c *OssServiceHTTPClientImpl) GetDownloadUrl(ctx context.Context, in *v1.GetDownloadInfoRequest, opts ...http.CallOption) (*v1.GetDownloadInfoResponse, error) {
+	var out v1.GetDownloadInfoResponse
+	pattern := "/admin/v1/file/oss/download-url"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationOssServiceGetDownloadUrl))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GetUploadPresignedUrl 获取对象存储（OSS）上传用的预签名链接
+func (c *OssServiceHTTPClientImpl) GetUploadPresignedUrl(ctx context.Context, in *v1.GetUploadPresignedUrlRequest, opts ...http.CallOption) (*v1.GetUploadPresignedUrlResponse, error) {
+	var out v1.GetUploadPresignedUrlResponse
+	pattern := "/admin/v1/file/oss/upload-presign-url"
 	path := binding.EncodeURL(pattern, in, false)
-	opts = append(opts, http.Operation(OperationOssServiceOssUploadUrl))
+	opts = append(opts, http.Operation(OperationOssServiceGetUploadPresignedUrl))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// ListOssFile 获取文件夹下面的文件列表
+func (c *OssServiceHTTPClientImpl) ListOssFile(ctx context.Context, in *v1.ListOssFileRequest, opts ...http.CallOption) (*v1.ListOssFileResponse, error) {
+	var out v1.ListOssFileResponse
+	pattern := "/admin/v1/file/oss/file-list"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationOssServiceListOssFile))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

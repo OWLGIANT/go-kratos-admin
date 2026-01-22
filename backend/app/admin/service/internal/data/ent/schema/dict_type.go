@@ -34,12 +34,7 @@ func (DictType) Fields() []ent.Field {
 		field.String("type_code").
 			Comment("字典类型唯一代码").
 			NotEmpty().
-			Optional().
-			Nillable(),
-
-		field.String("type_name").
-			Comment("字典类型名称").
-			NotEmpty().
+			Immutable().
 			Optional().
 			Nillable(),
 	}
@@ -53,7 +48,6 @@ func (DictType) Mixin() []ent.Mixin {
 		mixin.OperatorID{},
 		mixin.IsEnabled{},
 		mixin.SortOrder{},
-		mixin.Description{},
 		mixin.TenantID[uint32]{},
 	}
 }
@@ -62,6 +56,9 @@ func (DictType) Mixin() []ent.Mixin {
 func (DictType) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("entries", DictEntry.Type).
+			Ref("sys_dict_types"),
+
+		edge.From("i18ns", DictTypeI18n.Type).
 			Ref("sys_dict_types"),
 	}
 }
@@ -73,14 +70,6 @@ func (DictType) Indexes() []ent.Index {
 		index.Fields("tenant_id", "type_code").
 			Unique().
 			StorageKey("uix_sys_dict_types_tenant_type_code"),
-
-		// 常用查询：在租户范围内按名称查找
-		index.Fields("tenant_id", "type_name").
-			StorageKey("idx_sys_dict_types_tenant_type_name"),
-
-		// 单列索引：按名称快速查询/模糊搜索
-		index.Fields("type_name").
-			StorageKey("idx_sys_dict_types_type_name"),
 
 		// 支持按租户快速筛选
 		index.Fields("tenant_id").

@@ -403,7 +403,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DataAccessAuditLog'
-    /admin/v1/dict-entries:
+    /admin/v1/dict/entries:
         get:
             tags:
                 - DictEntryService
@@ -513,7 +513,7 @@ paths:
                 "200":
                     description: OK
                     content: {}
-    /admin/v1/dict-entries/{id}:
+    /admin/v1/dict/entries/{id}:
         put:
             tags:
                 - DictEntryService
@@ -536,7 +536,182 @@ paths:
                 "200":
                     description: OK
                     content: {}
-    /admin/v1/dict-types:
+    /admin/v1/dict/langs:
+        get:
+            tags:
+                - LanguageService
+            description: 分页查询语言列表
+            operationId: LanguageService_List
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListLanguageResponse'
+        post:
+            tags:
+                - LanguageService
+            description: 创建语言
+            operationId: LanguageService_Create
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateLanguageRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+        delete:
+            tags:
+                - LanguageService
+            description: 删除语言
+            operationId: LanguageService_Delete
+            parameters:
+                - name: id
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/dict/langs/batch:
+        post:
+            tags:
+                - LanguageService
+            description: 批量创建语言
+            operationId: LanguageService_BatchCreate
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/BatchCreateLanguagesRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/dict/langs/{id}:
+        get:
+            tags:
+                - LanguageService
+            description: 查询语言详情
+            operationId: LanguageService_Get
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: code
+                  in: query
+                  schema:
+                    type: string
+                - name: viewMask
+                  in: query
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Language'
+        put:
+            tags:
+                - LanguageService
+            description: 更新语言
+            operationId: LanguageService_Update
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateLanguageRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/dict/types:
         get:
             tags:
                 - DictTypeService
@@ -646,7 +821,7 @@ paths:
                 "200":
                     description: OK
                     content: {}
-    /admin/v1/dict-types/code/{code}:
+    /admin/v1/dict/types/code/{code}:
         get:
             tags:
                 - DictTypeService
@@ -675,7 +850,7 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DictType'
-    /admin/v1/dict-types/{id}:
+    /admin/v1/dict/types/{id}:
         get:
             tags:
                 - DictTypeService
@@ -726,54 +901,179 @@ paths:
                 "200":
                     description: OK
                     content: {}
-    /admin/v1/file:upload:
-        put:
+    /admin/v1/file/download:
+        get:
             tags:
-                - OssService
-            description: PUT方法上传文件
-            operationId: OssService_PutUploadFile
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UploadOssFileRequest'
-                required: true
+                - FileTransferService
+            description: 下载文件
+            operationId: FileTransferService_DownloadFile
+            parameters:
+                - name: fileId
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: storageObject.bucketName
+                  in: query
+                  schema:
+                    type: string
+                - name: storageObject.objectName
+                  in: query
+                  schema:
+                    type: string
+                - name: downloadUrl
+                  in: query
+                  schema:
+                    type: string
+                - name: rangeStart
+                  in: query
+                  description: 可选的分段下载范围（闭区间 start，开区间 end；为 0/0 表示全量）
+                  schema:
+                    type: string
+                - name: rangeEnd
+                  in: query
+                  schema:
+                    type: string
+                - name: preferPresignedUrl
+                  in: query
+                  schema:
+                    type: boolean
+                - name: presignExpireSeconds
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: disposition
+                  in: query
+                  schema:
+                    type: string
+                - name: acceptMime
+                  in: query
+                  schema:
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/UploadOssFileResponse'
-        post:
+                                $ref: '#/components/schemas/DownloadFileResponse'
+    /admin/v1/file/oss/delete-file:
+        delete:
             tags:
                 - OssService
-            description: POST方法上传文件
-            operationId: OssService_PostUploadFile
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/UploadOssFileRequest'
-                required: true
+            description: 删除一个文件
+            operationId: OssService_DeleteOssFile
+            parameters:
+                - name: bucketName
+                  in: query
+                  schema:
+                    type: string
+                - name: objectName
+                  in: query
+                  schema:
+                    type: string
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/UploadOssFileResponse'
-    /admin/v1/file:upload-url:
+                                $ref: '#/components/schemas/DeleteOssFileResponse'
+    /admin/v1/file/oss/download-url:
+        get:
+            tags:
+                - OssService
+            description: 获取对象存储（OSS）下载链接
+            operationId: OssService_GetDownloadUrl
+            parameters:
+                - name: fileId
+                  in: query
+                  schema:
+                    type: string
+                - name: storageObject.bucketName
+                  in: query
+                  schema:
+                    type: string
+                - name: storageObject.objectName
+                  in: query
+                  schema:
+                    type: string
+                - name: downloadUrl
+                  in: query
+                  schema:
+                    type: string
+                - name: rangeStart
+                  in: query
+                  description: 可选的分段下载范围（闭区间 start，开区间 end；为 0/0 表示全量）
+                  schema:
+                    type: string
+                - name: rangeEnd
+                  in: query
+                  schema:
+                    type: string
+                - name: preferPresignedUrl
+                  in: query
+                  schema:
+                    type: boolean
+                - name: presignExpireSeconds
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: disposition
+                  in: query
+                  schema:
+                    type: string
+                - name: acceptMime
+                  in: query
+                  description: 客户端期望的 MIME 类型（可用于后端选择或转换）
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetDownloadInfoResponse'
+    /admin/v1/file/oss/file-list:
+        get:
+            tags:
+                - OssService
+            description: 获取文件夹下面的文件列表
+            operationId: OssService_ListOssFile
+            parameters:
+                - name: bucketName
+                  in: query
+                  schema:
+                    type: string
+                - name: folder
+                  in: query
+                  schema:
+                    type: string
+                - name: recursive
+                  in: query
+                  schema:
+                    type: boolean
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListOssFileResponse'
+    /admin/v1/file/oss/upload-presign-url:
         post:
             tags:
                 - OssService
             description: 获取对象存储（OSS）上传用的预签名链接
-            operationId: OssService_OssUploadUrl
+            operationId: OssService_GetUploadPresignedUrl
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/OssUploadUrlRequest'
+                            $ref: '#/components/schemas/GetUploadPresignedUrlRequest'
                 required: true
             responses:
                 "200":
@@ -781,7 +1081,44 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/OssUploadUrlResponse'
+                                $ref: '#/components/schemas/GetUploadPresignedUrlResponse'
+    /admin/v1/file/upload:
+        put:
+            tags:
+                - FileTransferService
+            description: 上传文件 PUT 方式
+            operationId: FileTransferService_PutUploadFile
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UploadFileRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UploadFileResponse'
+        post:
+            tags:
+                - FileTransferService
+            description: 上传文件 POST 方式
+            operationId: FileTransferService_PostUploadFile
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UploadFileRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UploadFileResponse'
     /admin/v1/files:
         get:
             tags:
@@ -3626,11 +3963,29 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/UEditorResponse'
+        put:
+            tags:
+                - FileTransferService
+            description: UEditor 上传文件
+            operationId: FileTransferService_UEditorPutUploadFile
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UEditorUploadRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UEditorUploadResponse'
         post:
             tags:
-                - UEditorService
+                - FileTransferService
             description: UEditor 上传文件
-            operationId: UEditorService_UploadFile
+            operationId: FileTransferService_UEditorPostUploadFile
             requestBody:
                 content:
                     application/json:
@@ -4066,6 +4421,13 @@ components:
                     description: 日志创建时间
                     format: date-time
             description: 接口审计日志
+        BatchCreateLanguagesRequest:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Language'
         BindContactRequest:
             type: object
             properties:
@@ -4127,7 +4489,7 @@ components:
             properties:
                 data:
                     $ref: '#/components/schemas/DictEntry'
-            description: 创建字典条目 - 请求
+            description: 创建字典项 - 请求
         CreateDictTypeRequest:
             type: object
             properties:
@@ -4146,6 +4508,12 @@ components:
                 data:
                     $ref: '#/components/schemas/InternalMessageCategory'
             description: 创建站内信消息分类 - 请求
+        CreateLanguageRequest:
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/Language'
+            description: 创建语言 - 请求
         CreateLoginPolicyRequest:
             type: object
             properties:
@@ -4337,6 +4705,9 @@ components:
                         type: integer
                         format: uint32
                     description: 收件箱记录ID列表
+        DeleteOssFileResponse:
+            type: object
+            properties: {}
         DeviceInfo:
             type: object
             properties:
@@ -4428,35 +4799,36 @@ components:
             properties:
                 id:
                     type: integer
-                    description: 字典条目ID
+                    description: 字典项ID
                     format: uint32
                 typeId:
                     type: integer
                     description: 字典类型ID
                     format: uint32
-                entryLabel:
-                    type: string
-                    description: 字典项的显示标签
                 entryValue:
+                    example: MALE
                     type: string
-                    description: 字典项的实际值
+                    description: 字典项的实际值（在字典类型内唯一）
                 numericValue:
+                    example: 1
                     type: integer
-                    description: 数值型值
+                    description: 可选的数值型值（用于排序、计算等）
                     format: int32
-                languageCode:
-                    type: string
-                    description: 语言代码
                 isEnabled:
                     type: boolean
-                    description: 字典状态
+                    description: 是否启用
                 sortOrder:
                     type: integer
                     description: 排序顺序，值越小越靠前
                     format: uint32
-                description:
-                    type: string
-                    description: 描述
+                i18n:
+                    example: {"zh-CN": {"entryLabel": "男"}, "en-US": {"entryLabel": "Male"}}
+                    type: object
+                    additionalProperties:
+                        $ref: '#/components/schemas/DictEntryI18n'
+                    description: 多语言信息，key 为 BCP-47 语言标签（如 zh-CN、en-US）
+                currentI18n:
+                    $ref: '#/components/schemas/DictEntryI18n'
                 tenantId:
                     type: integer
                     description: 租户ID，0代表系统全局角色
@@ -4488,7 +4860,17 @@ components:
                     type: string
                     description: 删除时间
                     format: date-time
-            description: 字典条目
+            description: 字典项
+        DictEntryI18n:
+            type: object
+            properties:
+                entryLabel:
+                    type: string
+                    description: 显示标签
+                description:
+                    type: string
+                    description: 描述信息
+            description: 字典项多语言信息
         DictType:
             type: object
             properties:
@@ -4499,19 +4881,21 @@ components:
                 typeCode:
                     type: string
                     description: 字典类型唯一代码
-                typeName:
-                    type: string
-                    description: 字典类型名称
                 isEnabled:
                     type: boolean
-                    description: 字典状态
+                    description: 是否启用
                 sortOrder:
                     type: integer
                     description: 排序顺序，值越小越靠前
                     format: uint32
-                description:
-                    type: string
-                    description: 描述
+                i18n:
+                    example: {"zh-CN": {"typeName": "性别"}, "en-US": {"typeName": "Gender"}}
+                    type: object
+                    additionalProperties:
+                        $ref: '#/components/schemas/DictTypeI18n'
+                    description: 多语言信息，key 为 BCP-47 语言标签（如 zh-CN、en-US）
+                currentI18n:
+                    $ref: '#/components/schemas/DictTypeI18n'
                 tenantId:
                     type: integer
                     description: 租户ID，0代表系统全局角色
@@ -4544,6 +4928,46 @@ components:
                     description: 删除时间
                     format: date-time
             description: 字典类型
+        DictTypeI18n:
+            type: object
+            properties:
+                typeName:
+                    type: string
+                    description: 类型名称
+                description:
+                    type: string
+                    description: 描述信息
+            description: 字典类型多语言信息
+        DownloadFileResponse:
+            type: object
+            properties:
+                file:
+                    type: string
+                    description: 直接返回文件字节（小文件或同步场景）
+                    format: bytes
+                downloadUrl:
+                    type: string
+                    description: 预签名 URL（大文件或异步下载）
+                sourceFileName:
+                    type: string
+                    description: 原始文件名，客户端用于保存或显示
+                mime:
+                    type: string
+                    description: MIME 类型，默认 application/octet-stream
+                size:
+                    type: string
+                    description: 文件大小（字节），可用于进度或校验
+                checksum:
+                    type: string
+                    description: 可选，文件校验（如 MD5 或 SHA256）
+                storagePath:
+                    type: string
+                    description: 可选，后端存储位置或 key
+                updatedAt:
+                    type: string
+                    description: 可选，最后修改时间
+                    format: date-time
+            description: 文件下载响应
         EditUserPasswordRequest:
             type: object
             properties:
@@ -4677,6 +5101,87 @@ components:
                     type: string
                     description: 经度（微度）
             description: 地理位置
+        GetDownloadInfoResponse:
+            type: object
+            properties:
+                file:
+                    type: string
+                    description: 直接返回文件字节（小文件或同步场景）
+                    format: bytes
+                downloadUrl:
+                    type: string
+                    description: 预签名 URL（大文件或异步下载）
+                sourceFileName:
+                    type: string
+                    description: 原始文件名，客户端用于保存或显示
+                mime:
+                    type: string
+                    description: MIME 类型，默认 application/octet-stream
+                size:
+                    type: string
+                    description: 文件大小（字节），可用于进度或校验
+                checksum:
+                    type: string
+                    description: 可选，文件校验（如 MD5 或 SHA256）
+                storagePath:
+                    type: string
+                    description: 可选，后端存储位置或 key
+                updatedAt:
+                    type: string
+                    description: 可选，最后修改时间
+                    format: date-time
+                headers:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: 当返回 presigned URL 时，可能需要额外的请求 headers（或表单字段）
+                method:
+                    type: string
+                    description: 请求方法建议（如 GET / HEAD），返回预签名 URL 时可说明
+        GetUploadPresignedUrlRequest:
+            type: object
+            properties:
+                method:
+                    enum:
+                        - Put
+                        - Post
+                    type: string
+                    description: 上传文件所用的HTTP方法，支持POST和PUT
+                    format: enum
+                contentType:
+                    type: string
+                    description: 文件的MIME类型
+                bucketName:
+                    type: string
+                    description: 文件桶名称，如果不填写，将会根据文件名或者MIME类型进行自动解析
+                filePath:
+                    type: string
+                    description: 远端的文件路径，可以不填写
+                fileName:
+                    type: string
+                    description: 文件名，如果不填写，则会生成UUID，有同名文件也会改为UUID
+            description: 获取对象存储上传链接 - 请求
+        GetUploadPresignedUrlResponse:
+            type: object
+            properties:
+                uploadUrl:
+                    type: string
+                    description: 文件的上传链接，默认1个小时的过期时间
+                downloadUrl:
+                    type: string
+                    description: 文件的下载链接
+                bucketName:
+                    type: string
+                    description: 文件桶名称
+                objectName:
+                    type: string
+                    description: 文件名
+                formData:
+                    type: object
+                    additionalProperties:
+                        type: string
+                    description: 表单数据，使用POST方法时填写
+            description: 获取对象存储上传链接 - 回应
         InitialContextResponse:
             type: object
             properties:
@@ -4909,6 +5414,57 @@ components:
                     type: object
                     description: 元数据
             description: Kratos错误返回
+        Language:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 语言ID
+                    format: uint32
+                languageCode:
+                    type: string
+                    description: 标准语言代码
+                languageName:
+                    type: string
+                    description: 语言名称
+                nativeName:
+                    type: string
+                    description: 本地语言名称
+                isDefault:
+                    type: boolean
+                    description: 是否为默认语言
+                isEnabled:
+                    type: boolean
+                    description: 是否启用
+                sortOrder:
+                    type: integer
+                    description: 排序顺序，值越小越靠前
+                    format: uint32
+                createdBy:
+                    type: integer
+                    description: 创建者ID
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    description: 更新者ID
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    description: 删除者用户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: 更新时间
+                    format: date-time
+                deletedAt:
+                    type: string
+                    description: 删除时间
+                    format: date-time
+            description: 语言
         ListApiAuditLogResponse:
             type: object
             properties:
@@ -4948,7 +5504,7 @@ components:
                         $ref: '#/components/schemas/DictEntry'
                 total:
                     type: string
-            description: 查询字典条目列表 - 回应
+            description: 查询字典项列表 - 回应
         ListDictTypeResponse:
             type: object
             properties:
@@ -4989,6 +5545,16 @@ components:
                 total:
                     type: string
             description: 查询站内信消息列表 - 回应
+        ListLanguageResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Language'
+                total:
+                    type: string
+            description: 语言列表 - 答复
         ListLoginAuditLogResponse:
             type: object
             properties:
@@ -5039,6 +5605,14 @@ components:
                 total:
                     type: string
             description: 获取组织单元列表 - 答复
+        ListOssFileResponse:
+            type: object
+            properties:
+                files:
+                    type: array
+                    items:
+                        type: string
+                    description: 文件列表
         ListPermissionAuditLogResponse:
             type: object
             properties:
@@ -5868,50 +6442,6 @@ components:
                     description: 删除时间
                     format: date-time
             description: 组织单元
-        OssUploadUrlRequest:
-            type: object
-            properties:
-                method:
-                    enum:
-                        - Put
-                        - Post
-                    type: string
-                    description: 上传文件所用的HTTP方法，支持POST和PUT
-                    format: enum
-                contentType:
-                    type: string
-                    description: 文件的MIME类型
-                bucketName:
-                    type: string
-                    description: 文件桶名称，如果不填写，将会根据文件名或者MIME类型进行自动解析
-                filePath:
-                    type: string
-                    description: 远端的文件路径，可以不填写
-                fileName:
-                    type: string
-                    description: 文件名，如果不填写，则会生成UUID，有同名文件也会改为UUID
-            description: 获取对象存储上传链接 - 请求
-        OssUploadUrlResponse:
-            type: object
-            properties:
-                uploadUrl:
-                    type: string
-                    description: 文件的上传链接，默认1个小时的过期时间
-                downloadUrl:
-                    type: string
-                    description: 文件的下载链接
-                bucketName:
-                    type: string
-                    description: 文件桶名称
-                objectName:
-                    type: string
-                    description: 文件名
-                formData:
-                    type: object
-                    additionalProperties:
-                        type: string
-                    description: 表单数据，使用POST方法时填写
-            description: 获取对象存储上传链接 - 回应
         Permission:
             type: object
             properties:
@@ -6323,8 +6853,9 @@ components:
                     type: string
                     description: 角色名称
                 code:
+                    example: platform:admin, tenant:admin1
                     type: string
-                    description: 角色标识码（如：platform:admin, tenant:admin）
+                    description: 角色标识码
                 sortOrder:
                     type: integer
                     description: 排序顺序，值越小越靠前
@@ -6864,7 +7395,7 @@ components:
                 allowMissing:
                     type: boolean
                     description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
-            description: 更新字典条目 - 请求
+            description: 更新字典项 - 请求
         UpdateDictTypeRequest:
             type: object
             properties:
@@ -6933,6 +7464,23 @@ components:
                     type: boolean
                     description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
             description: 更新站内信消息 - 请求
+        UpdateLanguageRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                data:
+                    $ref: '#/components/schemas/Language'
+                updateMask:
+                    example: id,realname,username
+                    type: string
+                    description: 要更新的字段列表
+                    format: field-mask
+                allowMissing:
+                    type: boolean
+                    description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
+            description: 更新语言 - 请求
         UpdateLoginPolicyRequest:
             type: object
             properties:
@@ -7121,7 +7669,7 @@ components:
             properties:
                 url:
                     type: string
-        UploadOssFileRequest:
+        UploadFileRequest:
             type: object
             properties:
                 bucketName:
@@ -7140,7 +7688,7 @@ components:
                 mime:
                     type: string
                     description: 文件的MIME类型
-        UploadOssFileResponse:
+        UploadFileResponse:
             type: object
             properties:
                 url:
@@ -7353,12 +7901,16 @@ tags:
       description: 数据字典分类管理服务
     - name: FileService
       description: 文件管理服务
+    - name: FileTransferService
+      description: 文件传输服务
     - name: InternalMessageCategoryService
       description: 站内信消息分类管理服务
     - name: InternalMessageRecipientService
       description: 站内信消息管理服务
     - name: InternalMessageService
       description: 站内信消息管理服务
+    - name: LanguageService
+      description: 语言管理服务
     - name: LoginAuditLogService
       description: 登录审计日志管理服务
     - name: LoginPolicyService

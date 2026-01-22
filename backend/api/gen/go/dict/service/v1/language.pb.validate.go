@@ -81,6 +81,10 @@ func (m *Language) validate(all bool) error {
 		// no validation rules for IsEnabled
 	}
 
+	if m.SortOrder != nil {
+		// no validation rules for SortOrder
+	}
+
 	if m.CreatedBy != nil {
 		// no validation rules for CreatedBy
 	}
@@ -442,6 +446,18 @@ func (m *GetLanguageRequest) validate(all bool) error {
 			errors = append(errors, err)
 		}
 		// no validation rules for Id
+	case *GetLanguageRequest_Code:
+		if v == nil {
+			err := GetLanguageRequestValidationError{
+				field:  "QueryBy",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for Code
 	default:
 		_ = v // ensures v is used
 	}

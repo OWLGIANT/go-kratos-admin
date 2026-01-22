@@ -1,7 +1,6 @@
 package oss
 
 import (
-	"context"
 	"fmt"
 	"testing"
 
@@ -9,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/tx7do/go-utils/trans"
 
-	v1 "go-wind-admin/api/gen/go/file/service/v1"
+	fileV1 "go-wind-admin/api/gen/go/file/service/v1"
 
 	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
 )
@@ -32,8 +31,8 @@ func TestMinIoClient(t *testing.T) {
 	cli := createTestClient()
 	assert.NotNil(t, cli)
 
-	resp, err := cli.OssUploadUrl(context.Background(), &v1.OssUploadUrlRequest{
-		Method:      v1.OssUploadUrlRequest_Put,
+	resp, err := cli.GetUploadPresignedUrl(t.Context(), &fileV1.GetUploadPresignedUrlRequest{
+		Method:      fileV1.GetUploadPresignedUrlRequest_Put,
 		ContentType: trans.String("image/jpeg"),
 		BucketName:  trans.String("images"),
 		FilePath:    trans.String("20221010"),
@@ -46,12 +45,31 @@ func TestListFile(t *testing.T) {
 	cli := createTestClient()
 	assert.NotNil(t, cli)
 
-	req := &v1.ListOssFileRequest{
+	req := &fileV1.ListOssFileRequest{
 		BucketName: trans.Ptr("users"),
 		Folder:     trans.Ptr("1"),
 		Recursive:  trans.Ptr(true),
 	}
-	files, err := cli.ListFile(context.Background(), req)
+	files, err := cli.ListFile(t.Context(), req)
 	assert.Nil(t, err)
 	fmt.Println(files)
+}
+
+func TestDownloadFile(t *testing.T) {
+	cli := createTestClient()
+	assert.NotNil(t, cli)
+
+	resp, err := cli.DownloadFile(t.Context(), &fileV1.DownloadFileRequest{
+		Selector: &fileV1.DownloadFileRequest_StorageObject{
+			StorageObject: &fileV1.StorageObject{
+				BucketName: trans.Ptr("images"),
+				ObjectName: trans.Ptr("DateTimePicker.png"),
+			},
+		},
+		PreferPresignedUrl: trans.Ptr(false),
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(resp)
 }

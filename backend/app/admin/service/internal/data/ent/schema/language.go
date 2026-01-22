@@ -32,6 +32,7 @@ func (Language) Fields() []ent.Field {
 		field.String("language_code").
 			Comment("标准语言代码").
 			NotEmpty().
+			Immutable().
 			Optional().
 			Nillable(),
 

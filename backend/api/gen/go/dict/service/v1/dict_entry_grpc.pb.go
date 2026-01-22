@@ -31,15 +31,15 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// 数据字典条目管理服务
+// 数据字典项管理服务
 type DictEntryServiceClient interface {
-	// 分页查询字典条目列表
+	// 分页查询字典项列表
 	ListDictEntry(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListDictEntryResponse, error)
-	// 创建字典条目
+	// 创建字典项
 	CreateDictEntry(ctx context.Context, in *CreateDictEntryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// 更新字典条目
+	// 更新字典项
 	UpdateDictEntry(ctx context.Context, in *UpdateDictEntryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// 删除字典条目
+	// 删除字典项
 	DeleteDictEntry(ctx context.Context, in *DeleteDictEntryRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -95,15 +95,15 @@ func (c *dictEntryServiceClient) DeleteDictEntry(ctx context.Context, in *Delete
 // All implementations must embed UnimplementedDictEntryServiceServer
 // for forward compatibility.
 //
-// 数据字典条目管理服务
+// 数据字典项管理服务
 type DictEntryServiceServer interface {
-	// 分页查询字典条目列表
+	// 分页查询字典项列表
 	ListDictEntry(context.Context, *v1.PagingRequest) (*ListDictEntryResponse, error)
-	// 创建字典条目
+	// 创建字典项
 	CreateDictEntry(context.Context, *CreateDictEntryRequest) (*emptypb.Empty, error)
-	// 更新字典条目
+	// 更新字典项
 	UpdateDictEntry(context.Context, *UpdateDictEntryRequest) (*emptypb.Empty, error)
-	// 删除字典条目
+	// 删除字典项
 	DeleteDictEntry(context.Context, *DeleteDictEntryRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedDictEntryServiceServer()
 }

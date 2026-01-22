@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
+	"go-wind-admin/app/admin/service/internal/data/ent/dicttypei18n"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -135,20 +136,6 @@ func (_c *DictTypeCreate) SetNillableSortOrder(v *uint32) *DictTypeCreate {
 	return _c
 }
 
-// SetDescription sets the "description" field.
-func (_c *DictTypeCreate) SetDescription(v string) *DictTypeCreate {
-	_c.mutation.SetDescription(v)
-	return _c
-}
-
-// SetNillableDescription sets the "description" field if the given value is not nil.
-func (_c *DictTypeCreate) SetNillableDescription(v *string) *DictTypeCreate {
-	if v != nil {
-		_c.SetDescription(*v)
-	}
-	return _c
-}
-
 // SetTenantID sets the "tenant_id" field.
 func (_c *DictTypeCreate) SetTenantID(v uint32) *DictTypeCreate {
 	_c.mutation.SetTenantID(v)
@@ -177,20 +164,6 @@ func (_c *DictTypeCreate) SetNillableTypeCode(v *string) *DictTypeCreate {
 	return _c
 }
 
-// SetTypeName sets the "type_name" field.
-func (_c *DictTypeCreate) SetTypeName(v string) *DictTypeCreate {
-	_c.mutation.SetTypeName(v)
-	return _c
-}
-
-// SetNillableTypeName sets the "type_name" field if the given value is not nil.
-func (_c *DictTypeCreate) SetNillableTypeName(v *string) *DictTypeCreate {
-	if v != nil {
-		_c.SetTypeName(*v)
-	}
-	return _c
-}
-
 // SetID sets the "id" field.
 func (_c *DictTypeCreate) SetID(v uint32) *DictTypeCreate {
 	_c.mutation.SetID(v)
@@ -210,6 +183,21 @@ func (_c *DictTypeCreate) AddEntries(v ...*DictEntry) *DictTypeCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddEntryIDs(ids...)
+}
+
+// AddI18nIDs adds the "i18ns" edge to the DictTypeI18n entity by IDs.
+func (_c *DictTypeCreate) AddI18nIDs(ids ...uint32) *DictTypeCreate {
+	_c.mutation.AddI18nIDs(ids...)
+	return _c
+}
+
+// AddI18ns adds the "i18ns" edges to the DictTypeI18n entity.
+func (_c *DictTypeCreate) AddI18ns(v ...*DictTypeI18n) *DictTypeCreate {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddI18nIDs(ids...)
 }
 
 // Mutation returns the DictTypeMutation object of the builder.
@@ -269,11 +257,6 @@ func (_c *DictTypeCreate) check() error {
 	if v, ok := _c.mutation.TypeCode(); ok {
 		if err := dicttype.TypeCodeValidator(v); err != nil {
 			return &ValidationError{Name: "type_code", err: fmt.Errorf(`ent: validator failed for field "DictType.type_code": %w`, err)}
-		}
-	}
-	if v, ok := _c.mutation.TypeName(); ok {
-		if err := dicttype.TypeNameValidator(v); err != nil {
-			return &ValidationError{Name: "type_name", err: fmt.Errorf(`ent: validator failed for field "DictType.type_name": %w`, err)}
 		}
 	}
 	if v, ok := _c.mutation.ID(); ok {
@@ -346,10 +329,6 @@ func (_c *DictTypeCreate) createSpec() (*DictType, *sqlgraph.CreateSpec) {
 		_spec.SetField(dicttype.FieldSortOrder, field.TypeUint32, value)
 		_node.SortOrder = &value
 	}
-	if value, ok := _c.mutation.Description(); ok {
-		_spec.SetField(dicttype.FieldDescription, field.TypeString, value)
-		_node.Description = &value
-	}
 	if value, ok := _c.mutation.TenantID(); ok {
 		_spec.SetField(dicttype.FieldTenantID, field.TypeUint32, value)
 		_node.TenantID = &value
@@ -357,10 +336,6 @@ func (_c *DictTypeCreate) createSpec() (*DictType, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.TypeCode(); ok {
 		_spec.SetField(dicttype.FieldTypeCode, field.TypeString, value)
 		_node.TypeCode = &value
-	}
-	if value, ok := _c.mutation.TypeName(); ok {
-		_spec.SetField(dicttype.FieldTypeName, field.TypeString, value)
-		_node.TypeName = &value
 	}
 	if nodes := _c.mutation.EntriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -371,6 +346,22 @@ func (_c *DictTypeCreate) createSpec() (*DictType, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.I18nsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   dicttype.I18nsTable,
+			Columns: []string{dicttype.I18nsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(dicttypei18n.FieldID, field.TypeUint32),
 			},
 		}
 		for _, k := range nodes {
@@ -580,60 +571,6 @@ func (u *DictTypeUpsert) ClearSortOrder() *DictTypeUpsert {
 	return u
 }
 
-// SetDescription sets the "description" field.
-func (u *DictTypeUpsert) SetDescription(v string) *DictTypeUpsert {
-	u.Set(dicttype.FieldDescription, v)
-	return u
-}
-
-// UpdateDescription sets the "description" field to the value that was provided on create.
-func (u *DictTypeUpsert) UpdateDescription() *DictTypeUpsert {
-	u.SetExcluded(dicttype.FieldDescription)
-	return u
-}
-
-// ClearDescription clears the value of the "description" field.
-func (u *DictTypeUpsert) ClearDescription() *DictTypeUpsert {
-	u.SetNull(dicttype.FieldDescription)
-	return u
-}
-
-// SetTypeCode sets the "type_code" field.
-func (u *DictTypeUpsert) SetTypeCode(v string) *DictTypeUpsert {
-	u.Set(dicttype.FieldTypeCode, v)
-	return u
-}
-
-// UpdateTypeCode sets the "type_code" field to the value that was provided on create.
-func (u *DictTypeUpsert) UpdateTypeCode() *DictTypeUpsert {
-	u.SetExcluded(dicttype.FieldTypeCode)
-	return u
-}
-
-// ClearTypeCode clears the value of the "type_code" field.
-func (u *DictTypeUpsert) ClearTypeCode() *DictTypeUpsert {
-	u.SetNull(dicttype.FieldTypeCode)
-	return u
-}
-
-// SetTypeName sets the "type_name" field.
-func (u *DictTypeUpsert) SetTypeName(v string) *DictTypeUpsert {
-	u.Set(dicttype.FieldTypeName, v)
-	return u
-}
-
-// UpdateTypeName sets the "type_name" field to the value that was provided on create.
-func (u *DictTypeUpsert) UpdateTypeName() *DictTypeUpsert {
-	u.SetExcluded(dicttype.FieldTypeName)
-	return u
-}
-
-// ClearTypeName clears the value of the "type_name" field.
-func (u *DictTypeUpsert) ClearTypeName() *DictTypeUpsert {
-	u.SetNull(dicttype.FieldTypeName)
-	return u
-}
-
 // UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
@@ -656,6 +593,9 @@ func (u *DictTypeUpsertOne) UpdateNewValues() *DictTypeUpsertOne {
 		}
 		if _, exists := u.create.mutation.TenantID(); exists {
 			s.SetIgnore(dicttype.FieldTenantID)
+		}
+		if _, exists := u.create.mutation.TypeCode(); exists {
+			s.SetIgnore(dicttype.FieldTypeCode)
 		}
 	}))
 	return u
@@ -863,69 +803,6 @@ func (u *DictTypeUpsertOne) ClearSortOrder() *DictTypeUpsertOne {
 	})
 }
 
-// SetDescription sets the "description" field.
-func (u *DictTypeUpsertOne) SetDescription(v string) *DictTypeUpsertOne {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.SetDescription(v)
-	})
-}
-
-// UpdateDescription sets the "description" field to the value that was provided on create.
-func (u *DictTypeUpsertOne) UpdateDescription() *DictTypeUpsertOne {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.UpdateDescription()
-	})
-}
-
-// ClearDescription clears the value of the "description" field.
-func (u *DictTypeUpsertOne) ClearDescription() *DictTypeUpsertOne {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.ClearDescription()
-	})
-}
-
-// SetTypeCode sets the "type_code" field.
-func (u *DictTypeUpsertOne) SetTypeCode(v string) *DictTypeUpsertOne {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.SetTypeCode(v)
-	})
-}
-
-// UpdateTypeCode sets the "type_code" field to the value that was provided on create.
-func (u *DictTypeUpsertOne) UpdateTypeCode() *DictTypeUpsertOne {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.UpdateTypeCode()
-	})
-}
-
-// ClearTypeCode clears the value of the "type_code" field.
-func (u *DictTypeUpsertOne) ClearTypeCode() *DictTypeUpsertOne {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.ClearTypeCode()
-	})
-}
-
-// SetTypeName sets the "type_name" field.
-func (u *DictTypeUpsertOne) SetTypeName(v string) *DictTypeUpsertOne {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.SetTypeName(v)
-	})
-}
-
-// UpdateTypeName sets the "type_name" field to the value that was provided on create.
-func (u *DictTypeUpsertOne) UpdateTypeName() *DictTypeUpsertOne {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.UpdateTypeName()
-	})
-}
-
-// ClearTypeName clears the value of the "type_name" field.
-func (u *DictTypeUpsertOne) ClearTypeName() *DictTypeUpsertOne {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.ClearTypeName()
-	})
-}
-
 // Exec executes the query.
 func (u *DictTypeUpsertOne) Exec(ctx context.Context) error {
 	if len(u.create.conflict) == 0 {
@@ -1113,6 +990,9 @@ func (u *DictTypeUpsertBulk) UpdateNewValues() *DictTypeUpsertBulk {
 			}
 			if _, exists := b.mutation.TenantID(); exists {
 				s.SetIgnore(dicttype.FieldTenantID)
+			}
+			if _, exists := b.mutation.TypeCode(); exists {
+				s.SetIgnore(dicttype.FieldTypeCode)
 			}
 		}
 	}))
@@ -1318,69 +1198,6 @@ func (u *DictTypeUpsertBulk) UpdateSortOrder() *DictTypeUpsertBulk {
 func (u *DictTypeUpsertBulk) ClearSortOrder() *DictTypeUpsertBulk {
 	return u.Update(func(s *DictTypeUpsert) {
 		s.ClearSortOrder()
-	})
-}
-
-// SetDescription sets the "description" field.
-func (u *DictTypeUpsertBulk) SetDescription(v string) *DictTypeUpsertBulk {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.SetDescription(v)
-	})
-}
-
-// UpdateDescription sets the "description" field to the value that was provided on create.
-func (u *DictTypeUpsertBulk) UpdateDescription() *DictTypeUpsertBulk {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.UpdateDescription()
-	})
-}
-
-// ClearDescription clears the value of the "description" field.
-func (u *DictTypeUpsertBulk) ClearDescription() *DictTypeUpsertBulk {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.ClearDescription()
-	})
-}
-
-// SetTypeCode sets the "type_code" field.
-func (u *DictTypeUpsertBulk) SetTypeCode(v string) *DictTypeUpsertBulk {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.SetTypeCode(v)
-	})
-}
-
-// UpdateTypeCode sets the "type_code" field to the value that was provided on create.
-func (u *DictTypeUpsertBulk) UpdateTypeCode() *DictTypeUpsertBulk {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.UpdateTypeCode()
-	})
-}
-
-// ClearTypeCode clears the value of the "type_code" field.
-func (u *DictTypeUpsertBulk) ClearTypeCode() *DictTypeUpsertBulk {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.ClearTypeCode()
-	})
-}
-
-// SetTypeName sets the "type_name" field.
-func (u *DictTypeUpsertBulk) SetTypeName(v string) *DictTypeUpsertBulk {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.SetTypeName(v)
-	})
-}
-
-// UpdateTypeName sets the "type_name" field to the value that was provided on create.
-func (u *DictTypeUpsertBulk) UpdateTypeName() *DictTypeUpsertBulk {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.UpdateTypeName()
-	})
-}
-
-// ClearTypeName clears the value of the "type_name" field.
-func (u *DictTypeUpsertBulk) ClearTypeName() *DictTypeUpsertBulk {
-	return u.Update(func(s *DictTypeUpsert) {
-		s.ClearTypeName()
 	})
 }
 

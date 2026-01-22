@@ -107,20 +107,6 @@ func (_c *DictEntryCreate) SetNillableDeletedBy(v *uint32) *DictEntryCreate {
 	return _c
 }
 
-// SetDescription sets the "description" field.
-func (_c *DictEntryCreate) SetDescription(v string) *DictEntryCreate {
-	_c.mutation.SetDescription(v)
-	return _c
-}
-
-// SetNillableDescription sets the "description" field if the given value is not nil.
-func (_c *DictEntryCreate) SetNillableDescription(v *string) *DictEntryCreate {
-	if v != nil {
-		_c.SetDescription(*v)
-	}
-	return _c
-}
-
 // SetSortOrder sets the "sort_order" field.
 func (_c *DictEntryCreate) SetSortOrder(v uint32) *DictEntryCreate {
 	_c.mutation.SetSortOrder(v)
@@ -163,20 +149,6 @@ func (_c *DictEntryCreate) SetNillableTenantID(v *uint32) *DictEntryCreate {
 	return _c
 }
 
-// SetEntryLabel sets the "entry_label" field.
-func (_c *DictEntryCreate) SetEntryLabel(v string) *DictEntryCreate {
-	_c.mutation.SetEntryLabel(v)
-	return _c
-}
-
-// SetNillableEntryLabel sets the "entry_label" field if the given value is not nil.
-func (_c *DictEntryCreate) SetNillableEntryLabel(v *string) *DictEntryCreate {
-	if v != nil {
-		_c.SetEntryLabel(*v)
-	}
-	return _c
-}
-
 // SetEntryValue sets the "entry_value" field.
 func (_c *DictEntryCreate) SetEntryValue(v string) *DictEntryCreate {
 	_c.mutation.SetEntryValue(v)
@@ -201,20 +173,6 @@ func (_c *DictEntryCreate) SetNumericValue(v int32) *DictEntryCreate {
 func (_c *DictEntryCreate) SetNillableNumericValue(v *int32) *DictEntryCreate {
 	if v != nil {
 		_c.SetNumericValue(*v)
-	}
-	return _c
-}
-
-// SetLanguageCode sets the "language_code" field.
-func (_c *DictEntryCreate) SetLanguageCode(v string) *DictEntryCreate {
-	_c.mutation.SetLanguageCode(v)
-	return _c
-}
-
-// SetNillableLanguageCode sets the "language_code" field if the given value is not nil.
-func (_c *DictEntryCreate) SetNillableLanguageCode(v *string) *DictEntryCreate {
-	if v != nil {
-		_c.SetLanguageCode(*v)
 	}
 	return _c
 }
@@ -290,11 +248,6 @@ func (_c *DictEntryCreate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *DictEntryCreate) check() error {
-	if v, ok := _c.mutation.EntryLabel(); ok {
-		if err := dictentry.EntryLabelValidator(v); err != nil {
-			return &ValidationError{Name: "entry_label", err: fmt.Errorf(`ent: validator failed for field "DictEntry.entry_label": %w`, err)}
-		}
-	}
 	if v, ok := _c.mutation.EntryValue(); ok {
 		if err := dictentry.EntryValueValidator(v); err != nil {
 			return &ValidationError{Name: "entry_value", err: fmt.Errorf(`ent: validator failed for field "DictEntry.entry_value": %w`, err)}
@@ -365,10 +318,6 @@ func (_c *DictEntryCreate) createSpec() (*DictEntry, *sqlgraph.CreateSpec) {
 		_spec.SetField(dictentry.FieldDeletedBy, field.TypeUint32, value)
 		_node.DeletedBy = &value
 	}
-	if value, ok := _c.mutation.Description(); ok {
-		_spec.SetField(dictentry.FieldDescription, field.TypeString, value)
-		_node.Description = &value
-	}
 	if value, ok := _c.mutation.SortOrder(); ok {
 		_spec.SetField(dictentry.FieldSortOrder, field.TypeUint32, value)
 		_node.SortOrder = &value
@@ -381,10 +330,6 @@ func (_c *DictEntryCreate) createSpec() (*DictEntry, *sqlgraph.CreateSpec) {
 		_spec.SetField(dictentry.FieldTenantID, field.TypeUint32, value)
 		_node.TenantID = &value
 	}
-	if value, ok := _c.mutation.EntryLabel(); ok {
-		_spec.SetField(dictentry.FieldEntryLabel, field.TypeString, value)
-		_node.EntryLabel = &value
-	}
 	if value, ok := _c.mutation.EntryValue(); ok {
 		_spec.SetField(dictentry.FieldEntryValue, field.TypeString, value)
 		_node.EntryValue = &value
@@ -392,10 +337,6 @@ func (_c *DictEntryCreate) createSpec() (*DictEntry, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.NumericValue(); ok {
 		_spec.SetField(dictentry.FieldNumericValue, field.TypeInt32, value)
 		_node.NumericValue = &value
-	}
-	if value, ok := _c.mutation.LanguageCode(); ok {
-		_spec.SetField(dictentry.FieldLanguageCode, field.TypeString, value)
-		_node.LanguageCode = &value
 	}
 	if nodes := _c.mutation.SysDictTypesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -574,24 +515,6 @@ func (u *DictEntryUpsert) ClearDeletedBy() *DictEntryUpsert {
 	return u
 }
 
-// SetDescription sets the "description" field.
-func (u *DictEntryUpsert) SetDescription(v string) *DictEntryUpsert {
-	u.Set(dictentry.FieldDescription, v)
-	return u
-}
-
-// UpdateDescription sets the "description" field to the value that was provided on create.
-func (u *DictEntryUpsert) UpdateDescription() *DictEntryUpsert {
-	u.SetExcluded(dictentry.FieldDescription)
-	return u
-}
-
-// ClearDescription clears the value of the "description" field.
-func (u *DictEntryUpsert) ClearDescription() *DictEntryUpsert {
-	u.SetNull(dictentry.FieldDescription)
-	return u
-}
-
 // SetSortOrder sets the "sort_order" field.
 func (u *DictEntryUpsert) SetSortOrder(v uint32) *DictEntryUpsert {
 	u.Set(dictentry.FieldSortOrder, v)
@@ -634,24 +557,6 @@ func (u *DictEntryUpsert) ClearIsEnabled() *DictEntryUpsert {
 	return u
 }
 
-// SetEntryLabel sets the "entry_label" field.
-func (u *DictEntryUpsert) SetEntryLabel(v string) *DictEntryUpsert {
-	u.Set(dictentry.FieldEntryLabel, v)
-	return u
-}
-
-// UpdateEntryLabel sets the "entry_label" field to the value that was provided on create.
-func (u *DictEntryUpsert) UpdateEntryLabel() *DictEntryUpsert {
-	u.SetExcluded(dictentry.FieldEntryLabel)
-	return u
-}
-
-// ClearEntryLabel clears the value of the "entry_label" field.
-func (u *DictEntryUpsert) ClearEntryLabel() *DictEntryUpsert {
-	u.SetNull(dictentry.FieldEntryLabel)
-	return u
-}
-
 // SetEntryValue sets the "entry_value" field.
 func (u *DictEntryUpsert) SetEntryValue(v string) *DictEntryUpsert {
 	u.Set(dictentry.FieldEntryValue, v)
@@ -691,24 +596,6 @@ func (u *DictEntryUpsert) AddNumericValue(v int32) *DictEntryUpsert {
 // ClearNumericValue clears the value of the "numeric_value" field.
 func (u *DictEntryUpsert) ClearNumericValue() *DictEntryUpsert {
 	u.SetNull(dictentry.FieldNumericValue)
-	return u
-}
-
-// SetLanguageCode sets the "language_code" field.
-func (u *DictEntryUpsert) SetLanguageCode(v string) *DictEntryUpsert {
-	u.Set(dictentry.FieldLanguageCode, v)
-	return u
-}
-
-// UpdateLanguageCode sets the "language_code" field to the value that was provided on create.
-func (u *DictEntryUpsert) UpdateLanguageCode() *DictEntryUpsert {
-	u.SetExcluded(dictentry.FieldLanguageCode)
-	return u
-}
-
-// ClearLanguageCode clears the value of the "language_code" field.
-func (u *DictEntryUpsert) ClearLanguageCode() *DictEntryUpsert {
-	u.SetNull(dictentry.FieldLanguageCode)
 	return u
 }
 
@@ -892,27 +779,6 @@ func (u *DictEntryUpsertOne) ClearDeletedBy() *DictEntryUpsertOne {
 	})
 }
 
-// SetDescription sets the "description" field.
-func (u *DictEntryUpsertOne) SetDescription(v string) *DictEntryUpsertOne {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.SetDescription(v)
-	})
-}
-
-// UpdateDescription sets the "description" field to the value that was provided on create.
-func (u *DictEntryUpsertOne) UpdateDescription() *DictEntryUpsertOne {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.UpdateDescription()
-	})
-}
-
-// ClearDescription clears the value of the "description" field.
-func (u *DictEntryUpsertOne) ClearDescription() *DictEntryUpsertOne {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.ClearDescription()
-	})
-}
-
 // SetSortOrder sets the "sort_order" field.
 func (u *DictEntryUpsertOne) SetSortOrder(v uint32) *DictEntryUpsertOne {
 	return u.Update(func(s *DictEntryUpsert) {
@@ -962,27 +828,6 @@ func (u *DictEntryUpsertOne) ClearIsEnabled() *DictEntryUpsertOne {
 	})
 }
 
-// SetEntryLabel sets the "entry_label" field.
-func (u *DictEntryUpsertOne) SetEntryLabel(v string) *DictEntryUpsertOne {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.SetEntryLabel(v)
-	})
-}
-
-// UpdateEntryLabel sets the "entry_label" field to the value that was provided on create.
-func (u *DictEntryUpsertOne) UpdateEntryLabel() *DictEntryUpsertOne {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.UpdateEntryLabel()
-	})
-}
-
-// ClearEntryLabel clears the value of the "entry_label" field.
-func (u *DictEntryUpsertOne) ClearEntryLabel() *DictEntryUpsertOne {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.ClearEntryLabel()
-	})
-}
-
 // SetEntryValue sets the "entry_value" field.
 func (u *DictEntryUpsertOne) SetEntryValue(v string) *DictEntryUpsertOne {
 	return u.Update(func(s *DictEntryUpsert) {
@@ -1029,27 +874,6 @@ func (u *DictEntryUpsertOne) UpdateNumericValue() *DictEntryUpsertOne {
 func (u *DictEntryUpsertOne) ClearNumericValue() *DictEntryUpsertOne {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.ClearNumericValue()
-	})
-}
-
-// SetLanguageCode sets the "language_code" field.
-func (u *DictEntryUpsertOne) SetLanguageCode(v string) *DictEntryUpsertOne {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.SetLanguageCode(v)
-	})
-}
-
-// UpdateLanguageCode sets the "language_code" field to the value that was provided on create.
-func (u *DictEntryUpsertOne) UpdateLanguageCode() *DictEntryUpsertOne {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.UpdateLanguageCode()
-	})
-}
-
-// ClearLanguageCode clears the value of the "language_code" field.
-func (u *DictEntryUpsertOne) ClearLanguageCode() *DictEntryUpsertOne {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.ClearLanguageCode()
 	})
 }
 
@@ -1399,27 +1223,6 @@ func (u *DictEntryUpsertBulk) ClearDeletedBy() *DictEntryUpsertBulk {
 	})
 }
 
-// SetDescription sets the "description" field.
-func (u *DictEntryUpsertBulk) SetDescription(v string) *DictEntryUpsertBulk {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.SetDescription(v)
-	})
-}
-
-// UpdateDescription sets the "description" field to the value that was provided on create.
-func (u *DictEntryUpsertBulk) UpdateDescription() *DictEntryUpsertBulk {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.UpdateDescription()
-	})
-}
-
-// ClearDescription clears the value of the "description" field.
-func (u *DictEntryUpsertBulk) ClearDescription() *DictEntryUpsertBulk {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.ClearDescription()
-	})
-}
-
 // SetSortOrder sets the "sort_order" field.
 func (u *DictEntryUpsertBulk) SetSortOrder(v uint32) *DictEntryUpsertBulk {
 	return u.Update(func(s *DictEntryUpsert) {
@@ -1469,27 +1272,6 @@ func (u *DictEntryUpsertBulk) ClearIsEnabled() *DictEntryUpsertBulk {
 	})
 }
 
-// SetEntryLabel sets the "entry_label" field.
-func (u *DictEntryUpsertBulk) SetEntryLabel(v string) *DictEntryUpsertBulk {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.SetEntryLabel(v)
-	})
-}
-
-// UpdateEntryLabel sets the "entry_label" field to the value that was provided on create.
-func (u *DictEntryUpsertBulk) UpdateEntryLabel() *DictEntryUpsertBulk {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.UpdateEntryLabel()
-	})
-}
-
-// ClearEntryLabel clears the value of the "entry_label" field.
-func (u *DictEntryUpsertBulk) ClearEntryLabel() *DictEntryUpsertBulk {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.ClearEntryLabel()
-	})
-}
-
 // SetEntryValue sets the "entry_value" field.
 func (u *DictEntryUpsertBulk) SetEntryValue(v string) *DictEntryUpsertBulk {
 	return u.Update(func(s *DictEntryUpsert) {
@@ -1536,27 +1318,6 @@ func (u *DictEntryUpsertBulk) UpdateNumericValue() *DictEntryUpsertBulk {
 func (u *DictEntryUpsertBulk) ClearNumericValue() *DictEntryUpsertBulk {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.ClearNumericValue()
-	})
-}
-
-// SetLanguageCode sets the "language_code" field.
-func (u *DictEntryUpsertBulk) SetLanguageCode(v string) *DictEntryUpsertBulk {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.SetLanguageCode(v)
-	})
-}
-
-// UpdateLanguageCode sets the "language_code" field to the value that was provided on create.
-func (u *DictEntryUpsertBulk) UpdateLanguageCode() *DictEntryUpsertBulk {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.UpdateLanguageCode()
-	})
-}
-
-// ClearLanguageCode clears the value of the "language_code" field.
-func (u *DictEntryUpsertBulk) ClearLanguageCode() *DictEntryUpsertBulk {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.ClearLanguageCode()
 	})
 }
 

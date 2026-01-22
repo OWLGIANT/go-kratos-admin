@@ -36,13 +36,20 @@ type DictTypeRepo struct {
 		predicate.DictType,
 		dictV1.DictType, ent.DictType,
 	]
+
+	i18n *DictTypeI18nRepo
 }
 
-func NewDictTypeRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *DictTypeRepo {
+func NewDictTypeRepo(
+	ctx *bootstrap.Context,
+	entClient *entCrud.EntClient[*ent.Client],
+	i18n *DictTypeI18nRepo,
+) *DictTypeRepo {
 	repo := &DictTypeRepo{
 		log:       ctx.NewLoggerHelper("dict-type/repo/admin-service"),
 		entClient: entClient,
 		mapper:    mapper.NewCopierMapper[dictV1.DictType, ent.DictType](),
+		i18n:      i18n,
 	}
 
 	repo.init()
@@ -132,21 +139,44 @@ func (r *DictTypeRepo) Get(ctx context.Context, req *dictV1.GetDictTypeRequest) 
 		return nil, err
 	}
 
+	i18ns, err := r.i18n.Get(ctx, dto.GetId())
+	if err != nil {
+		return nil, err
+	}
+	dto.I18N = i18ns
+
 	return dto, err
 }
 
-func (r *DictTypeRepo) Create(ctx context.Context, req *dictV1.CreateDictTypeRequest) error {
+func (r *DictTypeRepo) Create(ctx context.Context, req *dictV1.CreateDictTypeRequest) (err error) {
 	if req == nil || req.Data == nil {
 		return dictV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().DictType.Create().
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return dictV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = dictV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	builder := tx.DictType.Create().
 		SetNillableTenantID(req.Data.TenantId).
 		SetNillableTypeCode(req.Data.TypeCode).
-		SetNillableTypeName(req.Data.TypeName).
 		SetNillableSortOrder(req.Data.SortOrder).
 		SetNillableIsEnabled(req.Data.IsEnabled).
-		SetNillableDescription(req.Data.Description).
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
 
@@ -158,22 +188,37 @@ func (r *DictTypeRepo) Create(ctx context.Context, req *dictV1.CreateDictTypeReq
 		builder.SetID(req.GetData().GetId())
 	}
 
-	if err := builder.Exec(ctx); err != nil {
+	var entity *ent.DictType
+	if entity, err = builder.Save(ctx); err != nil {
 		r.log.Errorf("insert dict type failed: %s", err.Error())
 		return dictV1.ErrorInternalServerError("insert dict type failed")
+	}
+
+	if req.Data.I18N != nil {
+		if err = r.i18n.ReplaceByTypeID(
+			ctx,
+			tx,
+			req.Data.GetTenantId(),
+			req.Data.GetCreatedBy(),
+			entity.ID,
+			req.Data.I18N,
+		); err != nil {
+			return err
+		}
 	}
 
 	return nil
 }
 
-func (r *DictTypeRepo) Update(ctx context.Context, req *dictV1.UpdateDictTypeRequest) error {
+func (r *DictTypeRepo) Update(ctx context.Context, req *dictV1.UpdateDictTypeRequest) (err error) {
 	if req == nil || req.Data == nil {
 		return dictV1.ErrorBadRequest("invalid parameter")
 	}
 
 	// 如果不存在则创建
 	if req.GetAllowMissing() {
-		exist, err := r.IsExist(ctx, req.GetId())
+		var exist bool
+		exist, err = r.IsExist(ctx, req.GetId())
 		if err != nil {
 			return err
 		}
@@ -185,15 +230,32 @@ func (r *DictTypeRepo) Update(ctx context.Context, req *dictV1.UpdateDictTypeReq
 		}
 	}
 
-	builder := r.entClient.Client().Debug().DictType.Update()
-	err := r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return dictV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = dictV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	builder := tx.DictType.UpdateOneID(req.GetId())
+	dto, err := r.repository.UpdateOne(ctx, builder, req.Data, req.GetUpdateMask(),
 		func(dto *dictV1.DictType) {
 			builder.
-				SetNillableTypeCode(req.Data.TypeCode).
-				SetNillableTypeName(req.Data.TypeName).
+				//SetNillableTypeCode(req.Data.TypeCode).
 				SetNillableSortOrder(req.Data.SortOrder).
 				SetNillableIsEnabled(req.Data.IsEnabled).
-				SetNillableDescription(req.Data.Description).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
 
@@ -205,6 +267,21 @@ func (r *DictTypeRepo) Update(ctx context.Context, req *dictV1.UpdateDictTypeReq
 			s.Where(sql.EQ(dicttype.FieldID, req.GetId()))
 		},
 	)
+	if err != nil {
+		r.log.Errorf("update dict type failed: %s", err.Error())
+		return dictV1.ErrorInternalServerError("update dict type failed")
+	}
+
+	if err = r.i18n.ReplaceByTypeID(
+		ctx,
+		tx,
+		req.Data.GetTenantId(),
+		req.Data.GetCreatedBy(),
+		dto.GetId(),
+		req.Data.I18N,
+	); err != nil {
+		return err
+	}
 
 	return err
 }

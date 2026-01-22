@@ -56,6 +56,9 @@ func NewRestMiddleware(
 	// add white list for authentication.
 	rpc.AddWhiteList(
 		adminV1.OperationAuthenticationServiceLogin,
+		//OperationFileTransferServiceDownloadFile,
+		//OperationFileTransferServicePostUploadFile,
+		//OperationFileTransferServicePutUploadFile,
 	)
 
 	ms = append(ms, selector.Server(
@@ -80,14 +83,19 @@ func NewRestServer(
 	authorizer *data.Authorizer,
 
 	authenticationService *service.AuthenticationService,
+	loginPolicyService *service.LoginPolicyService,
+
 	portalService *service.AdminPortalService,
-	dictTypeService *service.DictTypeService,
-	dictEntryService *service.DictEntryService,
+	taskService *service.TaskService,
+
 	ossService *service.OssService,
 	uEditorService *service.UEditorService,
 	fileService *service.FileService,
-	taskService *service.TaskService,
-	loginPolicyService *service.LoginPolicyService,
+	fileTransferService *service.FileTransferService,
+
+	dictTypeService *service.DictTypeService,
+	dictEntryService *service.DictEntryService,
+	languageService *service.LanguageService,
 
 	tenantService *service.TenantService,
 	userService *service.UserService,
@@ -138,6 +146,7 @@ func NewRestServer(
 
 	adminV1.RegisterDictTypeServiceHTTPServer(srv, dictTypeService)
 	adminV1.RegisterDictEntryServiceHTTPServer(srv, dictEntryService)
+	adminV1.RegisterLanguageServiceHTTPServer(srv, languageService)
 
 	adminV1.RegisterApiServiceHTTPServer(srv, apiService)
 	adminV1.RegisterMenuServiceHTTPServer(srv, menuService)
@@ -160,14 +169,16 @@ func NewRestServer(
 	adminV1.RegisterOssServiceHTTPServer(srv, ossService)
 	adminV1.RegisterFileServiceHTTPServer(srv, fileService)
 
+	// 注册文件传输服务，用于处理文件上传下载等功能
+	// TODO 它不能够使用代码生成器生成的Handler，需要手动注册。代码生成器生成的Handler无法处理文件上传下载的请求。
+	// 但，代码生成器生成代码可以提供给OpenAPI使用。
+	registerFileTransferServiceHandler(srv, fileTransferService)
+
 	adminV1.RegisterUEditorServiceHTTPServer(srv, uEditorService)
 
 	adminV1.RegisterInternalMessageServiceHTTPServer(srv, internalMessageService)
 	adminV1.RegisterInternalMessageCategoryServiceHTTPServer(srv, internalMessageCategoryService)
 	adminV1.RegisterInternalMessageRecipientServiceHTTPServer(srv, internalMessageRecipientService)
-
-	registerFileUploadHandler(srv, ossService)
-	registerUEditorUploadHandler(srv, uEditorService)
 
 	if cfg.GetServer().GetRest().GetEnableSwagger() {
 		swaggerUI.RegisterSwaggerUIServerWithOption(

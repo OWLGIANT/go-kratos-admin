@@ -284,26 +284,23 @@ var (
 		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
-		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
 		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
 		{Name: "is_enabled", Type: field.TypeBool, Nullable: true, Comment: "是否启用", Default: true},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
-		{Name: "entry_label", Type: field.TypeString, Nullable: true, Comment: "字典项的显示标签"},
 		{Name: "entry_value", Type: field.TypeString, Nullable: true, Comment: "字典项的实际值"},
 		{Name: "numeric_value", Type: field.TypeInt32, Nullable: true, Comment: "数值型值"},
-		{Name: "language_code", Type: field.TypeString, Nullable: true, Comment: "语言代码"},
 		{Name: "type_id", Type: field.TypeUint32},
 	}
 	// SysDictEntriesTable holds the schema information for the "sys_dict_entries" table.
 	SysDictEntriesTable = &schema.Table{
 		Name:       "sys_dict_entries",
-		Comment:    "字典条目表",
+		Comment:    "字典项表",
 		Columns:    SysDictEntriesColumns,
 		PrimaryKey: []*schema.Column{SysDictEntriesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "sys_dict_entries_sys_dict_types_sys_dict_types",
-				Columns:    []*schema.Column{SysDictEntriesColumns[15]},
+				Columns:    []*schema.Column{SysDictEntriesColumns[12]},
 				RefColumns: []*schema.Column{SysDictTypesColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
@@ -312,37 +309,70 @@ var (
 			{
 				Name:    "uix_sys_dict_entries_tenant_type_value",
 				Unique:  true,
-				Columns: []*schema.Column{SysDictEntriesColumns[10], SysDictEntriesColumns[0], SysDictEntriesColumns[12]},
+				Columns: []*schema.Column{SysDictEntriesColumns[9], SysDictEntriesColumns[0], SysDictEntriesColumns[10]},
 			},
 			{
 				Name:    "idx_sys_dict_entries_tenant_type",
 				Unique:  false,
-				Columns: []*schema.Column{SysDictEntriesColumns[10], SysDictEntriesColumns[0]},
+				Columns: []*schema.Column{SysDictEntriesColumns[9], SysDictEntriesColumns[0]},
 			},
 			{
 				Name:    "idx_sys_dict_entries_tenant_entry_value",
 				Unique:  false,
-				Columns: []*schema.Column{SysDictEntriesColumns[10], SysDictEntriesColumns[12]},
+				Columns: []*schema.Column{SysDictEntriesColumns[9], SysDictEntriesColumns[10]},
 			},
 			{
 				Name:    "idx_sys_dict_entries_entry_value",
 				Unique:  false,
-				Columns: []*schema.Column{SysDictEntriesColumns[12]},
-			},
-			{
-				Name:    "idx_sys_dict_entries_language_code",
-				Unique:  false,
-				Columns: []*schema.Column{SysDictEntriesColumns[14]},
+				Columns: []*schema.Column{SysDictEntriesColumns[10]},
 			},
 			{
 				Name:    "idx_sys_dict_entries_numeric_value",
 				Unique:  false,
-				Columns: []*schema.Column{SysDictEntriesColumns[13]},
+				Columns: []*schema.Column{SysDictEntriesColumns[11]},
 			},
 			{
 				Name:    "idx_sys_dict_entries_tenant_id",
 				Unique:  false,
-				Columns: []*schema.Column{SysDictEntriesColumns[10]},
+				Columns: []*schema.Column{SysDictEntriesColumns[9]},
+			},
+		},
+	}
+	// SysDictEntryI18nColumns holds the columns for the "sys_dict_entry_i18n" table.
+	SysDictEntryI18nColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
+		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "language_code", Type: field.TypeString, Nullable: true, Comment: "语言代码"},
+		{Name: "entry_label", Type: field.TypeString, Nullable: true, Comment: "字典项的显示标签"},
+		{Name: "entry_id", Type: field.TypeUint32},
+	}
+	// SysDictEntryI18nTable holds the schema information for the "sys_dict_entry_i18n" table.
+	SysDictEntryI18nTable = &schema.Table{
+		Name:       "sys_dict_entry_i18n",
+		Comment:    "字典项翻译表",
+		Columns:    SysDictEntryI18nColumns,
+		PrimaryKey: []*schema.Column{SysDictEntryI18nColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "sys_dict_entry_i18n_sys_dict_entries_sys_dict_entries",
+				Columns:    []*schema.Column{SysDictEntryI18nColumns[12]},
+				RefColumns: []*schema.Column{SysDictEntriesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_sys_dict_entry_i18n_language_code",
+				Unique:  false,
+				Columns: []*schema.Column{SysDictEntryI18nColumns[10]},
 			},
 		},
 	}
@@ -357,10 +387,8 @@ var (
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "is_enabled", Type: field.TypeBool, Nullable: true, Comment: "是否启用", Default: true},
 		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
-		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
 		{Name: "type_code", Type: field.TypeString, Nullable: true, Comment: "字典类型唯一代码"},
-		{Name: "type_name", Type: field.TypeString, Nullable: true, Comment: "字典类型名称"},
 	}
 	// SysDictTypesTable holds the schema information for the "sys_dict_types" table.
 	SysDictTypesTable = &schema.Table{
@@ -372,22 +400,12 @@ var (
 			{
 				Name:    "uix_sys_dict_types_tenant_type_code",
 				Unique:  true,
-				Columns: []*schema.Column{SysDictTypesColumns[10], SysDictTypesColumns[11]},
-			},
-			{
-				Name:    "idx_sys_dict_types_tenant_type_name",
-				Unique:  false,
-				Columns: []*schema.Column{SysDictTypesColumns[10], SysDictTypesColumns[12]},
-			},
-			{
-				Name:    "idx_sys_dict_types_type_name",
-				Unique:  false,
-				Columns: []*schema.Column{SysDictTypesColumns[12]},
+				Columns: []*schema.Column{SysDictTypesColumns[9], SysDictTypesColumns[10]},
 			},
 			{
 				Name:    "idx_sys_dict_types_tenant_id",
 				Unique:  false,
-				Columns: []*schema.Column{SysDictTypesColumns[10]},
+				Columns: []*schema.Column{SysDictTypesColumns[9]},
 			},
 			{
 				Name:    "idx_sys_dict_types_is_enabled",
@@ -398,6 +416,43 @@ var (
 				Name:    "idx_sys_dict_types_sort_order",
 				Unique:  false,
 				Columns: []*schema.Column{SysDictTypesColumns[8]},
+			},
+		},
+	}
+	// SysDictTypeI18nColumns holds the columns for the "sys_dict_type_i18n" table.
+	SysDictTypeI18nColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "language_code", Type: field.TypeString, Nullable: true, Comment: "语言代码"},
+		{Name: "type_name", Type: field.TypeString, Nullable: true, Comment: "字典类型名称"},
+		{Name: "type_id", Type: field.TypeUint32},
+	}
+	// SysDictTypeI18nTable holds the schema information for the "sys_dict_type_i18n" table.
+	SysDictTypeI18nTable = &schema.Table{
+		Name:       "sys_dict_type_i18n",
+		Comment:    "字典类型翻译表",
+		Columns:    SysDictTypeI18nColumns,
+		PrimaryKey: []*schema.Column{SysDictTypeI18nColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "sys_dict_type_i18n_sys_dict_types_sys_dict_types",
+				Columns:    []*schema.Column{SysDictTypeI18nColumns[11]},
+				RefColumns: []*schema.Column{SysDictTypesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_sys_dict_type_i18n_lang_code",
+				Unique:  false,
+				Columns: []*schema.Column{SysDictTypeI18nColumns[9]},
 			},
 		},
 	}
@@ -2790,7 +2845,9 @@ var (
 		SysAPIAuditLogsTable,
 		SysDataAccessAuditLogsTable,
 		SysDictEntriesTable,
+		SysDictEntryI18nTable,
 		SysDictTypesTable,
+		SysDictTypeI18nTable,
 		FilesTable,
 		InternalMessagesTable,
 		InternalMessageCategoriesTable,
@@ -2848,8 +2905,20 @@ func init() {
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
+	SysDictEntryI18nTable.ForeignKeys[0].RefTable = SysDictEntriesTable
+	SysDictEntryI18nTable.Annotation = &entsql.Annotation{
+		Table:     "sys_dict_entry_i18n",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
 	SysDictTypesTable.Annotation = &entsql.Annotation{
 		Table:     "sys_dict_types",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	SysDictTypeI18nTable.ForeignKeys[0].RefTable = SysDictTypesTable
+	SysDictTypeI18nTable.Annotation = &entsql.Annotation{
+		Table:     "sys_dict_type_i18n",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

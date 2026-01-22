@@ -52,11 +52,3 @@ func (s *redactedUEditorServiceServer) UEditorAPI(ctx context.Context, in *filep
 	}
 	return res, err
 }
-
-// UploadFile is the redacted wrapper for the actual UEditorServiceServer.UploadFile method
-// Client streaming
-func (s *redactedUEditorServiceServer) UploadFile(stream grpc.ClientStreamingServer[filepb.UEditorUploadRequest, filepb.UEditorUploadResponse]) error {
-	// Note: Redaction for client streaming is not fully implemented
-	// Streaming methods pass through without redaction
-	return s.srv.UploadFile(stream)
-}

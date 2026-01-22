@@ -21,12 +21,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	LanguageService_ListLanguage_FullMethodName = "/dict.service.v1.LanguageService/ListLanguage"
-	LanguageService_Get_FullMethodName          = "/dict.service.v1.LanguageService/Get"
-	LanguageService_Create_FullMethodName       = "/dict.service.v1.LanguageService/Create"
-	LanguageService_Update_FullMethodName       = "/dict.service.v1.LanguageService/Update"
-	LanguageService_Delete_FullMethodName       = "/dict.service.v1.LanguageService/Delete"
-	LanguageService_BatchCreate_FullMethodName  = "/dict.service.v1.LanguageService/BatchCreate"
+	LanguageService_List_FullMethodName        = "/dict.service.v1.LanguageService/List"
+	LanguageService_Get_FullMethodName         = "/dict.service.v1.LanguageService/Get"
+	LanguageService_Create_FullMethodName      = "/dict.service.v1.LanguageService/Create"
+	LanguageService_Update_FullMethodName      = "/dict.service.v1.LanguageService/Update"
+	LanguageService_Delete_FullMethodName      = "/dict.service.v1.LanguageService/Delete"
+	LanguageService_BatchCreate_FullMethodName = "/dict.service.v1.LanguageService/BatchCreate"
 )
 
 // LanguageServiceClient is the client API for LanguageService service.
@@ -36,7 +36,7 @@ const (
 // 语言管理服务
 type LanguageServiceClient interface {
 	// 分页查询语言列表
-	ListLanguage(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListLanguageResponse, error)
+	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListLanguageResponse, error)
 	// 查询语言详情
 	Get(ctx context.Context, in *GetLanguageRequest, opts ...grpc.CallOption) (*Language, error)
 	// 创建语言
@@ -57,10 +57,10 @@ func NewLanguageServiceClient(cc grpc.ClientConnInterface) LanguageServiceClient
 	return &languageServiceClient{cc}
 }
 
-func (c *languageServiceClient) ListLanguage(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListLanguageResponse, error) {
+func (c *languageServiceClient) List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListLanguageResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListLanguageResponse)
-	err := c.cc.Invoke(ctx, LanguageService_ListLanguage_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, LanguageService_List_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +124,7 @@ func (c *languageServiceClient) BatchCreate(ctx context.Context, in *BatchCreate
 // 语言管理服务
 type LanguageServiceServer interface {
 	// 分页查询语言列表
-	ListLanguage(context.Context, *v1.PagingRequest) (*ListLanguageResponse, error)
+	List(context.Context, *v1.PagingRequest) (*ListLanguageResponse, error)
 	// 查询语言详情
 	Get(context.Context, *GetLanguageRequest) (*Language, error)
 	// 创建语言
@@ -145,8 +145,8 @@ type LanguageServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedLanguageServiceServer struct{}
 
-func (UnimplementedLanguageServiceServer) ListLanguage(context.Context, *v1.PagingRequest) (*ListLanguageResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method ListLanguage not implemented")
+func (UnimplementedLanguageServiceServer) List(context.Context, *v1.PagingRequest) (*ListLanguageResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method List not implemented")
 }
 func (UnimplementedLanguageServiceServer) Get(context.Context, *GetLanguageRequest) (*Language, error) {
 	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
@@ -184,20 +184,20 @@ func RegisterLanguageServiceServer(s grpc.ServiceRegistrar, srv LanguageServiceS
 	s.RegisterService(&LanguageService_ServiceDesc, srv)
 }
 
-func _LanguageService_ListLanguage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _LanguageService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(v1.PagingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LanguageServiceServer).ListLanguage(ctx, in)
+		return srv.(LanguageServiceServer).List(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: LanguageService_ListLanguage_FullMethodName,
+		FullMethod: LanguageService_List_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LanguageServiceServer).ListLanguage(ctx, req.(*v1.PagingRequest))
+		return srv.(LanguageServiceServer).List(ctx, req.(*v1.PagingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -300,8 +300,8 @@ var LanguageService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*LanguageServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ListLanguage",
-			Handler:    _LanguageService_ListLanguage_Handler,
+			MethodName: "List",
+			Handler:    _LanguageService_List_Handler,
 		},
 		{
 			MethodName: "Get",

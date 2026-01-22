@@ -197,26 +197,6 @@ func (_u *LanguageUpdate) ClearIsEnabled() *LanguageUpdate {
 	return _u
 }
 
-// SetLanguageCode sets the "language_code" field.
-func (_u *LanguageUpdate) SetLanguageCode(v string) *LanguageUpdate {
-	_u.mutation.SetLanguageCode(v)
-	return _u
-}
-
-// SetNillableLanguageCode sets the "language_code" field if the given value is not nil.
-func (_u *LanguageUpdate) SetNillableLanguageCode(v *string) *LanguageUpdate {
-	if v != nil {
-		_u.SetLanguageCode(*v)
-	}
-	return _u
-}
-
-// ClearLanguageCode clears the value of the "language_code" field.
-func (_u *LanguageUpdate) ClearLanguageCode() *LanguageUpdate {
-	_u.mutation.ClearLanguageCode()
-	return _u
-}
-
 // SetLanguageName sets the "language_name" field.
 func (_u *LanguageUpdate) SetLanguageName(v string) *LanguageUpdate {
 	_u.mutation.SetLanguageName(v)
@@ -311,11 +291,6 @@ func (_u *LanguageUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *LanguageUpdate) check() error {
-	if v, ok := _u.mutation.LanguageCode(); ok {
-		if err := language.LanguageCodeValidator(v); err != nil {
-			return &ValidationError{Name: "language_code", err: fmt.Errorf(`ent: validator failed for field "Language.language_code": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.LanguageName(); ok {
 		if err := language.LanguageNameValidator(v); err != nil {
 			return &ValidationError{Name: "language_name", err: fmt.Errorf(`ent: validator failed for field "Language.language_name": %w`, err)}
@@ -403,9 +378,6 @@ func (_u *LanguageUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.IsEnabledCleared() {
 		_spec.ClearField(language.FieldIsEnabled, field.TypeBool)
-	}
-	if value, ok := _u.mutation.LanguageCode(); ok {
-		_spec.SetField(language.FieldLanguageCode, field.TypeString, value)
 	}
 	if _u.mutation.LanguageCodeCleared() {
 		_spec.ClearField(language.FieldLanguageCode, field.TypeString)
@@ -618,26 +590,6 @@ func (_u *LanguageUpdateOne) ClearIsEnabled() *LanguageUpdateOne {
 	return _u
 }
 
-// SetLanguageCode sets the "language_code" field.
-func (_u *LanguageUpdateOne) SetLanguageCode(v string) *LanguageUpdateOne {
-	_u.mutation.SetLanguageCode(v)
-	return _u
-}
-
-// SetNillableLanguageCode sets the "language_code" field if the given value is not nil.
-func (_u *LanguageUpdateOne) SetNillableLanguageCode(v *string) *LanguageUpdateOne {
-	if v != nil {
-		_u.SetLanguageCode(*v)
-	}
-	return _u
-}
-
-// ClearLanguageCode clears the value of the "language_code" field.
-func (_u *LanguageUpdateOne) ClearLanguageCode() *LanguageUpdateOne {
-	_u.mutation.ClearLanguageCode()
-	return _u
-}
-
 // SetLanguageName sets the "language_name" field.
 func (_u *LanguageUpdateOne) SetLanguageName(v string) *LanguageUpdateOne {
 	_u.mutation.SetLanguageName(v)
@@ -745,11 +697,6 @@ func (_u *LanguageUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *LanguageUpdateOne) check() error {
-	if v, ok := _u.mutation.LanguageCode(); ok {
-		if err := language.LanguageCodeValidator(v); err != nil {
-			return &ValidationError{Name: "language_code", err: fmt.Errorf(`ent: validator failed for field "Language.language_code": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.LanguageName(); ok {
 		if err := language.LanguageNameValidator(v); err != nil {
 			return &ValidationError{Name: "language_name", err: fmt.Errorf(`ent: validator failed for field "Language.language_name": %w`, err)}
@@ -854,9 +801,6 @@ func (_u *LanguageUpdateOne) sqlSave(ctx context.Context) (_node *Language, err 
 	}
 	if _u.mutation.IsEnabledCleared() {
 		_spec.ClearField(language.FieldIsEnabled, field.TypeBool)
-	}
-	if value, ok := _u.mutation.LanguageCode(); ok {
-		_spec.SetField(language.FieldLanguageCode, field.TypeString, value)
 	}
 	if _u.mutation.LanguageCodeCleared() {
 		_spec.ClearField(language.FieldLanguageCode, field.TypeString)

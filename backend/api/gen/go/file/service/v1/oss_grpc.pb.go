@@ -19,11 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	OssService_OssUploadUrl_FullMethodName   = "/file.service.v1.OssService/OssUploadUrl"
-	OssService_GetDownloadUrl_FullMethodName = "/file.service.v1.OssService/GetDownloadUrl"
-	OssService_ListOssFile_FullMethodName    = "/file.service.v1.OssService/ListOssFile"
-	OssService_DeleteOssFile_FullMethodName  = "/file.service.v1.OssService/DeleteOssFile"
-	OssService_UploadOssFile_FullMethodName  = "/file.service.v1.OssService/UploadOssFile"
+	OssService_GetUploadPresignedUrl_FullMethodName = "/file.service.v1.OssService/GetUploadPresignedUrl"
+	OssService_GetDownloadUrl_FullMethodName        = "/file.service.v1.OssService/GetDownloadUrl"
+	OssService_ListOssFile_FullMethodName           = "/file.service.v1.OssService/ListOssFile"
+	OssService_DeleteOssFile_FullMethodName         = "/file.service.v1.OssService/DeleteOssFile"
 )
 
 // OssServiceClient is the client API for OssService service.
@@ -33,15 +32,13 @@ const (
 // OSS服务
 type OssServiceClient interface {
 	// 获取对象存储（OSS）上传链接
-	OssUploadUrl(ctx context.Context, in *OssUploadUrlRequest, opts ...grpc.CallOption) (*OssUploadUrlResponse, error)
+	GetUploadPresignedUrl(ctx context.Context, in *GetUploadPresignedUrlRequest, opts ...grpc.CallOption) (*GetUploadPresignedUrlResponse, error)
 	// 获取对象存储（OSS）下载链接
-	GetDownloadUrl(ctx context.Context, in *GetDownloadUrlRequest, opts ...grpc.CallOption) (*GetDownloadUrlResponse, error)
+	GetDownloadUrl(ctx context.Context, in *GetDownloadInfoRequest, opts ...grpc.CallOption) (*GetDownloadInfoResponse, error)
 	// 获取文件夹下面的文件列表
 	ListOssFile(ctx context.Context, in *ListOssFileRequest, opts ...grpc.CallOption) (*ListOssFileResponse, error)
 	// 删除一个文件
 	DeleteOssFile(ctx context.Context, in *DeleteOssFileRequest, opts ...grpc.CallOption) (*DeleteOssFileResponse, error)
-	// 上传文件
-	UploadOssFile(ctx context.Context, in *UploadOssFileRequest, opts ...grpc.CallOption) (*UploadOssFileResponse, error)
 }
 
 type ossServiceClient struct {
@@ -52,19 +49,19 @@ func NewOssServiceClient(cc grpc.ClientConnInterface) OssServiceClient {
 	return &ossServiceClient{cc}
 }
 
-func (c *ossServiceClient) OssUploadUrl(ctx context.Context, in *OssUploadUrlRequest, opts ...grpc.CallOption) (*OssUploadUrlResponse, error) {
+func (c *ossServiceClient) GetUploadPresignedUrl(ctx context.Context, in *GetUploadPresignedUrlRequest, opts ...grpc.CallOption) (*GetUploadPresignedUrlResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(OssUploadUrlResponse)
-	err := c.cc.Invoke(ctx, OssService_OssUploadUrl_FullMethodName, in, out, cOpts...)
+	out := new(GetUploadPresignedUrlResponse)
+	err := c.cc.Invoke(ctx, OssService_GetUploadPresignedUrl_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *ossServiceClient) GetDownloadUrl(ctx context.Context, in *GetDownloadUrlRequest, opts ...grpc.CallOption) (*GetDownloadUrlResponse, error) {
+func (c *ossServiceClient) GetDownloadUrl(ctx context.Context, in *GetDownloadInfoRequest, opts ...grpc.CallOption) (*GetDownloadInfoResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetDownloadUrlResponse)
+	out := new(GetDownloadInfoResponse)
 	err := c.cc.Invoke(ctx, OssService_GetDownloadUrl_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -92,16 +89,6 @@ func (c *ossServiceClient) DeleteOssFile(ctx context.Context, in *DeleteOssFileR
 	return out, nil
 }
 
-func (c *ossServiceClient) UploadOssFile(ctx context.Context, in *UploadOssFileRequest, opts ...grpc.CallOption) (*UploadOssFileResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(UploadOssFileResponse)
-	err := c.cc.Invoke(ctx, OssService_UploadOssFile_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // OssServiceServer is the server API for OssService service.
 // All implementations must embed UnimplementedOssServiceServer
 // for forward compatibility.
@@ -109,15 +96,13 @@ func (c *ossServiceClient) UploadOssFile(ctx context.Context, in *UploadOssFileR
 // OSS服务
 type OssServiceServer interface {
 	// 获取对象存储（OSS）上传链接
-	OssUploadUrl(context.Context, *OssUploadUrlRequest) (*OssUploadUrlResponse, error)
+	GetUploadPresignedUrl(context.Context, *GetUploadPresignedUrlRequest) (*GetUploadPresignedUrlResponse, error)
 	// 获取对象存储（OSS）下载链接
-	GetDownloadUrl(context.Context, *GetDownloadUrlRequest) (*GetDownloadUrlResponse, error)
+	GetDownloadUrl(context.Context, *GetDownloadInfoRequest) (*GetDownloadInfoResponse, error)
 	// 获取文件夹下面的文件列表
 	ListOssFile(context.Context, *ListOssFileRequest) (*ListOssFileResponse, error)
 	// 删除一个文件
 	DeleteOssFile(context.Context, *DeleteOssFileRequest) (*DeleteOssFileResponse, error)
-	// 上传文件
-	UploadOssFile(context.Context, *UploadOssFileRequest) (*UploadOssFileResponse, error)
 	mustEmbedUnimplementedOssServiceServer()
 }
 
@@ -128,10 +113,10 @@ type OssServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedOssServiceServer struct{}
 
-func (UnimplementedOssServiceServer) OssUploadUrl(context.Context, *OssUploadUrlRequest) (*OssUploadUrlResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method OssUploadUrl not implemented")
+func (UnimplementedOssServiceServer) GetUploadPresignedUrl(context.Context, *GetUploadPresignedUrlRequest) (*GetUploadPresignedUrlResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetUploadPresignedUrl not implemented")
 }
-func (UnimplementedOssServiceServer) GetDownloadUrl(context.Context, *GetDownloadUrlRequest) (*GetDownloadUrlResponse, error) {
+func (UnimplementedOssServiceServer) GetDownloadUrl(context.Context, *GetDownloadInfoRequest) (*GetDownloadInfoResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetDownloadUrl not implemented")
 }
 func (UnimplementedOssServiceServer) ListOssFile(context.Context, *ListOssFileRequest) (*ListOssFileResponse, error) {
@@ -139,9 +124,6 @@ func (UnimplementedOssServiceServer) ListOssFile(context.Context, *ListOssFileRe
 }
 func (UnimplementedOssServiceServer) DeleteOssFile(context.Context, *DeleteOssFileRequest) (*DeleteOssFileResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method DeleteOssFile not implemented")
-}
-func (UnimplementedOssServiceServer) UploadOssFile(context.Context, *UploadOssFileRequest) (*UploadOssFileResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method UploadOssFile not implemented")
 }
 func (UnimplementedOssServiceServer) mustEmbedUnimplementedOssServiceServer() {}
 func (UnimplementedOssServiceServer) testEmbeddedByValue()                    {}
@@ -164,26 +146,26 @@ func RegisterOssServiceServer(s grpc.ServiceRegistrar, srv OssServiceServer) {
 	s.RegisterService(&OssService_ServiceDesc, srv)
 }
 
-func _OssService_OssUploadUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(OssUploadUrlRequest)
+func _OssService_GetUploadPresignedUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUploadPresignedUrlRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(OssServiceServer).OssUploadUrl(ctx, in)
+		return srv.(OssServiceServer).GetUploadPresignedUrl(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: OssService_OssUploadUrl_FullMethodName,
+		FullMethod: OssService_GetUploadPresignedUrl_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OssServiceServer).OssUploadUrl(ctx, req.(*OssUploadUrlRequest))
+		return srv.(OssServiceServer).GetUploadPresignedUrl(ctx, req.(*GetUploadPresignedUrlRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _OssService_GetDownloadUrl_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetDownloadUrlRequest)
+	in := new(GetDownloadInfoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -195,7 +177,7 @@ func _OssService_GetDownloadUrl_Handler(srv interface{}, ctx context.Context, de
 		FullMethod: OssService_GetDownloadUrl_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OssServiceServer).GetDownloadUrl(ctx, req.(*GetDownloadUrlRequest))
+		return srv.(OssServiceServer).GetDownloadUrl(ctx, req.(*GetDownloadInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -236,24 +218,6 @@ func _OssService_DeleteOssFile_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _OssService_UploadOssFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UploadOssFileRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(OssServiceServer).UploadOssFile(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: OssService_UploadOssFile_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OssServiceServer).UploadOssFile(ctx, req.(*UploadOssFileRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // OssService_ServiceDesc is the grpc.ServiceDesc for OssService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -262,8 +226,8 @@ var OssService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*OssServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "OssUploadUrl",
-			Handler:    _OssService_OssUploadUrl_Handler,
+			MethodName: "GetUploadPresignedUrl",
+			Handler:    _OssService_GetUploadPresignedUrl_Handler,
 		},
 		{
 			MethodName: "GetDownloadUrl",
@@ -276,10 +240,6 @@ var OssService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteOssFile",
 			Handler:    _OssService_DeleteOssFile_Handler,
-		},
-		{
-			MethodName: "UploadOssFile",
-			Handler:    _OssService_UploadOssFile_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

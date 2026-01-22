@@ -102,6 +102,7 @@ enum FileErrorReason {
     INTERNAL_SERVER_ERROR = 2000  [(errors.code) = 500];        // 内部服务器错误
     UPLOAD_FAILED = 2001 [(errors.code) = 500];
     DOWNLOAD_FAILED = 2002 [(errors.code) = 500];
+    DELETE_FAILED = 2003 [(errors.code) = 500];
 
     // 501
     NOT_IMPLEMENTED = 2100 [(errors.code) = 501];              // 未实现

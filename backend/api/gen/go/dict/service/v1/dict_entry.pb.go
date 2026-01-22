@@ -27,26 +27,25 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// 字典条目
+// 字典项
 type DictEntry struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                         // 字典条目ID
-	TypeId        *uint32                `protobuf:"varint,2,opt,name=type_id,json=typeId,proto3,oneof" json:"type_id,omitempty"`                   // 字典类型ID
-	EntryLabel    *string                `protobuf:"bytes,3,opt,name=entry_label,json=entryLabel,proto3,oneof" json:"entry_label,omitempty"`        // 字典项的显示标签
-	EntryValue    *string                `protobuf:"bytes,4,opt,name=entry_value,json=entryValue,proto3,oneof" json:"entry_value,omitempty"`        // 字典项的实际值
-	NumericValue  *int32                 `protobuf:"varint,5,opt,name=numeric_value,json=numericValue,proto3,oneof" json:"numeric_value,omitempty"` // 数值型值
-	LanguageCode  *string                `protobuf:"bytes,6,opt,name=language_code,json=languageCode,proto3,oneof" json:"language_code,omitempty"`  // 语言代码
-	IsEnabled     *bool                  `protobuf:"varint,7,opt,name=is_enabled,json=isEnabled,proto3,oneof" json:"is_enabled,omitempty"`          // 字典状态
-	SortOrder     *uint32                `protobuf:"varint,8,opt,name=sort_order,json=sortOrder,proto3,oneof" json:"sort_order,omitempty"`          // 排序顺序，值越小越靠前
-	Description   *string                `protobuf:"bytes,9,opt,name=description,proto3,oneof" json:"description,omitempty"`                        // 描述
-	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`            // 租户ID，0代表系统全局角色
-	TenantName    *string                `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`       // 租户名称
-	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`        // 创建者ID
-	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`        // 更新者ID
-	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`        // 删除者用户ID
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`         // 创建时间
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`         // 更新时间
-	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`         // 删除时间
+	state         protoimpl.MessageState    `protogen:"open.v1"`
+	Id            *uint32                   `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                        // 字典项ID
+	TypeId        *uint32                   `protobuf:"varint,2,opt,name=type_id,json=typeId,proto3,oneof" json:"type_id,omitempty"`                                                  // 字典类型ID
+	EntryValue    *string                   `protobuf:"bytes,3,opt,name=entry_value,json=entryValue,proto3,oneof" json:"entry_value,omitempty"`                                       // 字典项的实际值
+	NumericValue  *int32                    `protobuf:"varint,4,opt,name=numeric_value,json=numericValue,proto3,oneof" json:"numeric_value,omitempty"`                                // 数值型值
+	IsEnabled     *bool                     `protobuf:"varint,5,opt,name=is_enabled,json=isEnabled,proto3,oneof" json:"is_enabled,omitempty"`                                         // 是否启用
+	SortOrder     *uint32                   `protobuf:"varint,6,opt,name=sort_order,json=sortOrder,proto3,oneof" json:"sort_order,omitempty"`                                         // 排序顺序，值越小越靠前
+	I18N          map[string]*DictEntryI18N `protobuf:"bytes,7,rep,name=i18n,proto3" json:"i18n,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // 多语言信息，key为语言代码，如zh-CN、en-US等
+	CurrentI18N   *DictEntryI18N            `protobuf:"bytes,8,opt,name=current_i18n,json=currentI18n,proto3,oneof" json:"current_i18n,omitempty"`                                    // 当前语言的翻译（由服务端自动填充）
+	TenantId      *uint32                   `protobuf:"varint,50,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                           // 租户ID，0代表系统全局角色
+	TenantName    *string                   `protobuf:"bytes,51,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`                                      // 租户名称
+	CreatedBy     *uint32                   `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                       // 创建者ID
+	UpdatedBy     *uint32                   `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                       // 更新者ID
+	DeletedBy     *uint32                   `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                       // 删除者用户ID
+	CreatedAt     *timestamppb.Timestamp    `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                        // 创建时间
+	UpdatedAt     *timestamppb.Timestamp    `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                        // 更新时间
+	DeletedAt     *timestamppb.Timestamp    `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                        // 删除时间
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -95,13 +94,6 @@ func (x *DictEntry) GetTypeId() uint32 {
 	return 0
 }
 
-func (x *DictEntry) GetEntryLabel() string {
-	if x != nil && x.EntryLabel != nil {
-		return *x.EntryLabel
-	}
-	return ""
-}
-
 func (x *DictEntry) GetEntryValue() string {
 	if x != nil && x.EntryValue != nil {
 		return *x.EntryValue
@@ -114,13 +106,6 @@ func (x *DictEntry) GetNumericValue() int32 {
 		return *x.NumericValue
 	}
 	return 0
-}
-
-func (x *DictEntry) GetLanguageCode() string {
-	if x != nil && x.LanguageCode != nil {
-		return *x.LanguageCode
-	}
-	return ""
 }
 
 func (x *DictEntry) GetIsEnabled() bool {
@@ -137,11 +122,18 @@ func (x *DictEntry) GetSortOrder() uint32 {
 	return 0
 }
 
-func (x *DictEntry) GetDescription() string {
-	if x != nil && x.Description != nil {
-		return *x.Description
+func (x *DictEntry) GetI18N() map[string]*DictEntryI18N {
+	if x != nil {
+		return x.I18N
 	}
-	return ""
+	return nil
+}
+
+func (x *DictEntry) GetCurrentI18N() *DictEntryI18N {
+	if x != nil {
+		return x.CurrentI18N
+	}
+	return nil
 }
 
 func (x *DictEntry) GetTenantId() uint32 {
@@ -200,7 +192,60 @@ func (x *DictEntry) GetDeletedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-// 查询字典条目列表 - 回应
+// 字典项多语言信息
+type DictEntryI18N struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EntryLabel    *string                `protobuf:"bytes,1,opt,name=entry_label,json=entryLabel,proto3,oneof" json:"entry_label,omitempty"` // 显示标签
+	Description   *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`                 // 描述信息
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DictEntryI18N) Reset() {
+	*x = DictEntryI18N{}
+	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DictEntryI18N) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DictEntryI18N) ProtoMessage() {}
+
+func (x *DictEntryI18N) ProtoReflect() protoreflect.Message {
+	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DictEntryI18N.ProtoReflect.Descriptor instead.
+func (*DictEntryI18N) Descriptor() ([]byte, []int) {
+	return file_dict_service_v1_dict_entry_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *DictEntryI18N) GetEntryLabel() string {
+	if x != nil && x.EntryLabel != nil {
+		return *x.EntryLabel
+	}
+	return ""
+}
+
+func (x *DictEntryI18N) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+// 查询字典项列表 - 回应
 type ListDictEntryResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         []*DictEntry           `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
@@ -211,7 +256,7 @@ type ListDictEntryResponse struct {
 
 func (x *ListDictEntryResponse) Reset() {
 	*x = ListDictEntryResponse{}
-	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[1]
+	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -223,7 +268,7 @@ func (x *ListDictEntryResponse) String() string {
 func (*ListDictEntryResponse) ProtoMessage() {}
 
 func (x *ListDictEntryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[1]
+	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -236,7 +281,7 @@ func (x *ListDictEntryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDictEntryResponse.ProtoReflect.Descriptor instead.
 func (*ListDictEntryResponse) Descriptor() ([]byte, []int) {
-	return file_dict_service_v1_dict_entry_proto_rawDescGZIP(), []int{1}
+	return file_dict_service_v1_dict_entry_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ListDictEntryResponse) GetItems() []*DictEntry {
@@ -253,7 +298,98 @@ func (x *ListDictEntryResponse) GetTotal() uint64 {
 	return 0
 }
 
-// 创建字典条目 - 请求
+// 查询字典项详情 - 请求
+type GetDictEntryRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to QueryBy:
+	//
+	//	*GetDictEntryRequest_Id
+	//	*GetDictEntryRequest_Value
+	QueryBy       isGetDictEntryRequest_QueryBy `protobuf_oneof:"query_by"`
+	ViewMask      *fieldmaskpb.FieldMask        `protobuf:"bytes,100,opt,name=view_mask,json=viewMask,proto3,oneof" json:"view_mask,omitempty"` // 视图字段过滤器，用于控制返回的字段
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetDictEntryRequest) Reset() {
+	*x = GetDictEntryRequest{}
+	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetDictEntryRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetDictEntryRequest) ProtoMessage() {}
+
+func (x *GetDictEntryRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetDictEntryRequest.ProtoReflect.Descriptor instead.
+func (*GetDictEntryRequest) Descriptor() ([]byte, []int) {
+	return file_dict_service_v1_dict_entry_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetDictEntryRequest) GetQueryBy() isGetDictEntryRequest_QueryBy {
+	if x != nil {
+		return x.QueryBy
+	}
+	return nil
+}
+
+func (x *GetDictEntryRequest) GetId() uint32 {
+	if x != nil {
+		if x, ok := x.QueryBy.(*GetDictEntryRequest_Id); ok {
+			return x.Id
+		}
+	}
+	return 0
+}
+
+func (x *GetDictEntryRequest) GetValue() string {
+	if x != nil {
+		if x, ok := x.QueryBy.(*GetDictEntryRequest_Value); ok {
+			return x.Value
+		}
+	}
+	return ""
+}
+
+func (x *GetDictEntryRequest) GetViewMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.ViewMask
+	}
+	return nil
+}
+
+type isGetDictEntryRequest_QueryBy interface {
+	isGetDictEntryRequest_QueryBy()
+}
+
+type GetDictEntryRequest_Id struct {
+	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"`
+}
+
+type GetDictEntryRequest_Value struct {
+	Value string `protobuf:"bytes,2,opt,name=value,proto3,oneof"`
+}
+
+func (*GetDictEntryRequest_Id) isGetDictEntryRequest_QueryBy() {}
+
+func (*GetDictEntryRequest_Value) isGetDictEntryRequest_QueryBy() {}
+
+// 创建字典项 - 请求
 type CreateDictEntryRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Data          *DictEntry             `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
@@ -263,7 +399,7 @@ type CreateDictEntryRequest struct {
 
 func (x *CreateDictEntryRequest) Reset() {
 	*x = CreateDictEntryRequest{}
-	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[2]
+	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -275,7 +411,7 @@ func (x *CreateDictEntryRequest) String() string {
 func (*CreateDictEntryRequest) ProtoMessage() {}
 
 func (x *CreateDictEntryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[2]
+	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -288,7 +424,7 @@ func (x *CreateDictEntryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDictEntryRequest.ProtoReflect.Descriptor instead.
 func (*CreateDictEntryRequest) Descriptor() ([]byte, []int) {
-	return file_dict_service_v1_dict_entry_proto_rawDescGZIP(), []int{2}
+	return file_dict_service_v1_dict_entry_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CreateDictEntryRequest) GetData() *DictEntry {
@@ -298,7 +434,7 @@ func (x *CreateDictEntryRequest) GetData() *DictEntry {
 	return nil
 }
 
-// 更新字典条目 - 请求
+// 更新字典项 - 请求
 type UpdateDictEntryRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -311,7 +447,7 @@ type UpdateDictEntryRequest struct {
 
 func (x *UpdateDictEntryRequest) Reset() {
 	*x = UpdateDictEntryRequest{}
-	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[3]
+	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -323,7 +459,7 @@ func (x *UpdateDictEntryRequest) String() string {
 func (*UpdateDictEntryRequest) ProtoMessage() {}
 
 func (x *UpdateDictEntryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[3]
+	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -336,7 +472,7 @@ func (x *UpdateDictEntryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDictEntryRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDictEntryRequest) Descriptor() ([]byte, []int) {
-	return file_dict_service_v1_dict_entry_proto_rawDescGZIP(), []int{3}
+	return file_dict_service_v1_dict_entry_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *UpdateDictEntryRequest) GetId() uint32 {
@@ -377,7 +513,7 @@ type DeleteDictEntryRequest struct {
 
 func (x *DeleteDictEntryRequest) Reset() {
 	*x = DeleteDictEntryRequest{}
-	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[4]
+	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -389,7 +525,7 @@ func (x *DeleteDictEntryRequest) String() string {
 func (*DeleteDictEntryRequest) ProtoMessage() {}
 
 func (x *DeleteDictEntryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[4]
+	mi := &file_dict_service_v1_dict_entry_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -402,7 +538,7 @@ func (x *DeleteDictEntryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDictEntryRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDictEntryRequest) Descriptor() ([]byte, []int) {
-	return file_dict_service_v1_dict_entry_proto_rawDescGZIP(), []int{4}
+	return file_dict_service_v1_dict_entry_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *DeleteDictEntryRequest) GetIds() []uint32 {
@@ -416,48 +552,46 @@ var File_dict_service_v1_dict_entry_proto protoreflect.FileDescriptor
 
 const file_dict_service_v1_dict_entry_proto_rawDesc = "" +
 	"\n" +
-	" dict/service/v1/dict_entry.proto\x12\x0fdict.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xd8\n" +
+	" dict/service/v1/dict_entry.proto\x12\x0fdict.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x80\r\n" +
+	"\tDictEntry\x12&\n" +
+	"\x02id\x18\x01 \x01(\rB\x11\xbaG\x0e\x92\x02\v字典项IDH\x00R\x02id\x88\x01\x01\x122\n" +
+	"\atype_id\x18\x02 \x01(\rB\x14\xbaG\x11\x92\x02\x0e字典类型IDH\x01R\x06typeId\x88\x01\x01\x12g\n" +
+	"\ventry_value\x18\x03 \x01(\tBA\xbaG>:\x06\x12\x04MALE\x92\x023字典项的实际值（在字典类型内唯一）H\x02R\n" +
+	"entryValue\x88\x01\x01\x12h\n" +
+	"\rnumeric_value\x18\x04 \x01(\x05B>\xbaG;:\x03\x12\x011\x92\x023可选的数值型值（用于排序、计算等）H\x03R\fnumericValue\x88\x01\x01\x126\n" +
 	"\n" +
-	"\tDictEntry\x12)\n" +
-	"\x02id\x18\x01 \x01(\rB\x14\xbaG\x11\x92\x02\x0e字典条目IDH\x00R\x02id\x88\x01\x01\x122\n" +
-	"\atype_id\x18\x02 \x01(\rB\x14\xbaG\x11\x92\x02\x0e字典类型IDH\x01R\x06typeId\x88\x01\x01\x12D\n" +
-	"\ventry_label\x18\x03 \x01(\tB\x1e\xbaG\x1b\x92\x02\x18字典项的显示标签H\x02R\n" +
-	"entryLabel\x88\x01\x01\x12A\n" +
-	"\ventry_value\x18\x04 \x01(\tB\x1b\xbaG\x18\x92\x02\x15字典项的实际值H\x03R\n" +
-	"entryValue\x88\x01\x01\x12<\n" +
-	"\rnumeric_value\x18\x05 \x01(\x05B\x12\xbaG\x0f\x92\x02\f数值型值H\x04R\fnumericValue\x88\x01\x01\x12<\n" +
-	"\rlanguage_code\x18\x06 \x01(\tB\x12\xbaG\x0f\x92\x02\f语言代码H\x05R\flanguageCode\x88\x01\x01\x126\n" +
+	"is_enabled\x18\x05 \x01(\bB\x12\xbaG\x0f\x92\x02\f是否启用H\x04R\tisEnabled\x88\x01\x01\x12K\n" +
 	"\n" +
-	"is_enabled\x18\a \x01(\bB\x12\xbaG\x0f\x92\x02\f字典状态H\x06R\tisEnabled\x88\x01\x01\x12K\n" +
-	"\n" +
-	"sort_order\x18\b \x01(\rB'\xbaG$\x92\x02!排序顺序，值越小越靠前H\aR\tsortOrder\x88\x01\x01\x123\n" +
-	"\vdescription\x18\t \x01(\tB\f\xbaG\t\x92\x02\x06描述H\bR\vdescription\x88\x01\x01\x12L\n" +
-	"\ttenant_id\x18( \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\tR\btenantId\x88\x01\x01\x128\n" +
-	"\vtenant_name\x18) \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\n" +
-	"R\n" +
+	"sort_order\x18\x06 \x01(\rB'\xbaG$\x92\x02!排序顺序，值越小越靠前H\x05R\tsortOrder\x88\x01\x01\x12\xd1\x01\n" +
+	"\x04i18n\x18\a \x03(\v2$.dict.service.v1.DictEntry.I18nEntryB\x96\x01\xbaG\x92\x01:I\x12G{ \"zh-CN\": { \"entryLabel\": \"男\" }, \"en-US\": { \"entryLabel\": \"Male\" } }\x92\x02D多语言信息，key 为 BCP-47 语言标签（如 zh-CN、en-US）R\x04i18n\x12\x83\x01\n" +
+	"\fcurrent_i18n\x18\b \x01(\v2\x1e.dict.service.v1.DictEntryI18nB;\xbaG8\x18\x01\x92\x023当前语言的翻译（由服务端自动填充）H\x06R\vcurrentI18n\x88\x01\x01\x12L\n" +
+	"\ttenant_id\x182 \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\aR\btenantId\x88\x01\x01\x128\n" +
+	"\vtenant_name\x183 \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\bR\n" +
 	"tenantName\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\vR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\tR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\fR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\n" +
+	"R\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\rR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\vR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x0eR\tcreatedAt\x88\x01\x01\x12S\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\fR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\x0fR\tupdatedAt\x88\x01\x01\x12S\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\rR\tupdatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\x10R\tdeletedAt\x88\x01\x01B\x05\n" +
+	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\x0eR\tdeletedAt\x88\x01\x01\x1aW\n" +
+	"\tI18nEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x124\n" +
+	"\x05value\x18\x02 \x01(\v2\x1e.dict.service.v1.DictEntryI18nR\x05value:\x028\x01B\x05\n" +
 	"\x03_idB\n" +
 	"\n" +
 	"\b_type_idB\x0e\n" +
-	"\f_entry_labelB\x0e\n" +
 	"\f_entry_valueB\x10\n" +
-	"\x0e_numeric_valueB\x10\n" +
-	"\x0e_language_codeB\r\n" +
+	"\x0e_numeric_valueB\r\n" +
 	"\v_is_enabledB\r\n" +
-	"\v_sort_orderB\x0e\n" +
-	"\f_descriptionB\f\n" +
+	"\v_sort_orderB\x0f\n" +
+	"\r_current_i18nB\f\n" +
 	"\n" +
 	"_tenant_idB\x0e\n" +
 	"\f_tenant_nameB\r\n" +
@@ -466,10 +600,24 @@ const file_dict_service_v1_dict_entry_proto_rawDesc = "" +
 	"\v_deleted_byB\r\n" +
 	"\v_created_atB\r\n" +
 	"\v_updated_atB\r\n" +
-	"\v_deleted_at\"_\n" +
+	"\v_deleted_at\"\xa4\x01\n" +
+	"\rDictEntryI18n\x128\n" +
+	"\ventry_label\x18\x01 \x01(\tB\x12\xbaG\x0f\x92\x02\f显示标签H\x00R\n" +
+	"entryLabel\x88\x01\x01\x129\n" +
+	"\vdescription\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f描述信息H\x01R\vdescription\x88\x01\x01B\x0e\n" +
+	"\f_entry_labelB\x0e\n" +
+	"\f_description\"_\n" +
 	"\x15ListDictEntryResponse\x120\n" +
 	"\x05items\x18\x01 \x03(\v2\x1a.dict.service.v1.DictEntryR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"H\n" +
+	"\x05total\x18\x02 \x01(\x04R\x05total\"\xd2\x01\n" +
+	"\x13GetDictEntryRequest\x12\x10\n" +
+	"\x02id\x18\x01 \x01(\rH\x00R\x02id\x12\x16\n" +
+	"\x05value\x18\x02 \x01(\tH\x00R\x05value\x12w\n" +
+	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
+	"\n" +
+	"\bquery_byB\f\n" +
+	"\n" +
+	"_view_mask\"H\n" +
 	"\x16CreateDictEntryRequest\x12.\n" +
 	"\x04data\x18\x01 \x01(\v2\x1a.dict.service.v1.DictEntryR\x04data\"\x96\x03\n" +
 	"\x16UpdateDictEntryRequest\x12\x0e\n" +
@@ -500,39 +648,46 @@ func file_dict_service_v1_dict_entry_proto_rawDescGZIP() []byte {
 	return file_dict_service_v1_dict_entry_proto_rawDescData
 }
 
-var file_dict_service_v1_dict_entry_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_dict_service_v1_dict_entry_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_dict_service_v1_dict_entry_proto_goTypes = []any{
 	(*DictEntry)(nil),              // 0: dict.service.v1.DictEntry
-	(*ListDictEntryResponse)(nil),  // 1: dict.service.v1.ListDictEntryResponse
-	(*CreateDictEntryRequest)(nil), // 2: dict.service.v1.CreateDictEntryRequest
-	(*UpdateDictEntryRequest)(nil), // 3: dict.service.v1.UpdateDictEntryRequest
-	(*DeleteDictEntryRequest)(nil), // 4: dict.service.v1.DeleteDictEntryRequest
-	(*timestamppb.Timestamp)(nil),  // 5: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),  // 6: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),       // 7: pagination.PagingRequest
-	(*emptypb.Empty)(nil),          // 8: google.protobuf.Empty
+	(*DictEntryI18N)(nil),          // 1: dict.service.v1.DictEntryI18n
+	(*ListDictEntryResponse)(nil),  // 2: dict.service.v1.ListDictEntryResponse
+	(*GetDictEntryRequest)(nil),    // 3: dict.service.v1.GetDictEntryRequest
+	(*CreateDictEntryRequest)(nil), // 4: dict.service.v1.CreateDictEntryRequest
+	(*UpdateDictEntryRequest)(nil), // 5: dict.service.v1.UpdateDictEntryRequest
+	(*DeleteDictEntryRequest)(nil), // 6: dict.service.v1.DeleteDictEntryRequest
+	nil,                            // 7: dict.service.v1.DictEntry.I18nEntry
+	(*timestamppb.Timestamp)(nil),  // 8: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),  // 9: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),       // 10: pagination.PagingRequest
+	(*emptypb.Empty)(nil),          // 11: google.protobuf.Empty
 }
 var file_dict_service_v1_dict_entry_proto_depIdxs = []int32{
-	5,  // 0: dict.service.v1.DictEntry.created_at:type_name -> google.protobuf.Timestamp
-	5,  // 1: dict.service.v1.DictEntry.updated_at:type_name -> google.protobuf.Timestamp
-	5,  // 2: dict.service.v1.DictEntry.deleted_at:type_name -> google.protobuf.Timestamp
-	0,  // 3: dict.service.v1.ListDictEntryResponse.items:type_name -> dict.service.v1.DictEntry
-	0,  // 4: dict.service.v1.CreateDictEntryRequest.data:type_name -> dict.service.v1.DictEntry
-	0,  // 5: dict.service.v1.UpdateDictEntryRequest.data:type_name -> dict.service.v1.DictEntry
-	6,  // 6: dict.service.v1.UpdateDictEntryRequest.update_mask:type_name -> google.protobuf.FieldMask
-	7,  // 7: dict.service.v1.DictEntryService.ListDictEntry:input_type -> pagination.PagingRequest
-	2,  // 8: dict.service.v1.DictEntryService.CreateDictEntry:input_type -> dict.service.v1.CreateDictEntryRequest
-	3,  // 9: dict.service.v1.DictEntryService.UpdateDictEntry:input_type -> dict.service.v1.UpdateDictEntryRequest
-	4,  // 10: dict.service.v1.DictEntryService.DeleteDictEntry:input_type -> dict.service.v1.DeleteDictEntryRequest
-	1,  // 11: dict.service.v1.DictEntryService.ListDictEntry:output_type -> dict.service.v1.ListDictEntryResponse
-	8,  // 12: dict.service.v1.DictEntryService.CreateDictEntry:output_type -> google.protobuf.Empty
-	8,  // 13: dict.service.v1.DictEntryService.UpdateDictEntry:output_type -> google.protobuf.Empty
-	8,  // 14: dict.service.v1.DictEntryService.DeleteDictEntry:output_type -> google.protobuf.Empty
-	11, // [11:15] is the sub-list for method output_type
-	7,  // [7:11] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	7,  // 0: dict.service.v1.DictEntry.i18n:type_name -> dict.service.v1.DictEntry.I18nEntry
+	1,  // 1: dict.service.v1.DictEntry.current_i18n:type_name -> dict.service.v1.DictEntryI18n
+	8,  // 2: dict.service.v1.DictEntry.created_at:type_name -> google.protobuf.Timestamp
+	8,  // 3: dict.service.v1.DictEntry.updated_at:type_name -> google.protobuf.Timestamp
+	8,  // 4: dict.service.v1.DictEntry.deleted_at:type_name -> google.protobuf.Timestamp
+	0,  // 5: dict.service.v1.ListDictEntryResponse.items:type_name -> dict.service.v1.DictEntry
+	9,  // 6: dict.service.v1.GetDictEntryRequest.view_mask:type_name -> google.protobuf.FieldMask
+	0,  // 7: dict.service.v1.CreateDictEntryRequest.data:type_name -> dict.service.v1.DictEntry
+	0,  // 8: dict.service.v1.UpdateDictEntryRequest.data:type_name -> dict.service.v1.DictEntry
+	9,  // 9: dict.service.v1.UpdateDictEntryRequest.update_mask:type_name -> google.protobuf.FieldMask
+	1,  // 10: dict.service.v1.DictEntry.I18nEntry.value:type_name -> dict.service.v1.DictEntryI18n
+	10, // 11: dict.service.v1.DictEntryService.ListDictEntry:input_type -> pagination.PagingRequest
+	4,  // 12: dict.service.v1.DictEntryService.CreateDictEntry:input_type -> dict.service.v1.CreateDictEntryRequest
+	5,  // 13: dict.service.v1.DictEntryService.UpdateDictEntry:input_type -> dict.service.v1.UpdateDictEntryRequest
+	6,  // 14: dict.service.v1.DictEntryService.DeleteDictEntry:input_type -> dict.service.v1.DeleteDictEntryRequest
+	2,  // 15: dict.service.v1.DictEntryService.ListDictEntry:output_type -> dict.service.v1.ListDictEntryResponse
+	11, // 16: dict.service.v1.DictEntryService.CreateDictEntry:output_type -> google.protobuf.Empty
+	11, // 17: dict.service.v1.DictEntryService.UpdateDictEntry:output_type -> google.protobuf.Empty
+	11, // 18: dict.service.v1.DictEntryService.DeleteDictEntry:output_type -> google.protobuf.Empty
+	15, // [15:19] is the sub-list for method output_type
+	11, // [11:15] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_dict_service_v1_dict_entry_proto_init() }
@@ -541,14 +696,19 @@ func file_dict_service_v1_dict_entry_proto_init() {
 		return
 	}
 	file_dict_service_v1_dict_entry_proto_msgTypes[0].OneofWrappers = []any{}
-	file_dict_service_v1_dict_entry_proto_msgTypes[3].OneofWrappers = []any{}
+	file_dict_service_v1_dict_entry_proto_msgTypes[1].OneofWrappers = []any{}
+	file_dict_service_v1_dict_entry_proto_msgTypes[3].OneofWrappers = []any{
+		(*GetDictEntryRequest_Id)(nil),
+		(*GetDictEntryRequest_Value)(nil),
+	}
+	file_dict_service_v1_dict_entry_proto_msgTypes[5].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_dict_service_v1_dict_entry_proto_rawDesc), len(file_dict_service_v1_dict_entry_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

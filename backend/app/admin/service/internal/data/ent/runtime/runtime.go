@@ -9,7 +9,9 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/dataaccessauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
+	"go-wind-admin/app/admin/service/internal/data/ent/dictentryi18n"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
+	"go-wind-admin/app/admin/service/internal/data/ent/dicttypei18n"
 	"go-wind-admin/app/admin/service/internal/data/ent/file"
 	"go-wind-admin/app/admin/service/internal/data/ent/internalmessage"
 	"go-wind-admin/app/admin/service/internal/data/ent/internalmessagecategory"
@@ -112,7 +114,7 @@ func init() {
 	// dataaccessauditlog.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	dataaccessauditlog.IDValidator = dataaccessauditlogDescID.Validators[0].(func(uint32) error)
 	dictentryMixin := schema.DictEntry{}.Mixin()
-	dictentry.Policy = privacy.NewPolicies(dictentryMixin[6], schema.DictEntry{})
+	dictentry.Policy = privacy.NewPolicies(dictentryMixin[5], schema.DictEntry{})
 	dictentry.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := dictentry.Policy.EvalMutation(ctx, m); err != nil {
@@ -123,40 +125,74 @@ func init() {
 	}
 	dictentryMixinFields0 := dictentryMixin[0].Fields()
 	_ = dictentryMixinFields0
+	dictentryMixinFields3 := dictentryMixin[3].Fields()
+	_ = dictentryMixinFields3
 	dictentryMixinFields4 := dictentryMixin[4].Fields()
 	_ = dictentryMixinFields4
 	dictentryMixinFields5 := dictentryMixin[5].Fields()
 	_ = dictentryMixinFields5
-	dictentryMixinFields6 := dictentryMixin[6].Fields()
-	_ = dictentryMixinFields6
 	dictentryFields := schema.DictEntry{}.Fields()
 	_ = dictentryFields
 	// dictentryDescSortOrder is the schema descriptor for sort_order field.
-	dictentryDescSortOrder := dictentryMixinFields4[0].Descriptor()
+	dictentryDescSortOrder := dictentryMixinFields3[0].Descriptor()
 	// dictentry.DefaultSortOrder holds the default value on creation for the sort_order field.
 	dictentry.DefaultSortOrder = dictentryDescSortOrder.Default.(uint32)
 	// dictentryDescIsEnabled is the schema descriptor for is_enabled field.
-	dictentryDescIsEnabled := dictentryMixinFields5[0].Descriptor()
+	dictentryDescIsEnabled := dictentryMixinFields4[0].Descriptor()
 	// dictentry.DefaultIsEnabled holds the default value on creation for the is_enabled field.
 	dictentry.DefaultIsEnabled = dictentryDescIsEnabled.Default.(bool)
 	// dictentryDescTenantID is the schema descriptor for tenant_id field.
-	dictentryDescTenantID := dictentryMixinFields6[0].Descriptor()
+	dictentryDescTenantID := dictentryMixinFields5[0].Descriptor()
 	// dictentry.DefaultTenantID holds the default value on creation for the tenant_id field.
 	dictentry.DefaultTenantID = dictentryDescTenantID.Default.(uint32)
-	// dictentryDescEntryLabel is the schema descriptor for entry_label field.
-	dictentryDescEntryLabel := dictentryFields[0].Descriptor()
-	// dictentry.EntryLabelValidator is a validator for the "entry_label" field. It is called by the builders before save.
-	dictentry.EntryLabelValidator = dictentryDescEntryLabel.Validators[0].(func(string) error)
 	// dictentryDescEntryValue is the schema descriptor for entry_value field.
-	dictentryDescEntryValue := dictentryFields[1].Descriptor()
+	dictentryDescEntryValue := dictentryFields[0].Descriptor()
 	// dictentry.EntryValueValidator is a validator for the "entry_value" field. It is called by the builders before save.
 	dictentry.EntryValueValidator = dictentryDescEntryValue.Validators[0].(func(string) error)
 	// dictentryDescID is the schema descriptor for id field.
 	dictentryDescID := dictentryMixinFields0[0].Descriptor()
 	// dictentry.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	dictentry.IDValidator = dictentryDescID.Validators[0].(func(uint32) error)
+	dictentryi18nMixin := schema.DictEntryI18n{}.Mixin()
+	dictentryi18n.Policy = privacy.NewPolicies(dictentryi18nMixin[5], schema.DictEntryI18n{})
+	dictentryi18n.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := dictentryi18n.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	dictentryi18nMixinFields0 := dictentryi18nMixin[0].Fields()
+	_ = dictentryi18nMixinFields0
+	dictentryi18nMixinFields4 := dictentryi18nMixin[4].Fields()
+	_ = dictentryi18nMixinFields4
+	dictentryi18nMixinFields5 := dictentryi18nMixin[5].Fields()
+	_ = dictentryi18nMixinFields5
+	dictentryi18nFields := schema.DictEntryI18n{}.Fields()
+	_ = dictentryi18nFields
+	// dictentryi18nDescSortOrder is the schema descriptor for sort_order field.
+	dictentryi18nDescSortOrder := dictentryi18nMixinFields4[0].Descriptor()
+	// dictentryi18n.DefaultSortOrder holds the default value on creation for the sort_order field.
+	dictentryi18n.DefaultSortOrder = dictentryi18nDescSortOrder.Default.(uint32)
+	// dictentryi18nDescTenantID is the schema descriptor for tenant_id field.
+	dictentryi18nDescTenantID := dictentryi18nMixinFields5[0].Descriptor()
+	// dictentryi18n.DefaultTenantID holds the default value on creation for the tenant_id field.
+	dictentryi18n.DefaultTenantID = dictentryi18nDescTenantID.Default.(uint32)
+	// dictentryi18nDescLanguageCode is the schema descriptor for language_code field.
+	dictentryi18nDescLanguageCode := dictentryi18nFields[0].Descriptor()
+	// dictentryi18n.LanguageCodeValidator is a validator for the "language_code" field. It is called by the builders before save.
+	dictentryi18n.LanguageCodeValidator = dictentryi18nDescLanguageCode.Validators[0].(func(string) error)
+	// dictentryi18nDescEntryLabel is the schema descriptor for entry_label field.
+	dictentryi18nDescEntryLabel := dictentryi18nFields[1].Descriptor()
+	// dictentryi18n.EntryLabelValidator is a validator for the "entry_label" field. It is called by the builders before save.
+	dictentryi18n.EntryLabelValidator = dictentryi18nDescEntryLabel.Validators[0].(func(string) error)
+	// dictentryi18nDescID is the schema descriptor for id field.
+	dictentryi18nDescID := dictentryi18nMixinFields0[0].Descriptor()
+	// dictentryi18n.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	dictentryi18n.IDValidator = dictentryi18nDescID.Validators[0].(func(uint32) error)
 	dicttypeMixin := schema.DictType{}.Mixin()
-	dicttype.Policy = privacy.NewPolicies(dicttypeMixin[6], schema.DictType{})
+	dicttype.Policy = privacy.NewPolicies(dicttypeMixin[5], schema.DictType{})
 	dicttype.Hooks[0] = func(next ent.Mutator) ent.Mutator {
 		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
 			if err := dicttype.Policy.EvalMutation(ctx, m); err != nil {
@@ -171,8 +207,8 @@ func init() {
 	_ = dicttypeMixinFields3
 	dicttypeMixinFields4 := dicttypeMixin[4].Fields()
 	_ = dicttypeMixinFields4
-	dicttypeMixinFields6 := dicttypeMixin[6].Fields()
-	_ = dicttypeMixinFields6
+	dicttypeMixinFields5 := dicttypeMixin[5].Fields()
+	_ = dicttypeMixinFields5
 	dicttypeFields := schema.DictType{}.Fields()
 	_ = dicttypeFields
 	// dicttypeDescIsEnabled is the schema descriptor for is_enabled field.
@@ -184,21 +220,49 @@ func init() {
 	// dicttype.DefaultSortOrder holds the default value on creation for the sort_order field.
 	dicttype.DefaultSortOrder = dicttypeDescSortOrder.Default.(uint32)
 	// dicttypeDescTenantID is the schema descriptor for tenant_id field.
-	dicttypeDescTenantID := dicttypeMixinFields6[0].Descriptor()
+	dicttypeDescTenantID := dicttypeMixinFields5[0].Descriptor()
 	// dicttype.DefaultTenantID holds the default value on creation for the tenant_id field.
 	dicttype.DefaultTenantID = dicttypeDescTenantID.Default.(uint32)
 	// dicttypeDescTypeCode is the schema descriptor for type_code field.
 	dicttypeDescTypeCode := dicttypeFields[0].Descriptor()
 	// dicttype.TypeCodeValidator is a validator for the "type_code" field. It is called by the builders before save.
 	dicttype.TypeCodeValidator = dicttypeDescTypeCode.Validators[0].(func(string) error)
-	// dicttypeDescTypeName is the schema descriptor for type_name field.
-	dicttypeDescTypeName := dicttypeFields[1].Descriptor()
-	// dicttype.TypeNameValidator is a validator for the "type_name" field. It is called by the builders before save.
-	dicttype.TypeNameValidator = dicttypeDescTypeName.Validators[0].(func(string) error)
 	// dicttypeDescID is the schema descriptor for id field.
 	dicttypeDescID := dicttypeMixinFields0[0].Descriptor()
 	// dicttype.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	dicttype.IDValidator = dicttypeDescID.Validators[0].(func(uint32) error)
+	dicttypei18nMixin := schema.DictTypeI18n{}.Mixin()
+	dicttypei18n.Policy = privacy.NewPolicies(dicttypei18nMixin[4], schema.DictTypeI18n{})
+	dicttypei18n.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := dicttypei18n.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	dicttypei18nMixinFields0 := dicttypei18nMixin[0].Fields()
+	_ = dicttypei18nMixinFields0
+	dicttypei18nMixinFields4 := dicttypei18nMixin[4].Fields()
+	_ = dicttypei18nMixinFields4
+	dicttypei18nFields := schema.DictTypeI18n{}.Fields()
+	_ = dicttypei18nFields
+	// dicttypei18nDescTenantID is the schema descriptor for tenant_id field.
+	dicttypei18nDescTenantID := dicttypei18nMixinFields4[0].Descriptor()
+	// dicttypei18n.DefaultTenantID holds the default value on creation for the tenant_id field.
+	dicttypei18n.DefaultTenantID = dicttypei18nDescTenantID.Default.(uint32)
+	// dicttypei18nDescLanguageCode is the schema descriptor for language_code field.
+	dicttypei18nDescLanguageCode := dicttypei18nFields[0].Descriptor()
+	// dicttypei18n.LanguageCodeValidator is a validator for the "language_code" field. It is called by the builders before save.
+	dicttypei18n.LanguageCodeValidator = dicttypei18nDescLanguageCode.Validators[0].(func(string) error)
+	// dicttypei18nDescTypeName is the schema descriptor for type_name field.
+	dicttypei18nDescTypeName := dicttypei18nFields[1].Descriptor()
+	// dicttypei18n.TypeNameValidator is a validator for the "type_name" field. It is called by the builders before save.
+	dicttypei18n.TypeNameValidator = dicttypei18nDescTypeName.Validators[0].(func(string) error)
+	// dicttypei18nDescID is the schema descriptor for id field.
+	dicttypei18nDescID := dicttypei18nMixinFields0[0].Descriptor()
+	// dicttypei18n.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	dicttypei18n.IDValidator = dicttypei18nDescID.Validators[0].(func(uint32) error)
 	fileMixin := schema.File{}.Mixin()
 	file.Policy = privacy.NewPolicies(fileMixin[4], schema.File{})
 	file.Hooks[0] = func(next ent.Mutator) ent.Mutator {

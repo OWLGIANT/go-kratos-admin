@@ -34,14 +34,10 @@ type DictType struct {
 	IsEnabled *bool `json:"is_enabled,omitempty"`
 	// 排序值（越小越靠前）
 	SortOrder *uint32 `json:"sort_order,omitempty"`
-	// 描述
-	Description *string `json:"description,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
 	// 字典类型唯一代码
 	TypeCode *string `json:"type_code,omitempty"`
-	// 字典类型名称
-	TypeName *string `json:"type_name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DictTypeQuery when eager-loading is set.
 	Edges        DictTypeEdges `json:"edges"`
@@ -52,9 +48,11 @@ type DictType struct {
 type DictTypeEdges struct {
 	// Entries holds the value of the entries edge.
 	Entries []*DictEntry `json:"entries,omitempty"`
+	// I18ns holds the value of the i18ns edge.
+	I18ns []*DictTypeI18n `json:"i18ns,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // EntriesOrErr returns the Entries value or an error if the edge
@@ -66,6 +64,15 @@ func (e DictTypeEdges) EntriesOrErr() ([]*DictEntry, error) {
 	return nil, &NotLoadedError{edge: "entries"}
 }
 
+// I18nsOrErr returns the I18ns value or an error if the edge
+// was not loaded in eager-loading.
+func (e DictTypeEdges) I18nsOrErr() ([]*DictTypeI18n, error) {
+	if e.loadedTypes[1] {
+		return e.I18ns, nil
+	}
+	return nil, &NotLoadedError{edge: "i18ns"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*DictType) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -75,7 +82,7 @@ func (*DictType) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case dicttype.FieldID, dicttype.FieldCreatedBy, dicttype.FieldUpdatedBy, dicttype.FieldDeletedBy, dicttype.FieldSortOrder, dicttype.FieldTenantID:
 			values[i] = new(sql.NullInt64)
-		case dicttype.FieldDescription, dicttype.FieldTypeCode, dicttype.FieldTypeName:
+		case dicttype.FieldTypeCode:
 			values[i] = new(sql.NullString)
 		case dicttype.FieldCreatedAt, dicttype.FieldUpdatedAt, dicttype.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -156,13 +163,6 @@ func (_m *DictType) assignValues(columns []string, values []any) error {
 				_m.SortOrder = new(uint32)
 				*_m.SortOrder = uint32(value.Int64)
 			}
-		case dicttype.FieldDescription:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field description", values[i])
-			} else if value.Valid {
-				_m.Description = new(string)
-				*_m.Description = value.String
-			}
 		case dicttype.FieldTenantID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
@@ -176,13 +176,6 @@ func (_m *DictType) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.TypeCode = new(string)
 				*_m.TypeCode = value.String
-			}
-		case dicttype.FieldTypeName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field type_name", values[i])
-			} else if value.Valid {
-				_m.TypeName = new(string)
-				*_m.TypeName = value.String
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -200,6 +193,11 @@ func (_m *DictType) Value(name string) (ent.Value, error) {
 // QueryEntries queries the "entries" edge of the DictType entity.
 func (_m *DictType) QueryEntries() *DictEntryQuery {
 	return NewDictTypeClient(_m.config).QueryEntries(_m)
+}
+
+// QueryI18ns queries the "i18ns" edge of the DictType entity.
+func (_m *DictType) QueryI18ns() *DictTypeI18nQuery {
+	return NewDictTypeClient(_m.config).QueryI18ns(_m)
 }
 
 // Update returns a builder for updating this DictType.
@@ -265,11 +263,6 @@ func (_m *DictType) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.Description; v != nil {
-		builder.WriteString("description=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
 	if v := _m.TenantID; v != nil {
 		builder.WriteString("tenant_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -277,11 +270,6 @@ func (_m *DictType) String() string {
 	builder.WriteString(", ")
 	if v := _m.TypeCode; v != nil {
 		builder.WriteString("type_code=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.TypeName; v != nil {
-		builder.WriteString("type_name=")
 		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')

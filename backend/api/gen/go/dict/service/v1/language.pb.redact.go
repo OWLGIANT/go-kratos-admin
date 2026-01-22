@@ -48,10 +48,10 @@ type redactedLanguageServiceServer struct {
 	bypass redact.Bypass
 }
 
-// ListLanguage is the redacted wrapper for the actual LanguageServiceServer.ListLanguage method
+// List is the redacted wrapper for the actual LanguageServiceServer.List method
 // Unary RPC
-func (s *redactedLanguageServiceServer) ListLanguage(ctx context.Context, in *pagination.PagingRequest) (*ListLanguageResponse, error) {
-	res, err := s.srv.ListLanguage(ctx, in)
+func (s *redactedLanguageServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*ListLanguageResponse, error) {
+	res, err := s.srv.List(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)
@@ -132,6 +132,8 @@ func (x *Language) Redact() string {
 
 	// Safe field: IsEnabled
 
+	// Safe field: SortOrder
+
 	// Safe field: CreatedBy
 
 	// Safe field: UpdatedBy
@@ -165,6 +167,8 @@ func (x *GetLanguageRequest) Redact() string {
 	}
 
 	// Safe field: Id
+
+	// Safe field: Code
 
 	// Safe field: ViewMask
 	return x.String()

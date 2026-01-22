@@ -20,8 +20,12 @@ type Tx struct {
 	DataAccessAuditLog *DataAccessAuditLogClient
 	// DictEntry is the client for interacting with the DictEntry builders.
 	DictEntry *DictEntryClient
+	// DictEntryI18n is the client for interacting with the DictEntryI18n builders.
+	DictEntryI18n *DictEntryI18nClient
 	// DictType is the client for interacting with the DictType builders.
 	DictType *DictTypeClient
+	// DictTypeI18n is the client for interacting with the DictTypeI18n builders.
+	DictTypeI18n *DictTypeI18nClient
 	// File is the client for interacting with the File builders.
 	File *FileClient
 	// InternalMessage is the client for interacting with the InternalMessage builders.
@@ -221,7 +225,9 @@ func (tx *Tx) init() {
 	tx.ApiAuditLog = NewApiAuditLogClient(tx.config)
 	tx.DataAccessAuditLog = NewDataAccessAuditLogClient(tx.config)
 	tx.DictEntry = NewDictEntryClient(tx.config)
+	tx.DictEntryI18n = NewDictEntryI18nClient(tx.config)
 	tx.DictType = NewDictTypeClient(tx.config)
+	tx.DictTypeI18n = NewDictTypeI18nClient(tx.config)
 	tx.File = NewFileClient(tx.config)
 	tx.InternalMessage = NewInternalMessageClient(tx.config)
 	tx.InternalMessageCategory = NewInternalMessageCategoryClient(tx.config)

@@ -6,16 +6,22 @@ import { h } from 'vue';
 import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
 
-import { notification } from 'ant-design-vue';
+import { notification, Upload } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { type fileservicev1_File as File } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
-import { statusToColor, statusToName, useFileStore } from '#/stores';
+import {
+  statusToColor,
+  statusToName,
+  useFileStore,
+  useFileTransferStore,
+} from '#/stores';
 
 import FileDrawer from './file-drawer.vue';
 
 const fileStore = useFileStore();
+const fileTransferStore = useFileTransferStore();
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -94,7 +100,7 @@ const gridOptions: VxeGridProps<File> = {
 
 const [Grid, gridApi] = useVbenVxeGrid({ gridOptions, formOptions });
 
-const [Drawer, drawerApi] = useVbenDrawer({
+const [Drawer] = useVbenDrawer({
   // 连接抽离的组件
   connectedComponent: FileDrawer,
 
@@ -106,26 +112,54 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
 });
 
-/* 打开模态窗口 */
-function openModal(create: boolean, row?: any) {
-  drawerApi.setData({
-    create,
-    row,
-  });
-
-  drawerApi.open();
-}
-
-/* 创建 */
-function handleCreate() {
-  console.log('创建');
-  // openModal(true);
-}
-
 /* 编辑 */
 function handleEdit(row: any) {
   console.log('编辑', row);
   // openModal(false, row);
+}
+
+async function handleUploadFile(options: any) {
+  const { file, onProgress, onSuccess, onError } = options;
+
+  console.log('上传文件', options);
+
+  try {
+    const res = await fileTransferStore.uploadFile(
+      'images',
+      file.name || '',
+      'post',
+      file,
+      (progressEvent: any) => {
+        console.log(progressEvent);
+        // ant-design-vue 要求的进度结构为 { percent: number }
+        try {
+          // onProgress?.({ percent });
+        } catch {
+          // 忽略回调内错误
+        }
+      },
+    );
+
+    onSuccess?.(res ?? {}, file);
+
+    notification.success({
+      message: $t('ui.notification.upload_success'),
+    });
+  } catch (error) {
+    console.error('上传文件失败', error);
+
+    try {
+      onError?.(error, file);
+    } catch {}
+
+    notification.success({
+      message: $t('ui.notification.upload_failed'),
+    });
+  }
+}
+function handleDownloadFile() {
+  console.log('下载文件');
+  fileTransferStore.downloadFile('images', 'DateTimePicker.png', true);
 }
 
 /* 删除 */
@@ -152,9 +186,14 @@ async function handleDelete(row: any) {
   <Page auto-content-height>
     <Grid :table-title="$t('menu.system.file')">
       <template #toolbar-tools>
-        <a-button class="mr-2" type="primary" @click="handleCreate">
-          {{ $t('page.file.button.create') }}
+        <a-button class="mr-2" type="primary" @click="handleDownloadFile">
+          {{ $t('page.file.button.download') }}
         </a-button>
+        <Upload :multiple="false" :custom-request="handleUploadFile">
+          <a-button class="mr-2" type="primary">
+            {{ $t('page.file.button.upload') }}
+          </a-button>
+        </Upload>
       </template>
       <template #status="{ row }">
         <a-tag :color="statusToColor(row.status)">

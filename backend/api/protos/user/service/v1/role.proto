@@ -59,7 +59,10 @@ message Role {
 
   optional string code = 3 [
     json_name = "code",
-    (gnostic.openapi.v3.property) = {description: "角色标识码（如：platform:admin, tenant:admin）"}
+    (gnostic.openapi.v3.property) = {
+      description: "角色标识码"
+      example: {yaml: "platform:admin, tenant:admin1"}
+    }
   ];  // 角色标识码（如：ADMIN, VIEWER）
 
   optional uint32 sort_order = 4 [

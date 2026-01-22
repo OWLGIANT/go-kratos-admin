@@ -113,13 +113,13 @@ func (x *DictType) Redact() string {
 
 	// Safe field: TypeCode
 
-	// Safe field: TypeName
-
 	// Safe field: IsEnabled
 
 	// Safe field: SortOrder
 
-	// Safe field: Description
+	// Safe field: I18N
+
+	// Safe field: CurrentI18N
 
 	// Safe field: TenantId
 
@@ -136,6 +136,18 @@ func (x *DictType) Redact() string {
 	// Safe field: UpdatedAt
 
 	// Safe field: DeletedAt
+	return x.String()
+}
+
+// Redact method implementation for DictTypeI18N
+func (x *DictTypeI18N) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: TypeName
+
+	// Safe field: Description
 	return x.String()
 }
 

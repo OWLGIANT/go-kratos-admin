@@ -10,26 +10,31 @@ import "file/service/v1/oss.proto";
 // OSS服务
 service OssService {
   // 获取对象存储（OSS）上传用的预签名链接
-  rpc OssUploadUrl (file.service.v1.OssUploadUrlRequest) returns (file.service.v1.OssUploadUrlResponse) {
+  rpc GetUploadPresignedUrl (file.service.v1.GetUploadPresignedUrlRequest) returns (file.service.v1.GetUploadPresignedUrlResponse) {
     option (google.api.http) = {
-      post: "/admin/v1/file:upload-url"
+      post: "/admin/v1/file/oss/upload-presign-url"
       body: "*"
     };
   }
 
-  // POST方法上传文件
-  rpc PostUploadFile (stream file.service.v1.UploadOssFileRequest) returns (file.service.v1.UploadOssFileResponse) {
+  // 获取对象存储（OSS）下载链接
+  rpc GetDownloadUrl (file.service.v1.GetDownloadInfoRequest) returns (file.service.v1.GetDownloadInfoResponse) {
     option (google.api.http) = {
-      post: "/admin/v1/file:upload"
-      body: "*"
+      get: "/admin/v1/file/oss/download-url"
     };
   }
 
-  // PUT方法上传文件
-  rpc PutUploadFile (stream file.service.v1.UploadOssFileRequest) returns (file.service.v1.UploadOssFileResponse) {
+  // 获取文件夹下面的文件列表
+  rpc ListOssFile (file.service.v1.ListOssFileRequest) returns (file.service.v1.ListOssFileResponse) {
     option (google.api.http) = {
-      put: "/admin/v1/file:upload"
-      body: "*"
+      get: "/admin/v1/file/oss/file-list"
+    };
+  }
+
+  // 删除一个文件
+  rpc DeleteOssFile (file.service.v1.DeleteOssFileRequest) returns (file.service.v1.DeleteOssFileResponse) {
+    option (google.api.http) = {
+      delete: "/admin/v1/file/oss/delete-file"
     };
   }
 }

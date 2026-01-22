@@ -54,6 +54,10 @@
     "sync_failed": "同步失败",
     "operation_success": "操作成功",
     "operation_failed": "操作失败",
+    "upload_success": "上传成功",
+    "upload_failed": "上传失败",
+    "download_success": "下载成功",
+    "download_failed": "下载失败",
     "password_mismatch": "两次输入的密码不一致"
   },
   "text": {

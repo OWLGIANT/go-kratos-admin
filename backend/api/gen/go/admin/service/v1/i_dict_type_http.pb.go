@@ -43,12 +43,12 @@ type DictTypeServiceHTTPServer interface {
 
 func RegisterDictTypeServiceHTTPServer(s *http.Server, srv DictTypeServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/dict-types", _DictTypeService_ListDictType0_HTTP_Handler(srv))
-	r.GET("/admin/v1/dict-types/code/{code}", _DictTypeService_GetDictType0_HTTP_Handler(srv))
-	r.GET("/admin/v1/dict-types/{id}", _DictTypeService_GetDictType1_HTTP_Handler(srv))
-	r.POST("/admin/v1/dict-types", _DictTypeService_CreateDictType0_HTTP_Handler(srv))
-	r.PUT("/admin/v1/dict-types/{id}", _DictTypeService_UpdateDictType0_HTTP_Handler(srv))
-	r.DELETE("/admin/v1/dict-types", _DictTypeService_DeleteDictType0_HTTP_Handler(srv))
+	r.GET("/admin/v1/dict/types", _DictTypeService_ListDictType0_HTTP_Handler(srv))
+	r.GET("/admin/v1/dict/types/code/{code}", _DictTypeService_GetDictType0_HTTP_Handler(srv))
+	r.GET("/admin/v1/dict/types/{id}", _DictTypeService_GetDictType1_HTTP_Handler(srv))
+	r.POST("/admin/v1/dict/types", _DictTypeService_CreateDictType0_HTTP_Handler(srv))
+	r.PUT("/admin/v1/dict/types/{id}", _DictTypeService_UpdateDictType0_HTTP_Handler(srv))
+	r.DELETE("/admin/v1/dict/types", _DictTypeService_DeleteDictType0_HTTP_Handler(srv))
 }
 
 func _DictTypeService_ListDictType0_HTTP_Handler(srv DictTypeServiceHTTPServer) func(ctx http.Context) error {
@@ -204,7 +204,7 @@ func NewDictTypeServiceHTTPClient(client *http.Client) DictTypeServiceHTTPClient
 // CreateDictType 创建字典类型
 func (c *DictTypeServiceHTTPClientImpl) CreateDictType(ctx context.Context, in *v11.CreateDictTypeRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
-	pattern := "/admin/v1/dict-types"
+	pattern := "/admin/v1/dict/types"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationDictTypeServiceCreateDictType))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -218,7 +218,7 @@ func (c *DictTypeServiceHTTPClientImpl) CreateDictType(ctx context.Context, in *
 // DeleteDictType 删除字典类型
 func (c *DictTypeServiceHTTPClientImpl) DeleteDictType(ctx context.Context, in *v11.DeleteDictTypeRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
-	pattern := "/admin/v1/dict-types"
+	pattern := "/admin/v1/dict/types"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationDictTypeServiceDeleteDictType))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -232,7 +232,7 @@ func (c *DictTypeServiceHTTPClientImpl) DeleteDictType(ctx context.Context, in *
 // GetDictType 查询字典类型详情
 func (c *DictTypeServiceHTTPClientImpl) GetDictType(ctx context.Context, in *v11.GetDictTypeRequest, opts ...http.CallOption) (*v11.DictType, error) {
 	var out v11.DictType
-	pattern := "/admin/v1/dict-types/{id}"
+	pattern := "/admin/v1/dict/types/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationDictTypeServiceGetDictType))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -246,7 +246,7 @@ func (c *DictTypeServiceHTTPClientImpl) GetDictType(ctx context.Context, in *v11
 // ListDictType 分页查询字典类型列表
 func (c *DictTypeServiceHTTPClientImpl) ListDictType(ctx context.Context, in *v1.PagingRequest, opts ...http.CallOption) (*v11.ListDictTypeResponse, error) {
 	var out v11.ListDictTypeResponse
-	pattern := "/admin/v1/dict-types"
+	pattern := "/admin/v1/dict/types"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationDictTypeServiceListDictType))
 	opts = append(opts, http.PathTemplate(pattern))
@@ -260,7 +260,7 @@ func (c *DictTypeServiceHTTPClientImpl) ListDictType(ctx context.Context, in *v1
 // UpdateDictType 更新字典类型
 func (c *DictTypeServiceHTTPClientImpl) UpdateDictType(ctx context.Context, in *v11.UpdateDictTypeRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
-	pattern := "/admin/v1/dict-types/{id}"
+	pattern := "/admin/v1/dict/types/{id}"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationDictTypeServiceUpdateDictType))
 	opts = append(opts, http.PathTemplate(pattern))

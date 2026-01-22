@@ -90,6 +90,7 @@ const (
 	FileErrorReason_INTERNAL_SERVER_ERROR FileErrorReason = 2000 // 内部服务器错误
 	FileErrorReason_UPLOAD_FAILED         FileErrorReason = 2001
 	FileErrorReason_DOWNLOAD_FAILED       FileErrorReason = 2002
+	FileErrorReason_DELETE_FAILED         FileErrorReason = 2003
 	// 501
 	FileErrorReason_NOT_IMPLEMENTED FileErrorReason = 2100 // 未实现
 	// 502
@@ -153,6 +154,7 @@ var (
 		2000: "INTERNAL_SERVER_ERROR",
 		2001: "UPLOAD_FAILED",
 		2002: "DOWNLOAD_FAILED",
+		2003: "DELETE_FAILED",
 		2100: "NOT_IMPLEMENTED",
 		2200: "BAD_GATEWAY",
 		2300: "SERVICE_UNAVAILABLE",
@@ -201,6 +203,7 @@ var (
 		"INTERNAL_SERVER_ERROR":           2000,
 		"UPLOAD_FAILED":                   2001,
 		"DOWNLOAD_FAILED":                 2002,
+		"DELETE_FAILED":                   2003,
 		"NOT_IMPLEMENTED":                 2100,
 		"BAD_GATEWAY":                     2200,
 		"SERVICE_UNAVAILABLE":             2300,
@@ -247,8 +250,7 @@ var File_file_service_v1_file_error_proto protoreflect.FileDescriptor
 
 const file_file_service_v1_file_error_proto_rawDesc = "" +
 	"\n" +
-	" file/service/v1/file_error.proto\x12\x0ffile.service.v1\x1a\x13errors/errors.proto*\xf9\n" +
-	"\n" +
+	" file/service/v1/file_error.proto\x12\x0ffile.service.v1\x1a\x13errors/errors.proto*\x93\v\n" +
 	"\x0fFileErrorReason\x12\x15\n" +
 	"\vBAD_REQUEST\x10\x00\x1a\x04\xa8E\x90\x03\x12\x16\n" +
 	"\fUNAUTHORIZED\x10d\x1a\x04\xa8E\x91\x03\x12\x1b\n" +
@@ -283,7 +285,8 @@ const file_file_service_v1_file_error_proto_rawDesc = "" +
 	"\x1dUNAVAILABLE_FOR_LEGAL_REASONS\x10\x9c\t\x1a\x04\xa8E\xc3\x03\x12 \n" +
 	"\x15INTERNAL_SERVER_ERROR\x10\xd0\x0f\x1a\x04\xa8E\xf4\x03\x12\x18\n" +
 	"\rUPLOAD_FAILED\x10\xd1\x0f\x1a\x04\xa8E\xf4\x03\x12\x1a\n" +
-	"\x0fDOWNLOAD_FAILED\x10\xd2\x0f\x1a\x04\xa8E\xf4\x03\x12\x1a\n" +
+	"\x0fDOWNLOAD_FAILED\x10\xd2\x0f\x1a\x04\xa8E\xf4\x03\x12\x18\n" +
+	"\rDELETE_FAILED\x10\xd3\x0f\x1a\x04\xa8E\xf4\x03\x12\x1a\n" +
 	"\x0fNOT_IMPLEMENTED\x10\xb4\x10\x1a\x04\xa8E\xf5\x03\x12\x16\n" +
 	"\vBAD_GATEWAY\x10\x98\x11\x1a\x04\xa8E\xf6\x03\x12\x1e\n" +
 	"\x13SERVICE_UNAVAILABLE\x10\xfc\x11\x1a\x04\xa8E\xf7\x03\x12\x1a\n" +

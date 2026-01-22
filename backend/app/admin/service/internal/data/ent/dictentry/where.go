@@ -85,11 +85,6 @@ func DeletedBy(v uint32) predicate.DictEntry {
 	return predicate.DictEntry(sql.FieldEQ(FieldDeletedBy, v))
 }
 
-// Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
-func Description(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldEQ(FieldDescription, v))
-}
-
 // SortOrder applies equality check predicate on the "sort_order" field. It's identical to SortOrderEQ.
 func SortOrder(v uint32) predicate.DictEntry {
 	return predicate.DictEntry(sql.FieldEQ(FieldSortOrder, v))
@@ -105,11 +100,6 @@ func TenantID(v uint32) predicate.DictEntry {
 	return predicate.DictEntry(sql.FieldEQ(FieldTenantID, v))
 }
 
-// EntryLabel applies equality check predicate on the "entry_label" field. It's identical to EntryLabelEQ.
-func EntryLabel(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldEQ(FieldEntryLabel, v))
-}
-
 // EntryValue applies equality check predicate on the "entry_value" field. It's identical to EntryValueEQ.
 func EntryValue(v string) predicate.DictEntry {
 	return predicate.DictEntry(sql.FieldEQ(FieldEntryValue, v))
@@ -118,11 +108,6 @@ func EntryValue(v string) predicate.DictEntry {
 // NumericValue applies equality check predicate on the "numeric_value" field. It's identical to NumericValueEQ.
 func NumericValue(v int32) predicate.DictEntry {
 	return predicate.DictEntry(sql.FieldEQ(FieldNumericValue, v))
-}
-
-// LanguageCode applies equality check predicate on the "language_code" field. It's identical to LanguageCodeEQ.
-func LanguageCode(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldEQ(FieldLanguageCode, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -425,81 +410,6 @@ func DeletedByNotNil() predicate.DictEntry {
 	return predicate.DictEntry(sql.FieldNotNull(FieldDeletedBy))
 }
 
-// DescriptionEQ applies the EQ predicate on the "description" field.
-func DescriptionEQ(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldEQ(FieldDescription, v))
-}
-
-// DescriptionNEQ applies the NEQ predicate on the "description" field.
-func DescriptionNEQ(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldNEQ(FieldDescription, v))
-}
-
-// DescriptionIn applies the In predicate on the "description" field.
-func DescriptionIn(vs ...string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldIn(FieldDescription, vs...))
-}
-
-// DescriptionNotIn applies the NotIn predicate on the "description" field.
-func DescriptionNotIn(vs ...string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldNotIn(FieldDescription, vs...))
-}
-
-// DescriptionGT applies the GT predicate on the "description" field.
-func DescriptionGT(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldGT(FieldDescription, v))
-}
-
-// DescriptionGTE applies the GTE predicate on the "description" field.
-func DescriptionGTE(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldGTE(FieldDescription, v))
-}
-
-// DescriptionLT applies the LT predicate on the "description" field.
-func DescriptionLT(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldLT(FieldDescription, v))
-}
-
-// DescriptionLTE applies the LTE predicate on the "description" field.
-func DescriptionLTE(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldLTE(FieldDescription, v))
-}
-
-// DescriptionContains applies the Contains predicate on the "description" field.
-func DescriptionContains(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldContains(FieldDescription, v))
-}
-
-// DescriptionHasPrefix applies the HasPrefix predicate on the "description" field.
-func DescriptionHasPrefix(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldHasPrefix(FieldDescription, v))
-}
-
-// DescriptionHasSuffix applies the HasSuffix predicate on the "description" field.
-func DescriptionHasSuffix(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldHasSuffix(FieldDescription, v))
-}
-
-// DescriptionIsNil applies the IsNil predicate on the "description" field.
-func DescriptionIsNil() predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldIsNull(FieldDescription))
-}
-
-// DescriptionNotNil applies the NotNil predicate on the "description" field.
-func DescriptionNotNil() predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldNotNull(FieldDescription))
-}
-
-// DescriptionEqualFold applies the EqualFold predicate on the "description" field.
-func DescriptionEqualFold(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldEqualFold(FieldDescription, v))
-}
-
-// DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
-func DescriptionContainsFold(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldContainsFold(FieldDescription, v))
-}
-
 // SortOrderEQ applies the EQ predicate on the "sort_order" field.
 func SortOrderEQ(v uint32) predicate.DictEntry {
 	return predicate.DictEntry(sql.FieldEQ(FieldSortOrder, v))
@@ -618,81 +528,6 @@ func TenantIDIsNil() predicate.DictEntry {
 // TenantIDNotNil applies the NotNil predicate on the "tenant_id" field.
 func TenantIDNotNil() predicate.DictEntry {
 	return predicate.DictEntry(sql.FieldNotNull(FieldTenantID))
-}
-
-// EntryLabelEQ applies the EQ predicate on the "entry_label" field.
-func EntryLabelEQ(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldEQ(FieldEntryLabel, v))
-}
-
-// EntryLabelNEQ applies the NEQ predicate on the "entry_label" field.
-func EntryLabelNEQ(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldNEQ(FieldEntryLabel, v))
-}
-
-// EntryLabelIn applies the In predicate on the "entry_label" field.
-func EntryLabelIn(vs ...string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldIn(FieldEntryLabel, vs...))
-}
-
-// EntryLabelNotIn applies the NotIn predicate on the "entry_label" field.
-func EntryLabelNotIn(vs ...string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldNotIn(FieldEntryLabel, vs...))
-}
-
-// EntryLabelGT applies the GT predicate on the "entry_label" field.
-func EntryLabelGT(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldGT(FieldEntryLabel, v))
-}
-
-// EntryLabelGTE applies the GTE predicate on the "entry_label" field.
-func EntryLabelGTE(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldGTE(FieldEntryLabel, v))
-}
-
-// EntryLabelLT applies the LT predicate on the "entry_label" field.
-func EntryLabelLT(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldLT(FieldEntryLabel, v))
-}
-
-// EntryLabelLTE applies the LTE predicate on the "entry_label" field.
-func EntryLabelLTE(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldLTE(FieldEntryLabel, v))
-}
-
-// EntryLabelContains applies the Contains predicate on the "entry_label" field.
-func EntryLabelContains(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldContains(FieldEntryLabel, v))
-}
-
-// EntryLabelHasPrefix applies the HasPrefix predicate on the "entry_label" field.
-func EntryLabelHasPrefix(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldHasPrefix(FieldEntryLabel, v))
-}
-
-// EntryLabelHasSuffix applies the HasSuffix predicate on the "entry_label" field.
-func EntryLabelHasSuffix(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldHasSuffix(FieldEntryLabel, v))
-}
-
-// EntryLabelIsNil applies the IsNil predicate on the "entry_label" field.
-func EntryLabelIsNil() predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldIsNull(FieldEntryLabel))
-}
-
-// EntryLabelNotNil applies the NotNil predicate on the "entry_label" field.
-func EntryLabelNotNil() predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldNotNull(FieldEntryLabel))
-}
-
-// EntryLabelEqualFold applies the EqualFold predicate on the "entry_label" field.
-func EntryLabelEqualFold(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldEqualFold(FieldEntryLabel, v))
-}
-
-// EntryLabelContainsFold applies the ContainsFold predicate on the "entry_label" field.
-func EntryLabelContainsFold(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldContainsFold(FieldEntryLabel, v))
 }
 
 // EntryValueEQ applies the EQ predicate on the "entry_value" field.
@@ -818,81 +653,6 @@ func NumericValueIsNil() predicate.DictEntry {
 // NumericValueNotNil applies the NotNil predicate on the "numeric_value" field.
 func NumericValueNotNil() predicate.DictEntry {
 	return predicate.DictEntry(sql.FieldNotNull(FieldNumericValue))
-}
-
-// LanguageCodeEQ applies the EQ predicate on the "language_code" field.
-func LanguageCodeEQ(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldEQ(FieldLanguageCode, v))
-}
-
-// LanguageCodeNEQ applies the NEQ predicate on the "language_code" field.
-func LanguageCodeNEQ(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldNEQ(FieldLanguageCode, v))
-}
-
-// LanguageCodeIn applies the In predicate on the "language_code" field.
-func LanguageCodeIn(vs ...string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldIn(FieldLanguageCode, vs...))
-}
-
-// LanguageCodeNotIn applies the NotIn predicate on the "language_code" field.
-func LanguageCodeNotIn(vs ...string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldNotIn(FieldLanguageCode, vs...))
-}
-
-// LanguageCodeGT applies the GT predicate on the "language_code" field.
-func LanguageCodeGT(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldGT(FieldLanguageCode, v))
-}
-
-// LanguageCodeGTE applies the GTE predicate on the "language_code" field.
-func LanguageCodeGTE(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldGTE(FieldLanguageCode, v))
-}
-
-// LanguageCodeLT applies the LT predicate on the "language_code" field.
-func LanguageCodeLT(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldLT(FieldLanguageCode, v))
-}
-
-// LanguageCodeLTE applies the LTE predicate on the "language_code" field.
-func LanguageCodeLTE(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldLTE(FieldLanguageCode, v))
-}
-
-// LanguageCodeContains applies the Contains predicate on the "language_code" field.
-func LanguageCodeContains(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldContains(FieldLanguageCode, v))
-}
-
-// LanguageCodeHasPrefix applies the HasPrefix predicate on the "language_code" field.
-func LanguageCodeHasPrefix(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldHasPrefix(FieldLanguageCode, v))
-}
-
-// LanguageCodeHasSuffix applies the HasSuffix predicate on the "language_code" field.
-func LanguageCodeHasSuffix(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldHasSuffix(FieldLanguageCode, v))
-}
-
-// LanguageCodeIsNil applies the IsNil predicate on the "language_code" field.
-func LanguageCodeIsNil() predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldIsNull(FieldLanguageCode))
-}
-
-// LanguageCodeNotNil applies the NotNil predicate on the "language_code" field.
-func LanguageCodeNotNil() predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldNotNull(FieldLanguageCode))
-}
-
-// LanguageCodeEqualFold applies the EqualFold predicate on the "language_code" field.
-func LanguageCodeEqualFold(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldEqualFold(FieldLanguageCode, v))
-}
-
-// LanguageCodeContainsFold applies the ContainsFold predicate on the "language_code" field.
-func LanguageCodeContainsFold(v string) predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldContainsFold(FieldLanguageCode, v))
 }
 
 // HasSysDictTypes applies the HasEdge predicate on the "sys_dict_types" edge.

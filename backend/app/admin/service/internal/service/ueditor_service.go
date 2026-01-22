@@ -2,10 +2,8 @@ package service
 
 import (
 	"context"
-	"path"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
@@ -115,40 +113,4 @@ func (s *UEditorService) UEditorAPI(ctx context.Context, req *fileV1.UEditorRequ
 	case fileV1.UEditorAction_listImage.String():
 		return s.mc.ListFileForUEditor(ctx, "images", "")
 	}
-}
-
-func (s *UEditorService) UploadFile(ctx context.Context, req *fileV1.UEditorUploadRequest) (*fileV1.UEditorUploadResponse, error) {
-	//s.log.Infof("上传文件： %s", req.GetFile())
-
-	if req.File == nil {
-		return nil, fileV1.ErrorUploadFailed("unknown file")
-	}
-
-	var bucketName string
-	switch req.GetAction() {
-	default:
-		fallthrough
-	case fileV1.UEditorAction_uploadFile.String():
-		bucketName = "files"
-	case fileV1.UEditorAction_uploadImage.String(), fileV1.UEditorAction_uploadScrawl.String(), fileV1.UEditorAction_catchImage.String():
-		bucketName = "images"
-	case fileV1.UEditorAction_uploadVideo.String():
-		bucketName = "videos"
-	}
-
-	downloadUrl, err := s.mc.UploadFile(ctx, bucketName, req.GetSourceFileName(), req.GetFile())
-	if err != nil {
-		return &fileV1.UEditorUploadResponse{
-			State: trans.Ptr(err.Error()),
-		}, err
-	}
-
-	return &fileV1.UEditorUploadResponse{
-		State:    trans.Ptr(StateOK),
-		Original: trans.Ptr(req.GetSourceFileName()),
-		Title:    trans.Ptr(req.GetSourceFileName()),
-		Url:      trans.Ptr(downloadUrl),
-		Size:     trans.Ptr(int32(len(req.GetFile()))),
-		Type:     trans.Ptr(path.Ext(req.GetSourceFileName())),
-	}, nil
 }

@@ -550,24 +550,6 @@ func (u *LanguageUpsert) ClearIsEnabled() *LanguageUpsert {
 	return u
 }
 
-// SetLanguageCode sets the "language_code" field.
-func (u *LanguageUpsert) SetLanguageCode(v string) *LanguageUpsert {
-	u.Set(language.FieldLanguageCode, v)
-	return u
-}
-
-// UpdateLanguageCode sets the "language_code" field to the value that was provided on create.
-func (u *LanguageUpsert) UpdateLanguageCode() *LanguageUpsert {
-	u.SetExcluded(language.FieldLanguageCode)
-	return u
-}
-
-// ClearLanguageCode clears the value of the "language_code" field.
-func (u *LanguageUpsert) ClearLanguageCode() *LanguageUpsert {
-	u.SetNull(language.FieldLanguageCode)
-	return u
-}
-
 // SetLanguageName sets the "language_name" field.
 func (u *LanguageUpsert) SetLanguageName(v string) *LanguageUpsert {
 	u.Set(language.FieldLanguageName, v)
@@ -641,6 +623,9 @@ func (u *LanguageUpsertOne) UpdateNewValues() *LanguageUpsertOne {
 		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(language.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.LanguageCode(); exists {
+			s.SetIgnore(language.FieldLanguageCode)
 		}
 	}))
 	return u
@@ -845,27 +830,6 @@ func (u *LanguageUpsertOne) UpdateIsEnabled() *LanguageUpsertOne {
 func (u *LanguageUpsertOne) ClearIsEnabled() *LanguageUpsertOne {
 	return u.Update(func(s *LanguageUpsert) {
 		s.ClearIsEnabled()
-	})
-}
-
-// SetLanguageCode sets the "language_code" field.
-func (u *LanguageUpsertOne) SetLanguageCode(v string) *LanguageUpsertOne {
-	return u.Update(func(s *LanguageUpsert) {
-		s.SetLanguageCode(v)
-	})
-}
-
-// UpdateLanguageCode sets the "language_code" field to the value that was provided on create.
-func (u *LanguageUpsertOne) UpdateLanguageCode() *LanguageUpsertOne {
-	return u.Update(func(s *LanguageUpsert) {
-		s.UpdateLanguageCode()
-	})
-}
-
-// ClearLanguageCode clears the value of the "language_code" field.
-func (u *LanguageUpsertOne) ClearLanguageCode() *LanguageUpsertOne {
-	return u.Update(func(s *LanguageUpsert) {
-		s.ClearLanguageCode()
 	})
 }
 
@@ -1117,6 +1081,9 @@ func (u *LanguageUpsertBulk) UpdateNewValues() *LanguageUpsertBulk {
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(language.FieldCreatedAt)
 			}
+			if _, exists := b.mutation.LanguageCode(); exists {
+				s.SetIgnore(language.FieldLanguageCode)
+			}
 		}
 	}))
 	return u
@@ -1321,27 +1288,6 @@ func (u *LanguageUpsertBulk) UpdateIsEnabled() *LanguageUpsertBulk {
 func (u *LanguageUpsertBulk) ClearIsEnabled() *LanguageUpsertBulk {
 	return u.Update(func(s *LanguageUpsert) {
 		s.ClearIsEnabled()
-	})
-}
-
-// SetLanguageCode sets the "language_code" field.
-func (u *LanguageUpsertBulk) SetLanguageCode(v string) *LanguageUpsertBulk {
-	return u.Update(func(s *LanguageUpsert) {
-		s.SetLanguageCode(v)
-	})
-}
-
-// UpdateLanguageCode sets the "language_code" field to the value that was provided on create.
-func (u *LanguageUpsertBulk) UpdateLanguageCode() *LanguageUpsertBulk {
-	return u.Update(func(s *LanguageUpsert) {
-		s.UpdateLanguageCode()
-	})
-}
-
-// ClearLanguageCode clears the value of the "language_code" field.
-func (u *LanguageUpsertBulk) ClearLanguageCode() *LanguageUpsertBulk {
-	return u.Update(func(s *LanguageUpsert) {
-		s.ClearLanguageCode()
 	})
 }
 

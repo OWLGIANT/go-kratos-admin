@@ -13,7 +13,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// 字典条目表
+// 字典项表
 type DictEntry struct {
 	config `json:"-"`
 	// ID of the ent.
@@ -31,22 +31,16 @@ type DictEntry struct {
 	UpdatedBy *uint32 `json:"updated_by,omitempty"`
 	// 删除者ID
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
-	// 描述
-	Description *string `json:"description,omitempty"`
 	// 排序值（越小越靠前）
 	SortOrder *uint32 `json:"sort_order,omitempty"`
 	// 是否启用
 	IsEnabled *bool `json:"is_enabled,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
-	// 字典项的显示标签
-	EntryLabel *string `json:"entry_label,omitempty"`
 	// 字典项的实际值
 	EntryValue *string `json:"entry_value,omitempty"`
 	// 数值型值
 	NumericValue *int32 `json:"numeric_value,omitempty"`
-	// 语言代码
-	LanguageCode *string `json:"language_code,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DictEntryQuery when eager-loading is set.
 	Edges        DictEntryEdges `json:"edges"`
@@ -83,7 +77,7 @@ func (*DictEntry) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case dictentry.FieldID, dictentry.FieldCreatedBy, dictentry.FieldUpdatedBy, dictentry.FieldDeletedBy, dictentry.FieldSortOrder, dictentry.FieldTenantID, dictentry.FieldNumericValue:
 			values[i] = new(sql.NullInt64)
-		case dictentry.FieldDescription, dictentry.FieldEntryLabel, dictentry.FieldEntryValue, dictentry.FieldLanguageCode:
+		case dictentry.FieldEntryValue:
 			values[i] = new(sql.NullString)
 		case dictentry.FieldCreatedAt, dictentry.FieldUpdatedAt, dictentry.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -152,13 +146,6 @@ func (_m *DictEntry) assignValues(columns []string, values []any) error {
 				_m.DeletedBy = new(uint32)
 				*_m.DeletedBy = uint32(value.Int64)
 			}
-		case dictentry.FieldDescription:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field description", values[i])
-			} else if value.Valid {
-				_m.Description = new(string)
-				*_m.Description = value.String
-			}
 		case dictentry.FieldSortOrder:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field sort_order", values[i])
@@ -180,13 +167,6 @@ func (_m *DictEntry) assignValues(columns []string, values []any) error {
 				_m.TenantID = new(uint32)
 				*_m.TenantID = uint32(value.Int64)
 			}
-		case dictentry.FieldEntryLabel:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field entry_label", values[i])
-			} else if value.Valid {
-				_m.EntryLabel = new(string)
-				*_m.EntryLabel = value.String
-			}
 		case dictentry.FieldEntryValue:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field entry_value", values[i])
@@ -200,13 +180,6 @@ func (_m *DictEntry) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.NumericValue = new(int32)
 				*_m.NumericValue = int32(value.Int64)
-			}
-		case dictentry.FieldLanguageCode:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field language_code", values[i])
-			} else if value.Valid {
-				_m.LanguageCode = new(string)
-				*_m.LanguageCode = value.String
 			}
 		case dictentry.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -286,11 +259,6 @@ func (_m *DictEntry) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.Description; v != nil {
-		builder.WriteString("description=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
 	if v := _m.SortOrder; v != nil {
 		builder.WriteString("sort_order=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -306,11 +274,6 @@ func (_m *DictEntry) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.EntryLabel; v != nil {
-		builder.WriteString("entry_label=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
 	if v := _m.EntryValue; v != nil {
 		builder.WriteString("entry_value=")
 		builder.WriteString(*v)
@@ -319,11 +282,6 @@ func (_m *DictEntry) String() string {
 	if v := _m.NumericValue; v != nil {
 		builder.WriteString("numeric_value=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := _m.LanguageCode; v != nil {
-		builder.WriteString("language_code=")
-		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')
 	return builder.String()

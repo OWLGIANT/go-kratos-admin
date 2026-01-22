@@ -35,22 +35,130 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on OssUploadUrlRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *OssUploadUrlRequest) Validate() error {
+// Validate checks the field values on StorageObject with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *StorageObject) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on OssUploadUrlRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// OssUploadUrlRequestMultiError, or nil if none found.
-func (m *OssUploadUrlRequest) ValidateAll() error {
+// ValidateAll checks the field values on StorageObject with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in StorageObjectMultiError, or
+// nil if none found.
+func (m *StorageObject) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *OssUploadUrlRequest) validate(all bool) error {
+func (m *StorageObject) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.BucketName != nil {
+		// no validation rules for BucketName
+	}
+
+	if m.ObjectName != nil {
+		// no validation rules for ObjectName
+	}
+
+	if len(errors) > 0 {
+		return StorageObjectMultiError(errors)
+	}
+
+	return nil
+}
+
+// StorageObjectMultiError is an error wrapping multiple validation errors
+// returned by StorageObject.ValidateAll() if the designated constraints
+// aren't met.
+type StorageObjectMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m StorageObjectMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m StorageObjectMultiError) AllErrors() []error { return m }
+
+// StorageObjectValidationError is the validation error returned by
+// StorageObject.Validate if the designated constraints aren't met.
+type StorageObjectValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e StorageObjectValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e StorageObjectValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e StorageObjectValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e StorageObjectValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e StorageObjectValidationError) ErrorName() string { return "StorageObjectValidationError" }
+
+// Error satisfies the builtin error interface
+func (e StorageObjectValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sStorageObject.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = StorageObjectValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = StorageObjectValidationError{}
+
+// Validate checks the field values on GetUploadPresignedUrlRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetUploadPresignedUrlRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetUploadPresignedUrlRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetUploadPresignedUrlRequestMultiError, or nil if none found.
+func (m *GetUploadPresignedUrlRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetUploadPresignedUrlRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -76,19 +184,19 @@ func (m *OssUploadUrlRequest) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return OssUploadUrlRequestMultiError(errors)
+		return GetUploadPresignedUrlRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// OssUploadUrlRequestMultiError is an error wrapping multiple validation
-// errors returned by OssUploadUrlRequest.ValidateAll() if the designated
-// constraints aren't met.
-type OssUploadUrlRequestMultiError []error
+// GetUploadPresignedUrlRequestMultiError is an error wrapping multiple
+// validation errors returned by GetUploadPresignedUrlRequest.ValidateAll() if
+// the designated constraints aren't met.
+type GetUploadPresignedUrlRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m OssUploadUrlRequestMultiError) Error() string {
+func (m GetUploadPresignedUrlRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -97,11 +205,12 @@ func (m OssUploadUrlRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m OssUploadUrlRequestMultiError) AllErrors() []error { return m }
+func (m GetUploadPresignedUrlRequestMultiError) AllErrors() []error { return m }
 
-// OssUploadUrlRequestValidationError is the validation error returned by
-// OssUploadUrlRequest.Validate if the designated constraints aren't met.
-type OssUploadUrlRequestValidationError struct {
+// GetUploadPresignedUrlRequestValidationError is the validation error returned
+// by GetUploadPresignedUrlRequest.Validate if the designated constraints
+// aren't met.
+type GetUploadPresignedUrlRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -109,24 +218,24 @@ type OssUploadUrlRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e OssUploadUrlRequestValidationError) Field() string { return e.field }
+func (e GetUploadPresignedUrlRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e OssUploadUrlRequestValidationError) Reason() string { return e.reason }
+func (e GetUploadPresignedUrlRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e OssUploadUrlRequestValidationError) Cause() error { return e.cause }
+func (e GetUploadPresignedUrlRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e OssUploadUrlRequestValidationError) Key() bool { return e.key }
+func (e GetUploadPresignedUrlRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e OssUploadUrlRequestValidationError) ErrorName() string {
-	return "OssUploadUrlRequestValidationError"
+func (e GetUploadPresignedUrlRequestValidationError) ErrorName() string {
+	return "GetUploadPresignedUrlRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e OssUploadUrlRequestValidationError) Error() string {
+func (e GetUploadPresignedUrlRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -138,14 +247,14 @@ func (e OssUploadUrlRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sOssUploadUrlRequest.%s: %s%s",
+		"invalid %sGetUploadPresignedUrlRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = OssUploadUrlRequestValidationError{}
+var _ error = GetUploadPresignedUrlRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -153,24 +262,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = OssUploadUrlRequestValidationError{}
+} = GetUploadPresignedUrlRequestValidationError{}
 
-// Validate checks the field values on OssUploadUrlResponse with the rules
-// defined in the proto definition for this message. If any rules are
+// Validate checks the field values on GetUploadPresignedUrlResponse with the
+// rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *OssUploadUrlResponse) Validate() error {
+func (m *GetUploadPresignedUrlResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on OssUploadUrlResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// OssUploadUrlResponseMultiError, or nil if none found.
-func (m *OssUploadUrlResponse) ValidateAll() error {
+// ValidateAll checks the field values on GetUploadPresignedUrlResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// GetUploadPresignedUrlResponseMultiError, or nil if none found.
+func (m *GetUploadPresignedUrlResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *OssUploadUrlResponse) validate(all bool) error {
+func (m *GetUploadPresignedUrlResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -190,19 +299,19 @@ func (m *OssUploadUrlResponse) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return OssUploadUrlResponseMultiError(errors)
+		return GetUploadPresignedUrlResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// OssUploadUrlResponseMultiError is an error wrapping multiple validation
-// errors returned by OssUploadUrlResponse.ValidateAll() if the designated
-// constraints aren't met.
-type OssUploadUrlResponseMultiError []error
+// GetUploadPresignedUrlResponseMultiError is an error wrapping multiple
+// validation errors returned by GetUploadPresignedUrlResponse.ValidateAll()
+// if the designated constraints aren't met.
+type GetUploadPresignedUrlResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m OssUploadUrlResponseMultiError) Error() string {
+func (m GetUploadPresignedUrlResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -211,11 +320,12 @@ func (m OssUploadUrlResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m OssUploadUrlResponseMultiError) AllErrors() []error { return m }
+func (m GetUploadPresignedUrlResponseMultiError) AllErrors() []error { return m }
 
-// OssUploadUrlResponseValidationError is the validation error returned by
-// OssUploadUrlResponse.Validate if the designated constraints aren't met.
-type OssUploadUrlResponseValidationError struct {
+// GetUploadPresignedUrlResponseValidationError is the validation error
+// returned by GetUploadPresignedUrlResponse.Validate if the designated
+// constraints aren't met.
+type GetUploadPresignedUrlResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -223,24 +333,24 @@ type OssUploadUrlResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e OssUploadUrlResponseValidationError) Field() string { return e.field }
+func (e GetUploadPresignedUrlResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e OssUploadUrlResponseValidationError) Reason() string { return e.reason }
+func (e GetUploadPresignedUrlResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e OssUploadUrlResponseValidationError) Cause() error { return e.cause }
+func (e GetUploadPresignedUrlResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e OssUploadUrlResponseValidationError) Key() bool { return e.key }
+func (e GetUploadPresignedUrlResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e OssUploadUrlResponseValidationError) ErrorName() string {
-	return "OssUploadUrlResponseValidationError"
+func (e GetUploadPresignedUrlResponseValidationError) ErrorName() string {
+	return "GetUploadPresignedUrlResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e OssUploadUrlResponseValidationError) Error() string {
+func (e GetUploadPresignedUrlResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -252,14 +362,14 @@ func (e OssUploadUrlResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sOssUploadUrlResponse.%s: %s%s",
+		"invalid %sGetUploadPresignedUrlResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = OssUploadUrlResponseValidationError{}
+var _ error = GetUploadPresignedUrlResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -267,44 +377,138 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = OssUploadUrlResponseValidationError{}
+} = GetUploadPresignedUrlResponseValidationError{}
 
-// Validate checks the field values on GetDownloadUrlRequest with the rules
+// Validate checks the field values on GetDownloadInfoRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetDownloadUrlRequest) Validate() error {
+func (m *GetDownloadInfoRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetDownloadUrlRequest with the rules
+// ValidateAll checks the field values on GetDownloadInfoRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// GetDownloadUrlRequestMultiError, or nil if none found.
-func (m *GetDownloadUrlRequest) ValidateAll() error {
+// GetDownloadInfoRequestMultiError, or nil if none found.
+func (m *GetDownloadInfoRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetDownloadUrlRequest) validate(all bool) error {
+func (m *GetDownloadInfoRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
+	switch v := m.Selector.(type) {
+	case *GetDownloadInfoRequest_FileId:
+		if v == nil {
+			err := GetDownloadInfoRequestValidationError{
+				field:  "Selector",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for FileId
+	case *GetDownloadInfoRequest_StorageObject:
+		if v == nil {
+			err := GetDownloadInfoRequestValidationError{
+				field:  "Selector",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+		if all {
+			switch v := interface{}(m.GetStorageObject()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetDownloadInfoRequestValidationError{
+						field:  "StorageObject",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetDownloadInfoRequestValidationError{
+						field:  "StorageObject",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetStorageObject()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetDownloadInfoRequestValidationError{
+					field:  "StorageObject",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	case *GetDownloadInfoRequest_DownloadUrl:
+		if v == nil {
+			err := GetDownloadInfoRequestValidationError{
+				field:  "Selector",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for DownloadUrl
+	default:
+		_ = v // ensures v is used
+	}
+
+	if m.RangeStart != nil {
+		// no validation rules for RangeStart
+	}
+
+	if m.RangeEnd != nil {
+		// no validation rules for RangeEnd
+	}
+
+	if m.PreferPresignedUrl != nil {
+		// no validation rules for PreferPresignedUrl
+	}
+
+	if m.PresignExpireSeconds != nil {
+		// no validation rules for PresignExpireSeconds
+	}
+
+	if m.Disposition != nil {
+		// no validation rules for Disposition
+	}
+
+	if m.AcceptMime != nil {
+		// no validation rules for AcceptMime
+	}
+
 	if len(errors) > 0 {
-		return GetDownloadUrlRequestMultiError(errors)
+		return GetDownloadInfoRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// GetDownloadUrlRequestMultiError is an error wrapping multiple validation
-// errors returned by GetDownloadUrlRequest.ValidateAll() if the designated
+// GetDownloadInfoRequestMultiError is an error wrapping multiple validation
+// errors returned by GetDownloadInfoRequest.ValidateAll() if the designated
 // constraints aren't met.
-type GetDownloadUrlRequestMultiError []error
+type GetDownloadInfoRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetDownloadUrlRequestMultiError) Error() string {
+func (m GetDownloadInfoRequestMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -313,11 +517,11 @@ func (m GetDownloadUrlRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetDownloadUrlRequestMultiError) AllErrors() []error { return m }
+func (m GetDownloadInfoRequestMultiError) AllErrors() []error { return m }
 
-// GetDownloadUrlRequestValidationError is the validation error returned by
-// GetDownloadUrlRequest.Validate if the designated constraints aren't met.
-type GetDownloadUrlRequestValidationError struct {
+// GetDownloadInfoRequestValidationError is the validation error returned by
+// GetDownloadInfoRequest.Validate if the designated constraints aren't met.
+type GetDownloadInfoRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -325,24 +529,24 @@ type GetDownloadUrlRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetDownloadUrlRequestValidationError) Field() string { return e.field }
+func (e GetDownloadInfoRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetDownloadUrlRequestValidationError) Reason() string { return e.reason }
+func (e GetDownloadInfoRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetDownloadUrlRequestValidationError) Cause() error { return e.cause }
+func (e GetDownloadInfoRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetDownloadUrlRequestValidationError) Key() bool { return e.key }
+func (e GetDownloadInfoRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetDownloadUrlRequestValidationError) ErrorName() string {
-	return "GetDownloadUrlRequestValidationError"
+func (e GetDownloadInfoRequestValidationError) ErrorName() string {
+	return "GetDownloadInfoRequestValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e GetDownloadUrlRequestValidationError) Error() string {
+func (e GetDownloadInfoRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -354,14 +558,14 @@ func (e GetDownloadUrlRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetDownloadUrlRequest.%s: %s%s",
+		"invalid %sGetDownloadInfoRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetDownloadUrlRequestValidationError{}
+var _ error = GetDownloadInfoRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -369,44 +573,122 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetDownloadUrlRequestValidationError{}
+} = GetDownloadInfoRequestValidationError{}
 
-// Validate checks the field values on GetDownloadUrlResponse with the rules
+// Validate checks the field values on GetDownloadInfoResponse with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *GetDownloadUrlResponse) Validate() error {
+func (m *GetDownloadInfoResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on GetDownloadUrlResponse with the rules
-// defined in the proto definition for this message. If any rules are
+// ValidateAll checks the field values on GetDownloadInfoResponse with the
+// rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// GetDownloadUrlResponseMultiError, or nil if none found.
-func (m *GetDownloadUrlResponse) ValidateAll() error {
+// GetDownloadInfoResponseMultiError, or nil if none found.
+func (m *GetDownloadInfoResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *GetDownloadUrlResponse) validate(all bool) error {
+func (m *GetDownloadInfoResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
+	// no validation rules for SourceFileName
+
+	// no validation rules for Mime
+
+	// no validation rules for Size
+
+	// no validation rules for Checksum
+
+	// no validation rules for StoragePath
+
+	// no validation rules for Headers
+
+	switch v := m.Content.(type) {
+	case *GetDownloadInfoResponse_File:
+		if v == nil {
+			err := GetDownloadInfoResponseValidationError{
+				field:  "Content",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for File
+	case *GetDownloadInfoResponse_DownloadUrl:
+		if v == nil {
+			err := GetDownloadInfoResponseValidationError{
+				field:  "Content",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for DownloadUrl
+	default:
+		_ = v // ensures v is used
+	}
+
+	if m.UpdatedAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetUpdatedAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, GetDownloadInfoResponseValidationError{
+						field:  "UpdatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, GetDownloadInfoResponseValidationError{
+						field:  "UpdatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetUpdatedAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return GetDownloadInfoResponseValidationError{
+					field:  "UpdatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if m.Method != nil {
+		// no validation rules for Method
+	}
+
 	if len(errors) > 0 {
-		return GetDownloadUrlResponseMultiError(errors)
+		return GetDownloadInfoResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// GetDownloadUrlResponseMultiError is an error wrapping multiple validation
-// errors returned by GetDownloadUrlResponse.ValidateAll() if the designated
+// GetDownloadInfoResponseMultiError is an error wrapping multiple validation
+// errors returned by GetDownloadInfoResponse.ValidateAll() if the designated
 // constraints aren't met.
-type GetDownloadUrlResponseMultiError []error
+type GetDownloadInfoResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m GetDownloadUrlResponseMultiError) Error() string {
+func (m GetDownloadInfoResponseMultiError) Error() string {
 	msgs := make([]string, 0, len(m))
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -415,11 +697,11 @@ func (m GetDownloadUrlResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m GetDownloadUrlResponseMultiError) AllErrors() []error { return m }
+func (m GetDownloadInfoResponseMultiError) AllErrors() []error { return m }
 
-// GetDownloadUrlResponseValidationError is the validation error returned by
-// GetDownloadUrlResponse.Validate if the designated constraints aren't met.
-type GetDownloadUrlResponseValidationError struct {
+// GetDownloadInfoResponseValidationError is the validation error returned by
+// GetDownloadInfoResponse.Validate if the designated constraints aren't met.
+type GetDownloadInfoResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -427,24 +709,24 @@ type GetDownloadUrlResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e GetDownloadUrlResponseValidationError) Field() string { return e.field }
+func (e GetDownloadInfoResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e GetDownloadUrlResponseValidationError) Reason() string { return e.reason }
+func (e GetDownloadInfoResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e GetDownloadUrlResponseValidationError) Cause() error { return e.cause }
+func (e GetDownloadInfoResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e GetDownloadUrlResponseValidationError) Key() bool { return e.key }
+func (e GetDownloadInfoResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e GetDownloadUrlResponseValidationError) ErrorName() string {
-	return "GetDownloadUrlResponseValidationError"
+func (e GetDownloadInfoResponseValidationError) ErrorName() string {
+	return "GetDownloadInfoResponseValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e GetDownloadUrlResponseValidationError) Error() string {
+func (e GetDownloadInfoResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -456,14 +738,14 @@ func (e GetDownloadUrlResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sGetDownloadUrlResponse.%s: %s%s",
+		"invalid %sGetDownloadInfoResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = GetDownloadUrlResponseValidationError{}
+var _ error = GetDownloadInfoResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -471,7 +753,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = GetDownloadUrlResponseValidationError{}
+} = GetDownloadInfoResponseValidationError{}
 
 // Validate checks the field values on ListOssFileRequest with the rules
 // defined in the proto definition for this message. If any rules are
@@ -900,229 +1182,3 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = DeleteOssFileResponseValidationError{}
-
-// Validate checks the field values on UploadOssFileRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UploadOssFileRequest) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on UploadOssFileRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// UploadOssFileRequestMultiError, or nil if none found.
-func (m *UploadOssFileRequest) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *UploadOssFileRequest) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if m.BucketName != nil {
-		// no validation rules for BucketName
-	}
-
-	if m.ObjectName != nil {
-		// no validation rules for ObjectName
-	}
-
-	if m.File != nil {
-		// no validation rules for File
-	}
-
-	if m.SourceFileName != nil {
-		// no validation rules for SourceFileName
-	}
-
-	if m.Mime != nil {
-		// no validation rules for Mime
-	}
-
-	if len(errors) > 0 {
-		return UploadOssFileRequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// UploadOssFileRequestMultiError is an error wrapping multiple validation
-// errors returned by UploadOssFileRequest.ValidateAll() if the designated
-// constraints aren't met.
-type UploadOssFileRequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UploadOssFileRequestMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UploadOssFileRequestMultiError) AllErrors() []error { return m }
-
-// UploadOssFileRequestValidationError is the validation error returned by
-// UploadOssFileRequest.Validate if the designated constraints aren't met.
-type UploadOssFileRequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UploadOssFileRequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UploadOssFileRequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UploadOssFileRequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UploadOssFileRequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UploadOssFileRequestValidationError) ErrorName() string {
-	return "UploadOssFileRequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e UploadOssFileRequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUploadOssFileRequest.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UploadOssFileRequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UploadOssFileRequestValidationError{}
-
-// Validate checks the field values on UploadOssFileResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *UploadOssFileResponse) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on UploadOssFileResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// UploadOssFileResponseMultiError, or nil if none found.
-func (m *UploadOssFileResponse) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *UploadOssFileResponse) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	// no validation rules for Url
-
-	if len(errors) > 0 {
-		return UploadOssFileResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// UploadOssFileResponseMultiError is an error wrapping multiple validation
-// errors returned by UploadOssFileResponse.ValidateAll() if the designated
-// constraints aren't met.
-type UploadOssFileResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m UploadOssFileResponseMultiError) Error() string {
-	msgs := make([]string, 0, len(m))
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m UploadOssFileResponseMultiError) AllErrors() []error { return m }
-
-// UploadOssFileResponseValidationError is the validation error returned by
-// UploadOssFileResponse.Validate if the designated constraints aren't met.
-type UploadOssFileResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e UploadOssFileResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e UploadOssFileResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e UploadOssFileResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e UploadOssFileResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e UploadOssFileResponseValidationError) ErrorName() string {
-	return "UploadOssFileResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e UploadOssFileResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sUploadOssFileResponse.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = UploadOssFileResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = UploadOssFileResponseValidationError{}

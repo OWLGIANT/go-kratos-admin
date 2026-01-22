@@ -9,6 +9,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -18,6 +19,7 @@ var (
 	_ redact.Redactor
 	_ codes.Code
 	_ status.Status
+	_ timestamppb.Timestamp
 )
 
 // RegisterRedactedOssServiceServer wraps the OssServiceServer with the redacted server and registers the service in GRPC
@@ -38,10 +40,10 @@ type redactedOssServiceServer struct {
 	bypass redact.Bypass
 }
 
-// OssUploadUrl is the redacted wrapper for the actual OssServiceServer.OssUploadUrl method
+// GetUploadPresignedUrl is the redacted wrapper for the actual OssServiceServer.GetUploadPresignedUrl method
 // Unary RPC
-func (s *redactedOssServiceServer) OssUploadUrl(ctx context.Context, in *OssUploadUrlRequest) (*OssUploadUrlResponse, error) {
-	res, err := s.srv.OssUploadUrl(ctx, in)
+func (s *redactedOssServiceServer) GetUploadPresignedUrl(ctx context.Context, in *GetUploadPresignedUrlRequest) (*GetUploadPresignedUrlResponse, error) {
+	res, err := s.srv.GetUploadPresignedUrl(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)
@@ -51,7 +53,7 @@ func (s *redactedOssServiceServer) OssUploadUrl(ctx context.Context, in *OssUplo
 
 // GetDownloadUrl is the redacted wrapper for the actual OssServiceServer.GetDownloadUrl method
 // Unary RPC
-func (s *redactedOssServiceServer) GetDownloadUrl(ctx context.Context, in *GetDownloadUrlRequest) (*GetDownloadUrlResponse, error) {
+func (s *redactedOssServiceServer) GetDownloadUrl(ctx context.Context, in *GetDownloadInfoRequest) (*GetDownloadInfoResponse, error) {
 	res, err := s.srv.GetDownloadUrl(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -82,19 +84,20 @@ func (s *redactedOssServiceServer) DeleteOssFile(ctx context.Context, in *Delete
 	return res, err
 }
 
-// UploadOssFile is the redacted wrapper for the actual OssServiceServer.UploadOssFile method
-// Unary RPC
-func (s *redactedOssServiceServer) UploadOssFile(ctx context.Context, in *UploadOssFileRequest) (*UploadOssFileResponse, error) {
-	res, err := s.srv.UploadOssFile(ctx, in)
-	if !s.bypass.CheckInternal(ctx) {
-		// Apply redaction to the response
-		redact.Apply(res)
+// Redact method implementation for StorageObject
+func (x *StorageObject) Redact() string {
+	if x == nil {
+		return ""
 	}
-	return res, err
+
+	// Safe field: BucketName
+
+	// Safe field: ObjectName
+	return x.String()
 }
 
-// Redact method implementation for OssUploadUrlRequest
-func (x *OssUploadUrlRequest) Redact() string {
+// Redact method implementation for GetUploadPresignedUrlRequest
+func (x *GetUploadPresignedUrlRequest) Redact() string {
 	if x == nil {
 		return ""
 	}
@@ -111,8 +114,8 @@ func (x *OssUploadUrlRequest) Redact() string {
 	return x.String()
 }
 
-// Redact method implementation for OssUploadUrlResponse
-func (x *OssUploadUrlResponse) Redact() string {
+// Redact method implementation for GetUploadPresignedUrlResponse
+func (x *GetUploadPresignedUrlResponse) Redact() string {
 	if x == nil {
 		return ""
 	}
@@ -129,19 +132,57 @@ func (x *OssUploadUrlResponse) Redact() string {
 	return x.String()
 }
 
-// Redact method implementation for GetDownloadUrlRequest
-func (x *GetDownloadUrlRequest) Redact() string {
+// Redact method implementation for GetDownloadInfoRequest
+func (x *GetDownloadInfoRequest) Redact() string {
 	if x == nil {
 		return ""
 	}
+
+	// Safe field: FileId
+
+	// Safe field: StorageObject
+
+	// Safe field: DownloadUrl
+
+	// Safe field: RangeStart
+
+	// Safe field: RangeEnd
+
+	// Safe field: PreferPresignedUrl
+
+	// Safe field: PresignExpireSeconds
+
+	// Safe field: Disposition
+
+	// Safe field: AcceptMime
 	return x.String()
 }
 
-// Redact method implementation for GetDownloadUrlResponse
-func (x *GetDownloadUrlResponse) Redact() string {
+// Redact method implementation for GetDownloadInfoResponse
+func (x *GetDownloadInfoResponse) Redact() string {
 	if x == nil {
 		return ""
 	}
+
+	// Safe field: File
+
+	// Safe field: DownloadUrl
+
+	// Safe field: SourceFileName
+
+	// Safe field: Mime
+
+	// Safe field: Size
+
+	// Safe field: Checksum
+
+	// Safe field: StoragePath
+
+	// Safe field: UpdatedAt
+
+	// Safe field: Headers
+
+	// Safe field: Method
 	return x.String()
 }
 
@@ -186,33 +227,5 @@ func (x *DeleteOssFileResponse) Redact() string {
 	if x == nil {
 		return ""
 	}
-	return x.String()
-}
-
-// Redact method implementation for UploadOssFileRequest
-func (x *UploadOssFileRequest) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: BucketName
-
-	// Safe field: ObjectName
-
-	// Safe field: File
-
-	// Safe field: SourceFileName
-
-	// Safe field: Mime
-	return x.String()
-}
-
-// Redact method implementation for UploadOssFileResponse
-func (x *UploadOssFileResponse) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Url
 	return x.String()
 }

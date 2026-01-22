@@ -25,22 +25,16 @@ const (
 	FieldUpdatedBy = "updated_by"
 	// FieldDeletedBy holds the string denoting the deleted_by field in the database.
 	FieldDeletedBy = "deleted_by"
-	// FieldDescription holds the string denoting the description field in the database.
-	FieldDescription = "description"
 	// FieldSortOrder holds the string denoting the sort_order field in the database.
 	FieldSortOrder = "sort_order"
 	// FieldIsEnabled holds the string denoting the is_enabled field in the database.
 	FieldIsEnabled = "is_enabled"
 	// FieldTenantID holds the string denoting the tenant_id field in the database.
 	FieldTenantID = "tenant_id"
-	// FieldEntryLabel holds the string denoting the entry_label field in the database.
-	FieldEntryLabel = "entry_label"
 	// FieldEntryValue holds the string denoting the entry_value field in the database.
 	FieldEntryValue = "entry_value"
 	// FieldNumericValue holds the string denoting the numeric_value field in the database.
 	FieldNumericValue = "numeric_value"
-	// FieldLanguageCode holds the string denoting the language_code field in the database.
-	FieldLanguageCode = "language_code"
 	// EdgeSysDictTypes holds the string denoting the sys_dict_types edge name in mutations.
 	EdgeSysDictTypes = "sys_dict_types"
 	// Table holds the table name of the dictentry in the database.
@@ -63,14 +57,11 @@ var Columns = []string{
 	FieldCreatedBy,
 	FieldUpdatedBy,
 	FieldDeletedBy,
-	FieldDescription,
 	FieldSortOrder,
 	FieldIsEnabled,
 	FieldTenantID,
-	FieldEntryLabel,
 	FieldEntryValue,
 	FieldNumericValue,
-	FieldLanguageCode,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "sys_dict_entries"
@@ -108,8 +99,6 @@ var (
 	DefaultIsEnabled bool
 	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
 	DefaultTenantID uint32
-	// EntryLabelValidator is a validator for the "entry_label" field. It is called by the builders before save.
-	EntryLabelValidator func(string) error
 	// EntryValueValidator is a validator for the "entry_value" field. It is called by the builders before save.
 	EntryValueValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -154,11 +143,6 @@ func ByDeletedBy(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeletedBy, opts...).ToFunc()
 }
 
-// ByDescription orders the results by the description field.
-func ByDescription(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDescription, opts...).ToFunc()
-}
-
 // BySortOrder orders the results by the sort_order field.
 func BySortOrder(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSortOrder, opts...).ToFunc()
@@ -174,11 +158,6 @@ func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
 }
 
-// ByEntryLabel orders the results by the entry_label field.
-func ByEntryLabel(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldEntryLabel, opts...).ToFunc()
-}
-
 // ByEntryValue orders the results by the entry_value field.
 func ByEntryValue(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEntryValue, opts...).ToFunc()
@@ -187,11 +166,6 @@ func ByEntryValue(opts ...sql.OrderTermOption) OrderOption {
 // ByNumericValue orders the results by the numeric_value field.
 func ByNumericValue(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldNumericValue, opts...).ToFunc()
-}
-
-// ByLanguageCode orders the results by the language_code field.
-func ByLanguageCode(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLanguageCode, opts...).ToFunc()
 }
 
 // BySysDictTypesField orders the results by sys_dict_types field.

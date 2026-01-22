@@ -19,16 +19,16 @@ service DictTypeService {
   // 分页查询字典类型列表
   rpc ListDictType (pagination.PagingRequest) returns (dict.service.v1.ListDictTypeResponse) {
     option (google.api.http) = {
-      get: "/admin/v1/dict-types"
+      get: "/admin/v1/dict/types"
     };
   }
 
   // 查询字典类型详情
   rpc GetDictType (dict.service.v1.GetDictTypeRequest) returns (dict.service.v1.DictType) {
     option (google.api.http) = {
-      get: "/admin/v1/dict-types/{id}"
+      get: "/admin/v1/dict/types/{id}"
       additional_bindings {
-        get: "/admin/v1/dict-types/code/{code}"
+        get: "/admin/v1/dict/types/code/{code}"
       }
     };
   }
@@ -36,7 +36,7 @@ service DictTypeService {
   // 创建字典类型
   rpc CreateDictType (dict.service.v1.CreateDictTypeRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/admin/v1/dict-types"
+      post: "/admin/v1/dict/types"
       body: "*"
     };
   }
@@ -44,7 +44,7 @@ service DictTypeService {
   // 更新字典类型
   rpc UpdateDictType (dict.service.v1.UpdateDictTypeRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/admin/v1/dict-types/{id}"
+      put: "/admin/v1/dict/types/{id}"
       body: "*"
     };
   }
@@ -52,7 +52,7 @@ service DictTypeService {
   // 删除字典类型
   rpc DeleteDictType (dict.service.v1.DeleteDictTypeRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/admin/v1/dict-types"
+      delete: "/admin/v1/dict/types"
     };
   }
 }

@@ -21,7 +21,6 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	UEditorService_UEditorAPI_FullMethodName = "/admin.service.v1.UEditorService/UEditorAPI"
-	UEditorService_UploadFile_FullMethodName = "/admin.service.v1.UEditorService/UploadFile"
 )
 
 // UEditorServiceClient is the client API for UEditorService service.
@@ -32,8 +31,6 @@ const (
 type UEditorServiceClient interface {
 	// UEditor API
 	UEditorAPI(ctx context.Context, in *v1.UEditorRequest, opts ...grpc.CallOption) (*v1.UEditorResponse, error)
-	// UEditor 上传文件
-	UploadFile(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[v1.UEditorUploadRequest, v1.UEditorUploadResponse], error)
 }
 
 type uEditorServiceClient struct {
@@ -54,19 +51,6 @@ func (c *uEditorServiceClient) UEditorAPI(ctx context.Context, in *v1.UEditorReq
 	return out, nil
 }
 
-func (c *uEditorServiceClient) UploadFile(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[v1.UEditorUploadRequest, v1.UEditorUploadResponse], error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &UEditorService_ServiceDesc.Streams[0], UEditorService_UploadFile_FullMethodName, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &grpc.GenericClientStream[v1.UEditorUploadRequest, v1.UEditorUploadResponse]{ClientStream: stream}
-	return x, nil
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type UEditorService_UploadFileClient = grpc.ClientStreamingClient[v1.UEditorUploadRequest, v1.UEditorUploadResponse]
-
 // UEditorServiceServer is the server API for UEditorService service.
 // All implementations must embed UnimplementedUEditorServiceServer
 // for forward compatibility.
@@ -75,8 +59,6 @@ type UEditorService_UploadFileClient = grpc.ClientStreamingClient[v1.UEditorUplo
 type UEditorServiceServer interface {
 	// UEditor API
 	UEditorAPI(context.Context, *v1.UEditorRequest) (*v1.UEditorResponse, error)
-	// UEditor 上传文件
-	UploadFile(grpc.ClientStreamingServer[v1.UEditorUploadRequest, v1.UEditorUploadResponse]) error
 	mustEmbedUnimplementedUEditorServiceServer()
 }
 
@@ -89,9 +71,6 @@ type UnimplementedUEditorServiceServer struct{}
 
 func (UnimplementedUEditorServiceServer) UEditorAPI(context.Context, *v1.UEditorRequest) (*v1.UEditorResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UEditorAPI not implemented")
-}
-func (UnimplementedUEditorServiceServer) UploadFile(grpc.ClientStreamingServer[v1.UEditorUploadRequest, v1.UEditorUploadResponse]) error {
-	return status.Error(codes.Unimplemented, "method UploadFile not implemented")
 }
 func (UnimplementedUEditorServiceServer) mustEmbedUnimplementedUEditorServiceServer() {}
 func (UnimplementedUEditorServiceServer) testEmbeddedByValue()                        {}
@@ -132,13 +111,6 @@ func _UEditorService_UEditorAPI_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UEditorService_UploadFile_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(UEditorServiceServer).UploadFile(&grpc.GenericServerStream[v1.UEditorUploadRequest, v1.UEditorUploadResponse]{ServerStream: stream})
-}
-
-// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type UEditorService_UploadFileServer = grpc.ClientStreamingServer[v1.UEditorUploadRequest, v1.UEditorUploadResponse]
-
 // UEditorService_ServiceDesc is the grpc.ServiceDesc for UEditorService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -151,12 +123,6 @@ var UEditorService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UEditorService_UEditorAPI_Handler,
 		},
 	},
-	Streams: []grpc.StreamDesc{
-		{
-			StreamName:    "UploadFile",
-			Handler:       _UEditorService_UploadFile_Handler,
-			ClientStreams: true,
-		},
-	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "admin/service/v1/i_ueditor.proto",
 }

@@ -36,6 +36,7 @@ type Language struct {
 	NativeName    *string                `protobuf:"bytes,4,opt,name=native_name,json=nativeName,proto3,oneof" json:"native_name,omitempty"`       // 本地语言名称
 	IsDefault     *bool                  `protobuf:"varint,5,opt,name=is_default,json=isDefault,proto3,oneof" json:"is_default,omitempty"`         // 是否为默认语言
 	IsEnabled     *bool                  `protobuf:"varint,6,opt,name=is_enabled,json=isEnabled,proto3,oneof" json:"is_enabled,omitempty"`         // 是否启用
+	SortOrder     *uint32                `protobuf:"varint,7,opt,name=sort_order,json=sortOrder,proto3,oneof" json:"sort_order,omitempty"`         // 排序顺序，值越小越靠前
 	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`       // 创建者ID
 	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`       // 更新者ID
 	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`       // 删除者用户ID
@@ -116,6 +117,13 @@ func (x *Language) GetIsEnabled() bool {
 		return *x.IsEnabled
 	}
 	return false
+}
+
+func (x *Language) GetSortOrder() uint32 {
+	if x != nil && x.SortOrder != nil {
+		return *x.SortOrder
+	}
+	return 0
 }
 
 func (x *Language) GetCreatedBy() uint32 {
@@ -219,6 +227,7 @@ type GetLanguageRequest struct {
 	// Types that are valid to be assigned to QueryBy:
 	//
 	//	*GetLanguageRequest_Id
+	//	*GetLanguageRequest_Code
 	QueryBy       isGetLanguageRequest_QueryBy `protobuf_oneof:"query_by"`
 	ViewMask      *fieldmaskpb.FieldMask       `protobuf:"bytes,100,opt,name=view_mask,json=viewMask,proto3,oneof" json:"view_mask,omitempty"` // 视图字段过滤器，用于控制返回的字段
 	unknownFields protoimpl.UnknownFields
@@ -271,6 +280,15 @@ func (x *GetLanguageRequest) GetId() uint32 {
 	return 0
 }
 
+func (x *GetLanguageRequest) GetCode() string {
+	if x != nil {
+		if x, ok := x.QueryBy.(*GetLanguageRequest_Code); ok {
+			return x.Code
+		}
+	}
+	return ""
+}
+
 func (x *GetLanguageRequest) GetViewMask() *fieldmaskpb.FieldMask {
 	if x != nil {
 		return x.ViewMask
@@ -286,7 +304,13 @@ type GetLanguageRequest_Id struct {
 	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
+type GetLanguageRequest_Code struct {
+	Code string `protobuf:"bytes,2,opt,name=code,proto3,oneof"` // 标准语言代码
+}
+
 func (*GetLanguageRequest_Id) isGetLanguageRequest_QueryBy() {}
+
+func (*GetLanguageRequest_Code) isGetLanguageRequest_QueryBy() {}
 
 // 创建语言 - 请求
 type CreateLanguageRequest struct {
@@ -539,7 +563,7 @@ var File_dict_service_v1_language_proto protoreflect.FileDescriptor
 
 const file_dict_service_v1_language_proto_rawDesc = "" +
 	"\n" +
-	"\x1edict/service/v1/language.proto\x12\x0fdict.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xc7\a\n" +
+	"\x1edict/service/v1/language.proto\x12\x0fdict.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xa3\b\n" +
 	"\bLanguage\x12#\n" +
 	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b语言IDH\x00R\x02id\x88\x01\x01\x12B\n" +
 	"\rlanguage_code\x18\x02 \x01(\tB\x18\xbaG\x15\x92\x02\x12标准语言代码H\x01R\flanguageCode\x88\x01\x01\x12<\n" +
@@ -549,26 +573,29 @@ const file_dict_service_v1_language_proto_rawDesc = "" +
 	"\n" +
 	"is_default\x18\x05 \x01(\bB\x1b\xbaG\x18\x92\x02\x15是否为默认语言H\x04R\tisDefault\x88\x01\x01\x126\n" +
 	"\n" +
-	"is_enabled\x18\x06 \x01(\bB\x12\xbaG\x0f\x92\x02\f是否启用H\x05R\tisEnabled\x88\x01\x01\x125\n" +
+	"is_enabled\x18\x06 \x01(\bB\x12\xbaG\x0f\x92\x02\f是否启用H\x05R\tisEnabled\x88\x01\x01\x12K\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\x06R\tcreatedBy\x88\x01\x01\x125\n" +
+	"sort_order\x18\a \x01(\rB'\xbaG$\x92\x02!排序顺序，值越小越靠前H\x06R\tsortOrder\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\aR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\aR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\bR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\bR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\tR\tcreatedAt\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\tR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\n" +
-	"R\tupdatedAt\x88\x01\x01\x12S\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\n" +
+	"R\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\vR\tdeletedAt\x88\x01\x01B\x05\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\vR\tupdatedAt\x88\x01\x01\x12S\n" +
+	"\n" +
+	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\fR\tdeletedAt\x88\x01\x01B\x05\n" +
 	"\x03_idB\x10\n" +
 	"\x0e_language_codeB\x10\n" +
 	"\x0e_language_nameB\x0e\n" +
 	"\f_native_nameB\r\n" +
 	"\v_is_defaultB\r\n" +
 	"\v_is_enabledB\r\n" +
+	"\v_sort_orderB\r\n" +
 	"\v_created_byB\r\n" +
 	"\v_updated_byB\r\n" +
 	"\v_deleted_byB\r\n" +
@@ -577,10 +604,11 @@ const file_dict_service_v1_language_proto_rawDesc = "" +
 	"\v_deleted_at\"]\n" +
 	"\x14ListLanguageResponse\x12/\n" +
 	"\x05items\x18\x01 \x03(\v2\x19.dict.service.v1.LanguageR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\xc5\x01\n" +
+	"\x05total\x18\x02 \x01(\x04R\x05total\"\xf7\x01\n" +
 	"\x12GetLanguageRequest\x12\x1c\n" +
 	"\x02id\x18\x01 \x01(\rB\n" +
-	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
+	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x120\n" +
+	"\x04code\x18\x02 \x01(\tB\x1a\xbaG\x17\x18\x01\x92\x02\x12标准语言代码H\x00R\x04code\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
 	"\bquery_byB\f\n" +
@@ -601,9 +629,9 @@ const file_dict_service_v1_language_proto_rawDesc = "" +
 	"\x04data\x18\x01 \x03(\v2\x19.dict.service.v1.LanguageR\x04data\"d\n" +
 	"\x1cBatchCreateLanguagesResponse\x12D\n" +
 	"\vcreated_ids\x18\x01 \x03(\x05B#\xbaG \x92\x02\x1d创建成功的语言ID列表R\n" +
-	"createdIds2\xe9\x03\n" +
-	"\x0fLanguageService\x12R\n" +
-	"\fListLanguage\x12\x19.pagination.PagingRequest\x1a%.dict.service.v1.ListLanguageResponse\"\x00\x12G\n" +
+	"createdIds2\xe1\x03\n" +
+	"\x0fLanguageService\x12J\n" +
+	"\x04List\x12\x19.pagination.PagingRequest\x1a%.dict.service.v1.ListLanguageResponse\"\x00\x12G\n" +
 	"\x03Get\x12#.dict.service.v1.GetLanguageRequest\x1a\x19.dict.service.v1.Language\"\x00\x12J\n" +
 	"\x06Create\x12&.dict.service.v1.CreateLanguageRequest\x1a\x16.google.protobuf.Empty\"\x00\x12J\n" +
 	"\x06Update\x12&.dict.service.v1.UpdateLanguageRequest\x1a\x16.google.protobuf.Empty\"\x00\x12J\n" +
@@ -648,13 +676,13 @@ var file_dict_service_v1_language_proto_depIdxs = []int32{
 	0,  // 6: dict.service.v1.UpdateLanguageRequest.data:type_name -> dict.service.v1.Language
 	9,  // 7: dict.service.v1.UpdateLanguageRequest.update_mask:type_name -> google.protobuf.FieldMask
 	0,  // 8: dict.service.v1.BatchCreateLanguagesRequest.data:type_name -> dict.service.v1.Language
-	10, // 9: dict.service.v1.LanguageService.ListLanguage:input_type -> pagination.PagingRequest
+	10, // 9: dict.service.v1.LanguageService.List:input_type -> pagination.PagingRequest
 	2,  // 10: dict.service.v1.LanguageService.Get:input_type -> dict.service.v1.GetLanguageRequest
 	3,  // 11: dict.service.v1.LanguageService.Create:input_type -> dict.service.v1.CreateLanguageRequest
 	4,  // 12: dict.service.v1.LanguageService.Update:input_type -> dict.service.v1.UpdateLanguageRequest
 	5,  // 13: dict.service.v1.LanguageService.Delete:input_type -> dict.service.v1.DeleteLanguageRequest
 	6,  // 14: dict.service.v1.LanguageService.BatchCreate:input_type -> dict.service.v1.BatchCreateLanguagesRequest
-	1,  // 15: dict.service.v1.LanguageService.ListLanguage:output_type -> dict.service.v1.ListLanguageResponse
+	1,  // 15: dict.service.v1.LanguageService.List:output_type -> dict.service.v1.ListLanguageResponse
 	0,  // 16: dict.service.v1.LanguageService.Get:output_type -> dict.service.v1.Language
 	11, // 17: dict.service.v1.LanguageService.Create:output_type -> google.protobuf.Empty
 	11, // 18: dict.service.v1.LanguageService.Update:output_type -> google.protobuf.Empty
@@ -675,6 +703,7 @@ func file_dict_service_v1_language_proto_init() {
 	file_dict_service_v1_language_proto_msgTypes[0].OneofWrappers = []any{}
 	file_dict_service_v1_language_proto_msgTypes[2].OneofWrappers = []any{
 		(*GetLanguageRequest_Id)(nil),
+		(*GetLanguageRequest_Code)(nil),
 	}
 	file_dict_service_v1_language_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}

@@ -24,19 +24,13 @@ func (DictEntry) Annotations() []schema.Annotation {
 			Collation: "utf8mb4_bin",
 		},
 		entsql.WithComments(true),
-		schema.Comment("字典条目表"),
+		schema.Comment("字典项表"),
 	}
 }
 
 // Fields of the DictEntry.
 func (DictEntry) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("entry_label").
-			Comment("字典项的显示标签").
-			NotEmpty().
-			Optional().
-			Nillable(),
-
 		field.String("entry_value").
 			Comment("字典项的实际值").
 			NotEmpty().
@@ -45,11 +39,6 @@ func (DictEntry) Fields() []ent.Field {
 
 		field.Int32("numeric_value").
 			Comment("数值型值").
-			Optional().
-			Nillable(),
-
-		field.String("language_code").
-			Comment("语言代码").
 			Optional().
 			Nillable(),
 	}
@@ -61,7 +50,6 @@ func (DictEntry) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId{},
 		mixin.TimeAt{},
 		mixin.OperatorID{},
-		mixin.Description{},
 		mixin.SortOrder{},
 		mixin.IsEnabled{},
 		mixin.TenantID[uint32]{},
@@ -98,10 +86,6 @@ func (DictEntry) Indexes() []ent.Index {
 		// 单列索引：按 entry_value 快速查询（全局或模糊搜索）
 		index.Fields("entry_value").
 			StorageKey("idx_sys_dict_entries_entry_value"),
-
-		// 单列索引：按语言代码快速过滤
-		index.Fields("language_code").
-			StorageKey("idx_sys_dict_entries_language_code"),
 
 		// 单列索引：按数值字段快速查询/排序
 		index.Fields("numeric_value").

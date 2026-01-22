@@ -483,6 +483,18 @@ func ErrorDownloadFailed(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, FileErrorReason_DOWNLOAD_FAILED.String(), fmt.Sprintf(format, args...))
 }
 
+func IsDeleteFailed(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == FileErrorReason_DELETE_FAILED.String() && e.Code == 500
+}
+
+func ErrorDeleteFailed(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, FileErrorReason_DELETE_FAILED.String(), fmt.Sprintf(format, args...))
+}
+
 // 501
 func IsNotImplemented(err error) bool {
 	if err == nil {

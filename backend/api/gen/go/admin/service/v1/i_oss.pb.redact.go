@@ -19,7 +19,7 @@ var (
 	_ redact.Redactor
 	_ codes.Code
 	_ status.Status
-	_ filepb.OssUploadUrlRequest
+	_ filepb.StorageObject
 )
 
 // RegisterRedactedOssServiceServer wraps the OssServiceServer with the redacted server and registers the service in GRPC
@@ -40,10 +40,10 @@ type redactedOssServiceServer struct {
 	bypass redact.Bypass
 }
 
-// OssUploadUrl is the redacted wrapper for the actual OssServiceServer.OssUploadUrl method
+// GetUploadPresignedUrl is the redacted wrapper for the actual OssServiceServer.GetUploadPresignedUrl method
 // Unary RPC
-func (s *redactedOssServiceServer) OssUploadUrl(ctx context.Context, in *filepb.OssUploadUrlRequest) (*filepb.OssUploadUrlResponse, error) {
-	res, err := s.srv.OssUploadUrl(ctx, in)
+func (s *redactedOssServiceServer) GetUploadPresignedUrl(ctx context.Context, in *filepb.GetUploadPresignedUrlRequest) (*filepb.GetUploadPresignedUrlResponse, error) {
+	res, err := s.srv.GetUploadPresignedUrl(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)
@@ -51,18 +51,35 @@ func (s *redactedOssServiceServer) OssUploadUrl(ctx context.Context, in *filepb.
 	return res, err
 }
 
-// PostUploadFile is the redacted wrapper for the actual OssServiceServer.PostUploadFile method
-// Client streaming
-func (s *redactedOssServiceServer) PostUploadFile(stream grpc.ClientStreamingServer[filepb.UploadOssFileRequest, filepb.UploadOssFileResponse]) error {
-	// Note: Redaction for client streaming is not fully implemented
-	// Streaming methods pass through without redaction
-	return s.srv.PostUploadFile(stream)
+// GetDownloadUrl is the redacted wrapper for the actual OssServiceServer.GetDownloadUrl method
+// Unary RPC
+func (s *redactedOssServiceServer) GetDownloadUrl(ctx context.Context, in *filepb.GetDownloadInfoRequest) (*filepb.GetDownloadInfoResponse, error) {
+	res, err := s.srv.GetDownloadUrl(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
 }
 
-// PutUploadFile is the redacted wrapper for the actual OssServiceServer.PutUploadFile method
-// Client streaming
-func (s *redactedOssServiceServer) PutUploadFile(stream grpc.ClientStreamingServer[filepb.UploadOssFileRequest, filepb.UploadOssFileResponse]) error {
-	// Note: Redaction for client streaming is not fully implemented
-	// Streaming methods pass through without redaction
-	return s.srv.PutUploadFile(stream)
+// ListOssFile is the redacted wrapper for the actual OssServiceServer.ListOssFile method
+// Unary RPC
+func (s *redactedOssServiceServer) ListOssFile(ctx context.Context, in *filepb.ListOssFileRequest) (*filepb.ListOssFileResponse, error) {
+	res, err := s.srv.ListOssFile(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
+}
+
+// DeleteOssFile is the redacted wrapper for the actual OssServiceServer.DeleteOssFile method
+// Unary RPC
+func (s *redactedOssServiceServer) DeleteOssFile(ctx context.Context, in *filepb.DeleteOssFileRequest) (*filepb.DeleteOssFileResponse, error) {
+	res, err := s.srv.DeleteOssFile(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
 }

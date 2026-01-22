@@ -27,29 +27,36 @@ var File_admin_service_v1_i_oss_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_oss_proto_rawDesc = "" +
 	"\n" +
-	"\x1cadmin/service/v1/i_oss.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x19file/service/v1/oss.proto2\x9b\x03\n" +
+	"\x1cadmin/service/v1/i_oss.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x19file/service/v1/oss.proto2\xcf\x04\n" +
 	"\n" +
-	"OssService\x12\x81\x01\n" +
-	"\fOssUploadUrl\x12$.file.service.v1.OssUploadUrlRequest\x1a%.file.service.v1.OssUploadUrlResponse\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/admin/v1/file:upload-url\x12\x83\x01\n" +
-	"\x0ePostUploadFile\x12%.file.service.v1.UploadOssFileRequest\x1a&.file.service.v1.UploadOssFileResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/admin/v1/file:upload(\x01\x12\x82\x01\n" +
-	"\rPutUploadFile\x12%.file.service.v1.UploadOssFileRequest\x1a&.file.service.v1.UploadOssFileResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\x1a\x15/admin/v1/file:upload(\x01B\xb6\x01\n" +
+	"OssService\x12\xa8\x01\n" +
+	"\x15GetUploadPresignedUrl\x12-.file.service.v1.GetUploadPresignedUrlRequest\x1a..file.service.v1.GetUploadPresignedUrlResponse\"0\x82\xd3\xe4\x93\x02*:\x01*\"%/admin/v1/file/oss/upload-presign-url\x12\x8c\x01\n" +
+	"\x0eGetDownloadUrl\x12'.file.service.v1.GetDownloadInfoRequest\x1a(.file.service.v1.GetDownloadInfoResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/admin/v1/file/oss/download-url\x12~\n" +
+	"\vListOssFile\x12#.file.service.v1.ListOssFileRequest\x1a$.file.service.v1.ListOssFileResponse\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/admin/v1/file/oss/file-list\x12\x86\x01\n" +
+	"\rDeleteOssFile\x12%.file.service.v1.DeleteOssFileRequest\x1a&.file.service.v1.DeleteOssFileResponse\"&\x82\xd3\xe4\x93\x02 *\x1e/admin/v1/file/oss/delete-fileB\xb6\x01\n" +
 	"\x14com.admin.service.v1B\tIOssProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_oss_proto_goTypes = []any{
-	(*v1.OssUploadUrlRequest)(nil),   // 0: file.service.v1.OssUploadUrlRequest
-	(*v1.UploadOssFileRequest)(nil),  // 1: file.service.v1.UploadOssFileRequest
-	(*v1.OssUploadUrlResponse)(nil),  // 2: file.service.v1.OssUploadUrlResponse
-	(*v1.UploadOssFileResponse)(nil), // 3: file.service.v1.UploadOssFileResponse
+	(*v1.GetUploadPresignedUrlRequest)(nil),  // 0: file.service.v1.GetUploadPresignedUrlRequest
+	(*v1.GetDownloadInfoRequest)(nil),        // 1: file.service.v1.GetDownloadInfoRequest
+	(*v1.ListOssFileRequest)(nil),            // 2: file.service.v1.ListOssFileRequest
+	(*v1.DeleteOssFileRequest)(nil),          // 3: file.service.v1.DeleteOssFileRequest
+	(*v1.GetUploadPresignedUrlResponse)(nil), // 4: file.service.v1.GetUploadPresignedUrlResponse
+	(*v1.GetDownloadInfoResponse)(nil),       // 5: file.service.v1.GetDownloadInfoResponse
+	(*v1.ListOssFileResponse)(nil),           // 6: file.service.v1.ListOssFileResponse
+	(*v1.DeleteOssFileResponse)(nil),         // 7: file.service.v1.DeleteOssFileResponse
 }
 var file_admin_service_v1_i_oss_proto_depIdxs = []int32{
-	0, // 0: admin.service.v1.OssService.OssUploadUrl:input_type -> file.service.v1.OssUploadUrlRequest
-	1, // 1: admin.service.v1.OssService.PostUploadFile:input_type -> file.service.v1.UploadOssFileRequest
-	1, // 2: admin.service.v1.OssService.PutUploadFile:input_type -> file.service.v1.UploadOssFileRequest
-	2, // 3: admin.service.v1.OssService.OssUploadUrl:output_type -> file.service.v1.OssUploadUrlResponse
-	3, // 4: admin.service.v1.OssService.PostUploadFile:output_type -> file.service.v1.UploadOssFileResponse
-	3, // 5: admin.service.v1.OssService.PutUploadFile:output_type -> file.service.v1.UploadOssFileResponse
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	0, // 0: admin.service.v1.OssService.GetUploadPresignedUrl:input_type -> file.service.v1.GetUploadPresignedUrlRequest
+	1, // 1: admin.service.v1.OssService.GetDownloadUrl:input_type -> file.service.v1.GetDownloadInfoRequest
+	2, // 2: admin.service.v1.OssService.ListOssFile:input_type -> file.service.v1.ListOssFileRequest
+	3, // 3: admin.service.v1.OssService.DeleteOssFile:input_type -> file.service.v1.DeleteOssFileRequest
+	4, // 4: admin.service.v1.OssService.GetUploadPresignedUrl:output_type -> file.service.v1.GetUploadPresignedUrlResponse
+	5, // 5: admin.service.v1.OssService.GetDownloadUrl:output_type -> file.service.v1.GetDownloadInfoResponse
+	6, // 6: admin.service.v1.OssService.ListOssFile:output_type -> file.service.v1.ListOssFileResponse
+	7, // 7: admin.service.v1.OssService.DeleteOssFile:output_type -> file.service.v1.DeleteOssFileResponse
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

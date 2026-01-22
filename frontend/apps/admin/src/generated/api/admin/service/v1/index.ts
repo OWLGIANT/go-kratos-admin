@@ -1240,7 +1240,7 @@ export function createDictEntryServiceClient(
 ): DictEntryService {
   return {
     ListDictEntry(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/dict-entries`; // eslint-disable-line quotes
+      const path = `admin/v1/dict/entries`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       if (request.page) {
@@ -1319,7 +1319,7 @@ export function createDictEntryServiceClient(
       }) as Promise<dictservicev1_ListDictEntryResponse>;
     },
     CreateDictEntry(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/dict-entries`; // eslint-disable-line quotes
+      const path = `admin/v1/dict/entries`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;
@@ -1339,7 +1339,7 @@ export function createDictEntryServiceClient(
       if (!request.id) {
         throw new Error("missing required field request.id");
       }
-      const path = `admin/v1/dict-entries/${request.id}`; // eslint-disable-line quotes
+      const path = `admin/v1/dict/entries/${request.id}`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;
@@ -1356,7 +1356,7 @@ export function createDictEntryServiceClient(
       }) as Promise<wellKnownEmpty>;
     },
     DeleteDictEntry(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/dict-entries`; // eslint-disable-line quotes
+      const path = `admin/v1/dict/entries`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       if (request.ids) {
@@ -1379,23 +1379,22 @@ export function createDictEntryServiceClient(
     },
   };
 }
-// 查询字典条目列表 - 回应
+// 查询字典项列表 - 回应
 export type dictservicev1_ListDictEntryResponse = {
   items: dictservicev1_DictEntry[] | undefined;
   total: number | undefined;
 };
 
-// 字典条目
+// 字典项
 export type dictservicev1_DictEntry = {
   id?: number;
   typeId?: number;
-  entryLabel?: string;
   entryValue?: string;
   numericValue?: number;
-  languageCode?: string;
   isEnabled?: boolean;
   sortOrder?: number;
-  description?: string;
+  i18n: { [key: string]: dictservicev1_DictEntryI18n } | undefined;
+  currentI18n?: dictservicev1_DictEntryI18n;
   tenantId?: number;
   tenantName?: string;
   createdBy?: number;
@@ -1406,12 +1405,18 @@ export type dictservicev1_DictEntry = {
   deletedAt?: wellKnownTimestamp;
 };
 
-// 创建字典条目 - 请求
+// 字典项多语言信息
+export type dictservicev1_DictEntryI18n = {
+  entryLabel?: string;
+  description?: string;
+};
+
+// 创建字典项 - 请求
 export type dictservicev1_CreateDictEntryRequest = {
   data: dictservicev1_DictEntry | undefined;
 };
 
-// 更新字典条目 - 请求
+// 更新字典项 - 请求
 export type dictservicev1_UpdateDictEntryRequest = {
   id: number | undefined;
   data: dictservicev1_DictEntry | undefined;
@@ -1443,7 +1448,7 @@ export function createDictTypeServiceClient(
 ): DictTypeService {
   return {
     ListDictType(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/dict-types`; // eslint-disable-line quotes
+      const path = `admin/v1/dict/types`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       if (request.page) {
@@ -1525,7 +1530,7 @@ export function createDictTypeServiceClient(
       if (!request.id) {
         throw new Error("missing required field request.id");
       }
-      const path = `admin/v1/dict-types/${request.id}`; // eslint-disable-line quotes
+      const path = `admin/v1/dict/types/${request.id}`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       if (request.code) {
@@ -1548,7 +1553,7 @@ export function createDictTypeServiceClient(
       }) as Promise<dictservicev1_DictType>;
     },
     CreateDictType(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/dict-types`; // eslint-disable-line quotes
+      const path = `admin/v1/dict/types`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;
@@ -1568,7 +1573,7 @@ export function createDictTypeServiceClient(
       if (!request.id) {
         throw new Error("missing required field request.id");
       }
-      const path = `admin/v1/dict-types/${request.id}`; // eslint-disable-line quotes
+      const path = `admin/v1/dict/types/${request.id}`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;
@@ -1585,7 +1590,7 @@ export function createDictTypeServiceClient(
       }) as Promise<wellKnownEmpty>;
     },
     DeleteDictType(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/dict-types`; // eslint-disable-line quotes
+      const path = `admin/v1/dict/types`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       if (request.ids) {
@@ -1618,10 +1623,10 @@ export type dictservicev1_ListDictTypeResponse = {
 export type dictservicev1_DictType = {
   id?: number;
   typeCode?: string;
-  typeName?: string;
   isEnabled?: boolean;
   sortOrder?: number;
-  description?: string;
+  i18n: { [key: string]: dictservicev1_DictTypeI18n } | undefined;
+  currentI18n?: dictservicev1_DictTypeI18n;
   tenantId?: number;
   tenantName?: string;
   createdBy?: number;
@@ -1630,6 +1635,12 @@ export type dictservicev1_DictType = {
   createdAt?: wellKnownTimestamp;
   updatedAt?: wellKnownTimestamp;
   deletedAt?: wellKnownTimestamp;
+};
+
+// 字典类型多语言信息
+export type dictservicev1_DictTypeI18n = {
+  typeName?: string;
+  description?: string;
 };
 
 // 查询字典类型详情 - 请求
@@ -1903,6 +1914,206 @@ export type fileservicev1_UpdateFileRequest = {
 // 删除 - 请求
 export type fileservicev1_DeleteFileRequest = {
   id: number | undefined;
+};
+
+// 文件传输服务
+export interface FileTransferService {
+  // 下载文件
+  DownloadFile(request: fileservicev1_DownloadFileRequest): Promise<fileservicev1_DownloadFileResponse>;
+  // 上传文件 PUT 方式
+  PutUploadFile(request: fileservicev1_UploadFileRequest): Promise<fileservicev1_UploadFileResponse>;
+  // 上传文件 POST 方式
+  PostUploadFile(request: fileservicev1_UploadFileRequest): Promise<fileservicev1_UploadFileResponse>;
+}
+
+export function createFileTransferServiceClient(
+  handler: RequestHandler
+): FileTransferService {
+  return {
+    DownloadFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/file/download`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.fileId) {
+        queryParams.push(`fileId=${encodeURIComponent(request.fileId.toString())}`)
+      }
+      if (request.storageObject?.bucketName) {
+        queryParams.push(`storageObject.bucketName=${encodeURIComponent(request.storageObject.bucketName.toString())}`)
+      }
+      if (request.storageObject?.objectName) {
+        queryParams.push(`storageObject.objectName=${encodeURIComponent(request.storageObject.objectName.toString())}`)
+      }
+      if (request.downloadUrl) {
+        queryParams.push(`downloadUrl=${encodeURIComponent(request.downloadUrl.toString())}`)
+      }
+      if (request.rangeStart) {
+        queryParams.push(`rangeStart=${encodeURIComponent(request.rangeStart.toString())}`)
+      }
+      if (request.rangeEnd) {
+        queryParams.push(`rangeEnd=${encodeURIComponent(request.rangeEnd.toString())}`)
+      }
+      if (request.preferPresignedUrl) {
+        queryParams.push(`preferPresignedUrl=${encodeURIComponent(request.preferPresignedUrl.toString())}`)
+      }
+      if (request.presignExpireSeconds) {
+        queryParams.push(`presignExpireSeconds=${encodeURIComponent(request.presignExpireSeconds.toString())}`)
+      }
+      if (request.disposition) {
+        queryParams.push(`disposition=${encodeURIComponent(request.disposition.toString())}`)
+      }
+      if (request.acceptMime) {
+        queryParams.push(`acceptMime=${encodeURIComponent(request.acceptMime.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "FileTransferService",
+        method: "DownloadFile",
+      }) as Promise<fileservicev1_DownloadFileResponse>;
+    },
+    PutUploadFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/file/upload`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "PUT",
+        body,
+      }, {
+        service: "FileTransferService",
+        method: "PutUploadFile",
+      }) as Promise<fileservicev1_UploadFileResponse>;
+    },
+    PostUploadFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/file/upload`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "FileTransferService",
+        method: "PostUploadFile",
+      }) as Promise<fileservicev1_UploadFileResponse>;
+    },
+    UEditorPostUploadFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/ueditor`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "FileTransferService",
+        method: "UEditorPostUploadFile",
+      }) as Promise<fileservicev1_UEditorUploadResponse>;
+    },
+    UEditorPutUploadFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/ueditor`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "PUT",
+        body,
+      }, {
+        service: "FileTransferService",
+        method: "UEditorPutUploadFile",
+      }) as Promise<fileservicev1_UEditorUploadResponse>;
+    },
+  };
+}
+export type fileservicev1_DownloadFileRequest = {
+  fileId?: number;
+  storageObject?: fileservicev1_StorageObject;
+  downloadUrl?: string;
+  // 可选的分段下载范围（闭区间 start，开区间 end；为 0/0 表示全量）
+  rangeStart?: number;
+  rangeEnd?: number;
+  preferPresignedUrl?: boolean;
+  presignExpireSeconds?: number;
+  disposition?: string;
+  acceptMime?: string;
+};
+
+// 对象存储对象
+export type fileservicev1_StorageObject = {
+  bucketName?: string;
+  objectName?: string;
+};
+
+// 文件下载响应
+export type fileservicev1_DownloadFileResponse = {
+  file?: string;
+  downloadUrl?: string;
+  sourceFileName: string | undefined;
+  mime: string | undefined;
+  size: number | undefined;
+  checksum: string | undefined;
+  storagePath: string | undefined;
+  updatedAt?: wellKnownTimestamp;
+};
+
+export type fileservicev1_UploadFileRequest = {
+  bucketName?: string;
+  objectName?: string;
+  file?: string;
+  sourceFileName?: string;
+  mime?: string;
+};
+
+export type fileservicev1_UploadFileResponse = {
+  url: string | undefined;
+};
+
+export type fileservicev1_UEditorUploadRequest = {
+  action?: string;
+  file?: string;
+  sourceFileName?: string;
+  mime?: string;
+};
+
+export type fileservicev1_UEditorUploadResponse = {
+  state?: string;
+  url?: string;
+  title?: string;
+  original?: string;
+  type?: string;
+  size?: number;
+  list: fileservicev1_UEditorUploadResponse_Item[] | undefined;
+};
+
+export type fileservicev1_UEditorUploadResponse_Item = {
+  state: string | undefined;
+  url?: string;
+  title?: string;
+  original?: string;
+  type?: string;
+  size?: number;
 };
 
 // 站内信消息管理服务
@@ -2580,6 +2791,259 @@ export type internal_messageservicev1_DeleteNotificationFromInboxRequest = {
 export type internal_messageservicev1_MarkNotificationAsReadRequest = {
   userId: number | undefined;
   recipientIds: number[] | undefined;
+};
+
+// 语言管理服务
+export interface LanguageService {
+  // 分页查询语言列表
+  List(request: pagination_PagingRequest): Promise<dictservicev1_ListLanguageResponse>;
+  // 查询语言详情
+  Get(request: dictservicev1_GetLanguageRequest): Promise<dictservicev1_Language>;
+  // 创建语言
+  Create(request: dictservicev1_CreateLanguageRequest): Promise<wellKnownEmpty>;
+  // 更新语言
+  Update(request: dictservicev1_UpdateLanguageRequest): Promise<wellKnownEmpty>;
+  // 删除语言
+  Delete(request: dictservicev1_DeleteLanguageRequest): Promise<wellKnownEmpty>;
+  // 批量创建语言
+  BatchCreate(request: dictservicev1_BatchCreateLanguagesRequest): Promise<wellKnownEmpty>;
+}
+
+export function createLanguageServiceClient(
+  handler: RequestHandler
+): LanguageService {
+  return {
+    List(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/dict/langs`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
+      }
+      if (request.pageSize) {
+        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
+      }
+      if (request.offset) {
+        queryParams.push(`offset=${encodeURIComponent(request.offset.toString())}`)
+      }
+      if (request.limit) {
+        queryParams.push(`limit=${encodeURIComponent(request.limit.toString())}`)
+      }
+      if (request.token) {
+        queryParams.push(`token=${encodeURIComponent(request.token.toString())}`)
+      }
+      if (request.noPaging) {
+        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
+      }
+      if (request.query) {
+        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(`filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(`filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
+      }
+      if (request.fieldMask) {
+        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "LanguageService",
+        method: "List",
+      }) as Promise<dictservicev1_ListLanguageResponse>;
+    },
+    Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/dict/langs/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.code) {
+        queryParams.push(`code=${encodeURIComponent(request.code.toString())}`)
+      }
+      if (request.viewMask) {
+        queryParams.push(`viewMask=${encodeURIComponent(request.viewMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "LanguageService",
+        method: "Get",
+      }) as Promise<dictservicev1_Language>;
+    },
+    Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/dict/langs`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "LanguageService",
+        method: "Create",
+      }) as Promise<wellKnownEmpty>;
+    },
+    Update(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/dict/langs/${request.id}`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "PUT",
+        body,
+      }, {
+        service: "LanguageService",
+        method: "Update",
+      }) as Promise<wellKnownEmpty>;
+    },
+    Delete(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/dict/langs`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.id) {
+        queryParams.push(`id=${encodeURIComponent(request.id.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "DELETE",
+        body,
+      }, {
+        service: "LanguageService",
+        method: "Delete",
+      }) as Promise<wellKnownEmpty>;
+    },
+    BatchCreate(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/dict/langs/batch`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "LanguageService",
+        method: "BatchCreate",
+      }) as Promise<wellKnownEmpty>;
+    },
+  };
+}
+// 语言列表 - 答复
+export type dictservicev1_ListLanguageResponse = {
+  items: dictservicev1_Language[] | undefined;
+  total: number | undefined;
+};
+
+// 语言
+export type dictservicev1_Language = {
+  id?: number;
+  languageCode?: string;
+  languageName?: string;
+  nativeName?: string;
+  isDefault?: boolean;
+  isEnabled?: boolean;
+  sortOrder?: number;
+  createdBy?: number;
+  updatedBy?: number;
+  deletedBy?: number;
+  createdAt?: wellKnownTimestamp;
+  updatedAt?: wellKnownTimestamp;
+  deletedAt?: wellKnownTimestamp;
+};
+
+// 语言数据 - 请求
+export type dictservicev1_GetLanguageRequest = {
+  id?: number;
+  code?: string;
+  viewMask?: wellKnownFieldMask;
+};
+
+// 创建语言 - 请求
+export type dictservicev1_CreateLanguageRequest = {
+  data: dictservicev1_Language | undefined;
+};
+
+// 更新语言 - 请求
+export type dictservicev1_UpdateLanguageRequest = {
+  id: number | undefined;
+  data: dictservicev1_Language | undefined;
+  updateMask: wellKnownFieldMask | undefined;
+  allowMissing?: boolean;
+};
+
+// 删除语言 - 请求
+export type dictservicev1_DeleteLanguageRequest = {
+  id: number | undefined;
+};
+
+export type dictservicev1_BatchCreateLanguagesRequest = {
+  data: dictservicev1_Language[] | undefined;
 };
 
 // 登录审计日志管理服务
@@ -3702,15 +4166,21 @@ export type userservicev1_DeleteOrgUnitRequest = {
 // OSS服务
 export interface OssService {
   // 获取对象存储（OSS）上传用的预签名链接
-  OssUploadUrl(request: fileservicev1_OssUploadUrlRequest): Promise<fileservicev1_OssUploadUrlResponse>;
+  GetUploadPresignedUrl(request: fileservicev1_GetUploadPresignedUrlRequest): Promise<fileservicev1_GetUploadPresignedUrlResponse>;
+  // 获取对象存储（OSS）下载链接
+  GetDownloadUrl(request: fileservicev1_GetDownloadInfoRequest): Promise<fileservicev1_GetDownloadInfoResponse>;
+  // 获取文件夹下面的文件列表
+  ListOssFile(request: fileservicev1_ListOssFileRequest): Promise<fileservicev1_ListOssFileResponse>;
+  // 删除一个文件
+  DeleteOssFile(request: fileservicev1_DeleteOssFileRequest): Promise<fileservicev1_DeleteOssFileResponse>;
 }
 
 export function createOssServiceClient(
   handler: RequestHandler
 ): OssService {
   return {
-    OssUploadUrl(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/file:upload-url`; // eslint-disable-line quotes
+    GetUploadPresignedUrl(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/file/oss/upload-presign-url`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;
@@ -3723,48 +4193,110 @@ export function createOssServiceClient(
         body,
       }, {
         service: "OssService",
-        method: "OssUploadUrl",
-      }) as Promise<fileservicev1_OssUploadUrlResponse>;
+        method: "GetUploadPresignedUrl",
+      }) as Promise<fileservicev1_GetUploadPresignedUrlResponse>;
     },
-    PostUploadFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/file:upload`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
+    GetDownloadUrl(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/file/oss/download-url`; // eslint-disable-line quotes
+      const body = null;
       const queryParams: string[] = [];
+      if (request.fileId) {
+        queryParams.push(`fileId=${encodeURIComponent(request.fileId.toString())}`)
+      }
+      if (request.storageObject?.bucketName) {
+        queryParams.push(`storageObject.bucketName=${encodeURIComponent(request.storageObject.bucketName.toString())}`)
+      }
+      if (request.storageObject?.objectName) {
+        queryParams.push(`storageObject.objectName=${encodeURIComponent(request.storageObject.objectName.toString())}`)
+      }
+      if (request.downloadUrl) {
+        queryParams.push(`downloadUrl=${encodeURIComponent(request.downloadUrl.toString())}`)
+      }
+      if (request.rangeStart) {
+        queryParams.push(`rangeStart=${encodeURIComponent(request.rangeStart.toString())}`)
+      }
+      if (request.rangeEnd) {
+        queryParams.push(`rangeEnd=${encodeURIComponent(request.rangeEnd.toString())}`)
+      }
+      if (request.preferPresignedUrl) {
+        queryParams.push(`preferPresignedUrl=${encodeURIComponent(request.preferPresignedUrl.toString())}`)
+      }
+      if (request.presignExpireSeconds) {
+        queryParams.push(`presignExpireSeconds=${encodeURIComponent(request.presignExpireSeconds.toString())}`)
+      }
+      if (request.disposition) {
+        queryParams.push(`disposition=${encodeURIComponent(request.disposition.toString())}`)
+      }
+      if (request.acceptMime) {
+        queryParams.push(`acceptMime=${encodeURIComponent(request.acceptMime.toString())}`)
+      }
       let uri = path;
       if (queryParams.length > 0) {
         uri += `?${queryParams.join("&")}`
       }
       return handler({
         path: uri,
-        method: "POST",
+        method: "GET",
         body,
       }, {
         service: "OssService",
-        method: "PostUploadFile",
-      }) as Promise<fileservicev1_UploadOssFileResponse>;
+        method: "GetDownloadUrl",
+      }) as Promise<fileservicev1_GetDownloadInfoResponse>;
     },
-    PutUploadFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/file:upload`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
+    ListOssFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/file/oss/file-list`; // eslint-disable-line quotes
+      const body = null;
       const queryParams: string[] = [];
+      if (request.bucketName) {
+        queryParams.push(`bucketName=${encodeURIComponent(request.bucketName.toString())}`)
+      }
+      if (request.folder) {
+        queryParams.push(`folder=${encodeURIComponent(request.folder.toString())}`)
+      }
+      if (request.recursive) {
+        queryParams.push(`recursive=${encodeURIComponent(request.recursive.toString())}`)
+      }
       let uri = path;
       if (queryParams.length > 0) {
         uri += `?${queryParams.join("&")}`
       }
       return handler({
         path: uri,
-        method: "PUT",
+        method: "GET",
         body,
       }, {
         service: "OssService",
-        method: "PutUploadFile",
-      }) as Promise<fileservicev1_UploadOssFileResponse>;
+        method: "ListOssFile",
+      }) as Promise<fileservicev1_ListOssFileResponse>;
+    },
+    DeleteOssFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/file/oss/delete-file`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.bucketName) {
+        queryParams.push(`bucketName=${encodeURIComponent(request.bucketName.toString())}`)
+      }
+      if (request.objectName) {
+        queryParams.push(`objectName=${encodeURIComponent(request.objectName.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "DELETE",
+        body,
+      }, {
+        service: "OssService",
+        method: "DeleteOssFile",
+      }) as Promise<fileservicev1_DeleteOssFileResponse>;
     },
   };
 }
 // 获取对象存储上传链接 - 请求
-export type fileservicev1_OssUploadUrlRequest = {
-  method: fileservicev1_OssUploadUrlRequest_Method | undefined;
+export type fileservicev1_GetUploadPresignedUrlRequest = {
+  method: fileservicev1_GetUploadPresignedUrlRequest_Method | undefined;
   contentType?: string;
   bucketName?: string;
   filePath?: string;
@@ -3772,11 +4304,11 @@ export type fileservicev1_OssUploadUrlRequest = {
 };
 
 // 前端上传文件所用的HTTP方法
-export type fileservicev1_OssUploadUrlRequest_Method =
+export type fileservicev1_GetUploadPresignedUrlRequest_Method =
   | "Put"
   | "Post";
 // 获取对象存储上传链接 - 回应
-export type fileservicev1_OssUploadUrlResponse = {
+export type fileservicev1_GetUploadPresignedUrlResponse = {
   uploadUrl: string | undefined;
   downloadUrl: string | undefined;
   bucketName?: string;
@@ -3784,16 +4316,49 @@ export type fileservicev1_OssUploadUrlResponse = {
   formData: { [key: string]: string } | undefined;
 };
 
-export type fileservicev1_UploadOssFileRequest = {
-  bucketName?: string;
-  objectName?: string;
-  file?: string;
-  sourceFileName?: string;
-  mime?: string;
+export type fileservicev1_GetDownloadInfoRequest = {
+  fileId?: number;
+  storageObject?: fileservicev1_StorageObject;
+  downloadUrl?: string;
+  // 可选的分段下载范围（闭区间 start，开区间 end；为 0/0 表示全量）
+  rangeStart?: number;
+  rangeEnd?: number;
+  preferPresignedUrl?: boolean;
+  presignExpireSeconds?: number;
+  disposition?: string;
+  // 客户端期望的 MIME 类型（可用于后端选择或转换）
+  acceptMime?: string;
 };
 
-export type fileservicev1_UploadOssFileResponse = {
-  url: string | undefined;
+export type fileservicev1_GetDownloadInfoResponse = {
+  file?: string;
+  downloadUrl?: string;
+  sourceFileName: string | undefined;
+  mime: string | undefined;
+  size: number | undefined;
+  checksum: string | undefined;
+  storagePath: string | undefined;
+  updatedAt?: wellKnownTimestamp;
+  headers: { [key: string]: string } | undefined;
+  method?: string;
+};
+
+export type fileservicev1_ListOssFileRequest = {
+  bucketName?: string;
+  folder?: string;
+  recursive?: boolean;
+};
+
+export type fileservicev1_ListOssFileResponse = {
+  files: string[] | undefined;
+};
+
+export type fileservicev1_DeleteOssFileRequest = {
+  bucketName?: string;
+  objectName?: string;
+};
+
+export type fileservicev1_DeleteOssFileResponse = {
 };
 
 // 权限点管理服务
@@ -5922,23 +6487,6 @@ export function createUEditorServiceClient(
         method: "UEditorAPI",
       }) as Promise<fileservicev1_UEditorResponse>;
     },
-    UploadFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/ueditor`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "UEditorService",
-        method: "UploadFile",
-      }) as Promise<fileservicev1_UEditorUploadResponse>;
-    },
   };
 }
 export type fileservicev1_UEditorRequest = {
@@ -6012,32 +6560,6 @@ export type fileservicev1_UEditorResponse_FormulaConfig = {
 export type fileservicev1_UEditorResponse_Item = {
   url: string | undefined;
   mtime: number | undefined;
-};
-
-export type fileservicev1_UEditorUploadRequest = {
-  action?: string;
-  file?: string;
-  sourceFileName?: string;
-  mime?: string;
-};
-
-export type fileservicev1_UEditorUploadResponse = {
-  state?: string;
-  url?: string;
-  title?: string;
-  original?: string;
-  type?: string;
-  size?: number;
-  list: fileservicev1_UEditorUploadResponse_Item[] | undefined;
-};
-
-export type fileservicev1_UEditorUploadResponse_Item = {
-  state: string | undefined;
-  url?: string;
-  title?: string;
-  original?: string;
-  type?: string;
-  size?: number;
 };
 
 // 用户管理服务

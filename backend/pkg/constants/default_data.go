@@ -1,6 +1,8 @@
 package constants
 
 import (
+	dictV1 "go-wind-admin/api/gen/go/dict/service/v1"
+
 	"github.com/tx7do/go-utils/trans"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
@@ -108,7 +110,9 @@ var DefaultPermissions = []*permissionV1.Permission{
 			90, 91, 92, 93, 94, 95, 96, 97, 98, 99,
 			100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
 			110, 111, 112, 113, 114, 115, 116, 117, 118, 119,
-			120, 121, 122, 123, 124, 125, 126, 127, 128,
+			120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
+			130, 131, 132, 133, 134, 135, 136, 137, 138, 139,
+			140,
 		},
 	},
 	{
@@ -255,4 +259,15 @@ var DefaultMemberships = []*userV1.Membership{
 		IsPrimary: trans.Ptr(true),
 		RoleIds:   []uint32{1},
 	},
+}
+
+// DefaultLanguages 系统初始化默认语言数据
+var DefaultLanguages = []*dictV1.Language{
+	{LanguageCode: trans.Ptr("zh-CN"), LanguageName: trans.Ptr("中文（简体）"), NativeName: trans.Ptr("简体中文"), IsDefault: trans.Ptr(true), IsEnabled: trans.Ptr(true)},
+	{LanguageCode: trans.Ptr("zh-TW"), LanguageName: trans.Ptr("中文（繁体）"), NativeName: trans.Ptr("繁體中文"), IsDefault: trans.Ptr(false), IsEnabled: trans.Ptr(true)},
+	{LanguageCode: trans.Ptr("en-US"), LanguageName: trans.Ptr("英语"), NativeName: trans.Ptr("English"), IsDefault: trans.Ptr(false), IsEnabled: trans.Ptr(true)},
+	{LanguageCode: trans.Ptr("ja-JP"), LanguageName: trans.Ptr("日语"), NativeName: trans.Ptr("日本語"), IsDefault: trans.Ptr(false), IsEnabled: trans.Ptr(true)},
+	{LanguageCode: trans.Ptr("ko-KR"), LanguageName: trans.Ptr("韩语"), NativeName: trans.Ptr("한국어"), IsDefault: trans.Ptr(false), IsEnabled: trans.Ptr(true)},
+	{LanguageCode: trans.Ptr("es-ES"), LanguageName: trans.Ptr("西班牙语"), NativeName: trans.Ptr("Español"), IsDefault: trans.Ptr(false), IsEnabled: trans.Ptr(true)},
+	{LanguageCode: trans.Ptr("fr-FR"), LanguageName: trans.Ptr("法语"), NativeName: trans.Ptr("Français"), IsDefault: trans.Ptr(false), IsEnabled: trans.Ptr(true)},
 }

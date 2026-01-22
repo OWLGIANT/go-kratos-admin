@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
@@ -28,42 +27,18 @@ func NewOssService(ctx *bootstrap.Context, mc *oss.MinIOClient) *OssService {
 	}
 }
 
-func (s *OssService) OssUploadUrl(ctx context.Context, req *fileV1.OssUploadUrlRequest) (*fileV1.OssUploadUrlResponse, error) {
-	return s.mc.OssUploadUrl(ctx, req)
+func (s *OssService) GetUploadPresignedUrl(ctx context.Context, req *fileV1.GetUploadPresignedUrlRequest) (*fileV1.GetUploadPresignedUrlResponse, error) {
+	return s.mc.GetUploadPresignedUrl(ctx, req)
 }
 
-func (s *OssService) PostUploadFile(ctx context.Context, req *fileV1.UploadOssFileRequest) (*fileV1.UploadOssFileResponse, error) {
-	if req.File == nil {
-		return nil, fileV1.ErrorUploadFailed("unknown fileData")
-	}
-
-	if req.BucketName == nil {
-		req.BucketName = trans.Ptr(s.mc.ContentTypeToBucketName(req.GetMime()))
-	}
-	if req.ObjectName == nil {
-		req.ObjectName = trans.Ptr(req.GetSourceFileName())
-	}
-
-	downloadUrl, err := s.mc.UploadFile(ctx, req.GetBucketName(), req.GetObjectName(), req.GetFile())
-	return &fileV1.UploadOssFileResponse{
-		Url: downloadUrl,
-	}, err
+func (s *OssService) ListOssFile(ctx context.Context, req *fileV1.ListOssFileRequest) (*fileV1.ListOssFileResponse, error) {
+	return s.mc.ListFile(ctx, req)
 }
 
-func (s *OssService) PutUploadFile(ctx context.Context, req *fileV1.UploadOssFileRequest) (*fileV1.UploadOssFileResponse, error) {
-	if req.File == nil {
-		return nil, fileV1.ErrorUploadFailed("unknown fileData")
-	}
+func (s *OssService) DeleteOssFile(ctx context.Context, req *fileV1.DeleteOssFileRequest) (*fileV1.DeleteOssFileResponse, error) {
+	return s.mc.DeleteFile(ctx, req)
+}
 
-	if req.BucketName == nil {
-		req.BucketName = trans.Ptr(s.mc.ContentTypeToBucketName(req.GetMime()))
-	}
-	if req.ObjectName == nil {
-		req.ObjectName = trans.Ptr(req.GetSourceFileName())
-	}
-
-	downloadUrl, err := s.mc.UploadFile(ctx, req.GetBucketName(), req.GetObjectName(), req.GetFile())
-	return &fileV1.UploadOssFileResponse{
-		Url: downloadUrl,
-	}, err
+func (s *OssService) GetDownloadUrl(ctx context.Context, req *fileV1.GetDownloadInfoRequest) (*fileV1.GetDownloadInfoResponse, error) {
+	return s.mc.GetDownloadUrl(ctx, req)
 }

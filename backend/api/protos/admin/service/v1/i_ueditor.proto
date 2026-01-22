@@ -16,12 +16,4 @@ service UEditorService {
       get: "/admin/v1/ueditor"
     };
   }
-
-  // UEditor 上传文件
-  rpc UploadFile (stream file.service.v1.UEditorUploadRequest) returns (file.service.v1.UEditorUploadResponse) {
-    option (google.api.http) = {
-      post: "/admin/v1/ueditor"
-      body: "*"
-    };
-  }
 }

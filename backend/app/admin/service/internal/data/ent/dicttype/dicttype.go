@@ -29,16 +29,14 @@ const (
 	FieldIsEnabled = "is_enabled"
 	// FieldSortOrder holds the string denoting the sort_order field in the database.
 	FieldSortOrder = "sort_order"
-	// FieldDescription holds the string denoting the description field in the database.
-	FieldDescription = "description"
 	// FieldTenantID holds the string denoting the tenant_id field in the database.
 	FieldTenantID = "tenant_id"
 	// FieldTypeCode holds the string denoting the type_code field in the database.
 	FieldTypeCode = "type_code"
-	// FieldTypeName holds the string denoting the type_name field in the database.
-	FieldTypeName = "type_name"
 	// EdgeEntries holds the string denoting the entries edge name in mutations.
 	EdgeEntries = "entries"
+	// EdgeI18ns holds the string denoting the i18ns edge name in mutations.
+	EdgeI18ns = "i18ns"
 	// Table holds the table name of the dicttype in the database.
 	Table = "sys_dict_types"
 	// EntriesTable is the table that holds the entries relation/edge.
@@ -48,6 +46,13 @@ const (
 	EntriesInverseTable = "sys_dict_entries"
 	// EntriesColumn is the table column denoting the entries relation/edge.
 	EntriesColumn = "type_id"
+	// I18nsTable is the table that holds the i18ns relation/edge.
+	I18nsTable = "sys_dict_type_i18n"
+	// I18nsInverseTable is the table name for the DictTypeI18n entity.
+	// It exists in this package in order to avoid circular dependency with the "dicttypei18n" package.
+	I18nsInverseTable = "sys_dict_type_i18n"
+	// I18nsColumn is the table column denoting the i18ns relation/edge.
+	I18nsColumn = "type_id"
 )
 
 // Columns holds all SQL columns for dicttype fields.
@@ -61,10 +66,8 @@ var Columns = []string{
 	FieldDeletedBy,
 	FieldIsEnabled,
 	FieldSortOrder,
-	FieldDescription,
 	FieldTenantID,
 	FieldTypeCode,
-	FieldTypeName,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -93,8 +96,6 @@ var (
 	DefaultTenantID uint32
 	// TypeCodeValidator is a validator for the "type_code" field. It is called by the builders before save.
 	TypeCodeValidator func(string) error
-	// TypeNameValidator is a validator for the "type_name" field. It is called by the builders before save.
-	TypeNameValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
@@ -147,11 +148,6 @@ func BySortOrder(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSortOrder, opts...).ToFunc()
 }
 
-// ByDescription orders the results by the description field.
-func ByDescription(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDescription, opts...).ToFunc()
-}
-
 // ByTenantID orders the results by the tenant_id field.
 func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
@@ -160,11 +156,6 @@ func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 // ByTypeCode orders the results by the type_code field.
 func ByTypeCode(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTypeCode, opts...).ToFunc()
-}
-
-// ByTypeName orders the results by the type_name field.
-func ByTypeName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldTypeName, opts...).ToFunc()
 }
 
 // ByEntriesCount orders the results by entries count.
@@ -180,10 +171,31 @@ func ByEntries(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newEntriesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByI18nsCount orders the results by i18ns count.
+func ByI18nsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newI18nsStep(), opts...)
+	}
+}
+
+// ByI18ns orders the results by i18ns terms.
+func ByI18ns(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newI18nsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newEntriesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(EntriesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, true, EntriesTable, EntriesColumn),
+	)
+}
+func newI18nsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(I18nsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, true, I18nsTable, I18nsColumn),
 	)
 }

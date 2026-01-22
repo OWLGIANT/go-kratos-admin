@@ -849,11 +849,11 @@ var File_user_service_v1_role_proto protoreflect.FileDescriptor
 
 const file_user_service_v1_role_proto_rawDesc = "" +
 	"\n" +
-	"\x1auser/service/v1/role.proto\x12\x0fuser.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x9d\v\n" +
+	"\x1auser/service/v1/role.proto\x12\x0fuser.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x96\v\n" +
 	"\x04Role\x12#\n" +
 	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b角色IDH\x00R\x02id\x88\x01\x01\x12+\n" +
-	"\x04name\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f角色名称H\x01R\x04name\x88\x01\x01\x12V\n" +
-	"\x04code\x18\x03 \x01(\tB=\xbaG:\x92\x027角色标识码（如：platform:admin, tenant:admin）H\x02R\x04code\x88\x01\x01\x12K\n" +
+	"\x04name\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f角色名称H\x01R\x04name\x88\x01\x01\x12O\n" +
+	"\x04code\x18\x03 \x01(\tB6\xbaG3:\x1f\x12\x1dplatform:admin, tenant:admin1\x92\x02\x0f角色标识码H\x02R\x04code\x88\x01\x01\x12K\n" +
 	"\n" +
 	"sort_order\x18\x04 \x01(\rB'\xbaG$\x92\x02!排序顺序，值越小越靠前H\x03R\tsortOrder\x88\x01\x01\x12G\n" +
 	"\x06status\x18\x05 \x01(\x0e2\x1c.user.service.v1.Role.StatusB\f\xbaG\t\x92\x02\x06状态H\x04R\x06status\x88\x01\x01\x123\n" +

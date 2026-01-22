@@ -27,7 +27,7 @@ type LoginPolicyService struct {
 
 func NewLoginPolicyService(ctx *bootstrap.Context, repo *data.LoginPolicyRepo) *LoginPolicyService {
 	return &LoginPolicyService{
-		log:  ctx.NewLoggerHelper("admlogin-policy/service/admin-service"),
+		log:  ctx.NewLoggerHelper("login-policy/service/admin-service"),
 		repo: repo,
 	}
 }

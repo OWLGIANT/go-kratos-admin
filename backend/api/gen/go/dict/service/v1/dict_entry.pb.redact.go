@@ -102,19 +102,17 @@ func (x *DictEntry) Redact() string {
 
 	// Safe field: TypeId
 
-	// Safe field: EntryLabel
-
 	// Safe field: EntryValue
 
 	// Safe field: NumericValue
-
-	// Safe field: LanguageCode
 
 	// Safe field: IsEnabled
 
 	// Safe field: SortOrder
 
-	// Safe field: Description
+	// Safe field: I18N
+
+	// Safe field: CurrentI18N
 
 	// Safe field: TenantId
 
@@ -134,6 +132,18 @@ func (x *DictEntry) Redact() string {
 	return x.String()
 }
 
+// Redact method implementation for DictEntryI18N
+func (x *DictEntryI18N) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: EntryLabel
+
+	// Safe field: Description
+	return x.String()
+}
+
 // Redact method implementation for ListDictEntryResponse
 func (x *ListDictEntryResponse) Redact() string {
 	if x == nil {
@@ -143,6 +153,20 @@ func (x *ListDictEntryResponse) Redact() string {
 	// Safe field: Items
 
 	// Safe field: Total
+	return x.String()
+}
+
+// Redact method implementation for GetDictEntryRequest
+func (x *GetDictEntryRequest) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: Id
+
+	// Safe field: Value
+
+	// Safe field: ViewMask
 	return x.String()
 }
 

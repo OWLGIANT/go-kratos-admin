@@ -95,11 +95,6 @@ func SortOrder(v uint32) predicate.DictType {
 	return predicate.DictType(sql.FieldEQ(FieldSortOrder, v))
 }
 
-// Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
-func Description(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldEQ(FieldDescription, v))
-}
-
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
 func TenantID(v uint32) predicate.DictType {
 	return predicate.DictType(sql.FieldEQ(FieldTenantID, v))
@@ -108,11 +103,6 @@ func TenantID(v uint32) predicate.DictType {
 // TypeCode applies equality check predicate on the "type_code" field. It's identical to TypeCodeEQ.
 func TypeCode(v string) predicate.DictType {
 	return predicate.DictType(sql.FieldEQ(FieldTypeCode, v))
-}
-
-// TypeName applies equality check predicate on the "type_name" field. It's identical to TypeNameEQ.
-func TypeName(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldEQ(FieldTypeName, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -485,81 +475,6 @@ func SortOrderNotNil() predicate.DictType {
 	return predicate.DictType(sql.FieldNotNull(FieldSortOrder))
 }
 
-// DescriptionEQ applies the EQ predicate on the "description" field.
-func DescriptionEQ(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldEQ(FieldDescription, v))
-}
-
-// DescriptionNEQ applies the NEQ predicate on the "description" field.
-func DescriptionNEQ(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldNEQ(FieldDescription, v))
-}
-
-// DescriptionIn applies the In predicate on the "description" field.
-func DescriptionIn(vs ...string) predicate.DictType {
-	return predicate.DictType(sql.FieldIn(FieldDescription, vs...))
-}
-
-// DescriptionNotIn applies the NotIn predicate on the "description" field.
-func DescriptionNotIn(vs ...string) predicate.DictType {
-	return predicate.DictType(sql.FieldNotIn(FieldDescription, vs...))
-}
-
-// DescriptionGT applies the GT predicate on the "description" field.
-func DescriptionGT(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldGT(FieldDescription, v))
-}
-
-// DescriptionGTE applies the GTE predicate on the "description" field.
-func DescriptionGTE(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldGTE(FieldDescription, v))
-}
-
-// DescriptionLT applies the LT predicate on the "description" field.
-func DescriptionLT(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldLT(FieldDescription, v))
-}
-
-// DescriptionLTE applies the LTE predicate on the "description" field.
-func DescriptionLTE(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldLTE(FieldDescription, v))
-}
-
-// DescriptionContains applies the Contains predicate on the "description" field.
-func DescriptionContains(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldContains(FieldDescription, v))
-}
-
-// DescriptionHasPrefix applies the HasPrefix predicate on the "description" field.
-func DescriptionHasPrefix(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldHasPrefix(FieldDescription, v))
-}
-
-// DescriptionHasSuffix applies the HasSuffix predicate on the "description" field.
-func DescriptionHasSuffix(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldHasSuffix(FieldDescription, v))
-}
-
-// DescriptionIsNil applies the IsNil predicate on the "description" field.
-func DescriptionIsNil() predicate.DictType {
-	return predicate.DictType(sql.FieldIsNull(FieldDescription))
-}
-
-// DescriptionNotNil applies the NotNil predicate on the "description" field.
-func DescriptionNotNil() predicate.DictType {
-	return predicate.DictType(sql.FieldNotNull(FieldDescription))
-}
-
-// DescriptionEqualFold applies the EqualFold predicate on the "description" field.
-func DescriptionEqualFold(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldEqualFold(FieldDescription, v))
-}
-
-// DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
-func DescriptionContainsFold(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldContainsFold(FieldDescription, v))
-}
-
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
 func TenantIDEQ(v uint32) predicate.DictType {
 	return predicate.DictType(sql.FieldEQ(FieldTenantID, v))
@@ -685,81 +600,6 @@ func TypeCodeContainsFold(v string) predicate.DictType {
 	return predicate.DictType(sql.FieldContainsFold(FieldTypeCode, v))
 }
 
-// TypeNameEQ applies the EQ predicate on the "type_name" field.
-func TypeNameEQ(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldEQ(FieldTypeName, v))
-}
-
-// TypeNameNEQ applies the NEQ predicate on the "type_name" field.
-func TypeNameNEQ(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldNEQ(FieldTypeName, v))
-}
-
-// TypeNameIn applies the In predicate on the "type_name" field.
-func TypeNameIn(vs ...string) predicate.DictType {
-	return predicate.DictType(sql.FieldIn(FieldTypeName, vs...))
-}
-
-// TypeNameNotIn applies the NotIn predicate on the "type_name" field.
-func TypeNameNotIn(vs ...string) predicate.DictType {
-	return predicate.DictType(sql.FieldNotIn(FieldTypeName, vs...))
-}
-
-// TypeNameGT applies the GT predicate on the "type_name" field.
-func TypeNameGT(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldGT(FieldTypeName, v))
-}
-
-// TypeNameGTE applies the GTE predicate on the "type_name" field.
-func TypeNameGTE(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldGTE(FieldTypeName, v))
-}
-
-// TypeNameLT applies the LT predicate on the "type_name" field.
-func TypeNameLT(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldLT(FieldTypeName, v))
-}
-
-// TypeNameLTE applies the LTE predicate on the "type_name" field.
-func TypeNameLTE(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldLTE(FieldTypeName, v))
-}
-
-// TypeNameContains applies the Contains predicate on the "type_name" field.
-func TypeNameContains(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldContains(FieldTypeName, v))
-}
-
-// TypeNameHasPrefix applies the HasPrefix predicate on the "type_name" field.
-func TypeNameHasPrefix(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldHasPrefix(FieldTypeName, v))
-}
-
-// TypeNameHasSuffix applies the HasSuffix predicate on the "type_name" field.
-func TypeNameHasSuffix(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldHasSuffix(FieldTypeName, v))
-}
-
-// TypeNameIsNil applies the IsNil predicate on the "type_name" field.
-func TypeNameIsNil() predicate.DictType {
-	return predicate.DictType(sql.FieldIsNull(FieldTypeName))
-}
-
-// TypeNameNotNil applies the NotNil predicate on the "type_name" field.
-func TypeNameNotNil() predicate.DictType {
-	return predicate.DictType(sql.FieldNotNull(FieldTypeName))
-}
-
-// TypeNameEqualFold applies the EqualFold predicate on the "type_name" field.
-func TypeNameEqualFold(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldEqualFold(FieldTypeName, v))
-}
-
-// TypeNameContainsFold applies the ContainsFold predicate on the "type_name" field.
-func TypeNameContainsFold(v string) predicate.DictType {
-	return predicate.DictType(sql.FieldContainsFold(FieldTypeName, v))
-}
-
 // HasEntries applies the HasEdge predicate on the "entries" edge.
 func HasEntries() predicate.DictType {
 	return predicate.DictType(func(s *sql.Selector) {
@@ -775,6 +615,29 @@ func HasEntries() predicate.DictType {
 func HasEntriesWith(preds ...predicate.DictEntry) predicate.DictType {
 	return predicate.DictType(func(s *sql.Selector) {
 		step := newEntriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasI18ns applies the HasEdge predicate on the "i18ns" edge.
+func HasI18ns() predicate.DictType {
+	return predicate.DictType(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, I18nsTable, I18nsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasI18nsWith applies the HasEdge predicate on the "i18ns" edge with a given conditions (other predicates).
+func HasI18nsWith(preds ...predicate.DictTypeI18n) predicate.DictType {
+	return predicate.DictType(func(s *sql.Selector) {
+		step := newI18nsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
