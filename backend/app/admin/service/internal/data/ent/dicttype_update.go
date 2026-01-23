@@ -384,7 +384,7 @@ func (_u *DictTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.EntriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.EntriesTable,
 			Columns: []string{dicttype.EntriesColumn},
 			Bidi:    false,
@@ -397,7 +397,7 @@ func (_u *DictTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.RemovedEntriesIDs(); len(nodes) > 0 && !_u.mutation.EntriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.EntriesTable,
 			Columns: []string{dicttype.EntriesColumn},
 			Bidi:    false,
@@ -413,7 +413,7 @@ func (_u *DictTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.EntriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.EntriesTable,
 			Columns: []string{dicttype.EntriesColumn},
 			Bidi:    false,
@@ -429,7 +429,7 @@ func (_u *DictTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.I18nsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.I18nsTable,
 			Columns: []string{dicttype.I18nsColumn},
 			Bidi:    false,
@@ -442,7 +442,7 @@ func (_u *DictTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.RemovedI18nsIDs(); len(nodes) > 0 && !_u.mutation.I18nsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.I18nsTable,
 			Columns: []string{dicttype.I18nsColumn},
 			Bidi:    false,
@@ -458,7 +458,7 @@ func (_u *DictTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if nodes := _u.mutation.I18nsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.I18nsTable,
 			Columns: []string{dicttype.I18nsColumn},
 			Bidi:    false,
@@ -876,7 +876,7 @@ func (_u *DictTypeUpdateOne) sqlSave(ctx context.Context) (_node *DictType, err 
 	if _u.mutation.EntriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.EntriesTable,
 			Columns: []string{dicttype.EntriesColumn},
 			Bidi:    false,
@@ -889,7 +889,7 @@ func (_u *DictTypeUpdateOne) sqlSave(ctx context.Context) (_node *DictType, err 
 	if nodes := _u.mutation.RemovedEntriesIDs(); len(nodes) > 0 && !_u.mutation.EntriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.EntriesTable,
 			Columns: []string{dicttype.EntriesColumn},
 			Bidi:    false,
@@ -905,7 +905,7 @@ func (_u *DictTypeUpdateOne) sqlSave(ctx context.Context) (_node *DictType, err 
 	if nodes := _u.mutation.EntriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.EntriesTable,
 			Columns: []string{dicttype.EntriesColumn},
 			Bidi:    false,
@@ -921,7 +921,7 @@ func (_u *DictTypeUpdateOne) sqlSave(ctx context.Context) (_node *DictType, err 
 	if _u.mutation.I18nsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.I18nsTable,
 			Columns: []string{dicttype.I18nsColumn},
 			Bidi:    false,
@@ -934,7 +934,7 @@ func (_u *DictTypeUpdateOne) sqlSave(ctx context.Context) (_node *DictType, err 
 	if nodes := _u.mutation.RemovedI18nsIDs(); len(nodes) > 0 && !_u.mutation.I18nsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.I18nsTable,
 			Columns: []string{dicttype.I18nsColumn},
 			Bidi:    false,
@@ -950,7 +950,7 @@ func (_u *DictTypeUpdateOne) sqlSave(ctx context.Context) (_node *DictType, err 
 	if nodes := _u.mutation.I18nsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.I18nsTable,
 			Columns: []string{dicttype.I18nsColumn},
 			Bidi:    false,

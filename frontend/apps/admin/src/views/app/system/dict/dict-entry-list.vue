@@ -5,7 +5,6 @@ import { h, watch } from 'vue';
 
 import { useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
-import { preferences } from '@vben/preferences';
 
 import { notification } from 'ant-design-vue';
 
@@ -13,7 +12,10 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { type dictservicev1_DictEntry as DictEntry } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
 import { enableBoolToColor, enableBoolToName, useDictStore } from '#/stores';
-import { useDictViewStore } from '#/views/app/system/dict/dict-view.state';
+import {
+  getEntryLabel,
+  useDictViewStore,
+} from '#/views/app/system/dict/dict-view.state';
 
 import DictEntryDrawer from './dict-entry-drawer.vue';
 
@@ -148,14 +150,6 @@ async function handleDelete(row: any) {
       message: $t('ui.notification.delete_failed'),
     });
   }
-}
-
-function getEntryLabel(row: DictEntry) {
-  const currentI18n = row.i18n?.[preferences.app.locale];
-  if (currentI18n === undefined) {
-    return '';
-  }
-  return currentI18n.entryLabel;
 }
 
 watch(

@@ -287,9 +287,9 @@ var (
 		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
 		{Name: "is_enabled", Type: field.TypeBool, Nullable: true, Comment: "是否启用", Default: true},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
-		{Name: "entry_value", Type: field.TypeString, Nullable: true, Comment: "字典项的实际值"},
+		{Name: "entry_value", Type: field.TypeString, Comment: "字典项的实际值"},
 		{Name: "numeric_value", Type: field.TypeInt32, Nullable: true, Comment: "数值型值"},
-		{Name: "type_id", Type: field.TypeUint32},
+		{Name: "type_id", Type: field.TypeUint32, Nullable: true},
 	}
 	// SysDictEntriesTable holds the schema information for the "sys_dict_entries" table.
 	SysDictEntriesTable = &schema.Table{
@@ -299,7 +299,7 @@ var (
 		PrimaryKey: []*schema.Column{SysDictEntriesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "sys_dict_entries_sys_dict_types_sys_dict_types",
+				Symbol:     "sys_dict_entries_sys_dict_types_entries",
 				Columns:    []*schema.Column{SysDictEntriesColumns[12]},
 				RefColumns: []*schema.Column{SysDictTypesColumns[0]},
 				OnDelete:   schema.Cascade,
@@ -352,7 +352,7 @@ var (
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
 		{Name: "language_code", Type: field.TypeString, Nullable: true, Comment: "语言代码"},
 		{Name: "entry_label", Type: field.TypeString, Nullable: true, Comment: "字典项的显示标签"},
-		{Name: "entry_id", Type: field.TypeUint32},
+		{Name: "entry_id", Type: field.TypeUint32, Nullable: true},
 	}
 	// SysDictEntryI18nTable holds the schema information for the "sys_dict_entry_i18n" table.
 	SysDictEntryI18nTable = &schema.Table{
@@ -362,7 +362,7 @@ var (
 		PrimaryKey: []*schema.Column{SysDictEntryI18nColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "sys_dict_entry_i18n_sys_dict_entries_sys_dict_entries",
+				Symbol:     "sys_dict_entry_i18n_sys_dict_entries_i18ns",
 				Columns:    []*schema.Column{SysDictEntryI18nColumns[12]},
 				RefColumns: []*schema.Column{SysDictEntriesColumns[0]},
 				OnDelete:   schema.Cascade,
@@ -432,7 +432,7 @@ var (
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
 		{Name: "language_code", Type: field.TypeString, Nullable: true, Comment: "语言代码"},
 		{Name: "type_name", Type: field.TypeString, Nullable: true, Comment: "字典类型名称"},
-		{Name: "type_id", Type: field.TypeUint32},
+		{Name: "type_id", Type: field.TypeUint32, Nullable: true},
 	}
 	// SysDictTypeI18nTable holds the schema information for the "sys_dict_type_i18n" table.
 	SysDictTypeI18nTable = &schema.Table{
@@ -442,7 +442,7 @@ var (
 		PrimaryKey: []*schema.Column{SysDictTypeI18nColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "sys_dict_type_i18n_sys_dict_types_sys_dict_types",
+				Symbol:     "sys_dict_type_i18n_sys_dict_types_i18ns",
 				Columns:    []*schema.Column{SysDictTypeI18nColumns[11]},
 				RefColumns: []*schema.Column{SysDictTypesColumns[0]},
 				OnDelete:   schema.Cascade,

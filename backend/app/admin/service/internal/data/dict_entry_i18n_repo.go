@@ -72,14 +72,14 @@ func (r *DictEntryI18nRepo) Upsert(ctx context.Context,
 	err = r.entClient.Client().DictEntryI18n.Create().
 		SetTenantID(tenantID).
 		SetLanguageCode(langCode).
-		SetSysDictEntriesID(entryID).
+		SetDictEntryID(entryID).
 		SetEntryLabel(data.GetEntryLabel()).
 		SetDescription(data.GetDescription()).
 		SetCreatedBy(operatorID).
 		SetCreatedAt(now).
 		OnConflictColumns(
 			dictentryi18n.FieldLanguageCode,
-			dictentryi18n.SysDictEntriesColumn,
+			dictentryi18n.DictEntryColumn,
 		).
 		SetEntryLabel(data.GetEntryLabel()).
 		SetDescription(data.GetDescription()).
@@ -93,10 +93,10 @@ func (r *DictEntryI18nRepo) Upsert(ctx context.Context,
 func (r *DictEntryI18nRepo) Get(ctx context.Context, entryID uint32) (map[string]*dictV1.DictEntryI18N, error) {
 
 	entities, err := r.entClient.Client().DictEntryI18n.Query().
-		WithSysDictEntries(func(query *ent.DictEntryQuery) {
+		WithDictEntry(func(query *ent.DictEntryQuery) {
 			query.Where(dictentry.IDEQ(entryID))
 		}).
-		Where(dictentryi18n.HasSysDictEntriesWith(dictentry.IDEQ(entryID))).
+		Where(dictentryi18n.HasDictEntryWith(dictentry.IDEQ(entryID))).
 		All(ctx)
 	if err != nil {
 		return nil, err
@@ -124,7 +124,7 @@ func (r *DictEntryI18nRepo) Truncate(ctx context.Context) error {
 // CleanByEntryID 根据字典项ID清理多语言数据
 func (r *DictEntryI18nRepo) CleanByEntryID(ctx context.Context, tx *ent.Tx, entryID uint32) error {
 	_, err := tx.DictEntryI18n.Delete().
-		Where(dictentryi18n.HasSysDictEntriesWith(dictentry.IDEQ(entryID))).
+		Where(dictentryi18n.HasDictEntryWith(dictentry.IDEQ(entryID))).
 		Exec(ctx)
 	return err
 }
@@ -132,7 +132,7 @@ func (r *DictEntryI18nRepo) CleanByEntryID(ctx context.Context, tx *ent.Tx, entr
 // CleanByEntryIDs 根据字典项ID清理多语言数据
 func (r *DictEntryI18nRepo) CleanByEntryIDs(ctx context.Context, entryIDs []uint32) error {
 	_, err := r.entClient.Client().DictEntryI18n.Delete().
-		Where(dictentryi18n.HasSysDictEntriesWith(dictentry.IDIn(entryIDs...))).
+		Where(dictentryi18n.HasDictEntryWith(dictentry.IDIn(entryIDs...))).
 		Exec(ctx)
 	return err
 }
@@ -158,7 +158,7 @@ func (r *DictEntryI18nRepo) ReplaceByEntryID(
 		dictEntryI18nCreate := tx.DictEntryI18n.Create().
 			SetTenantID(tenantID).
 			SetLanguageCode(langCode).
-			SetSysDictEntriesID(entryID).
+			SetDictEntryID(entryID).
 			SetEntryLabel(item.GetEntryLabel()).
 			SetDescription(item.GetDescription()).
 			SetCreatedBy(operatorID).

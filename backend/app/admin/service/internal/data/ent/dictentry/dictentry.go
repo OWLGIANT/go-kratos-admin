@@ -35,17 +35,26 @@ const (
 	FieldEntryValue = "entry_value"
 	// FieldNumericValue holds the string denoting the numeric_value field in the database.
 	FieldNumericValue = "numeric_value"
-	// EdgeSysDictTypes holds the string denoting the sys_dict_types edge name in mutations.
-	EdgeSysDictTypes = "sys_dict_types"
+	// EdgeDictType holds the string denoting the dict_type edge name in mutations.
+	EdgeDictType = "dict_type"
+	// EdgeI18ns holds the string denoting the i18ns edge name in mutations.
+	EdgeI18ns = "i18ns"
 	// Table holds the table name of the dictentry in the database.
 	Table = "sys_dict_entries"
-	// SysDictTypesTable is the table that holds the sys_dict_types relation/edge.
-	SysDictTypesTable = "sys_dict_entries"
-	// SysDictTypesInverseTable is the table name for the DictType entity.
+	// DictTypeTable is the table that holds the dict_type relation/edge.
+	DictTypeTable = "sys_dict_entries"
+	// DictTypeInverseTable is the table name for the DictType entity.
 	// It exists in this package in order to avoid circular dependency with the "dicttype" package.
-	SysDictTypesInverseTable = "sys_dict_types"
-	// SysDictTypesColumn is the table column denoting the sys_dict_types relation/edge.
-	SysDictTypesColumn = "type_id"
+	DictTypeInverseTable = "sys_dict_types"
+	// DictTypeColumn is the table column denoting the dict_type relation/edge.
+	DictTypeColumn = "type_id"
+	// I18nsTable is the table that holds the i18ns relation/edge.
+	I18nsTable = "sys_dict_entry_i18n"
+	// I18nsInverseTable is the table name for the DictEntryI18n entity.
+	// It exists in this package in order to avoid circular dependency with the "dictentryi18n" package.
+	I18nsInverseTable = "sys_dict_entry_i18n"
+	// I18nsColumn is the table column denoting the i18ns relation/edge.
+	I18nsColumn = "entry_id"
 )
 
 // Columns holds all SQL columns for dictentry fields.
@@ -168,16 +177,37 @@ func ByNumericValue(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldNumericValue, opts...).ToFunc()
 }
 
-// BySysDictTypesField orders the results by sys_dict_types field.
-func BySysDictTypesField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByDictTypeField orders the results by dict_type field.
+func ByDictTypeField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newSysDictTypesStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newDictTypeStep(), sql.OrderByField(field, opts...))
 	}
 }
-func newSysDictTypesStep() *sqlgraph.Step {
+
+// ByI18nsCount orders the results by i18ns count.
+func ByI18nsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newI18nsStep(), opts...)
+	}
+}
+
+// ByI18ns orders the results by i18ns terms.
+func ByI18ns(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newI18nsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newDictTypeStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SysDictTypesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, SysDictTypesTable, SysDictTypesColumn),
+		sqlgraph.To(DictTypeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, DictTypeTable, DictTypeColumn),
+	)
+}
+func newI18nsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(I18nsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, I18nsTable, I18nsColumn),
 	)
 }

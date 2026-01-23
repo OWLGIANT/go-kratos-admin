@@ -59,11 +59,9 @@ func (DictTypeI18n) Mixin() []ent.Mixin {
 // Edges of the DictTypeI18n.
 func (DictTypeI18n) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("sys_dict_types", DictType.Type).
-			Unique().
-			Required().
-			Annotations(entsql.OnDelete(entsql.Cascade)).
-			StorageKey(edge.Column("type_id")),
+		edge.From("dict_type", DictType.Type).
+			Ref("i18ns").
+			Unique(),
 	}
 }
 

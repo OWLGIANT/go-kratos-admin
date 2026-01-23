@@ -72,14 +72,14 @@ func (r *DictTypeI18nRepo) Upsert(ctx context.Context,
 	err = r.entClient.Client().DictTypeI18n.Create().
 		SetTenantID(tenantID).
 		SetLanguageCode(langCode).
-		SetSysDictTypesID(typeID).
+		SetDictTypeID(typeID).
 		SetTypeName(data.GetTypeName()).
 		SetDescription(data.GetDescription()).
 		SetCreatedBy(operatorID).
 		SetCreatedAt(now).
 		OnConflictColumns(
 			dicttypei18n.FieldLanguageCode,
-			dicttypei18n.SysDictTypesColumn,
+			dicttypei18n.DictTypeColumn,
 		).
 		SetTypeName(data.GetTypeName()).
 		SetDescription(data.GetDescription()).
@@ -92,7 +92,7 @@ func (r *DictTypeI18nRepo) Upsert(ctx context.Context,
 // Get 获取字典类型多语言数据
 func (r *DictTypeI18nRepo) Get(ctx context.Context, typeID uint32) (map[string]*dictV1.DictTypeI18N, error) {
 	entities, err := r.entClient.Client().DictTypeI18n.Query().
-		Where(dicttypei18n.HasSysDictTypesWith(dicttype.IDEQ(typeID))).
+		Where(dicttypei18n.HasDictTypeWith(dicttype.IDEQ(typeID))).
 		All(ctx)
 	if err != nil {
 		r.log.Errorf("query dict type i18n failed: %s", err.Error())
@@ -121,7 +121,7 @@ func (r *DictTypeI18nRepo) Truncate(ctx context.Context) error {
 // CleanByTypeID 根据字典类型ID清理多语言数据
 func (r *DictTypeI18nRepo) CleanByTypeID(ctx context.Context, tx *ent.Tx, typeID uint32) error {
 	_, err := tx.DictTypeI18n.Delete().
-		Where(dicttypei18n.HasSysDictTypesWith(dicttype.IDEQ(typeID))).
+		Where(dicttypei18n.HasDictTypeWith(dicttype.IDEQ(typeID))).
 		Exec(ctx)
 	return err
 }
@@ -129,7 +129,7 @@ func (r *DictTypeI18nRepo) CleanByTypeID(ctx context.Context, tx *ent.Tx, typeID
 // CleanByTypeIDs 根据字典类型ID列表清理多语言数据
 func (r *DictTypeI18nRepo) CleanByTypeIDs(ctx context.Context, typeIDs []uint32) error {
 	_, err := r.entClient.Client().DictTypeI18n.Delete().
-		Where(dicttypei18n.HasSysDictTypesWith(dicttype.IDIn(typeIDs...))).
+		Where(dicttypei18n.HasDictTypeWith(dicttype.IDIn(typeIDs...))).
 		Exec(ctx)
 	return err
 }
@@ -155,7 +155,7 @@ func (r *DictTypeI18nRepo) ReplaceByTypeID(
 		dictTypeI18nCreate := tx.DictTypeI18n.Create().
 			SetTenantID(tenantID).
 			SetLanguageCode(langCode).
-			SetSysDictTypesID(typeID).
+			SetDictTypeID(typeID).
 			SetTypeName(item.GetTypeName()).
 			SetDescription(item.GetDescription()).
 			SetCreatedBy(operatorID).

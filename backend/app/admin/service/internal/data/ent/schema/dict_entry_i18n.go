@@ -60,21 +60,15 @@ func (DictEntryI18n) Mixin() []ent.Mixin {
 // Edges of the DictEntryI18n.
 func (DictEntryI18n) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("sys_dict_entries", DictEntry.Type).
-			Unique().
-			Required().
-			Annotations(entsql.OnDelete(entsql.Cascade)).
-			StorageKey(edge.Column("entry_id")),
+		edge.From("dict_entry", DictEntry.Type).
+			Ref("i18ns").
+			Unique(),
 	}
 }
 
 // Indexes of the DictEntryI18n.
 func (DictEntryI18n) Indexes() []ent.Index {
 	return []ent.Index{
-		//index.Fields("entry_id", "language_code").
-		//	Unique().
-		//	StorageKey("idx_sys_dict_entry_i18n_entry_id_language_code"),
-
 		index.Fields("language_code").
 			StorageKey("idx_sys_dict_entry_i18n_language_code"),
 	}

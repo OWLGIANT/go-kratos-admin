@@ -50,22 +50,22 @@ type DictEntryI18n struct {
 
 // DictEntryI18nEdges holds the relations/edges for other nodes in the graph.
 type DictEntryI18nEdges struct {
-	// SysDictEntries holds the value of the sys_dict_entries edge.
-	SysDictEntries *DictEntry `json:"sys_dict_entries,omitempty"`
+	// DictEntry holds the value of the dict_entry edge.
+	DictEntry *DictEntry `json:"dict_entry,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// SysDictEntriesOrErr returns the SysDictEntries value or an error if the edge
+// DictEntryOrErr returns the DictEntry value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e DictEntryI18nEdges) SysDictEntriesOrErr() (*DictEntry, error) {
-	if e.SysDictEntries != nil {
-		return e.SysDictEntries, nil
+func (e DictEntryI18nEdges) DictEntryOrErr() (*DictEntry, error) {
+	if e.DictEntry != nil {
+		return e.DictEntry, nil
 	} else if e.loadedTypes[0] {
 		return nil, &NotFoundError{label: dictentry.Label}
 	}
-	return nil, &NotLoadedError{edge: "sys_dict_entries"}
+	return nil, &NotLoadedError{edge: "dict_entry"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -199,9 +199,9 @@ func (_m *DictEntryI18n) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// QuerySysDictEntries queries the "sys_dict_entries" edge of the DictEntryI18n entity.
-func (_m *DictEntryI18n) QuerySysDictEntries() *DictEntryQuery {
-	return NewDictEntryI18nClient(_m.config).QuerySysDictEntries(_m)
+// QueryDictEntry queries the "dict_entry" edge of the DictEntryI18n entity.
+func (_m *DictEntryI18n) QueryDictEntry() *DictEntryQuery {
+	return NewDictEntryI18nClient(_m.config).QueryDictEntry(_m)
 }
 
 // Update returns a builder for updating this DictEntryI18n.

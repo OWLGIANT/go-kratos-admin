@@ -5,18 +5,17 @@ import { h } from 'vue';
 
 import { useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
-import { preferences } from '@vben/preferences';
 
 import { notification } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {
-  type dictservicev1_DictType as DictType,
-  type userservicev1_User as User,
-} from '#/generated/api/admin/service/v1';
+import { type dictservicev1_DictType as DictType } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
 import { enableBoolToColor, enableBoolToName, useDictStore } from '#/stores';
-import { useDictViewStore } from '#/views/app/system/dict/dict-view.state';
+import {
+  getTypeName,
+  useDictViewStore,
+} from '#/views/app/system/dict/dict-view.state';
 
 import DictTypeDrawer from './dict-type-drawer.vue';
 
@@ -96,7 +95,7 @@ const gridOptions: VxeGridProps<DictType> = {
   ],
 };
 
-const gridEvents: VxeGridListeners<User> = {
+const gridEvents: VxeGridListeners<DictType> = {
   // cellDblclick: ({ row }) => {
   //   // console.log(`cell-dbl-click: ${row.id}`);
   //   dictViewStore.setCurrentMain(typeof row.id === 'number' ? row.id : 0);
@@ -162,14 +161,6 @@ async function handleDelete(row: any) {
       message: $t('ui.notification.delete_failed'),
     });
   }
-}
-
-function getTypeName(row: DictType) {
-  const currentI18n = row.i18n?.[preferences.app.locale];
-  if (currentI18n === undefined) {
-    return '';
-  }
-  return currentI18n.typeName;
 }
 </script>
 

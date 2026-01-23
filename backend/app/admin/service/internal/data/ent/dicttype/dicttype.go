@@ -189,13 +189,13 @@ func newEntriesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(EntriesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, true, EntriesTable, EntriesColumn),
+		sqlgraph.Edge(sqlgraph.O2M, false, EntriesTable, EntriesColumn),
 	)
 }
 func newI18nsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(I18nsInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, true, I18nsTable, I18nsColumn),
+		sqlgraph.Edge(sqlgraph.O2M, false, I18nsTable, I18nsColumn),
 	)
 }

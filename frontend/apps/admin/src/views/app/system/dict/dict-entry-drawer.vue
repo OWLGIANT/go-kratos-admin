@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import type { dictservicev1_DictType as DictType } from '#/generated/api/admin/service/v1';
+
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
@@ -8,8 +10,13 @@ import { notification } from 'ant-design-vue';
 
 import { useVbenForm, z } from '#/adapter/form';
 import { enableBoolList, useDictStore } from '#/stores';
+import {
+  getTypeName,
+  useDictViewStore,
+} from '#/views/app/system/dict/dict-view.state';
 
 const dictStore = useDictStore();
+const dictViewStore = useDictViewStore();
 
 const data = ref();
 
@@ -35,18 +42,26 @@ const [BaseForm, baseFormApi] = useVbenForm({
       fieldName: 'typeId',
       label: $t('page.dict.typeId'),
       rules: 'required',
+      defaultValue: dictViewStore.currentTypeId,
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         showSearch: true,
         allowClear: false,
+        filterOption: (input: string, option: any) =>
+          option.label.toLowerCase().includes(input.toLowerCase()),
+        afterFetch: (data: DictType[]) => {
+          console.log('dddd', dictViewStore.currentTypeId);
+          return data.map((item: DictType) => ({
+            label: getTypeName(item),
+            value: item.id,
+          }));
+        },
         api: async () => {
           const result = await dictStore.listDictType(undefined, {
             is_enabled: 'true',
           });
           return result.items;
         },
-        filterOption: (input: string, option: any) =>
-          option.label.toLowerCase().includes(input.toLowerCase()),
       },
     },
     {
@@ -58,16 +73,6 @@ const [BaseForm, baseFormApi] = useVbenForm({
         allowClear: true,
       },
       rules: z.string().min(1, { message: $t('ui.formRules.required') }),
-    },
-    {
-      component: 'Input',
-      fieldName: 'entryLabel',
-      label: $t('page.dict.entryLabel'),
-      componentProps: {
-        placeholder: $t('ui.placeholder.input'),
-        allowClear: true,
-      },
-      rules: 'required',
     },
     {
       component: 'InputNumber',
@@ -99,15 +104,6 @@ const [BaseForm, baseFormApi] = useVbenForm({
         buttonStyle: 'solid',
         class: 'flex flex-wrap', // 如果选项过多，可以添加class来自动折叠
         options: enableBoolList,
-      },
-    },
-    {
-      component: 'Textarea',
-      fieldName: 'description',
-      label: $t('ui.table.description'),
-      componentProps: {
-        placeholder: $t('ui.placeholder.input'),
-        allowClear: true,
       },
     },
   ],
@@ -164,7 +160,10 @@ const [Drawer, drawerApi] = useVbenDrawer({
       data.value = drawerApi.getData<Record<string, any>>();
 
       // 为表单赋值
-      if (data.value.row !== undefined) {
+      if (data.value.row === undefined) {
+        baseFormApi.setValues({ typeId: dictViewStore.currentTypeId });
+      } else {
+        data.value.row.typeId = dictViewStore.currentTypeId;
         baseFormApi.setValues(data.value?.row);
       }
 

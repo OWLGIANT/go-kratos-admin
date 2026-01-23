@@ -122,13 +122,13 @@
   "dict": {
     "moduleName": "字典",
     "dictType": "字典类型",
-    "dictEntry": "字典条目",
+    "dictEntry": "字典项",
     "dictTypeList": "字典类型列表",
-    "dictEntryList": "字典条目列表",
+    "dictEntryList": "字典项列表",
     "typeCode": "编码",
     "typeName": "名称",
     "entryLabel": "标签",
-    "entryValue": "条目值",
+    "entryValue": "值",
     "numericValue": "数值",
     "typeId": "字典类型",
     "button": {

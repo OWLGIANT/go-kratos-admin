@@ -48,22 +48,22 @@ type DictTypeI18n struct {
 
 // DictTypeI18nEdges holds the relations/edges for other nodes in the graph.
 type DictTypeI18nEdges struct {
-	// SysDictTypes holds the value of the sys_dict_types edge.
-	SysDictTypes *DictType `json:"sys_dict_types,omitempty"`
+	// DictType holds the value of the dict_type edge.
+	DictType *DictType `json:"dict_type,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// SysDictTypesOrErr returns the SysDictTypes value or an error if the edge
+// DictTypeOrErr returns the DictType value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e DictTypeI18nEdges) SysDictTypesOrErr() (*DictType, error) {
-	if e.SysDictTypes != nil {
-		return e.SysDictTypes, nil
+func (e DictTypeI18nEdges) DictTypeOrErr() (*DictType, error) {
+	if e.DictType != nil {
+		return e.DictType, nil
 	} else if e.loadedTypes[0] {
 		return nil, &NotFoundError{label: dicttype.Label}
 	}
-	return nil, &NotLoadedError{edge: "sys_dict_types"}
+	return nil, &NotLoadedError{edge: "dict_type"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -190,9 +190,9 @@ func (_m *DictTypeI18n) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// QuerySysDictTypes queries the "sys_dict_types" edge of the DictTypeI18n entity.
-func (_m *DictTypeI18n) QuerySysDictTypes() *DictTypeQuery {
-	return NewDictTypeI18nClient(_m.config).QuerySysDictTypes(_m)
+// QueryDictType queries the "dict_type" edge of the DictTypeI18n entity.
+func (_m *DictTypeI18n) QueryDictType() *DictTypeQuery {
+	return NewDictTypeI18nClient(_m.config).QueryDictType(_m)
 }
 
 // Update returns a builder for updating this DictTypeI18n.

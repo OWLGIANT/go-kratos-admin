@@ -680,21 +680,21 @@ func TypeNameContainsFold(v string) predicate.DictTypeI18n {
 	return predicate.DictTypeI18n(sql.FieldContainsFold(FieldTypeName, v))
 }
 
-// HasSysDictTypes applies the HasEdge predicate on the "sys_dict_types" edge.
-func HasSysDictTypes() predicate.DictTypeI18n {
+// HasDictType applies the HasEdge predicate on the "dict_type" edge.
+func HasDictType() predicate.DictTypeI18n {
 	return predicate.DictTypeI18n(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, SysDictTypesTable, SysDictTypesColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, DictTypeTable, DictTypeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasSysDictTypesWith applies the HasEdge predicate on the "sys_dict_types" edge with a given conditions (other predicates).
-func HasSysDictTypesWith(preds ...predicate.DictType) predicate.DictTypeI18n {
+// HasDictTypeWith applies the HasEdge predicate on the "dict_type" edge with a given conditions (other predicates).
+func HasDictTypeWith(preds ...predicate.DictType) predicate.DictTypeI18n {
 	return predicate.DictTypeI18n(func(s *sql.Selector) {
-		step := newSysDictTypesStep()
+		step := newDictTypeStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

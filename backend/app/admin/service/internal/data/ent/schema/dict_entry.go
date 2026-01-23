@@ -34,7 +34,6 @@ func (DictEntry) Fields() []ent.Field {
 		field.String("entry_value").
 			Comment("字典项的实际值").
 			NotEmpty().
-			Optional().
 			Nillable(),
 
 		field.Int32("numeric_value").
@@ -59,11 +58,16 @@ func (DictEntry) Mixin() []ent.Mixin {
 // Edges of the DictEntry.
 func (DictEntry) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("sys_dict_types", DictType.Type).
-			Unique().
+		edge.From("dict_type", DictType.Type).
+			Ref("entries").
+			Unique(),
+
+		edge.To("i18ns", DictEntryI18n.Type).
 			Required().
-			Annotations(entsql.OnDelete(entsql.Cascade)).
-			StorageKey(edge.Column("type_id")),
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}).
+			StorageKey(edge.Column("entry_id")),
 	}
 }
 

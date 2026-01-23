@@ -80,7 +80,7 @@ func (_q *DictTypeQuery) QueryEntries() *DictEntryQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(dicttype.Table, dicttype.FieldID, selector),
 			sqlgraph.To(dictentry.Table, dictentry.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, dicttype.EntriesTable, dicttype.EntriesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, dicttype.EntriesTable, dicttype.EntriesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -102,7 +102,7 @@ func (_q *DictTypeQuery) QueryI18ns() *DictTypeI18nQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(dicttype.Table, dicttype.FieldID, selector),
 			sqlgraph.To(dicttypei18n.Table, dicttypei18n.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, dicttype.I18nsTable, dicttype.I18nsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, dicttype.I18nsTable, dicttype.I18nsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil

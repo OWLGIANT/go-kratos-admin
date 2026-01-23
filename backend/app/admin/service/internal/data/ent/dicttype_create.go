@@ -264,6 +264,12 @@ func (_c *DictTypeCreate) check() error {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "DictType.id": %w`, err)}
 		}
 	}
+	if len(_c.mutation.EntriesIDs()) == 0 {
+		return &ValidationError{Name: "entries", err: errors.New(`ent: missing required edge "DictType.entries"`)}
+	}
+	if len(_c.mutation.I18nsIDs()) == 0 {
+		return &ValidationError{Name: "i18ns", err: errors.New(`ent: missing required edge "DictType.i18ns"`)}
+	}
 	return nil
 }
 
@@ -340,7 +346,7 @@ func (_c *DictTypeCreate) createSpec() (*DictType, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.EntriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.EntriesTable,
 			Columns: []string{dicttype.EntriesColumn},
 			Bidi:    false,
@@ -356,7 +362,7 @@ func (_c *DictTypeCreate) createSpec() (*DictType, *sqlgraph.CreateSpec) {
 	if nodes := _c.mutation.I18nsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.I18nsTable,
 			Columns: []string{dicttype.I18nsColumn},
 			Bidi:    false,

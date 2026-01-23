@@ -1035,15 +1035,31 @@ func (c *DictEntryClient) GetX(ctx context.Context, id uint32) *DictEntry {
 	return obj
 }
 
-// QuerySysDictTypes queries the sys_dict_types edge of a DictEntry.
-func (c *DictEntryClient) QuerySysDictTypes(_m *DictEntry) *DictTypeQuery {
+// QueryDictType queries the dict_type edge of a DictEntry.
+func (c *DictEntryClient) QueryDictType(_m *DictEntry) *DictTypeQuery {
 	query := (&DictTypeClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(dictentry.Table, dictentry.FieldID, id),
 			sqlgraph.To(dicttype.Table, dicttype.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, dictentry.SysDictTypesTable, dictentry.SysDictTypesColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, dictentry.DictTypeTable, dictentry.DictTypeColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryI18ns queries the i18ns edge of a DictEntry.
+func (c *DictEntryClient) QueryI18ns(_m *DictEntry) *DictEntryI18nQuery {
+	query := (&DictEntryI18nClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(dictentry.Table, dictentry.FieldID, id),
+			sqlgraph.To(dictentryi18n.Table, dictentryi18n.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, dictentry.I18nsTable, dictentry.I18nsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1185,15 +1201,15 @@ func (c *DictEntryI18nClient) GetX(ctx context.Context, id uint32) *DictEntryI18
 	return obj
 }
 
-// QuerySysDictEntries queries the sys_dict_entries edge of a DictEntryI18n.
-func (c *DictEntryI18nClient) QuerySysDictEntries(_m *DictEntryI18n) *DictEntryQuery {
+// QueryDictEntry queries the dict_entry edge of a DictEntryI18n.
+func (c *DictEntryI18nClient) QueryDictEntry(_m *DictEntryI18n) *DictEntryQuery {
 	query := (&DictEntryClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(dictentryi18n.Table, dictentryi18n.FieldID, id),
 			sqlgraph.To(dictentry.Table, dictentry.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, dictentryi18n.SysDictEntriesTable, dictentryi18n.SysDictEntriesColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, dictentryi18n.DictEntryTable, dictentryi18n.DictEntryColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1343,7 +1359,7 @@ func (c *DictTypeClient) QueryEntries(_m *DictType) *DictEntryQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(dicttype.Table, dicttype.FieldID, id),
 			sqlgraph.To(dictentry.Table, dictentry.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, dicttype.EntriesTable, dicttype.EntriesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, dicttype.EntriesTable, dicttype.EntriesColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1359,7 +1375,7 @@ func (c *DictTypeClient) QueryI18ns(_m *DictType) *DictTypeI18nQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(dicttype.Table, dicttype.FieldID, id),
 			sqlgraph.To(dicttypei18n.Table, dicttypei18n.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, dicttype.I18nsTable, dicttype.I18nsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, dicttype.I18nsTable, dicttype.I18nsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1501,15 +1517,15 @@ func (c *DictTypeI18nClient) GetX(ctx context.Context, id uint32) *DictTypeI18n 
 	return obj
 }
 
-// QuerySysDictTypes queries the sys_dict_types edge of a DictTypeI18n.
-func (c *DictTypeI18nClient) QuerySysDictTypes(_m *DictTypeI18n) *DictTypeQuery {
+// QueryDictType queries the dict_type edge of a DictTypeI18n.
+func (c *DictTypeI18nClient) QueryDictType(_m *DictTypeI18n) *DictTypeQuery {
 	query := (&DictTypeClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(dicttypei18n.Table, dicttypei18n.FieldID, id),
 			sqlgraph.To(dicttype.Table, dicttype.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, dicttypei18n.SysDictTypesTable, dicttypei18n.SysDictTypesColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, dicttypei18n.DictTypeTable, dicttypei18n.DictTypeColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil

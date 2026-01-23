@@ -169,15 +169,23 @@ func (_c *DictTypeI18nCreate) SetID(v uint32) *DictTypeI18nCreate {
 	return _c
 }
 
-// SetSysDictTypesID sets the "sys_dict_types" edge to the DictType entity by ID.
-func (_c *DictTypeI18nCreate) SetSysDictTypesID(id uint32) *DictTypeI18nCreate {
-	_c.mutation.SetSysDictTypesID(id)
+// SetDictTypeID sets the "dict_type" edge to the DictType entity by ID.
+func (_c *DictTypeI18nCreate) SetDictTypeID(id uint32) *DictTypeI18nCreate {
+	_c.mutation.SetDictTypeID(id)
 	return _c
 }
 
-// SetSysDictTypes sets the "sys_dict_types" edge to the DictType entity.
-func (_c *DictTypeI18nCreate) SetSysDictTypes(v *DictType) *DictTypeI18nCreate {
-	return _c.SetSysDictTypesID(v.ID)
+// SetNillableDictTypeID sets the "dict_type" edge to the DictType entity by ID if the given value is not nil.
+func (_c *DictTypeI18nCreate) SetNillableDictTypeID(id *uint32) *DictTypeI18nCreate {
+	if id != nil {
+		_c = _c.SetDictTypeID(*id)
+	}
+	return _c
+}
+
+// SetDictType sets the "dict_type" edge to the DictType entity.
+func (_c *DictTypeI18nCreate) SetDictType(v *DictType) *DictTypeI18nCreate {
+	return _c.SetDictTypeID(v.ID)
 }
 
 // Mutation returns the DictTypeI18nMutation object of the builder.
@@ -240,9 +248,6 @@ func (_c *DictTypeI18nCreate) check() error {
 		if err := dicttypei18n.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "DictTypeI18n.id": %w`, err)}
 		}
-	}
-	if len(_c.mutation.SysDictTypesIDs()) == 0 {
-		return &ValidationError{Name: "sys_dict_types", err: errors.New(`ent: missing required edge "DictTypeI18n.sys_dict_types"`)}
 	}
 	return nil
 }
@@ -317,12 +322,12 @@ func (_c *DictTypeI18nCreate) createSpec() (*DictTypeI18n, *sqlgraph.CreateSpec)
 		_spec.SetField(dicttypei18n.FieldTypeName, field.TypeString, value)
 		_node.TypeName = &value
 	}
-	if nodes := _c.mutation.SysDictTypesIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.DictTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   dicttypei18n.SysDictTypesTable,
-			Columns: []string{dicttypei18n.SysDictTypesColumn},
+			Inverse: true,
+			Table:   dicttypei18n.DictTypeTable,
+			Columns: []string{dicttypei18n.DictTypeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint32),

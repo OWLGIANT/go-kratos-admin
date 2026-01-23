@@ -41,7 +41,7 @@ export const useDictStore = defineStore('dict', () => {
   }
 
   /**
-   * 查询字典条目列表
+   * 查询字典项列表
    */
   async function listDictEntry(
     paging?: Paging,
@@ -92,7 +92,7 @@ export const useDictStore = defineStore('dict', () => {
   }
 
   /**
-   * 创建字典条目
+   * 创建字典项
    */
   async function createDictEntry(values: object) {
     return await dictEntryService.CreateDictEntry({
@@ -117,7 +117,7 @@ export const useDictStore = defineStore('dict', () => {
   }
 
   /**
-   * 更新字典条目
+   * 更新字典项
    */
   async function updateDictEntry(id: number, values: object) {
     return await dictEntryService.UpdateDictEntry({
@@ -138,7 +138,7 @@ export const useDictStore = defineStore('dict', () => {
   }
 
   /**
-   * 删除字典条目
+   * 删除字典项
    */
   async function deleteDictEntry(ids: number[]) {
     return await dictEntryService.DeleteDictEntry({ ids });

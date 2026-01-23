@@ -21,13 +21,13 @@ import (
 // DictEntryI18nQuery is the builder for querying DictEntryI18n entities.
 type DictEntryI18nQuery struct {
 	config
-	ctx                *QueryContext
-	order              []dictentryi18n.OrderOption
-	inters             []Interceptor
-	predicates         []predicate.DictEntryI18n
-	withSysDictEntries *DictEntryQuery
-	withFKs            bool
-	modifiers          []func(*sql.Selector)
+	ctx           *QueryContext
+	order         []dictentryi18n.OrderOption
+	inters        []Interceptor
+	predicates    []predicate.DictEntryI18n
+	withDictEntry *DictEntryQuery
+	withFKs       bool
+	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -64,8 +64,8 @@ func (_q *DictEntryI18nQuery) Order(o ...dictentryi18n.OrderOption) *DictEntryI1
 	return _q
 }
 
-// QuerySysDictEntries chains the current query on the "sys_dict_entries" edge.
-func (_q *DictEntryI18nQuery) QuerySysDictEntries() *DictEntryQuery {
+// QueryDictEntry chains the current query on the "dict_entry" edge.
+func (_q *DictEntryI18nQuery) QueryDictEntry() *DictEntryQuery {
 	query := (&DictEntryClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
@@ -78,7 +78,7 @@ func (_q *DictEntryI18nQuery) QuerySysDictEntries() *DictEntryQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(dictentryi18n.Table, dictentryi18n.FieldID, selector),
 			sqlgraph.To(dictentry.Table, dictentry.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, dictentryi18n.SysDictEntriesTable, dictentryi18n.SysDictEntriesColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, dictentryi18n.DictEntryTable, dictentryi18n.DictEntryColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -273,12 +273,12 @@ func (_q *DictEntryI18nQuery) Clone() *DictEntryI18nQuery {
 		return nil
 	}
 	return &DictEntryI18nQuery{
-		config:             _q.config,
-		ctx:                _q.ctx.Clone(),
-		order:              append([]dictentryi18n.OrderOption{}, _q.order...),
-		inters:             append([]Interceptor{}, _q.inters...),
-		predicates:         append([]predicate.DictEntryI18n{}, _q.predicates...),
-		withSysDictEntries: _q.withSysDictEntries.Clone(),
+		config:        _q.config,
+		ctx:           _q.ctx.Clone(),
+		order:         append([]dictentryi18n.OrderOption{}, _q.order...),
+		inters:        append([]Interceptor{}, _q.inters...),
+		predicates:    append([]predicate.DictEntryI18n{}, _q.predicates...),
+		withDictEntry: _q.withDictEntry.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -286,14 +286,14 @@ func (_q *DictEntryI18nQuery) Clone() *DictEntryI18nQuery {
 	}
 }
 
-// WithSysDictEntries tells the query-builder to eager-load the nodes that are connected to
-// the "sys_dict_entries" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *DictEntryI18nQuery) WithSysDictEntries(opts ...func(*DictEntryQuery)) *DictEntryI18nQuery {
+// WithDictEntry tells the query-builder to eager-load the nodes that are connected to
+// the "dict_entry" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *DictEntryI18nQuery) WithDictEntry(opts ...func(*DictEntryQuery)) *DictEntryI18nQuery {
 	query := (&DictEntryClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withSysDictEntries = query
+	_q.withDictEntry = query
 	return _q
 }
 
@@ -383,10 +383,10 @@ func (_q *DictEntryI18nQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		withFKs     = _q.withFKs
 		_spec       = _q.querySpec()
 		loadedTypes = [1]bool{
-			_q.withSysDictEntries != nil,
+			_q.withDictEntry != nil,
 		}
 	)
-	if _q.withSysDictEntries != nil {
+	if _q.withDictEntry != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -413,16 +413,16 @@ func (_q *DictEntryI18nQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := _q.withSysDictEntries; query != nil {
-		if err := _q.loadSysDictEntries(ctx, query, nodes, nil,
-			func(n *DictEntryI18n, e *DictEntry) { n.Edges.SysDictEntries = e }); err != nil {
+	if query := _q.withDictEntry; query != nil {
+		if err := _q.loadDictEntry(ctx, query, nodes, nil,
+			func(n *DictEntryI18n, e *DictEntry) { n.Edges.DictEntry = e }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (_q *DictEntryI18nQuery) loadSysDictEntries(ctx context.Context, query *DictEntryQuery, nodes []*DictEntryI18n, init func(*DictEntryI18n), assign func(*DictEntryI18n, *DictEntry)) error {
+func (_q *DictEntryI18nQuery) loadDictEntry(ctx context.Context, query *DictEntryQuery, nodes []*DictEntryI18n, init func(*DictEntryI18n), assign func(*DictEntryI18n, *DictEntry)) error {
 	ids := make([]uint32, 0, len(nodes))
 	nodeids := make(map[uint32][]*DictEntryI18n)
 	for i := range nodes {

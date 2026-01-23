@@ -50,22 +50,33 @@ type DictEntry struct {
 
 // DictEntryEdges holds the relations/edges for other nodes in the graph.
 type DictEntryEdges struct {
-	// SysDictTypes holds the value of the sys_dict_types edge.
-	SysDictTypes *DictType `json:"sys_dict_types,omitempty"`
+	// DictType holds the value of the dict_type edge.
+	DictType *DictType `json:"dict_type,omitempty"`
+	// I18ns holds the value of the i18ns edge.
+	I18ns []*DictEntryI18n `json:"i18ns,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
-// SysDictTypesOrErr returns the SysDictTypes value or an error if the edge
+// DictTypeOrErr returns the DictType value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e DictEntryEdges) SysDictTypesOrErr() (*DictType, error) {
-	if e.SysDictTypes != nil {
-		return e.SysDictTypes, nil
+func (e DictEntryEdges) DictTypeOrErr() (*DictType, error) {
+	if e.DictType != nil {
+		return e.DictType, nil
 	} else if e.loadedTypes[0] {
 		return nil, &NotFoundError{label: dicttype.Label}
 	}
-	return nil, &NotLoadedError{edge: "sys_dict_types"}
+	return nil, &NotLoadedError{edge: "dict_type"}
+}
+
+// I18nsOrErr returns the I18ns value or an error if the edge
+// was not loaded in eager-loading.
+func (e DictEntryEdges) I18nsOrErr() ([]*DictEntryI18n, error) {
+	if e.loadedTypes[1] {
+		return e.I18ns, nil
+	}
+	return nil, &NotLoadedError{edge: "i18ns"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -201,9 +212,14 @@ func (_m *DictEntry) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// QuerySysDictTypes queries the "sys_dict_types" edge of the DictEntry entity.
-func (_m *DictEntry) QuerySysDictTypes() *DictTypeQuery {
-	return NewDictEntryClient(_m.config).QuerySysDictTypes(_m)
+// QueryDictType queries the "dict_type" edge of the DictEntry entity.
+func (_m *DictEntry) QueryDictType() *DictTypeQuery {
+	return NewDictEntryClient(_m.config).QueryDictType(_m)
+}
+
+// QueryI18ns queries the "i18ns" edge of the DictEntry entity.
+func (_m *DictEntry) QueryI18ns() *DictEntryI18nQuery {
+	return NewDictEntryClient(_m.config).QueryI18ns(_m)
 }
 
 // Update returns a builder for updating this DictEntry.

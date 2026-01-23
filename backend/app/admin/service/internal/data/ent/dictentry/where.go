@@ -585,16 +585,6 @@ func EntryValueHasSuffix(v string) predicate.DictEntry {
 	return predicate.DictEntry(sql.FieldHasSuffix(FieldEntryValue, v))
 }
 
-// EntryValueIsNil applies the IsNil predicate on the "entry_value" field.
-func EntryValueIsNil() predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldIsNull(FieldEntryValue))
-}
-
-// EntryValueNotNil applies the NotNil predicate on the "entry_value" field.
-func EntryValueNotNil() predicate.DictEntry {
-	return predicate.DictEntry(sql.FieldNotNull(FieldEntryValue))
-}
-
 // EntryValueEqualFold applies the EqualFold predicate on the "entry_value" field.
 func EntryValueEqualFold(v string) predicate.DictEntry {
 	return predicate.DictEntry(sql.FieldEqualFold(FieldEntryValue, v))
@@ -655,21 +645,44 @@ func NumericValueNotNil() predicate.DictEntry {
 	return predicate.DictEntry(sql.FieldNotNull(FieldNumericValue))
 }
 
-// HasSysDictTypes applies the HasEdge predicate on the "sys_dict_types" edge.
-func HasSysDictTypes() predicate.DictEntry {
+// HasDictType applies the HasEdge predicate on the "dict_type" edge.
+func HasDictType() predicate.DictEntry {
 	return predicate.DictEntry(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, SysDictTypesTable, SysDictTypesColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, DictTypeTable, DictTypeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasSysDictTypesWith applies the HasEdge predicate on the "sys_dict_types" edge with a given conditions (other predicates).
-func HasSysDictTypesWith(preds ...predicate.DictType) predicate.DictEntry {
+// HasDictTypeWith applies the HasEdge predicate on the "dict_type" edge with a given conditions (other predicates).
+func HasDictTypeWith(preds ...predicate.DictType) predicate.DictEntry {
 	return predicate.DictEntry(func(s *sql.Selector) {
-		step := newSysDictTypesStep()
+		step := newDictTypeStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasI18ns applies the HasEdge predicate on the "i18ns" edge.
+func HasI18ns() predicate.DictEntry {
+	return predicate.DictEntry(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, I18nsTable, I18nsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasI18nsWith applies the HasEdge predicate on the "i18ns" edge with a given conditions (other predicates).
+func HasI18nsWith(preds ...predicate.DictEntryI18n) predicate.DictEntry {
+	return predicate.DictEntry(func(s *sql.Selector) {
+		step := newI18nsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

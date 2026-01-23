@@ -6208,32 +6208,35 @@ func (m *DataAccessAuditLogMutation) ResetEdge(name string) error {
 // DictEntryMutation represents an operation that mutates the DictEntry nodes in the graph.
 type DictEntryMutation struct {
 	config
-	op                    Op
-	typ                   string
-	id                    *uint32
-	created_at            *time.Time
-	updated_at            *time.Time
-	deleted_at            *time.Time
-	created_by            *uint32
-	addcreated_by         *int32
-	updated_by            *uint32
-	addupdated_by         *int32
-	deleted_by            *uint32
-	adddeleted_by         *int32
-	sort_order            *uint32
-	addsort_order         *int32
-	is_enabled            *bool
-	tenant_id             *uint32
-	addtenant_id          *int32
-	entry_value           *string
-	numeric_value         *int32
-	addnumeric_value      *int32
-	clearedFields         map[string]struct{}
-	sys_dict_types        *uint32
-	clearedsys_dict_types bool
-	done                  bool
-	oldValue              func(context.Context) (*DictEntry, error)
-	predicates            []predicate.DictEntry
+	op               Op
+	typ              string
+	id               *uint32
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	created_by       *uint32
+	addcreated_by    *int32
+	updated_by       *uint32
+	addupdated_by    *int32
+	deleted_by       *uint32
+	adddeleted_by    *int32
+	sort_order       *uint32
+	addsort_order    *int32
+	is_enabled       *bool
+	tenant_id        *uint32
+	addtenant_id     *int32
+	entry_value      *string
+	numeric_value    *int32
+	addnumeric_value *int32
+	clearedFields    map[string]struct{}
+	dict_type        *uint32
+	cleareddict_type bool
+	i18ns            map[uint32]struct{}
+	removedi18ns     map[uint32]struct{}
+	clearedi18ns     bool
+	done             bool
+	oldValue         func(context.Context) (*DictEntry, error)
+	predicates       []predicate.DictEntry
 }
 
 var _ ent.Mutation = (*DictEntryMutation)(nil)
@@ -6917,22 +6920,9 @@ func (m *DictEntryMutation) OldEntryValue(ctx context.Context) (v *string, err e
 	return oldValue.EntryValue, nil
 }
 
-// ClearEntryValue clears the value of the "entry_value" field.
-func (m *DictEntryMutation) ClearEntryValue() {
-	m.entry_value = nil
-	m.clearedFields[dictentry.FieldEntryValue] = struct{}{}
-}
-
-// EntryValueCleared returns if the "entry_value" field was cleared in this mutation.
-func (m *DictEntryMutation) EntryValueCleared() bool {
-	_, ok := m.clearedFields[dictentry.FieldEntryValue]
-	return ok
-}
-
 // ResetEntryValue resets all changes to the "entry_value" field.
 func (m *DictEntryMutation) ResetEntryValue() {
 	m.entry_value = nil
-	delete(m.clearedFields, dictentry.FieldEntryValue)
 }
 
 // SetNumericValue sets the "numeric_value" field.
@@ -7005,43 +6995,97 @@ func (m *DictEntryMutation) ResetNumericValue() {
 	delete(m.clearedFields, dictentry.FieldNumericValue)
 }
 
-// SetSysDictTypesID sets the "sys_dict_types" edge to the DictType entity by id.
-func (m *DictEntryMutation) SetSysDictTypesID(id uint32) {
-	m.sys_dict_types = &id
+// SetDictTypeID sets the "dict_type" edge to the DictType entity by id.
+func (m *DictEntryMutation) SetDictTypeID(id uint32) {
+	m.dict_type = &id
 }
 
-// ClearSysDictTypes clears the "sys_dict_types" edge to the DictType entity.
-func (m *DictEntryMutation) ClearSysDictTypes() {
-	m.clearedsys_dict_types = true
+// ClearDictType clears the "dict_type" edge to the DictType entity.
+func (m *DictEntryMutation) ClearDictType() {
+	m.cleareddict_type = true
 }
 
-// SysDictTypesCleared reports if the "sys_dict_types" edge to the DictType entity was cleared.
-func (m *DictEntryMutation) SysDictTypesCleared() bool {
-	return m.clearedsys_dict_types
+// DictTypeCleared reports if the "dict_type" edge to the DictType entity was cleared.
+func (m *DictEntryMutation) DictTypeCleared() bool {
+	return m.cleareddict_type
 }
 
-// SysDictTypesID returns the "sys_dict_types" edge ID in the mutation.
-func (m *DictEntryMutation) SysDictTypesID() (id uint32, exists bool) {
-	if m.sys_dict_types != nil {
-		return *m.sys_dict_types, true
+// DictTypeID returns the "dict_type" edge ID in the mutation.
+func (m *DictEntryMutation) DictTypeID() (id uint32, exists bool) {
+	if m.dict_type != nil {
+		return *m.dict_type, true
 	}
 	return
 }
 
-// SysDictTypesIDs returns the "sys_dict_types" edge IDs in the mutation.
+// DictTypeIDs returns the "dict_type" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// SysDictTypesID instead. It exists only for internal usage by the builders.
-func (m *DictEntryMutation) SysDictTypesIDs() (ids []uint32) {
-	if id := m.sys_dict_types; id != nil {
+// DictTypeID instead. It exists only for internal usage by the builders.
+func (m *DictEntryMutation) DictTypeIDs() (ids []uint32) {
+	if id := m.dict_type; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetSysDictTypes resets all changes to the "sys_dict_types" edge.
-func (m *DictEntryMutation) ResetSysDictTypes() {
-	m.sys_dict_types = nil
-	m.clearedsys_dict_types = false
+// ResetDictType resets all changes to the "dict_type" edge.
+func (m *DictEntryMutation) ResetDictType() {
+	m.dict_type = nil
+	m.cleareddict_type = false
+}
+
+// AddI18nIDs adds the "i18ns" edge to the DictEntryI18n entity by ids.
+func (m *DictEntryMutation) AddI18nIDs(ids ...uint32) {
+	if m.i18ns == nil {
+		m.i18ns = make(map[uint32]struct{})
+	}
+	for i := range ids {
+		m.i18ns[ids[i]] = struct{}{}
+	}
+}
+
+// ClearI18ns clears the "i18ns" edge to the DictEntryI18n entity.
+func (m *DictEntryMutation) ClearI18ns() {
+	m.clearedi18ns = true
+}
+
+// I18nsCleared reports if the "i18ns" edge to the DictEntryI18n entity was cleared.
+func (m *DictEntryMutation) I18nsCleared() bool {
+	return m.clearedi18ns
+}
+
+// RemoveI18nIDs removes the "i18ns" edge to the DictEntryI18n entity by IDs.
+func (m *DictEntryMutation) RemoveI18nIDs(ids ...uint32) {
+	if m.removedi18ns == nil {
+		m.removedi18ns = make(map[uint32]struct{})
+	}
+	for i := range ids {
+		delete(m.i18ns, ids[i])
+		m.removedi18ns[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedI18ns returns the removed IDs of the "i18ns" edge to the DictEntryI18n entity.
+func (m *DictEntryMutation) RemovedI18nsIDs() (ids []uint32) {
+	for id := range m.removedi18ns {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// I18nsIDs returns the "i18ns" edge IDs in the mutation.
+func (m *DictEntryMutation) I18nsIDs() (ids []uint32) {
+	for id := range m.i18ns {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetI18ns resets all changes to the "i18ns" edge.
+func (m *DictEntryMutation) ResetI18ns() {
+	m.i18ns = nil
+	m.clearedi18ns = false
+	m.removedi18ns = nil
 }
 
 // Where appends a list predicates to the DictEntryMutation builder.
@@ -7391,9 +7435,6 @@ func (m *DictEntryMutation) ClearedFields() []string {
 	if m.FieldCleared(dictentry.FieldTenantID) {
 		fields = append(fields, dictentry.FieldTenantID)
 	}
-	if m.FieldCleared(dictentry.FieldEntryValue) {
-		fields = append(fields, dictentry.FieldEntryValue)
-	}
 	if m.FieldCleared(dictentry.FieldNumericValue) {
 		fields = append(fields, dictentry.FieldNumericValue)
 	}
@@ -7437,9 +7478,6 @@ func (m *DictEntryMutation) ClearField(name string) error {
 		return nil
 	case dictentry.FieldTenantID:
 		m.ClearTenantID()
-		return nil
-	case dictentry.FieldEntryValue:
-		m.ClearEntryValue()
 		return nil
 	case dictentry.FieldNumericValue:
 		m.ClearNumericValue()
@@ -7491,9 +7529,12 @@ func (m *DictEntryMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *DictEntryMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.sys_dict_types != nil {
-		edges = append(edges, dictentry.EdgeSysDictTypes)
+	edges := make([]string, 0, 2)
+	if m.dict_type != nil {
+		edges = append(edges, dictentry.EdgeDictType)
+	}
+	if m.i18ns != nil {
+		edges = append(edges, dictentry.EdgeI18ns)
 	}
 	return edges
 }
@@ -7502,31 +7543,51 @@ func (m *DictEntryMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *DictEntryMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case dictentry.EdgeSysDictTypes:
-		if id := m.sys_dict_types; id != nil {
+	case dictentry.EdgeDictType:
+		if id := m.dict_type; id != nil {
 			return []ent.Value{*id}
 		}
+	case dictentry.EdgeI18ns:
+		ids := make([]ent.Value, 0, len(m.i18ns))
+		for id := range m.i18ns {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *DictEntryMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.removedi18ns != nil {
+		edges = append(edges, dictentry.EdgeI18ns)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *DictEntryMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case dictentry.EdgeI18ns:
+		ids := make([]ent.Value, 0, len(m.removedi18ns))
+		for id := range m.removedi18ns {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *DictEntryMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.clearedsys_dict_types {
-		edges = append(edges, dictentry.EdgeSysDictTypes)
+	edges := make([]string, 0, 2)
+	if m.cleareddict_type {
+		edges = append(edges, dictentry.EdgeDictType)
+	}
+	if m.clearedi18ns {
+		edges = append(edges, dictentry.EdgeI18ns)
 	}
 	return edges
 }
@@ -7535,8 +7596,10 @@ func (m *DictEntryMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *DictEntryMutation) EdgeCleared(name string) bool {
 	switch name {
-	case dictentry.EdgeSysDictTypes:
-		return m.clearedsys_dict_types
+	case dictentry.EdgeDictType:
+		return m.cleareddict_type
+	case dictentry.EdgeI18ns:
+		return m.clearedi18ns
 	}
 	return false
 }
@@ -7545,8 +7608,8 @@ func (m *DictEntryMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *DictEntryMutation) ClearEdge(name string) error {
 	switch name {
-	case dictentry.EdgeSysDictTypes:
-		m.ClearSysDictTypes()
+	case dictentry.EdgeDictType:
+		m.ClearDictType()
 		return nil
 	}
 	return fmt.Errorf("unknown DictEntry unique edge %s", name)
@@ -7556,8 +7619,11 @@ func (m *DictEntryMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *DictEntryMutation) ResetEdge(name string) error {
 	switch name {
-	case dictentry.EdgeSysDictTypes:
-		m.ResetSysDictTypes()
+	case dictentry.EdgeDictType:
+		m.ResetDictType()
+		return nil
+	case dictentry.EdgeI18ns:
+		m.ResetI18ns()
 		return nil
 	}
 	return fmt.Errorf("unknown DictEntry edge %s", name)
@@ -7566,31 +7632,31 @@ func (m *DictEntryMutation) ResetEdge(name string) error {
 // DictEntryI18nMutation represents an operation that mutates the DictEntryI18n nodes in the graph.
 type DictEntryI18nMutation struct {
 	config
-	op                      Op
-	typ                     string
-	id                      *uint32
-	created_at              *time.Time
-	updated_at              *time.Time
-	deleted_at              *time.Time
-	created_by              *uint32
-	addcreated_by           *int32
-	updated_by              *uint32
-	addupdated_by           *int32
-	deleted_by              *uint32
-	adddeleted_by           *int32
-	description             *string
-	sort_order              *uint32
-	addsort_order           *int32
-	tenant_id               *uint32
-	addtenant_id            *int32
-	language_code           *string
-	entry_label             *string
-	clearedFields           map[string]struct{}
-	sys_dict_entries        *uint32
-	clearedsys_dict_entries bool
-	done                    bool
-	oldValue                func(context.Context) (*DictEntryI18n, error)
-	predicates              []predicate.DictEntryI18n
+	op                Op
+	typ               string
+	id                *uint32
+	created_at        *time.Time
+	updated_at        *time.Time
+	deleted_at        *time.Time
+	created_by        *uint32
+	addcreated_by     *int32
+	updated_by        *uint32
+	addupdated_by     *int32
+	deleted_by        *uint32
+	adddeleted_by     *int32
+	description       *string
+	sort_order        *uint32
+	addsort_order     *int32
+	tenant_id         *uint32
+	addtenant_id      *int32
+	language_code     *string
+	entry_label       *string
+	clearedFields     map[string]struct{}
+	dict_entry        *uint32
+	cleareddict_entry bool
+	done              bool
+	oldValue          func(context.Context) (*DictEntryI18n, error)
+	predicates        []predicate.DictEntryI18n
 }
 
 var _ ent.Mutation = (*DictEntryI18nMutation)(nil)
@@ -8341,43 +8407,43 @@ func (m *DictEntryI18nMutation) ResetEntryLabel() {
 	delete(m.clearedFields, dictentryi18n.FieldEntryLabel)
 }
 
-// SetSysDictEntriesID sets the "sys_dict_entries" edge to the DictEntry entity by id.
-func (m *DictEntryI18nMutation) SetSysDictEntriesID(id uint32) {
-	m.sys_dict_entries = &id
+// SetDictEntryID sets the "dict_entry" edge to the DictEntry entity by id.
+func (m *DictEntryI18nMutation) SetDictEntryID(id uint32) {
+	m.dict_entry = &id
 }
 
-// ClearSysDictEntries clears the "sys_dict_entries" edge to the DictEntry entity.
-func (m *DictEntryI18nMutation) ClearSysDictEntries() {
-	m.clearedsys_dict_entries = true
+// ClearDictEntry clears the "dict_entry" edge to the DictEntry entity.
+func (m *DictEntryI18nMutation) ClearDictEntry() {
+	m.cleareddict_entry = true
 }
 
-// SysDictEntriesCleared reports if the "sys_dict_entries" edge to the DictEntry entity was cleared.
-func (m *DictEntryI18nMutation) SysDictEntriesCleared() bool {
-	return m.clearedsys_dict_entries
+// DictEntryCleared reports if the "dict_entry" edge to the DictEntry entity was cleared.
+func (m *DictEntryI18nMutation) DictEntryCleared() bool {
+	return m.cleareddict_entry
 }
 
-// SysDictEntriesID returns the "sys_dict_entries" edge ID in the mutation.
-func (m *DictEntryI18nMutation) SysDictEntriesID() (id uint32, exists bool) {
-	if m.sys_dict_entries != nil {
-		return *m.sys_dict_entries, true
+// DictEntryID returns the "dict_entry" edge ID in the mutation.
+func (m *DictEntryI18nMutation) DictEntryID() (id uint32, exists bool) {
+	if m.dict_entry != nil {
+		return *m.dict_entry, true
 	}
 	return
 }
 
-// SysDictEntriesIDs returns the "sys_dict_entries" edge IDs in the mutation.
+// DictEntryIDs returns the "dict_entry" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// SysDictEntriesID instead. It exists only for internal usage by the builders.
-func (m *DictEntryI18nMutation) SysDictEntriesIDs() (ids []uint32) {
-	if id := m.sys_dict_entries; id != nil {
+// DictEntryID instead. It exists only for internal usage by the builders.
+func (m *DictEntryI18nMutation) DictEntryIDs() (ids []uint32) {
+	if id := m.dict_entry; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetSysDictEntries resets all changes to the "sys_dict_entries" edge.
-func (m *DictEntryI18nMutation) ResetSysDictEntries() {
-	m.sys_dict_entries = nil
-	m.clearedsys_dict_entries = false
+// ResetDictEntry resets all changes to the "dict_entry" edge.
+func (m *DictEntryI18nMutation) ResetDictEntry() {
+	m.dict_entry = nil
+	m.cleareddict_entry = false
 }
 
 // Where appends a list predicates to the DictEntryI18nMutation builder.
@@ -8816,8 +8882,8 @@ func (m *DictEntryI18nMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *DictEntryI18nMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.sys_dict_entries != nil {
-		edges = append(edges, dictentryi18n.EdgeSysDictEntries)
+	if m.dict_entry != nil {
+		edges = append(edges, dictentryi18n.EdgeDictEntry)
 	}
 	return edges
 }
@@ -8826,8 +8892,8 @@ func (m *DictEntryI18nMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *DictEntryI18nMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case dictentryi18n.EdgeSysDictEntries:
-		if id := m.sys_dict_entries; id != nil {
+	case dictentryi18n.EdgeDictEntry:
+		if id := m.dict_entry; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -8849,8 +8915,8 @@ func (m *DictEntryI18nMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *DictEntryI18nMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedsys_dict_entries {
-		edges = append(edges, dictentryi18n.EdgeSysDictEntries)
+	if m.cleareddict_entry {
+		edges = append(edges, dictentryi18n.EdgeDictEntry)
 	}
 	return edges
 }
@@ -8859,8 +8925,8 @@ func (m *DictEntryI18nMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *DictEntryI18nMutation) EdgeCleared(name string) bool {
 	switch name {
-	case dictentryi18n.EdgeSysDictEntries:
-		return m.clearedsys_dict_entries
+	case dictentryi18n.EdgeDictEntry:
+		return m.cleareddict_entry
 	}
 	return false
 }
@@ -8869,8 +8935,8 @@ func (m *DictEntryI18nMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *DictEntryI18nMutation) ClearEdge(name string) error {
 	switch name {
-	case dictentryi18n.EdgeSysDictEntries:
-		m.ClearSysDictEntries()
+	case dictentryi18n.EdgeDictEntry:
+		m.ClearDictEntry()
 		return nil
 	}
 	return fmt.Errorf("unknown DictEntryI18n unique edge %s", name)
@@ -8880,8 +8946,8 @@ func (m *DictEntryI18nMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *DictEntryI18nMutation) ResetEdge(name string) error {
 	switch name {
-	case dictentryi18n.EdgeSysDictEntries:
-		m.ResetSysDictEntries()
+	case dictentryi18n.EdgeDictEntry:
+		m.ResetDictEntry()
 		return nil
 	}
 	return fmt.Errorf("unknown DictEntryI18n edge %s", name)
@@ -10250,29 +10316,29 @@ func (m *DictTypeMutation) ResetEdge(name string) error {
 // DictTypeI18nMutation represents an operation that mutates the DictTypeI18n nodes in the graph.
 type DictTypeI18nMutation struct {
 	config
-	op                    Op
-	typ                   string
-	id                    *uint32
-	created_at            *time.Time
-	updated_at            *time.Time
-	deleted_at            *time.Time
-	created_by            *uint32
-	addcreated_by         *int32
-	updated_by            *uint32
-	addupdated_by         *int32
-	deleted_by            *uint32
-	adddeleted_by         *int32
-	description           *string
-	tenant_id             *uint32
-	addtenant_id          *int32
-	language_code         *string
-	type_name             *string
-	clearedFields         map[string]struct{}
-	sys_dict_types        *uint32
-	clearedsys_dict_types bool
-	done                  bool
-	oldValue              func(context.Context) (*DictTypeI18n, error)
-	predicates            []predicate.DictTypeI18n
+	op               Op
+	typ              string
+	id               *uint32
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	created_by       *uint32
+	addcreated_by    *int32
+	updated_by       *uint32
+	addupdated_by    *int32
+	deleted_by       *uint32
+	adddeleted_by    *int32
+	description      *string
+	tenant_id        *uint32
+	addtenant_id     *int32
+	language_code    *string
+	type_name        *string
+	clearedFields    map[string]struct{}
+	dict_type        *uint32
+	cleareddict_type bool
+	done             bool
+	oldValue         func(context.Context) (*DictTypeI18n, error)
+	predicates       []predicate.DictTypeI18n
 }
 
 var _ ent.Mutation = (*DictTypeI18nMutation)(nil)
@@ -10953,43 +11019,43 @@ func (m *DictTypeI18nMutation) ResetTypeName() {
 	delete(m.clearedFields, dicttypei18n.FieldTypeName)
 }
 
-// SetSysDictTypesID sets the "sys_dict_types" edge to the DictType entity by id.
-func (m *DictTypeI18nMutation) SetSysDictTypesID(id uint32) {
-	m.sys_dict_types = &id
+// SetDictTypeID sets the "dict_type" edge to the DictType entity by id.
+func (m *DictTypeI18nMutation) SetDictTypeID(id uint32) {
+	m.dict_type = &id
 }
 
-// ClearSysDictTypes clears the "sys_dict_types" edge to the DictType entity.
-func (m *DictTypeI18nMutation) ClearSysDictTypes() {
-	m.clearedsys_dict_types = true
+// ClearDictType clears the "dict_type" edge to the DictType entity.
+func (m *DictTypeI18nMutation) ClearDictType() {
+	m.cleareddict_type = true
 }
 
-// SysDictTypesCleared reports if the "sys_dict_types" edge to the DictType entity was cleared.
-func (m *DictTypeI18nMutation) SysDictTypesCleared() bool {
-	return m.clearedsys_dict_types
+// DictTypeCleared reports if the "dict_type" edge to the DictType entity was cleared.
+func (m *DictTypeI18nMutation) DictTypeCleared() bool {
+	return m.cleareddict_type
 }
 
-// SysDictTypesID returns the "sys_dict_types" edge ID in the mutation.
-func (m *DictTypeI18nMutation) SysDictTypesID() (id uint32, exists bool) {
-	if m.sys_dict_types != nil {
-		return *m.sys_dict_types, true
+// DictTypeID returns the "dict_type" edge ID in the mutation.
+func (m *DictTypeI18nMutation) DictTypeID() (id uint32, exists bool) {
+	if m.dict_type != nil {
+		return *m.dict_type, true
 	}
 	return
 }
 
-// SysDictTypesIDs returns the "sys_dict_types" edge IDs in the mutation.
+// DictTypeIDs returns the "dict_type" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// SysDictTypesID instead. It exists only for internal usage by the builders.
-func (m *DictTypeI18nMutation) SysDictTypesIDs() (ids []uint32) {
-	if id := m.sys_dict_types; id != nil {
+// DictTypeID instead. It exists only for internal usage by the builders.
+func (m *DictTypeI18nMutation) DictTypeIDs() (ids []uint32) {
+	if id := m.dict_type; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetSysDictTypes resets all changes to the "sys_dict_types" edge.
-func (m *DictTypeI18nMutation) ResetSysDictTypes() {
-	m.sys_dict_types = nil
-	m.clearedsys_dict_types = false
+// ResetDictType resets all changes to the "dict_type" edge.
+func (m *DictTypeI18nMutation) ResetDictType() {
+	m.dict_type = nil
+	m.cleareddict_type = false
 }
 
 // Where appends a list predicates to the DictTypeI18nMutation builder.
@@ -11393,8 +11459,8 @@ func (m *DictTypeI18nMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *DictTypeI18nMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.sys_dict_types != nil {
-		edges = append(edges, dicttypei18n.EdgeSysDictTypes)
+	if m.dict_type != nil {
+		edges = append(edges, dicttypei18n.EdgeDictType)
 	}
 	return edges
 }
@@ -11403,8 +11469,8 @@ func (m *DictTypeI18nMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *DictTypeI18nMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case dicttypei18n.EdgeSysDictTypes:
-		if id := m.sys_dict_types; id != nil {
+	case dicttypei18n.EdgeDictType:
+		if id := m.dict_type; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -11426,8 +11492,8 @@ func (m *DictTypeI18nMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *DictTypeI18nMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedsys_dict_types {
-		edges = append(edges, dicttypei18n.EdgeSysDictTypes)
+	if m.cleareddict_type {
+		edges = append(edges, dicttypei18n.EdgeDictType)
 	}
 	return edges
 }
@@ -11436,8 +11502,8 @@ func (m *DictTypeI18nMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *DictTypeI18nMutation) EdgeCleared(name string) bool {
 	switch name {
-	case dicttypei18n.EdgeSysDictTypes:
-		return m.clearedsys_dict_types
+	case dicttypei18n.EdgeDictType:
+		return m.cleareddict_type
 	}
 	return false
 }
@@ -11446,8 +11512,8 @@ func (m *DictTypeI18nMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *DictTypeI18nMutation) ClearEdge(name string) error {
 	switch name {
-	case dicttypei18n.EdgeSysDictTypes:
-		m.ClearSysDictTypes()
+	case dicttypei18n.EdgeDictType:
+		m.ClearDictType()
 		return nil
 	}
 	return fmt.Errorf("unknown DictTypeI18n unique edge %s", name)
@@ -11457,8 +11523,8 @@ func (m *DictTypeI18nMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *DictTypeI18nMutation) ResetEdge(name string) error {
 	switch name {
-	case dicttypei18n.EdgeSysDictTypes:
-		m.ResetSysDictTypes()
+	case dicttypei18n.EdgeDictType:
+		m.ResetDictType()
 		return nil
 	}
 	return fmt.Errorf("unknown DictTypeI18n edge %s", name)

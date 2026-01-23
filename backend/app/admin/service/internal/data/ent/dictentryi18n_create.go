@@ -183,15 +183,23 @@ func (_c *DictEntryI18nCreate) SetID(v uint32) *DictEntryI18nCreate {
 	return _c
 }
 
-// SetSysDictEntriesID sets the "sys_dict_entries" edge to the DictEntry entity by ID.
-func (_c *DictEntryI18nCreate) SetSysDictEntriesID(id uint32) *DictEntryI18nCreate {
-	_c.mutation.SetSysDictEntriesID(id)
+// SetDictEntryID sets the "dict_entry" edge to the DictEntry entity by ID.
+func (_c *DictEntryI18nCreate) SetDictEntryID(id uint32) *DictEntryI18nCreate {
+	_c.mutation.SetDictEntryID(id)
 	return _c
 }
 
-// SetSysDictEntries sets the "sys_dict_entries" edge to the DictEntry entity.
-func (_c *DictEntryI18nCreate) SetSysDictEntries(v *DictEntry) *DictEntryI18nCreate {
-	return _c.SetSysDictEntriesID(v.ID)
+// SetNillableDictEntryID sets the "dict_entry" edge to the DictEntry entity by ID if the given value is not nil.
+func (_c *DictEntryI18nCreate) SetNillableDictEntryID(id *uint32) *DictEntryI18nCreate {
+	if id != nil {
+		_c = _c.SetDictEntryID(*id)
+	}
+	return _c
+}
+
+// SetDictEntry sets the "dict_entry" edge to the DictEntry entity.
+func (_c *DictEntryI18nCreate) SetDictEntry(v *DictEntry) *DictEntryI18nCreate {
+	return _c.SetDictEntryID(v.ID)
 }
 
 // Mutation returns the DictEntryI18nMutation object of the builder.
@@ -258,9 +266,6 @@ func (_c *DictEntryI18nCreate) check() error {
 		if err := dictentryi18n.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "DictEntryI18n.id": %w`, err)}
 		}
-	}
-	if len(_c.mutation.SysDictEntriesIDs()) == 0 {
-		return &ValidationError{Name: "sys_dict_entries", err: errors.New(`ent: missing required edge "DictEntryI18n.sys_dict_entries"`)}
 	}
 	return nil
 }
@@ -339,12 +344,12 @@ func (_c *DictEntryI18nCreate) createSpec() (*DictEntryI18n, *sqlgraph.CreateSpe
 		_spec.SetField(dictentryi18n.FieldEntryLabel, field.TypeString, value)
 		_node.EntryLabel = &value
 	}
-	if nodes := _c.mutation.SysDictEntriesIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.DictEntryIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   dictentryi18n.SysDictEntriesTable,
-			Columns: []string{dictentryi18n.SysDictEntriesColumn},
+			Inverse: true,
+			Table:   dictentryi18n.DictEntryTable,
+			Columns: []string{dictentryi18n.DictEntryColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(dictentry.FieldID, field.TypeUint32),

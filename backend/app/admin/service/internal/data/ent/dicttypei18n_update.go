@@ -191,15 +191,23 @@ func (_u *DictTypeI18nUpdate) ClearTypeName() *DictTypeI18nUpdate {
 	return _u
 }
 
-// SetSysDictTypesID sets the "sys_dict_types" edge to the DictType entity by ID.
-func (_u *DictTypeI18nUpdate) SetSysDictTypesID(id uint32) *DictTypeI18nUpdate {
-	_u.mutation.SetSysDictTypesID(id)
+// SetDictTypeID sets the "dict_type" edge to the DictType entity by ID.
+func (_u *DictTypeI18nUpdate) SetDictTypeID(id uint32) *DictTypeI18nUpdate {
+	_u.mutation.SetDictTypeID(id)
 	return _u
 }
 
-// SetSysDictTypes sets the "sys_dict_types" edge to the DictType entity.
-func (_u *DictTypeI18nUpdate) SetSysDictTypes(v *DictType) *DictTypeI18nUpdate {
-	return _u.SetSysDictTypesID(v.ID)
+// SetNillableDictTypeID sets the "dict_type" edge to the DictType entity by ID if the given value is not nil.
+func (_u *DictTypeI18nUpdate) SetNillableDictTypeID(id *uint32) *DictTypeI18nUpdate {
+	if id != nil {
+		_u = _u.SetDictTypeID(*id)
+	}
+	return _u
+}
+
+// SetDictType sets the "dict_type" edge to the DictType entity.
+func (_u *DictTypeI18nUpdate) SetDictType(v *DictType) *DictTypeI18nUpdate {
+	return _u.SetDictTypeID(v.ID)
 }
 
 // Mutation returns the DictTypeI18nMutation object of the builder.
@@ -207,9 +215,9 @@ func (_u *DictTypeI18nUpdate) Mutation() *DictTypeI18nMutation {
 	return _u.mutation
 }
 
-// ClearSysDictTypes clears the "sys_dict_types" edge to the DictType entity.
-func (_u *DictTypeI18nUpdate) ClearSysDictTypes() *DictTypeI18nUpdate {
-	_u.mutation.ClearSysDictTypes()
+// ClearDictType clears the "dict_type" edge to the DictType entity.
+func (_u *DictTypeI18nUpdate) ClearDictType() *DictTypeI18nUpdate {
+	_u.mutation.ClearDictType()
 	return _u
 }
 
@@ -246,9 +254,6 @@ func (_u *DictTypeI18nUpdate) check() error {
 		if err := dicttypei18n.TypeNameValidator(v); err != nil {
 			return &ValidationError{Name: "type_name", err: fmt.Errorf(`ent: validator failed for field "DictTypeI18n.type_name": %w`, err)}
 		}
-	}
-	if _u.mutation.SysDictTypesCleared() && len(_u.mutation.SysDictTypesIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "DictTypeI18n.sys_dict_types"`)
 	}
 	return nil
 }
@@ -331,12 +336,12 @@ func (_u *DictTypeI18nUpdate) sqlSave(ctx context.Context) (_node int, err error
 	if _u.mutation.TypeNameCleared() {
 		_spec.ClearField(dicttypei18n.FieldTypeName, field.TypeString)
 	}
-	if _u.mutation.SysDictTypesCleared() {
+	if _u.mutation.DictTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   dicttypei18n.SysDictTypesTable,
-			Columns: []string{dicttypei18n.SysDictTypesColumn},
+			Inverse: true,
+			Table:   dicttypei18n.DictTypeTable,
+			Columns: []string{dicttypei18n.DictTypeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint32),
@@ -344,12 +349,12 @@ func (_u *DictTypeI18nUpdate) sqlSave(ctx context.Context) (_node int, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.SysDictTypesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.DictTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   dicttypei18n.SysDictTypesTable,
-			Columns: []string{dicttypei18n.SysDictTypesColumn},
+			Inverse: true,
+			Table:   dicttypei18n.DictTypeTable,
+			Columns: []string{dicttypei18n.DictTypeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint32),
@@ -543,15 +548,23 @@ func (_u *DictTypeI18nUpdateOne) ClearTypeName() *DictTypeI18nUpdateOne {
 	return _u
 }
 
-// SetSysDictTypesID sets the "sys_dict_types" edge to the DictType entity by ID.
-func (_u *DictTypeI18nUpdateOne) SetSysDictTypesID(id uint32) *DictTypeI18nUpdateOne {
-	_u.mutation.SetSysDictTypesID(id)
+// SetDictTypeID sets the "dict_type" edge to the DictType entity by ID.
+func (_u *DictTypeI18nUpdateOne) SetDictTypeID(id uint32) *DictTypeI18nUpdateOne {
+	_u.mutation.SetDictTypeID(id)
 	return _u
 }
 
-// SetSysDictTypes sets the "sys_dict_types" edge to the DictType entity.
-func (_u *DictTypeI18nUpdateOne) SetSysDictTypes(v *DictType) *DictTypeI18nUpdateOne {
-	return _u.SetSysDictTypesID(v.ID)
+// SetNillableDictTypeID sets the "dict_type" edge to the DictType entity by ID if the given value is not nil.
+func (_u *DictTypeI18nUpdateOne) SetNillableDictTypeID(id *uint32) *DictTypeI18nUpdateOne {
+	if id != nil {
+		_u = _u.SetDictTypeID(*id)
+	}
+	return _u
+}
+
+// SetDictType sets the "dict_type" edge to the DictType entity.
+func (_u *DictTypeI18nUpdateOne) SetDictType(v *DictType) *DictTypeI18nUpdateOne {
+	return _u.SetDictTypeID(v.ID)
 }
 
 // Mutation returns the DictTypeI18nMutation object of the builder.
@@ -559,9 +572,9 @@ func (_u *DictTypeI18nUpdateOne) Mutation() *DictTypeI18nMutation {
 	return _u.mutation
 }
 
-// ClearSysDictTypes clears the "sys_dict_types" edge to the DictType entity.
-func (_u *DictTypeI18nUpdateOne) ClearSysDictTypes() *DictTypeI18nUpdateOne {
-	_u.mutation.ClearSysDictTypes()
+// ClearDictType clears the "dict_type" edge to the DictType entity.
+func (_u *DictTypeI18nUpdateOne) ClearDictType() *DictTypeI18nUpdateOne {
+	_u.mutation.ClearDictType()
 	return _u
 }
 
@@ -611,9 +624,6 @@ func (_u *DictTypeI18nUpdateOne) check() error {
 		if err := dicttypei18n.TypeNameValidator(v); err != nil {
 			return &ValidationError{Name: "type_name", err: fmt.Errorf(`ent: validator failed for field "DictTypeI18n.type_name": %w`, err)}
 		}
-	}
-	if _u.mutation.SysDictTypesCleared() && len(_u.mutation.SysDictTypesIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "DictTypeI18n.sys_dict_types"`)
 	}
 	return nil
 }
@@ -713,12 +723,12 @@ func (_u *DictTypeI18nUpdateOne) sqlSave(ctx context.Context) (_node *DictTypeI1
 	if _u.mutation.TypeNameCleared() {
 		_spec.ClearField(dicttypei18n.FieldTypeName, field.TypeString)
 	}
-	if _u.mutation.SysDictTypesCleared() {
+	if _u.mutation.DictTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   dicttypei18n.SysDictTypesTable,
-			Columns: []string{dicttypei18n.SysDictTypesColumn},
+			Inverse: true,
+			Table:   dicttypei18n.DictTypeTable,
+			Columns: []string{dicttypei18n.DictTypeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint32),
@@ -726,12 +736,12 @@ func (_u *DictTypeI18nUpdateOne) sqlSave(ctx context.Context) (_node *DictTypeI1
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.SysDictTypesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.DictTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   dicttypei18n.SysDictTypesTable,
-			Columns: []string{dicttypei18n.SysDictTypesColumn},
+			Inverse: true,
+			Table:   dicttypei18n.DictTypeTable,
+			Columns: []string{dicttypei18n.DictTypeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint32),

@@ -35,17 +35,17 @@ const (
 	FieldLanguageCode = "language_code"
 	// FieldEntryLabel holds the string denoting the entry_label field in the database.
 	FieldEntryLabel = "entry_label"
-	// EdgeSysDictEntries holds the string denoting the sys_dict_entries edge name in mutations.
-	EdgeSysDictEntries = "sys_dict_entries"
+	// EdgeDictEntry holds the string denoting the dict_entry edge name in mutations.
+	EdgeDictEntry = "dict_entry"
 	// Table holds the table name of the dictentryi18n in the database.
 	Table = "sys_dict_entry_i18n"
-	// SysDictEntriesTable is the table that holds the sys_dict_entries relation/edge.
-	SysDictEntriesTable = "sys_dict_entry_i18n"
-	// SysDictEntriesInverseTable is the table name for the DictEntry entity.
+	// DictEntryTable is the table that holds the dict_entry relation/edge.
+	DictEntryTable = "sys_dict_entry_i18n"
+	// DictEntryInverseTable is the table name for the DictEntry entity.
 	// It exists in this package in order to avoid circular dependency with the "dictentry" package.
-	SysDictEntriesInverseTable = "sys_dict_entries"
-	// SysDictEntriesColumn is the table column denoting the sys_dict_entries relation/edge.
-	SysDictEntriesColumn = "entry_id"
+	DictEntryInverseTable = "sys_dict_entries"
+	// DictEntryColumn is the table column denoting the dict_entry relation/edge.
+	DictEntryColumn = "entry_id"
 )
 
 // Columns holds all SQL columns for dictentryi18n fields.
@@ -168,16 +168,16 @@ func ByEntryLabel(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEntryLabel, opts...).ToFunc()
 }
 
-// BySysDictEntriesField orders the results by sys_dict_entries field.
-func BySysDictEntriesField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByDictEntryField orders the results by dict_entry field.
+func ByDictEntryField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newSysDictEntriesStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newDictEntryStep(), sql.OrderByField(field, opts...))
 	}
 }
-func newSysDictEntriesStep() *sqlgraph.Step {
+func newDictEntryStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SysDictEntriesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, SysDictEntriesTable, SysDictEntriesColumn),
+		sqlgraph.To(DictEntryInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, DictEntryTable, DictEntryColumn),
 	)
 }

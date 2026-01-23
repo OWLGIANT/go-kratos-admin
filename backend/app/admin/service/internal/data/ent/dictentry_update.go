@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
+	"go-wind-admin/app/admin/service/internal/data/ent/dictentryi18n"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"time"
@@ -212,12 +213,6 @@ func (_u *DictEntryUpdate) SetNillableEntryValue(v *string) *DictEntryUpdate {
 	return _u
 }
 
-// ClearEntryValue clears the value of the "entry_value" field.
-func (_u *DictEntryUpdate) ClearEntryValue() *DictEntryUpdate {
-	_u.mutation.ClearEntryValue()
-	return _u
-}
-
 // SetNumericValue sets the "numeric_value" field.
 func (_u *DictEntryUpdate) SetNumericValue(v int32) *DictEntryUpdate {
 	_u.mutation.ResetNumericValue()
@@ -245,15 +240,38 @@ func (_u *DictEntryUpdate) ClearNumericValue() *DictEntryUpdate {
 	return _u
 }
 
-// SetSysDictTypesID sets the "sys_dict_types" edge to the DictType entity by ID.
-func (_u *DictEntryUpdate) SetSysDictTypesID(id uint32) *DictEntryUpdate {
-	_u.mutation.SetSysDictTypesID(id)
+// SetDictTypeID sets the "dict_type" edge to the DictType entity by ID.
+func (_u *DictEntryUpdate) SetDictTypeID(id uint32) *DictEntryUpdate {
+	_u.mutation.SetDictTypeID(id)
 	return _u
 }
 
-// SetSysDictTypes sets the "sys_dict_types" edge to the DictType entity.
-func (_u *DictEntryUpdate) SetSysDictTypes(v *DictType) *DictEntryUpdate {
-	return _u.SetSysDictTypesID(v.ID)
+// SetNillableDictTypeID sets the "dict_type" edge to the DictType entity by ID if the given value is not nil.
+func (_u *DictEntryUpdate) SetNillableDictTypeID(id *uint32) *DictEntryUpdate {
+	if id != nil {
+		_u = _u.SetDictTypeID(*id)
+	}
+	return _u
+}
+
+// SetDictType sets the "dict_type" edge to the DictType entity.
+func (_u *DictEntryUpdate) SetDictType(v *DictType) *DictEntryUpdate {
+	return _u.SetDictTypeID(v.ID)
+}
+
+// AddI18nIDs adds the "i18ns" edge to the DictEntryI18n entity by IDs.
+func (_u *DictEntryUpdate) AddI18nIDs(ids ...uint32) *DictEntryUpdate {
+	_u.mutation.AddI18nIDs(ids...)
+	return _u
+}
+
+// AddI18ns adds the "i18ns" edges to the DictEntryI18n entity.
+func (_u *DictEntryUpdate) AddI18ns(v ...*DictEntryI18n) *DictEntryUpdate {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddI18nIDs(ids...)
 }
 
 // Mutation returns the DictEntryMutation object of the builder.
@@ -261,10 +279,31 @@ func (_u *DictEntryUpdate) Mutation() *DictEntryMutation {
 	return _u.mutation
 }
 
-// ClearSysDictTypes clears the "sys_dict_types" edge to the DictType entity.
-func (_u *DictEntryUpdate) ClearSysDictTypes() *DictEntryUpdate {
-	_u.mutation.ClearSysDictTypes()
+// ClearDictType clears the "dict_type" edge to the DictType entity.
+func (_u *DictEntryUpdate) ClearDictType() *DictEntryUpdate {
+	_u.mutation.ClearDictType()
 	return _u
+}
+
+// ClearI18ns clears all "i18ns" edges to the DictEntryI18n entity.
+func (_u *DictEntryUpdate) ClearI18ns() *DictEntryUpdate {
+	_u.mutation.ClearI18ns()
+	return _u
+}
+
+// RemoveI18nIDs removes the "i18ns" edge to DictEntryI18n entities by IDs.
+func (_u *DictEntryUpdate) RemoveI18nIDs(ids ...uint32) *DictEntryUpdate {
+	_u.mutation.RemoveI18nIDs(ids...)
+	return _u
+}
+
+// RemoveI18ns removes "i18ns" edges to DictEntryI18n entities.
+func (_u *DictEntryUpdate) RemoveI18ns(v ...*DictEntryI18n) *DictEntryUpdate {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveI18nIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -300,9 +339,6 @@ func (_u *DictEntryUpdate) check() error {
 		if err := dictentry.EntryValueValidator(v); err != nil {
 			return &ValidationError{Name: "entry_value", err: fmt.Errorf(`ent: validator failed for field "DictEntry.entry_value": %w`, err)}
 		}
-	}
-	if _u.mutation.SysDictTypesCleared() && len(_u.mutation.SysDictTypesIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "DictEntry.sys_dict_types"`)
 	}
 	return nil
 }
@@ -388,9 +424,6 @@ func (_u *DictEntryUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.EntryValue(); ok {
 		_spec.SetField(dictentry.FieldEntryValue, field.TypeString, value)
 	}
-	if _u.mutation.EntryValueCleared() {
-		_spec.ClearField(dictentry.FieldEntryValue, field.TypeString)
-	}
 	if value, ok := _u.mutation.NumericValue(); ok {
 		_spec.SetField(dictentry.FieldNumericValue, field.TypeInt32, value)
 	}
@@ -400,12 +433,12 @@ func (_u *DictEntryUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.NumericValueCleared() {
 		_spec.ClearField(dictentry.FieldNumericValue, field.TypeInt32)
 	}
-	if _u.mutation.SysDictTypesCleared() {
+	if _u.mutation.DictTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   dictentry.SysDictTypesTable,
-			Columns: []string{dictentry.SysDictTypesColumn},
+			Inverse: true,
+			Table:   dictentry.DictTypeTable,
+			Columns: []string{dictentry.DictTypeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint32),
@@ -413,15 +446,60 @@ func (_u *DictEntryUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.SysDictTypesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.DictTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   dictentry.SysDictTypesTable,
-			Columns: []string{dictentry.SysDictTypesColumn},
+			Inverse: true,
+			Table:   dictentry.DictTypeTable,
+			Columns: []string{dictentry.DictTypeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.I18nsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   dictentry.I18nsTable,
+			Columns: []string{dictentry.I18nsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(dictentryi18n.FieldID, field.TypeUint32),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedI18nsIDs(); len(nodes) > 0 && !_u.mutation.I18nsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   dictentry.I18nsTable,
+			Columns: []string{dictentry.I18nsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(dictentryi18n.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.I18nsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   dictentry.I18nsTable,
+			Columns: []string{dictentry.I18nsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(dictentryi18n.FieldID, field.TypeUint32),
 			},
 		}
 		for _, k := range nodes {
@@ -633,12 +711,6 @@ func (_u *DictEntryUpdateOne) SetNillableEntryValue(v *string) *DictEntryUpdateO
 	return _u
 }
 
-// ClearEntryValue clears the value of the "entry_value" field.
-func (_u *DictEntryUpdateOne) ClearEntryValue() *DictEntryUpdateOne {
-	_u.mutation.ClearEntryValue()
-	return _u
-}
-
 // SetNumericValue sets the "numeric_value" field.
 func (_u *DictEntryUpdateOne) SetNumericValue(v int32) *DictEntryUpdateOne {
 	_u.mutation.ResetNumericValue()
@@ -666,15 +738,38 @@ func (_u *DictEntryUpdateOne) ClearNumericValue() *DictEntryUpdateOne {
 	return _u
 }
 
-// SetSysDictTypesID sets the "sys_dict_types" edge to the DictType entity by ID.
-func (_u *DictEntryUpdateOne) SetSysDictTypesID(id uint32) *DictEntryUpdateOne {
-	_u.mutation.SetSysDictTypesID(id)
+// SetDictTypeID sets the "dict_type" edge to the DictType entity by ID.
+func (_u *DictEntryUpdateOne) SetDictTypeID(id uint32) *DictEntryUpdateOne {
+	_u.mutation.SetDictTypeID(id)
 	return _u
 }
 
-// SetSysDictTypes sets the "sys_dict_types" edge to the DictType entity.
-func (_u *DictEntryUpdateOne) SetSysDictTypes(v *DictType) *DictEntryUpdateOne {
-	return _u.SetSysDictTypesID(v.ID)
+// SetNillableDictTypeID sets the "dict_type" edge to the DictType entity by ID if the given value is not nil.
+func (_u *DictEntryUpdateOne) SetNillableDictTypeID(id *uint32) *DictEntryUpdateOne {
+	if id != nil {
+		_u = _u.SetDictTypeID(*id)
+	}
+	return _u
+}
+
+// SetDictType sets the "dict_type" edge to the DictType entity.
+func (_u *DictEntryUpdateOne) SetDictType(v *DictType) *DictEntryUpdateOne {
+	return _u.SetDictTypeID(v.ID)
+}
+
+// AddI18nIDs adds the "i18ns" edge to the DictEntryI18n entity by IDs.
+func (_u *DictEntryUpdateOne) AddI18nIDs(ids ...uint32) *DictEntryUpdateOne {
+	_u.mutation.AddI18nIDs(ids...)
+	return _u
+}
+
+// AddI18ns adds the "i18ns" edges to the DictEntryI18n entity.
+func (_u *DictEntryUpdateOne) AddI18ns(v ...*DictEntryI18n) *DictEntryUpdateOne {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddI18nIDs(ids...)
 }
 
 // Mutation returns the DictEntryMutation object of the builder.
@@ -682,10 +777,31 @@ func (_u *DictEntryUpdateOne) Mutation() *DictEntryMutation {
 	return _u.mutation
 }
 
-// ClearSysDictTypes clears the "sys_dict_types" edge to the DictType entity.
-func (_u *DictEntryUpdateOne) ClearSysDictTypes() *DictEntryUpdateOne {
-	_u.mutation.ClearSysDictTypes()
+// ClearDictType clears the "dict_type" edge to the DictType entity.
+func (_u *DictEntryUpdateOne) ClearDictType() *DictEntryUpdateOne {
+	_u.mutation.ClearDictType()
 	return _u
+}
+
+// ClearI18ns clears all "i18ns" edges to the DictEntryI18n entity.
+func (_u *DictEntryUpdateOne) ClearI18ns() *DictEntryUpdateOne {
+	_u.mutation.ClearI18ns()
+	return _u
+}
+
+// RemoveI18nIDs removes the "i18ns" edge to DictEntryI18n entities by IDs.
+func (_u *DictEntryUpdateOne) RemoveI18nIDs(ids ...uint32) *DictEntryUpdateOne {
+	_u.mutation.RemoveI18nIDs(ids...)
+	return _u
+}
+
+// RemoveI18ns removes "i18ns" edges to DictEntryI18n entities.
+func (_u *DictEntryUpdateOne) RemoveI18ns(v ...*DictEntryI18n) *DictEntryUpdateOne {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveI18nIDs(ids...)
 }
 
 // Where appends a list predicates to the DictEntryUpdate builder.
@@ -734,9 +850,6 @@ func (_u *DictEntryUpdateOne) check() error {
 		if err := dictentry.EntryValueValidator(v); err != nil {
 			return &ValidationError{Name: "entry_value", err: fmt.Errorf(`ent: validator failed for field "DictEntry.entry_value": %w`, err)}
 		}
-	}
-	if _u.mutation.SysDictTypesCleared() && len(_u.mutation.SysDictTypesIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "DictEntry.sys_dict_types"`)
 	}
 	return nil
 }
@@ -839,9 +952,6 @@ func (_u *DictEntryUpdateOne) sqlSave(ctx context.Context) (_node *DictEntry, er
 	if value, ok := _u.mutation.EntryValue(); ok {
 		_spec.SetField(dictentry.FieldEntryValue, field.TypeString, value)
 	}
-	if _u.mutation.EntryValueCleared() {
-		_spec.ClearField(dictentry.FieldEntryValue, field.TypeString)
-	}
 	if value, ok := _u.mutation.NumericValue(); ok {
 		_spec.SetField(dictentry.FieldNumericValue, field.TypeInt32, value)
 	}
@@ -851,12 +961,12 @@ func (_u *DictEntryUpdateOne) sqlSave(ctx context.Context) (_node *DictEntry, er
 	if _u.mutation.NumericValueCleared() {
 		_spec.ClearField(dictentry.FieldNumericValue, field.TypeInt32)
 	}
-	if _u.mutation.SysDictTypesCleared() {
+	if _u.mutation.DictTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   dictentry.SysDictTypesTable,
-			Columns: []string{dictentry.SysDictTypesColumn},
+			Inverse: true,
+			Table:   dictentry.DictTypeTable,
+			Columns: []string{dictentry.DictTypeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint32),
@@ -864,15 +974,60 @@ func (_u *DictEntryUpdateOne) sqlSave(ctx context.Context) (_node *DictEntry, er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.SysDictTypesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.DictTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   dictentry.SysDictTypesTable,
-			Columns: []string{dictentry.SysDictTypesColumn},
+			Inverse: true,
+			Table:   dictentry.DictTypeTable,
+			Columns: []string{dictentry.DictTypeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.I18nsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   dictentry.I18nsTable,
+			Columns: []string{dictentry.I18nsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(dictentryi18n.FieldID, field.TypeUint32),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedI18nsIDs(); len(nodes) > 0 && !_u.mutation.I18nsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   dictentry.I18nsTable,
+			Columns: []string{dictentry.I18nsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(dictentryi18n.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.I18nsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   dictentry.I18nsTable,
+			Columns: []string{dictentry.I18nsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(dictentryi18n.FieldID, field.TypeUint32),
 			},
 		}
 		for _, k := range nodes {

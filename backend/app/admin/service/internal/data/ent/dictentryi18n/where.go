@@ -735,21 +735,21 @@ func EntryLabelContainsFold(v string) predicate.DictEntryI18n {
 	return predicate.DictEntryI18n(sql.FieldContainsFold(FieldEntryLabel, v))
 }
 
-// HasSysDictEntries applies the HasEdge predicate on the "sys_dict_entries" edge.
-func HasSysDictEntries() predicate.DictEntryI18n {
+// HasDictEntry applies the HasEdge predicate on the "dict_entry" edge.
+func HasDictEntry() predicate.DictEntryI18n {
 	return predicate.DictEntryI18n(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, SysDictEntriesTable, SysDictEntriesColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, DictEntryTable, DictEntryColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasSysDictEntriesWith applies the HasEdge predicate on the "sys_dict_entries" edge with a given conditions (other predicates).
-func HasSysDictEntriesWith(preds ...predicate.DictEntry) predicate.DictEntryI18n {
+// HasDictEntryWith applies the HasEdge predicate on the "dict_entry" edge with a given conditions (other predicates).
+func HasDictEntryWith(preds ...predicate.DictEntry) predicate.DictEntryI18n {
 	return predicate.DictEntryI18n(func(s *sql.Selector) {
-		step := newSysDictEntriesStep()
+		step := newDictEntryStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

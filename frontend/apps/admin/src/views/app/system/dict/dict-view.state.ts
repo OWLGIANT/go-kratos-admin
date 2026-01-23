@@ -1,6 +1,10 @@
+import { preferences } from '@vben/preferences';
+
 import { defineStore } from 'pinia';
 
 import {
+  type dictservicev1_DictEntry as DictEntry,
+  type dictservicev1_DictType as DictType,
   type dictservicev1_ListDictEntryResponse as ListDictEntryResponse,
   type dictservicev1_ListDictTypeResponse as ListDictTypeResponse,
 } from '#/generated/api/admin/service/v1';
@@ -16,7 +20,7 @@ interface DictViewState {
 
   currentTypeId: null | number; // 当前选中的字典类型ID
   typeList: ListDictTypeResponse; // 字典类型列表
-  entryList: ListDictEntryResponse; // 字典条目列表
+  entryList: ListDictEntryResponse; // 字典项列表
 }
 
 /**
@@ -63,7 +67,7 @@ export const useDictViewStore = defineStore('dict-view', {
     },
 
     /**
-     * 根据字典类型ID获取字典条目列表
+     * 根据字典类型ID获取字典项列表
      * @param typeId 字典类型ID
      * @param currentPage
      * @param pageSize
@@ -93,7 +97,7 @@ export const useDictViewStore = defineStore('dict-view', {
           },
         );
       } catch (error) {
-        console.error(`获取字典类型[${typeId}]的条目失败:`, error);
+        console.error(`获取字典类型[${typeId}]的项失败:`, error);
         this.resetEntryList();
       } finally {
         this.loading = false;
@@ -103,7 +107,7 @@ export const useDictViewStore = defineStore('dict-view', {
     },
 
     /**
-     * 点击字典类型时触发：设置当前字典类型ID + 刷新字典条目列表
+     * 点击字典类型时触发：设置当前字典类型ID + 刷新字典项列表
      * @param typeId 字典类型ID
      */
     async setCurrentTypeId(typeId: null | number) {
@@ -119,3 +123,19 @@ export const useDictViewStore = defineStore('dict-view', {
     },
   },
 });
+
+export function getTypeName(row: DictType) {
+  const currentI18n = row.i18n?.[preferences.app.locale];
+  if (currentI18n === undefined) {
+    return '';
+  }
+  return currentI18n.typeName;
+}
+
+export function getEntryLabel(row: DictEntry) {
+  const currentI18n = row.i18n?.[preferences.app.locale];
+  if (currentI18n === undefined) {
+    return '';
+  }
+  return currentI18n.entryLabel;
+}

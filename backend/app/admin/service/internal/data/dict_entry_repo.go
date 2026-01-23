@@ -91,7 +91,7 @@ func (r *DictEntryRepo) List(ctx context.Context, req *paginationV1.PagingReques
 		return nil, dictV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().DictEntry.Query()
+	builder := r.entClient.Client().Debug().DictEntry.Query()
 
 	ret, err := r.repository.ListWithPaging(ctx, builder, builder.Clone(), req)
 	if err != nil {
@@ -182,7 +182,7 @@ func (r *DictEntryRepo) Create(ctx context.Context, req *dictV1.CreateDictEntryR
 
 	builder := tx.DictEntry.Create().
 		SetNillableTenantID(req.Data.TenantId).
-		SetNillableEntryValue(req.Data.EntryValue).
+		SetEntryValue(req.Data.GetEntryValue()).
 		SetNillableNumericValue(req.Data.NumericValue).
 		SetNillableIsEnabled(req.Data.IsEnabled).
 		SetNillableSortOrder(req.Data.SortOrder).
@@ -190,7 +190,7 @@ func (r *DictEntryRepo) Create(ctx context.Context, req *dictV1.CreateDictEntryR
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
 
 	if req.Data.TypeId == nil {
-		builder.SetSysDictTypesID(req.Data.GetTypeId())
+		builder.SetDictTypeID(req.Data.GetTypeId())
 	}
 	if req.Data.CreatedAt == nil {
 		builder.SetCreatedAt(time.Now())
@@ -210,8 +210,7 @@ func (r *DictEntryRepo) Create(ctx context.Context, req *dictV1.CreateDictEntryR
 		if err = r.i18n.ReplaceByEntryID(
 			ctx,
 			tx,
-			req.Data.GetTenantId(),
-			req.Data.GetCreatedBy(),
+			req.Data.GetTenantId(), req.Data.GetCreatedBy(),
 			entity.ID,
 			req.Data.I18N,
 		); err != nil {

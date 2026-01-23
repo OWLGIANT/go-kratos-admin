@@ -33,17 +33,17 @@ const (
 	FieldLanguageCode = "language_code"
 	// FieldTypeName holds the string denoting the type_name field in the database.
 	FieldTypeName = "type_name"
-	// EdgeSysDictTypes holds the string denoting the sys_dict_types edge name in mutations.
-	EdgeSysDictTypes = "sys_dict_types"
+	// EdgeDictType holds the string denoting the dict_type edge name in mutations.
+	EdgeDictType = "dict_type"
 	// Table holds the table name of the dicttypei18n in the database.
 	Table = "sys_dict_type_i18n"
-	// SysDictTypesTable is the table that holds the sys_dict_types relation/edge.
-	SysDictTypesTable = "sys_dict_type_i18n"
-	// SysDictTypesInverseTable is the table name for the DictType entity.
+	// DictTypeTable is the table that holds the dict_type relation/edge.
+	DictTypeTable = "sys_dict_type_i18n"
+	// DictTypeInverseTable is the table name for the DictType entity.
 	// It exists in this package in order to avoid circular dependency with the "dicttype" package.
-	SysDictTypesInverseTable = "sys_dict_types"
-	// SysDictTypesColumn is the table column denoting the sys_dict_types relation/edge.
-	SysDictTypesColumn = "type_id"
+	DictTypeInverseTable = "sys_dict_types"
+	// DictTypeColumn is the table column denoting the dict_type relation/edge.
+	DictTypeColumn = "type_id"
 )
 
 // Columns holds all SQL columns for dicttypei18n fields.
@@ -158,16 +158,16 @@ func ByTypeName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTypeName, opts...).ToFunc()
 }
 
-// BySysDictTypesField orders the results by sys_dict_types field.
-func BySysDictTypesField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByDictTypeField orders the results by dict_type field.
+func ByDictTypeField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newSysDictTypesStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newDictTypeStep(), sql.OrderByField(field, opts...))
 	}
 }
-func newSysDictTypesStep() *sqlgraph.Step {
+func newDictTypeStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(SysDictTypesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, SysDictTypesTable, SysDictTypesColumn),
+		sqlgraph.To(DictTypeInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, DictTypeTable, DictTypeColumn),
 	)
 }

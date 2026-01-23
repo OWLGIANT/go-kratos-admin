@@ -1178,24 +1178,36 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 	}
 	graph.MustAddE(
-		"sys_dict_types",
+		"dict_type",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   dictentry.SysDictTypesTable,
-			Columns: []string{dictentry.SysDictTypesColumn},
+			Inverse: true,
+			Table:   dictentry.DictTypeTable,
+			Columns: []string{dictentry.DictTypeColumn},
 			Bidi:    false,
 		},
 		"DictEntry",
 		"DictType",
 	)
 	graph.MustAddE(
-		"sys_dict_entries",
+		"i18ns",
+		&sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   dictentry.I18nsTable,
+			Columns: []string{dictentry.I18nsColumn},
+			Bidi:    false,
+		},
+		"DictEntry",
+		"DictEntryI18n",
+	)
+	graph.MustAddE(
+		"dict_entry",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   dictentryi18n.SysDictEntriesTable,
-			Columns: []string{dictentryi18n.SysDictEntriesColumn},
+			Inverse: true,
+			Table:   dictentryi18n.DictEntryTable,
+			Columns: []string{dictentryi18n.DictEntryColumn},
 			Bidi:    false,
 		},
 		"DictEntryI18n",
@@ -1205,7 +1217,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"entries",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.EntriesTable,
 			Columns: []string{dicttype.EntriesColumn},
 			Bidi:    false,
@@ -1217,7 +1229,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"i18ns",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   dicttype.I18nsTable,
 			Columns: []string{dicttype.I18nsColumn},
 			Bidi:    false,
@@ -1226,12 +1238,12 @@ var schemaGraph = func() *sqlgraph.Schema {
 		"DictTypeI18n",
 	)
 	graph.MustAddE(
-		"sys_dict_types",
+		"dict_type",
 		&sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   dicttypei18n.SysDictTypesTable,
-			Columns: []string{dicttypei18n.SysDictTypesColumn},
+			Inverse: true,
+			Table:   dicttypei18n.DictTypeTable,
+			Columns: []string{dicttypei18n.DictTypeColumn},
 			Bidi:    false,
 		},
 		"DictTypeI18n",
@@ -1868,14 +1880,28 @@ func (f *DictEntryFilter) WhereNumericValue(p entql.Int32P) {
 	f.Where(p.Field(dictentry.FieldNumericValue))
 }
 
-// WhereHasSysDictTypes applies a predicate to check if query has an edge sys_dict_types.
-func (f *DictEntryFilter) WhereHasSysDictTypes() {
-	f.Where(entql.HasEdge("sys_dict_types"))
+// WhereHasDictType applies a predicate to check if query has an edge dict_type.
+func (f *DictEntryFilter) WhereHasDictType() {
+	f.Where(entql.HasEdge("dict_type"))
 }
 
-// WhereHasSysDictTypesWith applies a predicate to check if query has an edge sys_dict_types with a given conditions (other predicates).
-func (f *DictEntryFilter) WhereHasSysDictTypesWith(preds ...predicate.DictType) {
-	f.Where(entql.HasEdgeWith("sys_dict_types", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasDictTypeWith applies a predicate to check if query has an edge dict_type with a given conditions (other predicates).
+func (f *DictEntryFilter) WhereHasDictTypeWith(preds ...predicate.DictType) {
+	f.Where(entql.HasEdgeWith("dict_type", sqlgraph.WrapFunc(func(s *sql.Selector) {
+		for _, p := range preds {
+			p(s)
+		}
+	})))
+}
+
+// WhereHasI18ns applies a predicate to check if query has an edge i18ns.
+func (f *DictEntryFilter) WhereHasI18ns() {
+	f.Where(entql.HasEdge("i18ns"))
+}
+
+// WhereHasI18nsWith applies a predicate to check if query has an edge i18ns with a given conditions (other predicates).
+func (f *DictEntryFilter) WhereHasI18nsWith(preds ...predicate.DictEntryI18n) {
+	f.Where(entql.HasEdgeWith("i18ns", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -1977,14 +2003,14 @@ func (f *DictEntryI18nFilter) WhereEntryLabel(p entql.StringP) {
 	f.Where(p.Field(dictentryi18n.FieldEntryLabel))
 }
 
-// WhereHasSysDictEntries applies a predicate to check if query has an edge sys_dict_entries.
-func (f *DictEntryI18nFilter) WhereHasSysDictEntries() {
-	f.Where(entql.HasEdge("sys_dict_entries"))
+// WhereHasDictEntry applies a predicate to check if query has an edge dict_entry.
+func (f *DictEntryI18nFilter) WhereHasDictEntry() {
+	f.Where(entql.HasEdge("dict_entry"))
 }
 
-// WhereHasSysDictEntriesWith applies a predicate to check if query has an edge sys_dict_entries with a given conditions (other predicates).
-func (f *DictEntryI18nFilter) WhereHasSysDictEntriesWith(preds ...predicate.DictEntry) {
-	f.Where(entql.HasEdgeWith("sys_dict_entries", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasDictEntryWith applies a predicate to check if query has an edge dict_entry with a given conditions (other predicates).
+func (f *DictEntryI18nFilter) WhereHasDictEntryWith(preds ...predicate.DictEntry) {
+	f.Where(entql.HasEdgeWith("dict_entry", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}
@@ -2199,14 +2225,14 @@ func (f *DictTypeI18nFilter) WhereTypeName(p entql.StringP) {
 	f.Where(p.Field(dicttypei18n.FieldTypeName))
 }
 
-// WhereHasSysDictTypes applies a predicate to check if query has an edge sys_dict_types.
-func (f *DictTypeI18nFilter) WhereHasSysDictTypes() {
-	f.Where(entql.HasEdge("sys_dict_types"))
+// WhereHasDictType applies a predicate to check if query has an edge dict_type.
+func (f *DictTypeI18nFilter) WhereHasDictType() {
+	f.Where(entql.HasEdge("dict_type"))
 }
 
-// WhereHasSysDictTypesWith applies a predicate to check if query has an edge sys_dict_types with a given conditions (other predicates).
-func (f *DictTypeI18nFilter) WhereHasSysDictTypesWith(preds ...predicate.DictType) {
-	f.Where(entql.HasEdgeWith("sys_dict_types", sqlgraph.WrapFunc(func(s *sql.Selector) {
+// WhereHasDictTypeWith applies a predicate to check if query has an edge dict_type with a given conditions (other predicates).
+func (f *DictTypeI18nFilter) WhereHasDictTypeWith(preds ...predicate.DictType) {
+	f.Where(entql.HasEdgeWith("dict_type", sqlgraph.WrapFunc(func(s *sql.Selector) {
 		for _, p := range preds {
 			p(s)
 		}

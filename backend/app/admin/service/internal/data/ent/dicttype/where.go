@@ -605,7 +605,7 @@ func HasEntries() predicate.DictType {
 	return predicate.DictType(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, EntriesTable, EntriesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, EntriesTable, EntriesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -628,7 +628,7 @@ func HasI18ns() predicate.DictType {
 	return predicate.DictType(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, I18nsTable, I18nsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, I18nsTable, I18nsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

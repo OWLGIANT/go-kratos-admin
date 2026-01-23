@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
+	"go-wind-admin/app/admin/service/internal/data/ent/dictentryi18n"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"time"
 
@@ -155,14 +156,6 @@ func (_c *DictEntryCreate) SetEntryValue(v string) *DictEntryCreate {
 	return _c
 }
 
-// SetNillableEntryValue sets the "entry_value" field if the given value is not nil.
-func (_c *DictEntryCreate) SetNillableEntryValue(v *string) *DictEntryCreate {
-	if v != nil {
-		_c.SetEntryValue(*v)
-	}
-	return _c
-}
-
 // SetNumericValue sets the "numeric_value" field.
 func (_c *DictEntryCreate) SetNumericValue(v int32) *DictEntryCreate {
 	_c.mutation.SetNumericValue(v)
@@ -183,15 +176,38 @@ func (_c *DictEntryCreate) SetID(v uint32) *DictEntryCreate {
 	return _c
 }
 
-// SetSysDictTypesID sets the "sys_dict_types" edge to the DictType entity by ID.
-func (_c *DictEntryCreate) SetSysDictTypesID(id uint32) *DictEntryCreate {
-	_c.mutation.SetSysDictTypesID(id)
+// SetDictTypeID sets the "dict_type" edge to the DictType entity by ID.
+func (_c *DictEntryCreate) SetDictTypeID(id uint32) *DictEntryCreate {
+	_c.mutation.SetDictTypeID(id)
 	return _c
 }
 
-// SetSysDictTypes sets the "sys_dict_types" edge to the DictType entity.
-func (_c *DictEntryCreate) SetSysDictTypes(v *DictType) *DictEntryCreate {
-	return _c.SetSysDictTypesID(v.ID)
+// SetNillableDictTypeID sets the "dict_type" edge to the DictType entity by ID if the given value is not nil.
+func (_c *DictEntryCreate) SetNillableDictTypeID(id *uint32) *DictEntryCreate {
+	if id != nil {
+		_c = _c.SetDictTypeID(*id)
+	}
+	return _c
+}
+
+// SetDictType sets the "dict_type" edge to the DictType entity.
+func (_c *DictEntryCreate) SetDictType(v *DictType) *DictEntryCreate {
+	return _c.SetDictTypeID(v.ID)
+}
+
+// AddI18nIDs adds the "i18ns" edge to the DictEntryI18n entity by IDs.
+func (_c *DictEntryCreate) AddI18nIDs(ids ...uint32) *DictEntryCreate {
+	_c.mutation.AddI18nIDs(ids...)
+	return _c
+}
+
+// AddI18ns adds the "i18ns" edges to the DictEntryI18n entity.
+func (_c *DictEntryCreate) AddI18ns(v ...*DictEntryI18n) *DictEntryCreate {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddI18nIDs(ids...)
 }
 
 // Mutation returns the DictEntryMutation object of the builder.
@@ -248,6 +264,9 @@ func (_c *DictEntryCreate) defaults() error {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *DictEntryCreate) check() error {
+	if _, ok := _c.mutation.EntryValue(); !ok {
+		return &ValidationError{Name: "entry_value", err: errors.New(`ent: missing required field "DictEntry.entry_value"`)}
+	}
 	if v, ok := _c.mutation.EntryValue(); ok {
 		if err := dictentry.EntryValueValidator(v); err != nil {
 			return &ValidationError{Name: "entry_value", err: fmt.Errorf(`ent: validator failed for field "DictEntry.entry_value": %w`, err)}
@@ -258,8 +277,8 @@ func (_c *DictEntryCreate) check() error {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "DictEntry.id": %w`, err)}
 		}
 	}
-	if len(_c.mutation.SysDictTypesIDs()) == 0 {
-		return &ValidationError{Name: "sys_dict_types", err: errors.New(`ent: missing required edge "DictEntry.sys_dict_types"`)}
+	if len(_c.mutation.I18nsIDs()) == 0 {
+		return &ValidationError{Name: "i18ns", err: errors.New(`ent: missing required edge "DictEntry.i18ns"`)}
 	}
 	return nil
 }
@@ -338,12 +357,12 @@ func (_c *DictEntryCreate) createSpec() (*DictEntry, *sqlgraph.CreateSpec) {
 		_spec.SetField(dictentry.FieldNumericValue, field.TypeInt32, value)
 		_node.NumericValue = &value
 	}
-	if nodes := _c.mutation.SysDictTypesIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.DictTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
-			Table:   dictentry.SysDictTypesTable,
-			Columns: []string{dictentry.SysDictTypesColumn},
+			Inverse: true,
+			Table:   dictentry.DictTypeTable,
+			Columns: []string{dictentry.DictTypeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(dicttype.FieldID, field.TypeUint32),
@@ -353,6 +372,22 @@ func (_c *DictEntryCreate) createSpec() (*DictEntry, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.type_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.I18nsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   dictentry.I18nsTable,
+			Columns: []string{dictentry.I18nsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(dictentryi18n.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -566,12 +601,6 @@ func (u *DictEntryUpsert) SetEntryValue(v string) *DictEntryUpsert {
 // UpdateEntryValue sets the "entry_value" field to the value that was provided on create.
 func (u *DictEntryUpsert) UpdateEntryValue() *DictEntryUpsert {
 	u.SetExcluded(dictentry.FieldEntryValue)
-	return u
-}
-
-// ClearEntryValue clears the value of the "entry_value" field.
-func (u *DictEntryUpsert) ClearEntryValue() *DictEntryUpsert {
-	u.SetNull(dictentry.FieldEntryValue)
 	return u
 }
 
@@ -839,13 +868,6 @@ func (u *DictEntryUpsertOne) SetEntryValue(v string) *DictEntryUpsertOne {
 func (u *DictEntryUpsertOne) UpdateEntryValue() *DictEntryUpsertOne {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.UpdateEntryValue()
-	})
-}
-
-// ClearEntryValue clears the value of the "entry_value" field.
-func (u *DictEntryUpsertOne) ClearEntryValue() *DictEntryUpsertOne {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.ClearEntryValue()
 	})
 }
 
@@ -1283,13 +1305,6 @@ func (u *DictEntryUpsertBulk) SetEntryValue(v string) *DictEntryUpsertBulk {
 func (u *DictEntryUpsertBulk) UpdateEntryValue() *DictEntryUpsertBulk {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.UpdateEntryValue()
-	})
-}
-
-// ClearEntryValue clears the value of the "entry_value" field.
-func (u *DictEntryUpsertBulk) ClearEntryValue() *DictEntryUpsertBulk {
-	return u.Update(func(s *DictEntryUpsert) {
-		s.ClearEntryValue()
 	})
 }
 

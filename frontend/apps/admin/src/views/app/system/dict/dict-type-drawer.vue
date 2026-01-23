@@ -41,17 +41,6 @@ const [BaseForm, baseFormApi] = useVbenForm({
       rules: z.string().min(1, { message: $t('ui.formRules.required') }),
     },
     {
-      component: 'Input',
-      fieldName: 'typeName',
-      label: $t('page.dict.typeName'),
-      componentProps: {
-        placeholder: $t('ui.placeholder.input'),
-        allowClear: true,
-      },
-      rules: 'required',
-    },
-
-    {
       component: 'InputNumber',
       fieldName: 'sortOrder',
       defaultValue: 1,
@@ -61,7 +50,6 @@ const [BaseForm, baseFormApi] = useVbenForm({
         allowClear: true,
       },
     },
-
     {
       component: 'RadioGroup',
       fieldName: 'isEnabled',
@@ -73,16 +61,6 @@ const [BaseForm, baseFormApi] = useVbenForm({
         buttonStyle: 'solid',
         class: 'flex flex-wrap', // 如果选项过多，可以添加class来自动折叠
         options: enableBoolList,
-      },
-    },
-
-    {
-      component: 'Textarea',
-      fieldName: 'description',
-      label: $t('ui.table.description'),
-      componentProps: {
-        placeholder: $t('ui.placeholder.input'),
-        allowClear: true,
       },
     },
   ],
