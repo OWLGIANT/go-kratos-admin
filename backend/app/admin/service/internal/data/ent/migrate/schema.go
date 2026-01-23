@@ -467,17 +467,17 @@ var (
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
-		{Name: "provider", Type: field.TypeEnum, Nullable: true, Comment: "OSS供应商", Enums: []string{"UNKNOWN", "MINIO", "ALIYUN", "QINIU", "TENCENT", "AWS", "GOOGLE", "AZURE", "BAIDU", "HUAWEI", "QCLOUD", "LOCAL"}, Default: "MINIO"},
+		{Name: "provider", Type: field.TypeEnum, Nullable: true, Comment: "OSS供应商", Enums: []string{"UNKNOWN", "MINIO", "ALIYUN", "QINIU", "TENCENT", "AWS", "GOOGLE", "AZURE", "BAIDU", "HUAWEI", "LOCAL"}, Default: "MINIO"},
 		{Name: "bucket_name", Type: field.TypeString, Nullable: true, Comment: "存储桶名称"},
 		{Name: "file_directory", Type: field.TypeString, Nullable: true, Comment: "文件目录"},
 		{Name: "file_guid", Type: field.TypeString, Nullable: true, Comment: "文件Guid"},
-		{Name: "save_file_name", Type: field.TypeString, Nullable: true, Comment: "保存文件名"},
-		{Name: "file_name", Type: field.TypeString, Nullable: true, Comment: "文件名"},
+		{Name: "save_file_name", Type: field.TypeString, Nullable: true, Comment: "实际存储文件名"},
+		{Name: "file_name", Type: field.TypeString, Nullable: true, Comment: "原始文件名"},
 		{Name: "extension", Type: field.TypeString, Nullable: true, Comment: "文件扩展名"},
-		{Name: "size", Type: field.TypeUint64, Nullable: true, Comment: "文件字节长度"},
-		{Name: "size_format", Type: field.TypeString, Nullable: true, Comment: "文件大小格式化"},
+		{Name: "size", Type: field.TypeUint64, Nullable: true, Comment: "文件长度，单位：字节"},
+		{Name: "size_format", Type: field.TypeString, Nullable: true, Comment: "格式化后的文件长度字符串"},
 		{Name: "link_url", Type: field.TypeString, Nullable: true, Comment: "链接地址"},
-		{Name: "md5", Type: field.TypeString, Nullable: true, Comment: "md5码，防止上传重复文件"},
+		{Name: "content_hash", Type: field.TypeString, Nullable: true, Comment: "文件内容hash值，防止上传重复文件"},
 	}
 	// FilesTable holds the schema information for the "files" table.
 	FilesTable = &schema.Table{
@@ -497,12 +497,12 @@ var (
 				Columns: []*schema.Column{FilesColumns[8], FilesColumns[12]},
 			},
 			{
-				Name:    "idx_files_tenant_md5",
+				Name:    "idx_files_tenant_content_hash",
 				Unique:  false,
 				Columns: []*schema.Column{FilesColumns[8], FilesColumns[19]},
 			},
 			{
-				Name:    "idx_files_md5",
+				Name:    "idx_files_content_hash",
 				Unique:  false,
 				Columns: []*schema.Column{FilesColumns[19]},
 			},

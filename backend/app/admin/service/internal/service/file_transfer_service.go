@@ -2,12 +2,9 @@ package service
 
 import (
 	"context"
-	"crypto/md5"
+	"crypto/sha256"
 	"encoding/hex"
-	"go-wind-admin/app/admin/service/internal/data"
-	"go-wind-admin/pkg/middleware/auth"
 	"io"
-	"math"
 	"net/http"
 	"path"
 	"strings"
@@ -18,9 +15,12 @@ import (
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
+	"go-wind-admin/app/admin/service/internal/data"
+
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	fileV1 "go-wind-admin/api/gen/go/file/service/v1"
 
+	"go-wind-admin/pkg/middleware/auth"
 	"go-wind-admin/pkg/oss"
 )
 
@@ -80,37 +80,9 @@ func parseKey(key string) (folder, filename, ext string) {
 	}
 
 	name := base[:idx]
-	ext = base[idx:] // 包含前导 '.'
-
-	if dir == "" {
-		dir = "/"
-	}
+	ext = strings.ToLower(base[idx+1:])
 
 	return dir, name, ext
-}
-
-// formatSize 返回归一化后的数值和单位。
-// 例如：formatSize(1536) -> 1.5, "KB"；formatSize(512) -> 512, "B"
-func formatSize(size int64) (float64, string) {
-	if size <= 0 {
-		return 0, "B"
-	}
-
-	units := []string{"B", "KB", "MB", "GB", "TB", "PB"}
-	s := float64(size)
-	i := 0
-	for s >= 1024 && i < len(units)-1 {
-		s /= 1024
-		i++
-	}
-
-	if i == 0 {
-		// 字节单位返回整数
-		return math.Round(s), units[i]
-	}
-	// 非字节单位保留最多两位小数
-	v := math.Round(s*100) / 100
-	return v, units[i]
 }
 
 // recordFile 记录文件元数据到数据库
@@ -118,29 +90,28 @@ func (s *FileTransferService) recordFile(
 	ctx context.Context,
 	tenantID, userID uint32,
 	fileData []byte,
+	sourceFileName string,
 	info minio.UploadInfo,
 	downloadUrl string,
 ) error {
 
-	sum := md5.Sum(fileData)             // md5.Sum 返回 [16]byte
-	md5Hex := hex.EncodeToString(sum[:]) // 转为十六进制字符串
+	sum := sha256.Sum256(fileData)          // sha256.Sum256 返回 [32]byte
+	sha256Hex := hex.EncodeToString(sum[:]) // 转为十六进制字符串
 
-	dir, name, ext := parseKey(info.Key)
-
-	sizeNum, sizeFormat := formatSize(info.Size)
+	dir, fileName, ext := parseKey(info.Key)
+	//s.log.Debugf("Parsed file - Dir: %s, FileName: %s, Ext: %s", dir, fileName, ext)
 
 	if err := s.fileRepo.Create(ctx, &fileV1.CreateFileRequest{
 		Data: &fileV1.File{
 			Provider:      trans.Ptr(fileV1.OSSProvider_MINIO),
 			BucketName:    trans.Ptr(info.Bucket),
-			SaveFileName:  trans.Ptr(info.Key),
-			Md5:           trans.Ptr(md5Hex),
+			SaveFileName:  trans.Ptr(fileName + "." + ext),
+			ContentHash:   trans.Ptr(sha256Hex),
 			FileDirectory: trans.Ptr(dir),
-			FileName:      trans.Ptr(name),
+			FileName:      trans.Ptr(sourceFileName),
 			Extension:     trans.Ptr(ext),
 			FileGuid:      trans.Ptr(uuid.New().String()),
-			Size:          trans.Ptr(uint64(sizeNum)),
-			SizeFormat:    trans.Ptr(sizeFormat),
+			Size:          trans.Ptr(uint64(info.Size)),
 			LinkUrl:       trans.Ptr(downloadUrl),
 			CreatedBy:     trans.Ptr(userID),
 			TenantId:      trans.Ptr(tenantID),
@@ -152,9 +123,22 @@ func (s *FileTransferService) recordFile(
 	return nil
 }
 
-func (s *FileTransferService) UploadFile(ctx context.Context, req *fileV1.UploadFileRequest) (*fileV1.UploadFileResponse, error) {
-	if req.File == nil {
+// directUploadFile 直接上传文件
+func (s *FileTransferService) directUploadFile(ctx context.Context, req *fileV1.UploadFileRequest) (*fileV1.UploadFileResponse, error) {
+	if req.StorageObject == nil {
+		return nil, fileV1.ErrorUploadFailed("unknown storageObject")
+	}
+
+	if req.GetFile() == nil {
 		return nil, fileV1.ErrorUploadFailed("unknown fileData")
+	}
+
+	if req.GetMime() == "" {
+		return nil, fileV1.ErrorUploadFailed("unknown mime type")
+	}
+
+	if req.GetSourceFileName() == "" {
+		return nil, fileV1.ErrorUploadFailed("unknown source file name")
 	}
 
 	// 获取操作人信息
@@ -163,14 +147,28 @@ func (s *FileTransferService) UploadFile(ctx context.Context, req *fileV1.Upload
 		return nil, err
 	}
 
-	if req.BucketName == nil {
-		req.BucketName = trans.Ptr(s.mc.ContentTypeToBucketName(req.GetMime()))
-	}
-	if req.ObjectName == nil {
-		req.ObjectName = trans.Ptr(req.GetSourceFileName())
+	if req.StorageObject.BucketName == nil {
+		req.StorageObject.BucketName = trans.Ptr(oss.ContentTypeToBucketName(req.GetMime()))
 	}
 
-	info, downloadUrl, err := s.mc.UploadFile(ctx, req.GetBucketName(), req.GetObjectName(), req.GetFile())
+	if req.StorageObject.ObjectName == nil {
+		req.StorageObject.ObjectName = trans.Ptr(
+			oss.EnsureObjectName(
+				req.GetStorageObject().GetFileDirectory(),
+				req.GetSourceFileName(),
+				req.GetMime(),
+				req.GetFile(),
+				oss.GenerateFileNameTypeUUID,
+			),
+		)
+	}
+
+	info, downloadUrl, err := s.mc.UploadFile(
+		ctx,
+		req.GetStorageObject().GetBucketName(),
+		req.GetStorageObject().GetObjectName(),
+		req.GetFile(),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -179,12 +177,95 @@ func (s *FileTransferService) UploadFile(ctx context.Context, req *fileV1.Upload
 		ctx,
 		operator.GetTenantId(), operator.GetUserId(),
 		req.GetFile(),
+		req.GetSourceFileName(),
 		info, downloadUrl); err != nil {
 	}
 
 	return &fileV1.UploadFileResponse{
-		Url: downloadUrl,
+		ObjectName: trans.Ptr(downloadUrl),
 	}, err
+}
+
+// presignedUploadFile 预签名上传文件
+func (s *FileTransferService) presignedUploadFile(ctx context.Context, req *fileV1.UploadFileRequest) (*fileV1.UploadFileResponse, error) {
+	if req.StorageObject == nil {
+		return nil, fileV1.ErrorUploadFailed("unknown storageObject")
+	}
+
+	if req.GetPresign() == nil {
+		return nil, fileV1.ErrorUploadFailed("unknown presign data")
+	}
+
+	var contentType string
+	if req.GetPresign().GetContentType() != "" {
+		contentType = req.GetPresign().GetContentType()
+	} else if req.GetMime() != "" {
+		contentType = req.GetMime()
+	} else {
+		return nil, fileV1.ErrorUploadFailed("unknown content type for presign")
+	}
+
+	if req.GetSourceFileName() == "" {
+		return nil, fileV1.ErrorUploadFailed("unknown source file name")
+	}
+
+	if req.StorageObject.BucketName == nil {
+		req.StorageObject.BucketName = trans.Ptr(oss.ContentTypeToBucketName(contentType))
+	}
+	if req.StorageObject.ObjectName == nil {
+		req.StorageObject.ObjectName = trans.Ptr(
+			oss.EnsureObjectName(
+				req.GetStorageObject().GetFileDirectory(),
+				req.GetSourceFileName(),
+				contentType,
+				req.GetFile(),
+				oss.GenerateFileNameTypeUUID,
+			),
+		)
+	}
+
+	var method fileV1.GetUploadPresignedUrlRequest_Method
+	switch strings.ToLower(req.GetPresign().GetMethod()) {
+	case "put":
+		method = fileV1.GetUploadPresignedUrlRequest_Put
+	case "post":
+		method = fileV1.GetUploadPresignedUrlRequest_Post
+	default:
+		method = fileV1.GetUploadPresignedUrlRequest_Post
+	}
+
+	resp, err := s.mc.GetUploadPresignedUrl(
+		ctx,
+		&fileV1.GetUploadPresignedUrlRequest{
+			ContentType:   trans.Ptr(contentType),
+			ExpireSeconds: req.GetPresign().ExpireSeconds,
+			Method:        method,
+			BucketName:    req.StorageObject.BucketName,
+			FileDirectory: req.StorageObject.FileDirectory,
+		})
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO : 记录文件元数据到数据库（待上传完成后再记录更合适？）
+
+	return &fileV1.UploadFileResponse{
+		PresignedUrl: trans.Ptr(resp.UploadUrl),
+	}, nil
+}
+
+// UploadFile 上传文件
+func (s *FileTransferService) UploadFile(ctx context.Context, req *fileV1.UploadFileRequest) (*fileV1.UploadFileResponse, error) {
+	switch req.Source.(type) {
+	case *fileV1.UploadFileRequest_File:
+		return s.directUploadFile(ctx, req)
+
+	case *fileV1.UploadFileRequest_Presign:
+		return s.presignedUploadFile(ctx, req)
+
+	default:
+		return nil, fileV1.ErrorUploadFailed("unknown upload source")
+	}
 }
 
 // downloadFileFromURL 从指定的 URL 下载文件内容
@@ -227,7 +308,21 @@ func (s *FileTransferService) downloadFileFromURL(ctx context.Context, downloadU
 func (s *FileTransferService) DownloadFile(ctx context.Context, req *fileV1.DownloadFileRequest) (*fileV1.DownloadFileResponse, error) {
 	switch req.Selector.(type) {
 	case *fileV1.DownloadFileRequest_FileId:
-		return nil, fileV1.ErrorDownloadFailed("unsupported file ID download")
+		resp, err := s.fileRepo.Get(ctx, &fileV1.GetFileRequest{
+			QueryBy: &fileV1.GetFileRequest_Id{Id: req.GetFileId()},
+		})
+		if err != nil {
+			return nil, fileV1.ErrorDownloadFailed("file not found")
+		}
+
+		req.Selector = &fileV1.DownloadFileRequest_StorageObject{
+			StorageObject: &fileV1.StorageObject{
+				BucketName: resp.BucketName,
+				ObjectName: trans.Ptr(resp.GetFileDirectory() + resp.GetSaveFileName()),
+			},
+		}
+
+		return s.mc.DownloadFile(ctx, req)
 
 	case *fileV1.DownloadFileRequest_StorageObject:
 		return s.mc.DownloadFile(ctx, req)
@@ -247,6 +342,12 @@ func (s *FileTransferService) UEditorUploadFile(ctx context.Context, req *fileV1
 		return nil, fileV1.ErrorUploadFailed("unknown file")
 	}
 
+	// 获取操作人信息
+	operator, err := auth.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	var bucketName string
 	switch req.GetAction() {
 	default:
@@ -259,11 +360,19 @@ func (s *FileTransferService) UEditorUploadFile(ctx context.Context, req *fileV1
 		bucketName = "videos"
 	}
 
-	_, downloadUrl, err := s.mc.UploadFile(ctx, bucketName, req.GetSourceFileName(), req.GetFile())
+	info, downloadUrl, err := s.mc.UploadFile(ctx, bucketName, req.GetSourceFileName(), req.GetFile())
 	if err != nil {
 		return &fileV1.UEditorUploadResponse{
 			State: trans.Ptr(err.Error()),
 		}, err
+	}
+
+	if err = s.recordFile(
+		ctx,
+		operator.GetTenantId(), operator.GetUserId(),
+		req.GetFile(),
+		req.GetSourceFileName(),
+		info, downloadUrl); err != nil {
 	}
 
 	return &fileV1.UEditorUploadResponse{

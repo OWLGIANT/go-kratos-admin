@@ -139,9 +139,9 @@ func LinkURL(v string) predicate.File {
 	return predicate.File(sql.FieldEQ(FieldLinkURL, v))
 }
 
-// Md5 applies equality check predicate on the "md5" field. It's identical to Md5EQ.
-func Md5(v string) predicate.File {
-	return predicate.File(sql.FieldEQ(FieldMd5, v))
+// ContentHash applies equality check predicate on the "content_hash" field. It's identical to ContentHashEQ.
+func ContentHash(v string) predicate.File {
+	return predicate.File(sql.FieldEQ(FieldContentHash, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -1249,79 +1249,79 @@ func LinkURLContainsFold(v string) predicate.File {
 	return predicate.File(sql.FieldContainsFold(FieldLinkURL, v))
 }
 
-// Md5EQ applies the EQ predicate on the "md5" field.
-func Md5EQ(v string) predicate.File {
-	return predicate.File(sql.FieldEQ(FieldMd5, v))
+// ContentHashEQ applies the EQ predicate on the "content_hash" field.
+func ContentHashEQ(v string) predicate.File {
+	return predicate.File(sql.FieldEQ(FieldContentHash, v))
 }
 
-// Md5NEQ applies the NEQ predicate on the "md5" field.
-func Md5NEQ(v string) predicate.File {
-	return predicate.File(sql.FieldNEQ(FieldMd5, v))
+// ContentHashNEQ applies the NEQ predicate on the "content_hash" field.
+func ContentHashNEQ(v string) predicate.File {
+	return predicate.File(sql.FieldNEQ(FieldContentHash, v))
 }
 
-// Md5In applies the In predicate on the "md5" field.
-func Md5In(vs ...string) predicate.File {
-	return predicate.File(sql.FieldIn(FieldMd5, vs...))
+// ContentHashIn applies the In predicate on the "content_hash" field.
+func ContentHashIn(vs ...string) predicate.File {
+	return predicate.File(sql.FieldIn(FieldContentHash, vs...))
 }
 
-// Md5NotIn applies the NotIn predicate on the "md5" field.
-func Md5NotIn(vs ...string) predicate.File {
-	return predicate.File(sql.FieldNotIn(FieldMd5, vs...))
+// ContentHashNotIn applies the NotIn predicate on the "content_hash" field.
+func ContentHashNotIn(vs ...string) predicate.File {
+	return predicate.File(sql.FieldNotIn(FieldContentHash, vs...))
 }
 
-// Md5GT applies the GT predicate on the "md5" field.
-func Md5GT(v string) predicate.File {
-	return predicate.File(sql.FieldGT(FieldMd5, v))
+// ContentHashGT applies the GT predicate on the "content_hash" field.
+func ContentHashGT(v string) predicate.File {
+	return predicate.File(sql.FieldGT(FieldContentHash, v))
 }
 
-// Md5GTE applies the GTE predicate on the "md5" field.
-func Md5GTE(v string) predicate.File {
-	return predicate.File(sql.FieldGTE(FieldMd5, v))
+// ContentHashGTE applies the GTE predicate on the "content_hash" field.
+func ContentHashGTE(v string) predicate.File {
+	return predicate.File(sql.FieldGTE(FieldContentHash, v))
 }
 
-// Md5LT applies the LT predicate on the "md5" field.
-func Md5LT(v string) predicate.File {
-	return predicate.File(sql.FieldLT(FieldMd5, v))
+// ContentHashLT applies the LT predicate on the "content_hash" field.
+func ContentHashLT(v string) predicate.File {
+	return predicate.File(sql.FieldLT(FieldContentHash, v))
 }
 
-// Md5LTE applies the LTE predicate on the "md5" field.
-func Md5LTE(v string) predicate.File {
-	return predicate.File(sql.FieldLTE(FieldMd5, v))
+// ContentHashLTE applies the LTE predicate on the "content_hash" field.
+func ContentHashLTE(v string) predicate.File {
+	return predicate.File(sql.FieldLTE(FieldContentHash, v))
 }
 
-// Md5Contains applies the Contains predicate on the "md5" field.
-func Md5Contains(v string) predicate.File {
-	return predicate.File(sql.FieldContains(FieldMd5, v))
+// ContentHashContains applies the Contains predicate on the "content_hash" field.
+func ContentHashContains(v string) predicate.File {
+	return predicate.File(sql.FieldContains(FieldContentHash, v))
 }
 
-// Md5HasPrefix applies the HasPrefix predicate on the "md5" field.
-func Md5HasPrefix(v string) predicate.File {
-	return predicate.File(sql.FieldHasPrefix(FieldMd5, v))
+// ContentHashHasPrefix applies the HasPrefix predicate on the "content_hash" field.
+func ContentHashHasPrefix(v string) predicate.File {
+	return predicate.File(sql.FieldHasPrefix(FieldContentHash, v))
 }
 
-// Md5HasSuffix applies the HasSuffix predicate on the "md5" field.
-func Md5HasSuffix(v string) predicate.File {
-	return predicate.File(sql.FieldHasSuffix(FieldMd5, v))
+// ContentHashHasSuffix applies the HasSuffix predicate on the "content_hash" field.
+func ContentHashHasSuffix(v string) predicate.File {
+	return predicate.File(sql.FieldHasSuffix(FieldContentHash, v))
 }
 
-// Md5IsNil applies the IsNil predicate on the "md5" field.
-func Md5IsNil() predicate.File {
-	return predicate.File(sql.FieldIsNull(FieldMd5))
+// ContentHashIsNil applies the IsNil predicate on the "content_hash" field.
+func ContentHashIsNil() predicate.File {
+	return predicate.File(sql.FieldIsNull(FieldContentHash))
 }
 
-// Md5NotNil applies the NotNil predicate on the "md5" field.
-func Md5NotNil() predicate.File {
-	return predicate.File(sql.FieldNotNull(FieldMd5))
+// ContentHashNotNil applies the NotNil predicate on the "content_hash" field.
+func ContentHashNotNil() predicate.File {
+	return predicate.File(sql.FieldNotNull(FieldContentHash))
 }
 
-// Md5EqualFold applies the EqualFold predicate on the "md5" field.
-func Md5EqualFold(v string) predicate.File {
-	return predicate.File(sql.FieldEqualFold(FieldMd5, v))
+// ContentHashEqualFold applies the EqualFold predicate on the "content_hash" field.
+func ContentHashEqualFold(v string) predicate.File {
+	return predicate.File(sql.FieldEqualFold(FieldContentHash, v))
 }
 
-// Md5ContainsFold applies the ContainsFold predicate on the "md5" field.
-func Md5ContainsFold(v string) predicate.File {
-	return predicate.File(sql.FieldContainsFold(FieldMd5, v))
+// ContentHashContainsFold applies the ContainsFold predicate on the "content_hash" field.
+func ContentHashContainsFold(v string) predicate.File {
+	return predicate.File(sql.FieldContainsFold(FieldContentHash, v))
 }
 
 // And groups predicates with the AND operator between them.

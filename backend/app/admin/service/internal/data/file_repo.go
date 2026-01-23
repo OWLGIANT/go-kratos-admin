@@ -2,10 +2,14 @@ package data
 
 import (
 	"context"
+	"fmt"
+	"math"
+	"strings"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -66,6 +70,28 @@ func (r *FileRepo) init() {
 	r.mapper.AppendConverters(copierutil.NewTimeTimestamppbConverterPair())
 
 	r.mapper.AppendConverters(r.providerConverter.NewConverterPair())
+}
+
+// formatSize 返回格式化后的文本，例如 "512B", "1.5KB"。
+// 对字节单位返回整数；对其它单位保留最多两位小数并去掉多余的 0。
+func (r *FileRepo) formatSize(size int64) string {
+	if size <= 0 {
+		return "0B"
+	}
+	units := []string{"B", "KB", "MB", "GB", "TB", "PB"}
+	s := float64(size)
+	i := 0
+	for s >= 1024 && i < len(units)-1 {
+		s /= 1024
+		i++
+	}
+	if i == 0 {
+		return fmt.Sprintf("%d%s", size, units[i])
+	}
+	v := math.Round(s*100) / 100
+	str := fmt.Sprintf("%.2f", v)
+	str = strings.TrimRight(strings.TrimRight(str, "0"), ".")
+	return str + units[i]
 }
 
 func (r *FileRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
@@ -142,6 +168,10 @@ func (r *FileRepo) Create(ctx context.Context, req *fileV1.CreateFileRequest) er
 		return fileV1.ErrorBadRequest("invalid parameter")
 	}
 
+	if req.Data.Size != nil {
+		req.Data.SizeFormat = trans.Ptr(r.formatSize(int64(req.Data.GetSize())))
+	}
+
 	builder := r.entClient.Client().File.Create().
 		SetNillableTenantID(req.Data.TenantId).
 		SetNillableProvider(r.providerConverter.ToEntity(req.Data.Provider)).
@@ -154,7 +184,7 @@ func (r *FileRepo) Create(ctx context.Context, req *fileV1.CreateFileRequest) er
 		SetNillableSize(req.Data.Size).
 		SetNillableSizeFormat(req.Data.SizeFormat).
 		SetNillableLinkURL(req.Data.LinkUrl).
-		SetNillableMd5(req.Data.Md5).
+		SetNillableContentHash(req.Data.ContentHash).
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
 
@@ -177,6 +207,10 @@ func (r *FileRepo) Create(ctx context.Context, req *fileV1.CreateFileRequest) er
 func (r *FileRepo) Update(ctx context.Context, req *fileV1.UpdateFileRequest) error {
 	if req == nil || req.Data == nil {
 		return fileV1.ErrorBadRequest("invalid parameter")
+	}
+
+	if req.Data.Size != nil {
+		req.Data.SizeFormat = trans.Ptr(r.formatSize(int64(req.Data.GetSize())))
 	}
 
 	// 如果不存在则创建
@@ -207,8 +241,8 @@ func (r *FileRepo) Update(ctx context.Context, req *fileV1.UpdateFileRequest) er
 				SetNillableSize(req.Data.Size).
 				SetNillableSizeFormat(req.Data.SizeFormat).
 				SetNillableLinkURL(req.Data.LinkUrl).
-				SetNillableMd5(req.Data.Md5).
-				//SetNillableUpdatedBy(trans.Ptr(operator.UserId)).
+				SetNillableContentHash(req.Data.ContentHash).
+				SetNillableCreatedBy(req.Data.UpdatedBy).
 				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
 
 			if req.Data.UpdatedAt == nil {

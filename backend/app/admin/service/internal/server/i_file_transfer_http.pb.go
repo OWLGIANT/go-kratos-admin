@@ -7,13 +7,19 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/tx7do/go-utils/trans"
+
+	"github.com/go-kratos/kratos/v2/encoding"
+	_ "github.com/go-kratos/kratos/v2/encoding/json"
 
 	"go-wind-admin/app/admin/service/internal/service"
 
 	fileV1 "go-wind-admin/api/gen/go/file/service/v1"
 )
+
+var codec = encoding.GetCodec("json")
 
 func registerFileTransferServiceHandler(srv *http.Server, svc *service.FileTransferService) {
 	r := srv.Route("/")
@@ -49,13 +55,50 @@ func _FileTransferService_PostUploadFile_HTTP_Handler(svc *service.FileTransferS
 			b := new(strings.Builder)
 			_, err = io.Copy(b, file)
 
-			in.SourceFileName = trans.Ptr(header.Filename)
-			in.Mime = trans.Ptr(header.Header.Get("Content-Type"))
-			in.File = []byte(b.String())
-		}
+			in.Source = &fileV1.UploadFileRequest_File{File: []byte(b.String())}
 
-		if err = ctx.BindQuery(&in); err != nil {
-			return err
+			sourceFileName := ctx.Request().FormValue("sourceFileName")
+			if sourceFileName != "" {
+				in.SourceFileName = trans.Ptr(sourceFileName)
+			} else {
+				in.SourceFileName = trans.Ptr(header.Filename)
+			}
+			//log.Debugf("Upload file sourceFileName: %s", sourceFileName)
+
+			mime := ctx.Request().FormValue("mime")
+			if mime != "" {
+				in.Mime = trans.Ptr(mime)
+			} else {
+				in.Mime = trans.Ptr(header.Header.Get("Content-Type"))
+			}
+			//log.Debugf("Upload file mime: %s", mime)
+
+			size := ctx.Request().FormValue("size")
+			if size != "" {
+				var n int64
+				n, err = strconv.ParseInt(size, 10, 64)
+				if err == nil {
+					in.Size = trans.Ptr(n)
+				}
+			} else {
+				in.Size = trans.Ptr(header.Size)
+			}
+			//log.Debugf("Upload file size: %s", size)
+
+			storageObject := ctx.Request().FormValue("storageObject")
+			if storageObject != "" {
+				in.StorageObject = &fileV1.StorageObject{}
+				if err = codec.Unmarshal([]byte(storageObject), in.StorageObject); err != nil {
+					log.Errorf("Unmarshal upload file storageObject error: %v", err)
+					return err
+				}
+			}
+			//log.Debugf("Upload file storageObject: %s", storageObject)
+		} else {
+			if err = ctx.Bind(&in); err != nil {
+				log.Errorf("Bind upload file request error: %v", err)
+				return err
+			}
 		}
 
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
@@ -63,7 +106,7 @@ func _FileTransferService_PostUploadFile_HTTP_Handler(svc *service.FileTransferS
 
 			var resp *fileV1.UploadFileResponse
 			resp, err = svc.UploadFile(ctx, aReq)
-			in.File = nil
+			in.Source = nil
 
 			return resp, err
 		})
@@ -94,13 +137,50 @@ func _FileTransferService_PutUploadFile_HTTP_Handler(svc *service.FileTransferSe
 			b := new(strings.Builder)
 			_, err = io.Copy(b, file)
 
-			in.SourceFileName = trans.Ptr(header.Filename)
-			in.Mime = trans.Ptr(header.Header.Get("Content-Type"))
-			in.File = []byte(b.String())
-		}
+			in.Source = &fileV1.UploadFileRequest_File{File: []byte(b.String())}
 
-		if err = ctx.BindQuery(&in); err != nil {
-			return err
+			sourceFileName := ctx.Request().FormValue("sourceFileName")
+			if sourceFileName != "" {
+				in.SourceFileName = trans.Ptr(sourceFileName)
+			} else {
+				in.SourceFileName = trans.Ptr(header.Filename)
+			}
+			//log.Debugf("Upload file sourceFileName: %s", sourceFileName)
+
+			mime := ctx.Request().FormValue("mime")
+			if mime != "" {
+				in.Mime = trans.Ptr(mime)
+			} else {
+				in.Mime = trans.Ptr(header.Header.Get("Content-Type"))
+			}
+			//log.Debugf("Upload file mime: %s", mime)
+
+			size := ctx.Request().FormValue("size")
+			if size != "" {
+				var n int64
+				n, err = strconv.ParseInt(size, 10, 64)
+				if err == nil {
+					in.Size = trans.Ptr(n)
+				}
+			} else {
+				in.Size = trans.Ptr(header.Size)
+			}
+			//log.Debugf("Upload file size: %s", size)
+
+			storageObject := ctx.Request().FormValue("storageObject")
+			if storageObject != "" {
+				in.StorageObject = &fileV1.StorageObject{}
+				if err = codec.Unmarshal([]byte(storageObject), in.StorageObject); err != nil {
+					log.Errorf("Unmarshal upload file storageObject error: %v", err)
+					return err
+				}
+			}
+			//log.Debugf("Upload file storageObject: %s", storageObject)
+		} else {
+			if err = ctx.Bind(&in); err != nil {
+				log.Errorf("Bind upload file request error: %v", err)
+				return err
+			}
 		}
 
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
@@ -108,7 +188,7 @@ func _FileTransferService_PutUploadFile_HTTP_Handler(svc *service.FileTransferSe
 
 			var resp *fileV1.UploadFileResponse
 			resp, err = svc.UploadFile(ctx, aReq)
-			in.File = nil
+			in.Source = nil
 
 			return resp, err
 		})

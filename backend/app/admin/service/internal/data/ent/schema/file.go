@@ -43,7 +43,6 @@ func (File) Fields() []ent.Field {
 				"Azure", "AZURE",
 				"Baidu", "BAIDU",
 				"Huawei", "HUAWEI",
-				"QCloud", "QCLOUD",
 				"Local", "LOCAL",
 			).
 			Default("MINIO").
@@ -66,12 +65,12 @@ func (File) Fields() []ent.Field {
 			Nillable(),
 
 		field.String("save_file_name").
-			Comment("保存文件名").
+			Comment("实际存储文件名").
 			Optional().
 			Nillable(),
 
 		field.String("file_name").
-			Comment("文件名").
+			Comment("原始文件名").
 			Optional().
 			Nillable(),
 
@@ -81,12 +80,12 @@ func (File) Fields() []ent.Field {
 			Nillable(),
 
 		field.Uint64("size").
-			Comment("文件字节长度").
+			Comment("文件长度，单位：字节").
 			Optional().
 			Nillable(),
 
 		field.String("size_format").
-			Comment("文件大小格式化").
+			Comment("格式化后的文件长度字符串").
 			Optional().
 			Nillable(),
 
@@ -95,8 +94,8 @@ func (File) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.String("md5").
-			Comment("md5码，防止上传重复文件").
+		field.String("content_hash").
+			Comment("文件内容hash值，防止上传重复文件").
 			Optional().
 			Nillable(),
 	}
@@ -124,12 +123,12 @@ func (File) Indexes() []ent.Index {
 			Unique().
 			StorageKey("uix_files_tenant_file_guid"),
 
-		// 租户维度的 md5 用于去重/定位（非强制唯一，视业务决定是否改为 Unique）
-		index.Fields("tenant_id", "md5").
-			StorageKey("idx_files_tenant_md5"),
-		// 全局 md5 索引（模糊/跨租户场景）
-		index.Fields("md5").
-			StorageKey("idx_files_md5"),
+		// 租户维度的 content_hash 用于去重/定位（非强制唯一，视业务决定是否改为 Unique）
+		index.Fields("tenant_id", "content_hash").
+			StorageKey("idx_files_tenant_content_hash"),
+		// 全局 content_hash 索引（模糊/跨租户场景）
+		index.Fields("content_hash").
+			StorageKey("idx_files_content_hash"),
 
 		// 常用查询字段索引
 		index.Fields("bucket_name").

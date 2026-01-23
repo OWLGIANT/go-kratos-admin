@@ -92,7 +92,23 @@ func (x *StorageObject) Redact() string {
 
 	// Safe field: BucketName
 
+	// Safe field: FileDirectory
+
 	// Safe field: ObjectName
+	return x.String()
+}
+
+// Redact method implementation for PresignOption
+func (x *PresignOption) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: Method
+
+	// Safe field: ExpireSeconds
+
+	// Safe field: ContentType
 	return x.String()
 }
 
@@ -108,9 +124,11 @@ func (x *GetUploadPresignedUrlRequest) Redact() string {
 
 	// Safe field: BucketName
 
-	// Safe field: FilePath
+	// Safe field: FileDirectory
 
 	// Safe field: FileName
+
+	// Safe field: ExpireSeconds
 	return x.String()
 }
 

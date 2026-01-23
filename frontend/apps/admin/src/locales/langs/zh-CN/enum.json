@@ -176,5 +176,17 @@
       "REVOKED": "已撤回",
       "DELETED": "已删除"
     }
+  },
+  "ossProvider": {
+    "LOCAL": "本地存储",
+    "MINIO": "MinIO",
+    "ALIYUN": "阿里云OSS",
+    "QINIU": "七牛云存储",
+    "TENCENT": "腾讯云COS",
+    "BAIDU": "百度云BOS",
+    "HUAWEI": "华为云OBS",
+    "AWS": "亚马逊S3",
+    "AZURE": "微软AzureBlob",
+    "GOOGLE": "谷歌云存储"
   }
 }

@@ -62,11 +62,11 @@ func RegisterOSS(L *lua.LState, ossClient *oss.MinIOClient, logger *log.Helper) 
 			if bucketName != nil {
 				finalBucketName = *bucketName
 			} else {
-				finalBucketName = ossClient.ContentTypeToBucketName(contentType)
+				finalBucketName = oss.ContentTypeToBucketName(contentType)
 			}
 
 			// Generate object name
-			objectName, _ := ossClient.JointObjectName(contentType, filePath, fileName)
+			objectName, _ := oss.JoinObjectName(contentType, filePath, fileName)
 
 			// Get presigned URL using the underlying MinIO client
 			ctx := context.Background()
@@ -175,7 +175,7 @@ func RegisterOSS(L *lua.LState, ossClient *oss.MinIOClient, logger *log.Helper) 
 			content := L.CheckString(3)
 
 			ctx := context.Background()
-			downloadURL, err := ossClient.UploadFile(ctx, bucketName, objectName, []byte(content))
+			_, downloadURL, err := ossClient.UploadFile(ctx, bucketName, objectName, []byte(content))
 			if err != nil {
 				L.Push(lua.LBool(false))
 				L.Push(lua.LString(err.Error()))
@@ -208,7 +208,7 @@ func RegisterOSS(L *lua.LState, ossClient *oss.MinIOClient, logger *log.Helper) 
 		// Get the appropriate bucket name for a content type
 		ossModule.RawSetString("get_bucket_for_type", L.NewFunction(func(L *lua.LState) int {
 			contentType := L.CheckString(1)
-			bucketName := ossClient.ContentTypeToBucketName(contentType)
+			bucketName := oss.ContentTypeToBucketName(contentType)
 			L.Push(lua.LString(bucketName))
 			return 1
 		}))

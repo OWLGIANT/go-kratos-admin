@@ -88,7 +88,6 @@ func NewRestServer(
 	portalService *service.AdminPortalService,
 	taskService *service.TaskService,
 
-	ossService *service.OssService,
 	uEditorService *service.UEditorService,
 	fileService *service.FileService,
 	fileTransferService *service.FileTransferService,
@@ -166,7 +165,6 @@ func NewRestServer(
 	adminV1.RegisterOperationAuditLogServiceHTTPServer(srv, operationAuditLogService)
 	adminV1.RegisterDataAccessAuditLogServiceHTTPServer(srv, dataAccessAuditLogService)
 
-	adminV1.RegisterOssServiceHTTPServer(srv, ossService)
 	adminV1.RegisterFileServiceHTTPServer(srv, fileService)
 
 	// 注册文件传输服务，用于处理文件上传下载等功能

@@ -4,7 +4,7 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 import { h } from 'vue';
 
 import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
-import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
+import { LucideFileDownload, LucideTrash2 } from '@vben/icons';
 
 import { notification, Upload } from 'ant-design-vue';
 
@@ -12,8 +12,8 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { type fileservicev1_File as File } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
 import {
-  statusToColor,
-  statusToName,
+  ossProviderColor,
+  ossProviderLabel,
   useFileStore,
   useFileTransferStore,
 } from '#/stores';
@@ -79,23 +79,29 @@ const gridOptions: VxeGridProps<File> = {
   },
 
   columns: [
-    { title: $t('page.file.md5'), field: 'md5' },
-    { title: $t('page.file.fileName'), field: 'saveFileName' },
-    {
-      title: $t('page.file.size'),
-      field: 'size',
-      slots: { default: 'fileSize' },
-    },
-    { title: $t('page.file.bucketName'), field: 'bucketName' },
+    { title: $t('ui.table.seq'), field: 'id', width: 50 },
+    { title: $t('page.file.fileName'), field: 'fileName' },
+    { title: $t('page.file.saveFileName'), field: 'saveFileName' },
     { title: $t('page.file.fileDirectory'), field: 'fileDirectory' },
     {
-      title: $t('ui.table.createdAt'),
+      title: $t('page.file.size'),
+      field: 'sizeFormat',
+    },
+    {
+      title: $t('page.file.createdAt'),
       field: 'createdAt',
       formatter: 'formatDateTime',
       width: 140,
     },
     {
-      title: $t('ui.table.action'),
+      title: $t('page.file.provider'),
+      field: 'provider',
+      fixed: 'right',
+      slots: { default: 'provider' },
+      width: 90,
+    },
+    {
+      title: $t('page.file.createdAt'),
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
@@ -118,23 +124,17 @@ const [Drawer] = useVbenDrawer({
   },
 });
 
-/* 编辑 */
-function handleEdit(row: any) {
-  console.log('编辑', row);
-  // openModal(false, row);
-}
-
 async function handleUploadFile(options: any) {
-  const { file, onProgress, onSuccess, onError } = options;
+  const { file, onSuccess, onError } = options;
 
   console.log('上传文件', options);
 
   try {
     const res = await fileTransferStore.uploadFile(
       'images',
-      file.name || '',
-      'post',
+      'temp',
       file,
+      'post',
       (progressEvent: any) => {
         console.log(progressEvent);
         // ant-design-vue 要求的进度结构为 { percent: number }
@@ -165,9 +165,11 @@ async function handleUploadFile(options: any) {
     });
   }
 }
-function handleDownloadFile() {
-  console.log('下载文件');
-  fileTransferStore.downloadFile('images', 'DateTimePicker.png', true);
+
+function handleDownloadFile(row: any) {
+  console.log('下载文件', row);
+  const objectName = row ? `${row.fileDirectory}/${row.saveFileName}` : '';
+  fileTransferStore.downloadFile(row.bucketName, objectName, true);
 }
 
 /* 删除 */
@@ -194,28 +196,22 @@ async function handleDelete(row: any) {
   <Page auto-content-height>
     <Grid :table-title="$t('menu.system.file')">
       <template #toolbar-tools>
-        <a-button class="mr-2" type="primary" @click="handleDownloadFile">
-          {{ $t('page.file.button.download') }}
-        </a-button>
         <Upload :multiple="false" :custom-request="handleUploadFile">
           <a-button class="mr-2" type="primary">
             {{ $t('page.file.button.upload') }}
           </a-button>
         </Upload>
       </template>
-      <template #status="{ row }">
-        <a-tag :color="statusToColor(row.status)">
-          {{ statusToName(row.status) }}
+      <template #provider="{ row }">
+        <a-tag :color="ossProviderColor(row.provider)">
+          {{ ossProviderLabel(row.provider) }}
         </a-tag>
-      </template>
-      <template #fileSize="{ row }">
-        {{ row.size }} {{ row.sizeFormat }}
       </template>
       <template #action="{ row }">
         <a-button
           type="link"
-          :icon="h(LucideFilePenLine)"
-          @click.stop="handleEdit(row)"
+          :icon="h(LucideFileDownload)"
+          @click.stop="handleDownloadFile(row)"
         />
         <a-popconfirm
           :cancel-text="$t('ui.button.cancel')"

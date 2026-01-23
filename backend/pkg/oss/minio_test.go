@@ -32,10 +32,10 @@ func TestMinIoClient(t *testing.T) {
 	assert.NotNil(t, cli)
 
 	resp, err := cli.GetUploadPresignedUrl(t.Context(), &fileV1.GetUploadPresignedUrlRequest{
-		Method:      fileV1.GetUploadPresignedUrlRequest_Put,
-		ContentType: trans.String("image/jpeg"),
-		BucketName:  trans.String("images"),
-		FilePath:    trans.String("20221010"),
+		Method:        fileV1.GetUploadPresignedUrlRequest_Put,
+		ContentType:   trans.String("image/jpeg"),
+		BucketName:    trans.String("images"),
+		FileDirectory: trans.String("20221010"),
 	})
 	assert.Nil(t, err)
 	assert.NotNil(t, resp)

@@ -32,17 +32,17 @@ service FileService {
 
 // OSS供应商
 enum OSSProvider {
-  MINIO = 0;
-  ALIYUN = 1;
-  AWS = 2;
-  AZURE = 3;
-  BAIDU = 4;
-  QINIU = 5;
-  TENCENT = 6;
-  GOOGLE = 7;
-  HUAWEI = 8;
-  QCLOUD = 9;
-  LOCAL = 10;
+  MINIO = 0; // MinIO
+  ALIYUN = 1; // 阿里云
+  AWS = 2; // 亚马逊云
+  AZURE = 3; // 微软云
+  BAIDU = 4; // 百度云
+  QINIU = 5; // 七牛云
+  TENCENT = 6; // 腾讯云
+  GOOGLE = 7; // 谷歌云
+  HUAWEI = 8; // 华为云
+
+  LOCAL = 10; // 本地文件系统
 }
 
 // 文件
@@ -65,7 +65,10 @@ message File {
 
   optional string file_directory = 4 [
     json_name = "fileDirectory",
-    (gnostic.openapi.v3.property) = { description: "文件目录" }
+    (gnostic.openapi.v3.property) = {
+      description: "文件目录",
+      example: {yaml : "tenant/1001/user/avatar/"}
+    }
   ];  // 文件目录
 
   optional string file_guid = 5 [
@@ -75,38 +78,50 @@ message File {
 
   optional string save_file_name = 6 [
     json_name = "saveFileName",
-    (gnostic.openapi.v3.property) = { description: "保存文件名" }
-  ];  // 保存文件名
+    (gnostic.openapi.v3.property) = {
+      description: "实际存储文件名（防止在服务器文件系统发生文件冲突）",
+      example: {yaml : "f8a3b9c0-1234-5678-90ab-cdef12345678.pdf"}
+    }
+  ];  // 实际存储文件名（防止在服务器文件系统发生文件冲突）
 
   optional string file_name = 7 [
     json_name = "fileName",
-    (gnostic.openapi.v3.property) = { description: "文件名" }
-  ];  // 文件名
+    (gnostic.openapi.v3.property) = {
+      description: "原始文件名",
+      example: {yaml : "2025年个人所得税申报表.pdf"}
+    }
+  ];  // 原始文件名
 
   optional string extension = 8 [
     json_name = "extension",
-    (gnostic.openapi.v3.property) = { description: "文件扩展名" }
+    (gnostic.openapi.v3.property) = {
+      description: "文件扩展名",
+      example: {yaml : "pdf"}
+    }
   ];  // 文件扩展名
 
   optional uint64 size = 9 [
     json_name = "size",
-    (gnostic.openapi.v3.property) = { description: "文件字节长度" }
+    (gnostic.openapi.v3.property) = { description: "文件长度，单位：字节" }
   ];  // 文件字节长度
 
   optional string size_format = 10 [
     json_name = "sizeFormat",
-    (gnostic.openapi.v3.property) = { description: "文件大小格式化" }
-  ];  // 文件大小格式化
+    (gnostic.openapi.v3.property) = {
+      description: "格式化后的文件长度字符串",
+      example: {yaml : "2.3 MB"}
+    }
+  ];  // 格式化后的文件长度字符串
 
   optional string link_url = 11 [
     json_name = "linkUrl",
     (gnostic.openapi.v3.property) = { description: "链接地址" }
   ];  // 链接地址
 
-  optional string md5 = 12 [
-    json_name = "md5",
-    (gnostic.openapi.v3.property) = { description: "md5码，防止上传重复文件" }
-  ];  // md5码，防止上传重复文件
+  optional string content_hash = 12 [
+    json_name = "contentHash",
+    (gnostic.openapi.v3.property) = { description: "文件内容hash值" }
+  ];  // 文件内容hash值
 
   optional uint32 tenant_id = 40 [
     json_name = "tenantId",

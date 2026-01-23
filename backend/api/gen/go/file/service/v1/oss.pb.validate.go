@@ -61,6 +61,10 @@ func (m *StorageObject) validate(all bool) error {
 		// no validation rules for BucketName
 	}
 
+	if m.FileDirectory != nil {
+		// no validation rules for FileDirectory
+	}
+
 	if m.ObjectName != nil {
 		// no validation rules for ObjectName
 	}
@@ -143,6 +147,118 @@ var _ interface {
 	ErrorName() string
 } = StorageObjectValidationError{}
 
+// Validate checks the field values on PresignOption with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *PresignOption) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PresignOption with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in PresignOptionMultiError, or
+// nil if none found.
+func (m *PresignOption) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PresignOption) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.Method != nil {
+		// no validation rules for Method
+	}
+
+	if m.ExpireSeconds != nil {
+		// no validation rules for ExpireSeconds
+	}
+
+	if m.ContentType != nil {
+		// no validation rules for ContentType
+	}
+
+	if len(errors) > 0 {
+		return PresignOptionMultiError(errors)
+	}
+
+	return nil
+}
+
+// PresignOptionMultiError is an error wrapping multiple validation errors
+// returned by PresignOption.ValidateAll() if the designated constraints
+// aren't met.
+type PresignOptionMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PresignOptionMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PresignOptionMultiError) AllErrors() []error { return m }
+
+// PresignOptionValidationError is the validation error returned by
+// PresignOption.Validate if the designated constraints aren't met.
+type PresignOptionValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PresignOptionValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PresignOptionValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PresignOptionValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PresignOptionValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PresignOptionValidationError) ErrorName() string { return "PresignOptionValidationError" }
+
+// Error satisfies the builtin error interface
+func (e PresignOptionValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPresignOption.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PresignOptionValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PresignOptionValidationError{}
+
 // Validate checks the field values on GetUploadPresignedUrlRequest with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -175,12 +291,16 @@ func (m *GetUploadPresignedUrlRequest) validate(all bool) error {
 		// no validation rules for BucketName
 	}
 
-	if m.FilePath != nil {
-		// no validation rules for FilePath
+	if m.FileDirectory != nil {
+		// no validation rules for FileDirectory
 	}
 
 	if m.FileName != nil {
 		// no validation rules for FileName
+	}
+
+	if m.ExpireSeconds != nil {
+		// no validation rules for ExpireSeconds
 	}
 
 	if len(errors) > 0 {

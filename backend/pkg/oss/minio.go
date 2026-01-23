@@ -3,13 +3,11 @@ package oss
 import (
 	"bytes"
 	"context"
-	"mime"
 	"net/url"
 	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
 	"github.com/tx7do/go-utils/timeutil"
 	"github.com/tx7do/go-utils/trans"
@@ -21,78 +19,25 @@ import (
 )
 
 const (
-	defaultExpiryTime = time.Minute * 60 // 1小时
+	defaultExpiryTime = time.Minute * 60 // 默认的预签名时间，默认为：1小时
 )
 
+// MinIOClient MinIO 客户端封装
 type MinIOClient struct {
-	mc   *minio.Client
-	conf *conf.OSS
-	log  *log.Helper
+	mc         *minio.Client
+	conf       *conf.OSS
+	log        *log.Helper
+	hmacSecret []byte
 }
 
 func NewMinIoClient(cfg *conf.Bootstrap, logger log.Logger) *MinIOClient {
 	l := log.NewHelper(log.With(logger, "module", "minio/data/admin-service"))
 	return &MinIOClient{
-		log:  l,
-		conf: cfg.Oss,
-		mc:   ossMinio.NewClient(cfg.Oss),
+		log:        l,
+		conf:       cfg.Oss,
+		mc:         ossMinio.NewClient(cfg.Oss),
+		hmacSecret: staticHMACSecret,
 	}
-}
-
-// ContentTypeToBucketName 根据文件类型获取bucket名称
-func (c *MinIOClient) ContentTypeToBucketName(contentType string) string {
-	h := strings.Split(contentType, "/")
-	if len(h) != 2 {
-		return "images"
-	}
-
-	var bucketName string
-	switch h[0] {
-	case "image":
-		bucketName = "images"
-		break
-	case "video":
-		bucketName = "videos"
-		break
-	case "audio":
-		bucketName = "audios"
-		break
-	case "application", "text":
-		bucketName = "docs"
-		break
-	default:
-		bucketName = "files"
-		break
-	}
-
-	return bucketName
-}
-
-// contentTypeToFileSuffix 根据文件类型获取文件后缀
-func (c *MinIOClient) contentTypeToFileSuffix(contentType string) string {
-	fileSuffix := ""
-
-	switch contentType {
-	case "text/plain":
-		fileSuffix = ".txt"
-		break
-
-	case "image/jpeg":
-		fileSuffix = ".jpg"
-		break
-
-	case "image/png":
-		fileSuffix = ".png"
-		break
-
-	default:
-		extensions, _ := mime.ExtensionsByType(contentType)
-		if len(extensions) > 0 {
-			fileSuffix = extensions[0]
-		}
-	}
-
-	return fileSuffix
 }
 
 // GetClient returns the underlying MinIO client
@@ -100,48 +45,40 @@ func (c *MinIOClient) GetClient() *minio.Client {
 	return c.mc
 }
 
-// JointObjectName Spliced objectName, containing hash-based folder structure (exported version)
-func (c *MinIOClient) JointObjectName(contentType string, filePath, fileName *string) (string, string) {
-	return c.jointObjectName(contentType, filePath, fileName)
+// BucketExists Check if the specified bucket exists
+func (c *MinIOClient) BucketExists(ctx context.Context, bucketName string) (exists bool, err error) {
+	exists, err = c.mc.BucketExists(ctx, bucketName)
+	if err != nil {
+		c.log.Errorf("Failed to check bucket existence: %v", err)
+		return false, fileV1.ErrorInternalServerError("failed to check bucket existence: %s", bucketName)
+	}
+	return exists, nil
 }
 
-// EnsureBucketExists Ensure that the specified bucket exists
-func (c *MinIOClient) EnsureBucketExists(ctx context.Context, bucketName string) error {
-	exists, err := c.mc.BucketExists(ctx, bucketName)
+// MakeBucket Create a new bucket
+func (c *MinIOClient) MakeBucket(ctx context.Context, bucketName string) (err error) {
+	err = c.mc.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 	if err != nil {
-		return fileV1.ErrorInternalServerError("failed to check bucket existence: %s", bucketName)
+		c.log.Errorf("Failed to create bucket: %v", err)
+		return fileV1.ErrorInternalServerError("failed to create bucket: %s", bucketName)
 	}
-
-	if !exists {
-		err = c.mc.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
-		if err != nil {
-			return fileV1.ErrorInternalServerError("failed to create bucket: %s", bucketName)
-		}
-		c.log.Infof("Created bucket: %s", bucketName)
-	}
+	c.log.Infof("Created bucket: %s", bucketName)
 
 	return nil
 }
 
-// jointObjectName 拼接objectName
-func (c *MinIOClient) jointObjectName(contentType string, filePath, fileName *string) (string, string) {
-	fileSuffix := c.contentTypeToFileSuffix(contentType)
-
-	var _fileName string
-	if fileName == nil {
-		_fileName = uuid.New().String() + fileSuffix
-	} else {
-		_fileName = *fileName
+// EnsureBucketExists Ensure that the specified bucket exists
+func (c *MinIOClient) EnsureBucketExists(ctx context.Context, bucketName string) error {
+	exists, err := c.BucketExists(ctx, bucketName)
+	if err != nil {
+		return err
 	}
 
-	var objectName string
-	if filePath != nil {
-		objectName = *filePath + "/" + _fileName
-	} else {
-		objectName = _fileName
+	if !exists {
+		return c.MakeBucket(ctx, bucketName)
 	}
 
-	return objectName, _fileName
+	return nil
 }
 
 // GetUploadPresignedUrl 获取上传地址
@@ -150,12 +87,22 @@ func (c *MinIOClient) GetUploadPresignedUrl(ctx context.Context, req *fileV1.Get
 	if req.BucketName != nil {
 		bucketName = req.GetBucketName()
 	} else {
-		bucketName = c.ContentTypeToBucketName(req.GetContentType())
+		bucketName = ContentTypeToBucketName(req.GetContentType())
+	}
+	if bucketName == "" {
+		bucketName = BucketFiles
 	}
 
-	objectName, _ := c.jointObjectName(req.GetContentType(), req.FilePath, req.FileName)
+	objectName, _ := JoinObjectName(req.GetContentType(), req.FileDirectory, req.FileName)
 
 	expiry := defaultExpiryTime
+	if req.ExpireSeconds != nil {
+		expiry = time.Second * time.Duration(req.GetExpireSeconds())
+	}
+
+	if err := c.EnsureBucketExists(ctx, bucketName); err != nil {
+		return nil, err
+	}
 
 	var uploadUrl string
 	var downloadUrl string
@@ -173,10 +120,10 @@ func (c *MinIOClient) GetUploadPresignedUrl(ctx context.Context, req *fileV1.Get
 		}
 
 		uploadUrl = presignedURL.String()
-		uploadUrl = c.replaceEndpointHost(downloadUrl, c.conf.Minio.UploadHost)
+		uploadUrl = ReplaceEndpointHost(downloadUrl, c.conf.Minio.UploadHost, c.conf.Minio.Endpoint)
 
-		downloadUrl = presignedURL.Host + "/" + bucketName + "/" + objectName
-		downloadUrl = c.replaceEndpointHost(downloadUrl, c.conf.Minio.DownloadHost)
+		downloadUrl = JoinObjectUrl(presignedURL.Host, bucketName, objectName)
+		downloadUrl = ReplaceEndpointHost(downloadUrl, c.conf.Minio.DownloadHost, c.conf.Minio.Endpoint)
 		if !strings.HasPrefix(downloadUrl, presignedURL.Scheme) {
 			downloadUrl = presignedURL.Scheme + "://" + downloadUrl
 		}
@@ -195,10 +142,10 @@ func (c *MinIOClient) GetUploadPresignedUrl(ctx context.Context, req *fileV1.Get
 		}
 
 		uploadUrl = presignedURL.String()
-		uploadUrl = c.replaceEndpointHost(downloadUrl, c.conf.Minio.UploadHost)
+		uploadUrl = ReplaceEndpointHost(downloadUrl, c.conf.Minio.UploadHost, c.conf.Minio.Endpoint)
 
-		downloadUrl = presignedURL.Host + "/" + bucketName + "/" + objectName
-		uploadUrl = c.replaceEndpointHost(downloadUrl, c.conf.Minio.DownloadHost)
+		downloadUrl = JoinObjectUrl(presignedURL.Host, bucketName, objectName)
+		uploadUrl = ReplaceEndpointHost(downloadUrl, c.conf.Minio.DownloadHost, c.conf.Minio.Endpoint)
 		if !strings.HasPrefix(downloadUrl, presignedURL.Scheme) {
 			downloadUrl = presignedURL.Scheme + "://" + downloadUrl
 		}
@@ -258,225 +205,271 @@ func (c *MinIOClient) ListFileForUEditor(ctx context.Context, bucketName string,
 }
 
 // DeleteFile 删除一个文件
-func (c *MinIOClient) DeleteFile(ctx context.Context, req *fileV1.DeleteOssFileRequest) (*fileV1.DeleteOssFileResponse, error) {
-	err := c.mc.RemoveObject(ctx, req.GetBucketName(), req.GetObjectName(), minio.RemoveObjectOptions{})
-	if err != nil {
-		c.log.Errorf("Failed to delete file: %v", err)
-		return nil, fileV1.ErrorDeleteFailed("failed to delete file")
+func (c *MinIOClient) DeleteFile(ctx context.Context, bucketName, objectName string) error {
+	if bucketName == "" {
+		return fileV1.ErrorBadRequest("bucket name is required")
+	}
+	if objectName == "" {
+		return fileV1.ErrorBadRequest("object name is required")
 	}
 
-	return &fileV1.DeleteOssFileResponse{}, nil
+	err := c.mc.RemoveObject(ctx, bucketName, objectName, minio.RemoveObjectOptions{})
+	if err != nil {
+		c.log.Errorf("Failed to delete file: %v", err)
+		return fileV1.ErrorDeleteFailed("failed to delete file")
+	}
+
+	return nil
 }
 
 // UploadFile 上传文件
-func (c *MinIOClient) UploadFile(ctx context.Context, bucketName string, objectName string, file []byte) (minio.UploadInfo, string, error) {
-	reader := bytes.NewReader(file)
+func (c *MinIOClient) UploadFile(ctx context.Context, bucketName string, objectName string, fileContent []byte) (minio.UploadInfo, string, error) {
+	if len(fileContent) == 0 {
+		c.log.Errorf("Empty fileContent data")
+		return minio.UploadInfo{}, "", fileV1.ErrorUploadFailed("empty fileContent data")
+	}
+
+	if bucketName == "" {
+		bucketName = BucketFiles
+	}
+	if objectName == "" {
+		mimeType, ext := DetectFileType(fileContent)
+		if mimeType == "" {
+			mimeType = "application/octet-stream"
+		}
+		if ext == "" {
+			ext = ".bin"
+		}
+
+		bucketName = ContentTypeToBucketName(mimeType)
+		objectName = GenerateObjectName("", fileContent, ext, GenerateFileNameTypeUUID)
+	}
+	if err := c.EnsureBucketExists(ctx, bucketName); err != nil {
+		return minio.UploadInfo{}, "", err
+	}
+
+	reader := bytes.NewReader(fileContent)
 	if reader == nil {
-		c.log.Errorf("Invalid file data")
-		return minio.UploadInfo{}, "", fileV1.ErrorUploadFailed("invalid file data")
+		c.log.Errorf("Invalid fileContent data")
+		return minio.UploadInfo{}, "", fileV1.ErrorUploadFailed("invalid fileContent data")
 	}
 
 	info, err := c.mc.PutObject(
 		ctx,
-		bucketName,
-		objectName,
+		bucketName, objectName,
 		reader, reader.Size(),
 		minio.PutObjectOptions{},
 	)
 	if err != nil {
-		c.log.Errorf("Failed to upload file: %v", err)
-		return info, "", fileV1.ErrorUploadFailed("failed to upload file")
+		c.log.Errorf("Failed to upload fileContent: %v", err)
+		return info, "", fileV1.ErrorUploadFailed("failed to upload fileContent")
 	}
 
-	downloadUrl := "/" + bucketName + "/" + objectName
+	downloadUrl := JoinObjectUrl("", bucketName, objectName)
 
 	return info, downloadUrl, nil
 }
 
+// getDownloadUrlWithStorageObjectDirect 直接获取文件内容
+func (c *MinIOClient) getDownloadUrlWithStorageObjectDirect(ctx context.Context, req *fileV1.GetDownloadInfoRequest) (*fileV1.GetDownloadInfoResponse, error) {
+	opts := minio.GetObjectOptions{}
+
+	SetDownloadRange(&opts, req.RangeStart, req.RangeEnd)
+
+	object, err := c.mc.GetObject(
+		ctx,
+		req.GetStorageObject().GetBucketName(),
+		req.GetStorageObject().GetObjectName(),
+		opts,
+	)
+	if err != nil {
+		c.log.Errorf("Failed to get object: %v", err)
+		return nil, fileV1.ErrorDownloadFailed("failed to get object")
+	}
+
+	buf := new(bytes.Buffer)
+	_, err = buf.ReadFrom(object)
+	if err != nil {
+		c.log.Errorf("Failed to read object: %v", err)
+		return nil, fileV1.ErrorDownloadFailed("failed to read object")
+	}
+
+	resp := &fileV1.GetDownloadInfoResponse{
+		Content: &fileV1.GetDownloadInfoResponse_File{
+			File: buf.Bytes(),
+		},
+	}
+
+	st, err := object.Stat()
+	if err != nil {
+		c.log.Errorf("Failed to stat object: %v", err)
+		return nil, fileV1.ErrorDownloadFailed("failed to stat object")
+	}
+
+	if req.GetAcceptMime() != "" {
+		resp.Mime = req.GetAcceptMime()
+	} else {
+		resp.Mime = st.ContentType
+	}
+	if resp.GetMime() == "" {
+		resp.Mime = "application/octet-stream"
+	}
+
+	resp.Checksum = st.ChecksumSHA256
+	resp.SourceFileName = st.Key
+	resp.Size = st.Size
+	resp.UpdatedAt = timeutil.TimeToTimestamppb(&st.LastModified)
+
+	return resp, nil
+}
+
+// getDownloadUrlWithStorageObjectPresigned 获取预签名下载地址
+func (c *MinIOClient) getDownloadUrlWithStorageObjectPresigned(ctx context.Context, req *fileV1.GetDownloadInfoRequest) (*fileV1.GetDownloadInfoResponse, error) {
+	expires := defaultExpiryTime
+	if req.PresignExpireSeconds != nil {
+		expires = time.Second * time.Duration(req.GetPresignExpireSeconds())
+	}
+	presignedURL, err := c.mc.PresignedGetObject(
+		ctx,
+		req.GetStorageObject().GetBucketName(),
+		req.GetStorageObject().GetObjectName(),
+		expires,
+		nil,
+	)
+	if err != nil {
+		c.log.Errorf("Failed to generate presigned URL: %v", err)
+		return nil, fileV1.ErrorDownloadFailed("failed to generate presigned URL")
+	}
+
+	downloadUrl := presignedURL.String()
+	downloadUrl = ReplaceEndpointHost(downloadUrl, c.conf.Minio.DownloadHost, c.conf.Minio.Endpoint)
+	if !strings.HasPrefix(downloadUrl, presignedURL.Scheme) {
+		downloadUrl = presignedURL.Scheme + "://" + downloadUrl
+	}
+
+	return &fileV1.GetDownloadInfoResponse{
+		Content: &fileV1.GetDownloadInfoResponse_DownloadUrl{
+			DownloadUrl: downloadUrl,
+		},
+	}, nil
+}
+
 // GetDownloadUrl 获取下载地址
 func (c *MinIOClient) GetDownloadUrl(ctx context.Context, req *fileV1.GetDownloadInfoRequest) (*fileV1.GetDownloadInfoResponse, error) {
-	if req.GetPreferPresignedUrl() {
-		expires := defaultExpiryTime
-		if req.PresignExpireSeconds != nil {
-			expires = time.Second * time.Duration(req.GetPresignExpireSeconds())
-		}
-		presignedURL, err := c.mc.PresignedGetObject(
-			ctx,
-			req.GetStorageObject().GetBucketName(),
-			req.GetStorageObject().GetObjectName(),
-			expires,
-			nil,
-		)
-		if err != nil {
-			c.log.Errorf("Failed to generate presigned URL: %v", err)
-			return nil, fileV1.ErrorDownloadFailed("failed to generate presigned URL")
-		}
-
-		downloadUrl := presignedURL.String()
-		downloadUrl = c.replaceEndpointHost(downloadUrl, c.conf.Minio.DownloadHost)
-		if !strings.HasPrefix(downloadUrl, presignedURL.Scheme) {
-			downloadUrl = presignedURL.Scheme + "://" + downloadUrl
-		}
-
-		return &fileV1.GetDownloadInfoResponse{
-			Content: &fileV1.GetDownloadInfoResponse_DownloadUrl{
-				DownloadUrl: downloadUrl,
-			},
-		}, nil
-	} else {
-		opts := minio.GetObjectOptions{}
-
-		c.setDownloadRange(&opts, req.RangeStart, req.RangeEnd)
-
-		object, err := c.mc.GetObject(
-			ctx,
-			req.GetStorageObject().GetBucketName(),
-			req.GetStorageObject().GetObjectName(),
-			opts,
-		)
-		if err != nil {
-			c.log.Errorf("Failed to get object: %v", err)
-			return nil, fileV1.ErrorDownloadFailed("failed to get object")
-		}
-
-		buf := new(bytes.Buffer)
-		_, err = buf.ReadFrom(object)
-		if err != nil {
-			c.log.Errorf("Failed to read object: %v", err)
-			return nil, fileV1.ErrorDownloadFailed("failed to read object")
-		}
-
-		resp := &fileV1.GetDownloadInfoResponse{
-			Content: &fileV1.GetDownloadInfoResponse_File{
-				File: buf.Bytes(),
-			},
-		}
-
-		st, err := object.Stat()
-		if err != nil {
-			c.log.Errorf("Failed to stat object: %v", err)
-			return nil, fileV1.ErrorDownloadFailed("failed to stat object")
-		}
-
-		if req.GetAcceptMime() != "" {
-			resp.Mime = req.GetAcceptMime()
+	switch req.Selector.(type) {
+	case *fileV1.GetDownloadInfoRequest_StorageObject:
+		if req.GetPreferPresignedUrl() {
+			return c.getDownloadUrlWithStorageObjectPresigned(ctx, req)
 		} else {
-			resp.Mime = st.ContentType
-		}
-		if resp.GetMime() == "" {
-			resp.Mime = "application/octet-stream"
+			return c.getDownloadUrlWithStorageObjectDirect(ctx, req)
 		}
 
-		resp.Checksum = st.ChecksumSHA256
-		resp.SourceFileName = st.Key
-		resp.Size = st.Size
-		resp.UpdatedAt = timeutil.TimeToTimestamppb(&st.LastModified)
+	case *fileV1.GetDownloadInfoRequest_FileId:
+		return nil, fileV1.ErrorNotImplemented("not implemented yet")
 
-		return resp, nil
+	default:
+		return nil, fileV1.ErrorBadRequest("invalid selector")
 	}
+}
+
+// downloadFileWithStorageObjectDirect 直接获取文件内容
+func (c *MinIOClient) downloadFileWithStorageObjectDirect(ctx context.Context, req *fileV1.DownloadFileRequest) (*fileV1.DownloadFileResponse, error) {
+	opts := minio.GetObjectOptions{}
+
+	SetDownloadRange(&opts, req.RangeStart, req.RangeEnd)
+
+	object, err := c.mc.GetObject(
+		ctx,
+		req.GetStorageObject().GetBucketName(),
+		req.GetStorageObject().GetObjectName(),
+		opts,
+	)
+	if err != nil {
+		c.log.Errorf("Failed to get object: %v", err)
+		return nil, fileV1.ErrorDownloadFailed("failed to get object")
+	}
+
+	buf := new(bytes.Buffer)
+	_, err = buf.ReadFrom(object)
+	if err != nil {
+		c.log.Errorf("Failed to read object: %v", err)
+		return nil, fileV1.ErrorDownloadFailed("failed to read object")
+	}
+
+	resp := &fileV1.DownloadFileResponse{
+		Content: &fileV1.DownloadFileResponse_File{
+			File: buf.Bytes(),
+		},
+	}
+
+	st, err := object.Stat()
+	if err != nil {
+		c.log.Errorf("Failed to stat object: %v", err)
+		return nil, fileV1.ErrorDownloadFailed("failed to stat object")
+	}
+
+	if req.GetAcceptMime() != "" {
+		resp.Mime = req.GetAcceptMime()
+	} else {
+		resp.Mime = st.ContentType
+	}
+	if resp.GetMime() == "" {
+		resp.Mime = "application/octet-stream"
+	}
+
+	resp.Checksum = st.ChecksumSHA256
+	resp.SourceFileName = st.Key
+	resp.Size = st.Size
+	resp.UpdatedAt = timeutil.TimeToTimestamppb(&st.LastModified)
+
+	return resp, nil
+}
+
+// downloadFileWithStorageObjectPresigned 获取预签名下载地址
+func (c *MinIOClient) downloadFileWithStorageObjectPresigned(ctx context.Context, req *fileV1.DownloadFileRequest) (*fileV1.DownloadFileResponse, error) {
+	expires := defaultExpiryTime
+	if req.PresignExpireSeconds != nil {
+		expires = time.Second * time.Duration(req.GetPresignExpireSeconds())
+	}
+	presignedURL, err := c.mc.PresignedGetObject(
+		ctx,
+		req.GetStorageObject().GetBucketName(),
+		req.GetStorageObject().GetObjectName(),
+		expires,
+		nil,
+	)
+	if err != nil {
+		c.log.Errorf("Failed to generate presigned URL: %v", err)
+		return nil, fileV1.ErrorDownloadFailed("failed to generate presigned URL")
+	}
+
+	downloadUrl := presignedURL.String()
+	downloadUrl = ReplaceEndpointHost(downloadUrl, c.conf.Minio.DownloadHost, c.conf.Minio.Endpoint)
+	if !strings.HasPrefix(downloadUrl, presignedURL.Scheme) {
+		downloadUrl = presignedURL.Scheme + "://" + downloadUrl
+	}
+
+	return &fileV1.DownloadFileResponse{
+		Content: &fileV1.DownloadFileResponse_DownloadUrl{
+			DownloadUrl: downloadUrl,
+		},
+	}, nil
 }
 
 // DownloadFile 下载文件
 func (c *MinIOClient) DownloadFile(ctx context.Context, req *fileV1.DownloadFileRequest) (*fileV1.DownloadFileResponse, error) {
-	if req.GetPreferPresignedUrl() {
-		expires := defaultExpiryTime
-		if req.PresignExpireSeconds != nil {
-			expires = time.Second * time.Duration(req.GetPresignExpireSeconds())
-		}
-		presignedURL, err := c.mc.PresignedGetObject(
-			ctx,
-			req.GetStorageObject().GetBucketName(),
-			req.GetStorageObject().GetObjectName(),
-			expires,
-			nil,
-		)
-		if err != nil {
-			c.log.Errorf("Failed to generate presigned URL: %v", err)
-			return nil, fileV1.ErrorDownloadFailed("failed to generate presigned URL")
-		}
-
-		downloadUrl := presignedURL.String()
-		downloadUrl = c.replaceEndpointHost(downloadUrl, c.conf.Minio.DownloadHost)
-		if !strings.HasPrefix(downloadUrl, presignedURL.Scheme) {
-			downloadUrl = presignedURL.Scheme + "://" + downloadUrl
-		}
-
-		return &fileV1.DownloadFileResponse{
-			Content: &fileV1.DownloadFileResponse_DownloadUrl{
-				DownloadUrl: downloadUrl,
-			},
-		}, nil
-	} else {
-		opts := minio.GetObjectOptions{}
-
-		c.setDownloadRange(&opts, req.RangeStart, req.RangeEnd)
-
-		object, err := c.mc.GetObject(
-			ctx,
-			req.GetStorageObject().GetBucketName(),
-			req.GetStorageObject().GetObjectName(),
-			opts,
-		)
-		if err != nil {
-			c.log.Errorf("Failed to get object: %v", err)
-			return nil, fileV1.ErrorDownloadFailed("failed to get object")
-		}
-
-		buf := new(bytes.Buffer)
-		_, err = buf.ReadFrom(object)
-		if err != nil {
-			c.log.Errorf("Failed to read object: %v", err)
-			return nil, fileV1.ErrorDownloadFailed("failed to read object")
-		}
-
-		resp := &fileV1.DownloadFileResponse{
-			Content: &fileV1.DownloadFileResponse_File{
-				File: buf.Bytes(),
-			},
-		}
-
-		st, err := object.Stat()
-		if err != nil {
-			c.log.Errorf("Failed to stat object: %v", err)
-			return nil, fileV1.ErrorDownloadFailed("failed to stat object")
-		}
-
-		if req.GetAcceptMime() != "" {
-			resp.Mime = req.GetAcceptMime()
+	switch req.Selector.(type) {
+	case *fileV1.DownloadFileRequest_StorageObject:
+		if req.GetPreferPresignedUrl() {
+			return c.downloadFileWithStorageObjectPresigned(ctx, req)
 		} else {
-			resp.Mime = st.ContentType
-		}
-		if resp.GetMime() == "" {
-			resp.Mime = "application/octet-stream"
+			return c.downloadFileWithStorageObjectDirect(ctx, req)
 		}
 
-		resp.Checksum = st.ChecksumSHA256
-		resp.SourceFileName = st.Key
-		resp.Size = st.Size
-		resp.UpdatedAt = timeutil.TimeToTimestamppb(&st.LastModified)
+	case *fileV1.DownloadFileRequest_FileId:
+		return nil, fileV1.ErrorNotImplemented("not implemented yet")
 
-		return resp, nil
+	default:
+		return nil, fileV1.ErrorBadRequest("invalid selector")
 	}
-}
-
-// setDownloadRange 设置下载范围
-func (c *MinIOClient) setDownloadRange(opts *minio.GetObjectOptions, start, end *int64) {
-	if opts == nil {
-		return
-	}
-
-	if start != nil && end != nil {
-		_ = opts.SetRange(*start, *end)
-	} else if start != nil {
-		_ = opts.SetRange(*start, 0)
-	} else if end != nil {
-		_ = opts.SetRange(0, *end)
-	}
-}
-
-func (c *MinIOClient) replaceEndpointHost(rawURL, host string) string {
-	if rawURL == "" || host == "" {
-		return rawURL
-	}
-	return strings.Replace(rawURL, c.conf.Minio.Endpoint, host, -1)
 }

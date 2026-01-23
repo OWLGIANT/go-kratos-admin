@@ -100,8 +100,8 @@ func (m *File) validate(all bool) error {
 		// no validation rules for LinkUrl
 	}
 
-	if m.Md5 != nil {
-		// no validation rules for Md5
+	if m.ContentHash != nil {
+		// no validation rules for ContentHash
 	}
 
 	if m.TenantId != nil {

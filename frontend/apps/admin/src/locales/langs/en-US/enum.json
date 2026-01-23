@@ -111,5 +111,9 @@
       "CONTRACT": "Contract Position",
       "OTHER": "Other Position"
     }
+  },
+  "ossProvider": {
+    "LOCAL": "Local Storage",
+    "ALIYUN": "Aliyun OSS",
   }
 }

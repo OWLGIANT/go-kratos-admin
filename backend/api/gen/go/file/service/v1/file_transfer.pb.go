@@ -24,6 +24,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// 文件下载请求
 type DownloadFileRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to Selector:
@@ -158,7 +159,7 @@ type DownloadFileRequest_FileId struct {
 }
 
 type DownloadFileRequest_StorageObject struct {
-	StorageObject *StorageObject `protobuf:"bytes,2,opt,name=storage_object,json=storageObject,proto3,oneof"` // bucket + object 定位
+	StorageObject *StorageObject `protobuf:"bytes,2,opt,name=storage_object,json=storageObject,proto3,oneof"` // 对象存储对象
 }
 
 type DownloadFileRequest_DownloadUrl struct {
@@ -305,12 +306,16 @@ func (*DownloadFileResponse_File) isDownloadFileResponse_Content() {}
 func (*DownloadFileResponse_DownloadUrl) isDownloadFileResponse_Content() {}
 
 type UploadFileRequest struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	BucketName     *string                `protobuf:"bytes,1,opt,name=bucket_name,json=bucketName,proto3,oneof" json:"bucket_name,omitempty"`               // 文件桶名称
-	ObjectName     *string                `protobuf:"bytes,2,opt,name=object_name,json=objectName,proto3,oneof" json:"object_name,omitempty"`               // 文件名
-	File           []byte                 `protobuf:"bytes,3,opt,name=file,proto3,oneof" json:"file,omitempty"`                                             // 文件内容
-	SourceFileName *string                `protobuf:"bytes,4,opt,name=source_file_name,json=sourceFileName,proto3,oneof" json:"source_file_name,omitempty"` // 原文件文件名
-	Mime           *string                `protobuf:"bytes,5,opt,name=mime,proto3,oneof" json:"mime,omitempty"`                                             // 文件的MIME类型
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	StorageObject *StorageObject         `protobuf:"bytes,1,opt,name=storage_object,json=storageObject,proto3" json:"storage_object,omitempty"` // 对象存储对象
+	// Types that are valid to be assigned to Source:
+	//
+	//	*UploadFileRequest_File
+	//	*UploadFileRequest_Presign
+	Source         isUploadFileRequest_Source `protobuf_oneof:"source"`
+	SourceFileName *string                    `protobuf:"bytes,4,opt,name=source_file_name,json=sourceFileName,proto3,oneof" json:"source_file_name,omitempty"` // 原文件文件名
+	Mime           *string                    `protobuf:"bytes,5,opt,name=mime,proto3,oneof" json:"mime,omitempty"`                                             // 文件的MIME类型
+	Size           *int64                     `protobuf:"varint,6,opt,name=size,proto3,oneof" json:"size,omitempty"`                                            // 文件大小（字节）
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -345,23 +350,34 @@ func (*UploadFileRequest) Descriptor() ([]byte, []int) {
 	return file_file_service_v1_file_transfer_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *UploadFileRequest) GetBucketName() string {
-	if x != nil && x.BucketName != nil {
-		return *x.BucketName
+func (x *UploadFileRequest) GetStorageObject() *StorageObject {
+	if x != nil {
+		return x.StorageObject
 	}
-	return ""
+	return nil
 }
 
-func (x *UploadFileRequest) GetObjectName() string {
-	if x != nil && x.ObjectName != nil {
-		return *x.ObjectName
+func (x *UploadFileRequest) GetSource() isUploadFileRequest_Source {
+	if x != nil {
+		return x.Source
 	}
-	return ""
+	return nil
 }
 
 func (x *UploadFileRequest) GetFile() []byte {
 	if x != nil {
-		return x.File
+		if x, ok := x.Source.(*UploadFileRequest_File); ok {
+			return x.File
+		}
+	}
+	return nil
+}
+
+func (x *UploadFileRequest) GetPresign() *PresignOption {
+	if x != nil {
+		if x, ok := x.Source.(*UploadFileRequest_Presign); ok {
+			return x.Presign
+		}
 	}
 	return nil
 }
@@ -380,9 +396,33 @@ func (x *UploadFileRequest) GetMime() string {
 	return ""
 }
 
+func (x *UploadFileRequest) GetSize() int64 {
+	if x != nil && x.Size != nil {
+		return *x.Size
+	}
+	return 0
+}
+
+type isUploadFileRequest_Source interface {
+	isUploadFileRequest_Source()
+}
+
+type UploadFileRequest_File struct {
+	File []byte `protobuf:"bytes,2,opt,name=file,proto3,oneof"`
+}
+
+type UploadFileRequest_Presign struct {
+	Presign *PresignOption `protobuf:"bytes,3,opt,name=presign,proto3,oneof"`
+}
+
+func (*UploadFileRequest_File) isUploadFileRequest_Source() {}
+
+func (*UploadFileRequest_Presign) isUploadFileRequest_Source() {}
+
 type UploadFileResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Url           string                 `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
+	ObjectName    *string                `protobuf:"bytes,1,opt,name=object_name,json=objectName,proto3,oneof" json:"object_name,omitempty"`       // OSS 对象键
+	PresignedUrl  *string                `protobuf:"bytes,2,opt,name=presigned_url,json=presignedUrl,proto3,oneof" json:"presigned_url,omitempty"` // 预签名上传链接
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -417,9 +457,16 @@ func (*UploadFileResponse) Descriptor() ([]byte, []int) {
 	return file_file_service_v1_file_transfer_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *UploadFileResponse) GetUrl() string {
-	if x != nil {
-		return x.Url
+func (x *UploadFileResponse) GetObjectName() string {
+	if x != nil && x.ObjectName != nil {
+		return *x.ObjectName
+	}
+	return ""
+}
+
+func (x *UploadFileResponse) GetPresignedUrl() string {
+	if x != nil && x.PresignedUrl != nil {
+		return *x.PresignedUrl
 	}
 	return ""
 }
@@ -428,10 +475,10 @@ var File_file_service_v1_file_transfer_proto protoreflect.FileDescriptor
 
 const file_file_service_v1_file_transfer_proto_rawDesc = "" +
 	"\n" +
-	"#file/service/v1/file_transfer.proto\x12\x0ffile.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x19google/api/httpbody.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19file/service/v1/oss.proto\"\xd8\b\n" +
+	"#file/service/v1/file_transfer.proto\x12\x0ffile.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x19google/api/httpbody.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19file/service/v1/oss.proto\"\xd4\b\n" +
 	"\x13DownloadFileRequest\x129\n" +
-	"\afile_id\x18\x01 \x01(\rB\x1e\xbaG\x1b\x92\x02\x18服务端内部文件 IDH\x00R\x06fileId\x12e\n" +
-	"\x0estorage_object\x18\x02 \x01(\v2\x1e.file.service.v1.StorageObjectB\x1c\xbaG\x19\x92\x02\x16bucket + object 定位H\x00R\rstorageObject\x12\\\n" +
+	"\afile_id\x18\x01 \x01(\rB\x1e\xbaG\x1b\x92\x02\x18服务端内部文件 IDH\x00R\x06fileId\x12a\n" +
+	"\x0estorage_object\x18\x02 \x01(\v2\x1e.file.service.v1.StorageObjectB\x18\xbaG\x15\x92\x02\x12对象存储对象H\x00R\rstorageObject\x12\\\n" +
 	"\fdownload_url\x18\x03 \x01(\tB7\xbaG4\x92\x021直接的外部 URL（可用于代理或验证）H\x00R\vdownloadUrl\x12P\n" +
 	"\vrange_start\x18\x04 \x01(\x03B*\xbaG'\x92\x02$下载范围开始区域，闭区间H\x01R\n" +
 	"rangeStart\x88\x01\x01\x12L\n" +
@@ -461,22 +508,24 @@ const file_file_service_v1_file_transfer_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampB!\xbaG\x1e\x92\x02\x1b可选，最后修改时间H\x01R\tupdatedAt\x88\x01\x01B\t\n" +
 	"\acontentB\r\n" +
-	"\v_updated_at\"\xf8\x02\n" +
-	"\x11UploadFileRequest\x12;\n" +
-	"\vbucket_name\x18\x01 \x01(\tB\x15\xbaG\x12\x92\x02\x0f文件桶名称H\x00R\n" +
-	"bucketName\x88\x01\x01\x125\n" +
-	"\vobject_name\x18\x02 \x01(\tB\x0f\xbaG\f\x92\x02\t文件名H\x01R\n" +
-	"objectName\x88\x01\x01\x12+\n" +
-	"\x04file\x18\x03 \x01(\fB\x12\xbaG\x0f\x92\x02\f文件内容H\x02R\x04file\x88\x01\x01\x12G\n" +
-	"\x10source_file_name\x18\x04 \x01(\tB\x18\xbaG\x15\x92\x02\x12原文件文件名H\x03R\x0esourceFileName\x88\x01\x01\x122\n" +
-	"\x04mime\x18\x05 \x01(\tB\x19\xbaG\x16\x92\x02\x13文件的MIME类型H\x04R\x04mime\x88\x01\x01B\x0e\n" +
-	"\f_bucket_nameB\x0e\n" +
-	"\f_object_nameB\a\n" +
-	"\x05_fileB\x13\n" +
+	"\v_updated_at\"\xba\x04\n" +
+	"\x11UploadFileRequest\x12_\n" +
+	"\x0estorage_object\x18\x01 \x01(\v2\x1e.file.service.v1.StorageObjectB\x18\xbaG\x15\x92\x02\x12对象存储对象R\rstorageObject\x12I\n" +
+	"\x04file\x18\x02 \x01(\fB3\xbaG0\x92\x02-直接上传的文件内容（内联字节）H\x00R\x04file\x12\x91\x01\n" +
+	"\apresign\x18\x03 \x01(\v2\x1e.file.service.v1.PresignOptionBU\xbaGR\x92\x02O请求服务返回预签名信息（不上传文件而是获取预签名 URL）H\x00R\apresign\x12G\n" +
+	"\x10source_file_name\x18\x04 \x01(\tB\x18\xbaG\x15\x92\x02\x12原文件文件名H\x01R\x0esourceFileName\x88\x01\x01\x122\n" +
+	"\x04mime\x18\x05 \x01(\tB\x19\xbaG\x16\x92\x02\x13文件的MIME类型H\x02R\x04mime\x88\x01\x01\x127\n" +
+	"\x04size\x18\x06 \x01(\x03B\x1e\xbaG\x1b\x92\x02\x18文件大小（字节）H\x03R\x04size\x88\x01\x01B\b\n" +
+	"\x06sourceB\x13\n" +
 	"\x11_source_file_nameB\a\n" +
-	"\x05_mime\"&\n" +
-	"\x12UploadFileResponse\x12\x10\n" +
-	"\x03url\x18\x01 \x01(\tR\x03url2\x86\x02\n" +
+	"\x05_mimeB\a\n" +
+	"\x05_size\"\xb8\x01\n" +
+	"\x12UploadFileResponse\x129\n" +
+	"\vobject_name\x18\x01 \x01(\tB\x13\xbaG\x10\x92\x02\rOSS 对象键H\x00R\n" +
+	"objectName\x88\x01\x01\x12E\n" +
+	"\rpresigned_url\x18\x02 \x01(\tB\x1b\xbaG\x18\x92\x02\x15预签名上传链接H\x01R\fpresignedUrl\x88\x01\x01B\x0e\n" +
+	"\f_object_nameB\x10\n" +
+	"\x0e_presigned_url2\x86\x02\n" +
 	"\x13FileTransferService\x12N\n" +
 	"\fDownloadFile\x12$.file.service.v1.DownloadFileRequest\x1a\x14.google.api.HttpBody\"\x000\x01\x12N\n" +
 	"\rPutUploadFile\x12\x14.google.api.HttpBody\x1a#.file.service.v1.UploadFileResponse\"\x00(\x01\x12O\n" +
@@ -503,22 +552,25 @@ var file_file_service_v1_file_transfer_proto_goTypes = []any{
 	(*UploadFileResponse)(nil),    // 3: file.service.v1.UploadFileResponse
 	(*StorageObject)(nil),         // 4: file.service.v1.StorageObject
 	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
-	(*httpbody.HttpBody)(nil),     // 6: google.api.HttpBody
+	(*PresignOption)(nil),         // 6: file.service.v1.PresignOption
+	(*httpbody.HttpBody)(nil),     // 7: google.api.HttpBody
 }
 var file_file_service_v1_file_transfer_proto_depIdxs = []int32{
 	4, // 0: file.service.v1.DownloadFileRequest.storage_object:type_name -> file.service.v1.StorageObject
 	5, // 1: file.service.v1.DownloadFileResponse.updated_at:type_name -> google.protobuf.Timestamp
-	0, // 2: file.service.v1.FileTransferService.DownloadFile:input_type -> file.service.v1.DownloadFileRequest
-	6, // 3: file.service.v1.FileTransferService.PutUploadFile:input_type -> google.api.HttpBody
-	6, // 4: file.service.v1.FileTransferService.PostUploadFile:input_type -> google.api.HttpBody
-	6, // 5: file.service.v1.FileTransferService.DownloadFile:output_type -> google.api.HttpBody
-	3, // 6: file.service.v1.FileTransferService.PutUploadFile:output_type -> file.service.v1.UploadFileResponse
-	3, // 7: file.service.v1.FileTransferService.PostUploadFile:output_type -> file.service.v1.UploadFileResponse
-	5, // [5:8] is the sub-list for method output_type
-	2, // [2:5] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	4, // 2: file.service.v1.UploadFileRequest.storage_object:type_name -> file.service.v1.StorageObject
+	6, // 3: file.service.v1.UploadFileRequest.presign:type_name -> file.service.v1.PresignOption
+	0, // 4: file.service.v1.FileTransferService.DownloadFile:input_type -> file.service.v1.DownloadFileRequest
+	7, // 5: file.service.v1.FileTransferService.PutUploadFile:input_type -> google.api.HttpBody
+	7, // 6: file.service.v1.FileTransferService.PostUploadFile:input_type -> google.api.HttpBody
+	7, // 7: file.service.v1.FileTransferService.DownloadFile:output_type -> google.api.HttpBody
+	3, // 8: file.service.v1.FileTransferService.PutUploadFile:output_type -> file.service.v1.UploadFileResponse
+	3, // 9: file.service.v1.FileTransferService.PostUploadFile:output_type -> file.service.v1.UploadFileResponse
+	7, // [7:10] is the sub-list for method output_type
+	4, // [4:7] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_file_service_v1_file_transfer_proto_init() }
@@ -536,7 +588,11 @@ func file_file_service_v1_file_transfer_proto_init() {
 		(*DownloadFileResponse_File)(nil),
 		(*DownloadFileResponse_DownloadUrl)(nil),
 	}
-	file_file_service_v1_file_transfer_proto_msgTypes[2].OneofWrappers = []any{}
+	file_file_service_v1_file_transfer_proto_msgTypes[2].OneofWrappers = []any{
+		(*UploadFileRequest_File)(nil),
+		(*UploadFileRequest_Presign)(nil),
+	}
+	file_file_service_v1_file_transfer_proto_msgTypes[3].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

@@ -131,7 +131,7 @@ func (x *File) Redact() string {
 
 	// Safe field: LinkUrl
 
-	// Safe field: Md5
+	// Safe field: ContentHash
 
 	// Safe field: TenantId
 

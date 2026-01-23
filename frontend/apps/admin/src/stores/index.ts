@@ -17,7 +17,6 @@ export * from './login-policy.state';
 export * from './menu.state';
 export * from './operation-audit-log.state';
 export * from './org-unit.state';
-export * from './oss.state';
 export * from './permission.state';
 export * from './permission-audit-log.state';
 export * from './permission-group.state';

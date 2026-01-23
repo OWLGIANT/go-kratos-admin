@@ -101,24 +101,31 @@ export const useFileTransferStore = defineStore('file-transfer', () => {
   /**
    * 上传文件到MinIO
    * @param bucketName 文件桶名称
-   * @param objectName 对象名称
-   * @param method 上传方法，支持 'post' 和 'put'
+   * @param fileDirectory 远端存储文件目录
    * @param fileData 文件数据
+   * @param method 上传方法，支持 'post' 和 'put'
    * @param onUploadProgress 上传进度回调函数
    */
   async function uploadFile(
     bucketName: string,
-    objectName: string,
-    method: 'post' | 'put',
+    fileDirectory: string,
     fileData: File,
+    method: 'post' | 'put' = 'post',
     onUploadProgress?: (progressEvent: any) => void,
   ) {
+    const storageObject = JSON.stringify({
+      bucketName,
+      fileDirectory,
+    });
+
     await requestClient.upload(
       'admin/v1/file/upload',
       {
         file: fileData,
-        bucketName,
-        objectName,
+        storageObject,
+        sourceFileName: fileData.name,
+        mime: fileData.type,
+        size: fileData.size,
         method,
       },
       { onUploadProgress },

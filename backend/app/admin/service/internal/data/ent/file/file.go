@@ -50,8 +50,8 @@ const (
 	FieldSizeFormat = "size_format"
 	// FieldLinkURL holds the string denoting the link_url field in the database.
 	FieldLinkURL = "link_url"
-	// FieldMd5 holds the string denoting the md5 field in the database.
-	FieldMd5 = "md5"
+	// FieldContentHash holds the string denoting the content_hash field in the database.
+	FieldContentHash = "content_hash"
 	// Table holds the table name of the file in the database.
 	Table = "files"
 )
@@ -77,7 +77,7 @@ var Columns = []string{
 	FieldSize,
 	FieldSizeFormat,
 	FieldLinkURL,
-	FieldMd5,
+	FieldContentHash,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -122,7 +122,6 @@ const (
 	ProviderAzure   Provider = "AZURE"
 	ProviderBaidu   Provider = "BAIDU"
 	ProviderHuawei  Provider = "HUAWEI"
-	ProviderQCloud  Provider = "QCLOUD"
 	ProviderLocal   Provider = "LOCAL"
 )
 
@@ -133,7 +132,7 @@ func (pr Provider) String() string {
 // ProviderValidator is a validator for the "provider" field enum values. It is called by the builders before save.
 func ProviderValidator(pr Provider) error {
 	switch pr {
-	case ProviderUnknown, ProviderMinIO, ProviderAliyun, ProviderQiniu, ProviderTencent, ProviderAWS, ProviderGoogle, ProviderAzure, ProviderBaidu, ProviderHuawei, ProviderQCloud, ProviderLocal:
+	case ProviderUnknown, ProviderMinIO, ProviderAliyun, ProviderQiniu, ProviderTencent, ProviderAWS, ProviderGoogle, ProviderAzure, ProviderBaidu, ProviderHuawei, ProviderLocal:
 		return nil
 	default:
 		return fmt.Errorf("file: invalid enum value for provider field: %q", pr)
@@ -238,7 +237,7 @@ func ByLinkURL(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLinkURL, opts...).ToFunc()
 }
 
-// ByMd5 orders the results by the md5 field.
-func ByMd5(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldMd5, opts...).ToFunc()
+// ByContentHash orders the results by the content_hash field.
+func ByContentHash(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldContentHash, opts...).ToFunc()
 }

@@ -377,23 +377,23 @@ func (_u *FileUpdate) ClearLinkURL() *FileUpdate {
 	return _u
 }
 
-// SetMd5 sets the "md5" field.
-func (_u *FileUpdate) SetMd5(v string) *FileUpdate {
-	_u.mutation.SetMd5(v)
+// SetContentHash sets the "content_hash" field.
+func (_u *FileUpdate) SetContentHash(v string) *FileUpdate {
+	_u.mutation.SetContentHash(v)
 	return _u
 }
 
-// SetNillableMd5 sets the "md5" field if the given value is not nil.
-func (_u *FileUpdate) SetNillableMd5(v *string) *FileUpdate {
+// SetNillableContentHash sets the "content_hash" field if the given value is not nil.
+func (_u *FileUpdate) SetNillableContentHash(v *string) *FileUpdate {
 	if v != nil {
-		_u.SetMd5(*v)
+		_u.SetContentHash(*v)
 	}
 	return _u
 }
 
-// ClearMd5 clears the value of the "md5" field.
-func (_u *FileUpdate) ClearMd5() *FileUpdate {
-	_u.mutation.ClearMd5()
+// ClearContentHash clears the value of the "content_hash" field.
+func (_u *FileUpdate) ClearContentHash() *FileUpdate {
+	_u.mutation.ClearContentHash()
 	return _u
 }
 
@@ -571,11 +571,11 @@ func (_u *FileUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.LinkURLCleared() {
 		_spec.ClearField(file.FieldLinkURL, field.TypeString)
 	}
-	if value, ok := _u.mutation.Md5(); ok {
-		_spec.SetField(file.FieldMd5, field.TypeString, value)
+	if value, ok := _u.mutation.ContentHash(); ok {
+		_spec.SetField(file.FieldContentHash, field.TypeString, value)
 	}
-	if _u.mutation.Md5Cleared() {
-		_spec.ClearField(file.FieldMd5, field.TypeString)
+	if _u.mutation.ContentHashCleared() {
+		_spec.ClearField(file.FieldContentHash, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -947,23 +947,23 @@ func (_u *FileUpdateOne) ClearLinkURL() *FileUpdateOne {
 	return _u
 }
 
-// SetMd5 sets the "md5" field.
-func (_u *FileUpdateOne) SetMd5(v string) *FileUpdateOne {
-	_u.mutation.SetMd5(v)
+// SetContentHash sets the "content_hash" field.
+func (_u *FileUpdateOne) SetContentHash(v string) *FileUpdateOne {
+	_u.mutation.SetContentHash(v)
 	return _u
 }
 
-// SetNillableMd5 sets the "md5" field if the given value is not nil.
-func (_u *FileUpdateOne) SetNillableMd5(v *string) *FileUpdateOne {
+// SetNillableContentHash sets the "content_hash" field if the given value is not nil.
+func (_u *FileUpdateOne) SetNillableContentHash(v *string) *FileUpdateOne {
 	if v != nil {
-		_u.SetMd5(*v)
+		_u.SetContentHash(*v)
 	}
 	return _u
 }
 
-// ClearMd5 clears the value of the "md5" field.
-func (_u *FileUpdateOne) ClearMd5() *FileUpdateOne {
-	_u.mutation.ClearMd5()
+// ClearContentHash clears the value of the "content_hash" field.
+func (_u *FileUpdateOne) ClearContentHash() *FileUpdateOne {
+	_u.mutation.ClearContentHash()
 	return _u
 }
 
@@ -1171,11 +1171,11 @@ func (_u *FileUpdateOne) sqlSave(ctx context.Context) (_node *File, err error) {
 	if _u.mutation.LinkURLCleared() {
 		_spec.ClearField(file.FieldLinkURL, field.TypeString)
 	}
-	if value, ok := _u.mutation.Md5(); ok {
-		_spec.SetField(file.FieldMd5, field.TypeString, value)
+	if value, ok := _u.mutation.ContentHash(); ok {
+		_spec.SetField(file.FieldContentHash, field.TypeString, value)
 	}
-	if _u.mutation.Md5Cleared() {
-		_spec.ClearField(file.FieldMd5, field.TypeString)
+	if _u.mutation.ContentHashCleared() {
+		_spec.ClearField(file.FieldContentHash, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &File{config: _u.config}

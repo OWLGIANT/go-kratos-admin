@@ -20,6 +20,7 @@ service FileTransferService {
   rpc PostUploadFile (stream google.api.HttpBody) returns (UploadFileResponse) {}
 }
 
+// 文件下载请求
 message DownloadFileRequest {
   oneof selector {
     uint32 file_id = 1 [
@@ -29,8 +30,8 @@ message DownloadFileRequest {
 
     StorageObject storage_object = 2 [
       json_name = "storageObject",
-      (gnostic.openapi.v3.property) = { description: "bucket + object 定位" }
-    ]; // bucket + object 定位
+      (gnostic.openapi.v3.property) = { description: "对象存储对象" }
+    ]; // 对象存储对象
 
     string download_url = 3 [
       json_name = "downloadUrl",
@@ -116,20 +117,22 @@ message DownloadFileResponse {
 }
 
 message UploadFileRequest {
-  optional string bucket_name = 1 [
-    json_name = "bucketName",
-    (gnostic.openapi.v3.property) = { description: "文件桶名称" }
-  ]; // 文件桶名称
+  StorageObject storage_object = 1 [
+    json_name = "storageObject",
+    (gnostic.openapi.v3.property) = { description: "对象存储对象" }
+  ]; // 对象存储对象
 
-  optional string object_name = 2 [
-    json_name = "objectName",
-    (gnostic.openapi.v3.property) = { description: "文件名" }
-  ]; // 文件名
+  oneof source {
+    bytes file = 2 [
+      json_name = "file",
+      (gnostic.openapi.v3.property) = { description: "直接上传的文件内容（内联字节）" }
+    ];
 
-  optional bytes file = 3 [
-    json_name = "file",
-    (gnostic.openapi.v3.property) = { description: "文件内容" }
-  ]; // 文件内容
+    PresignOption presign = 3 [
+      json_name = "presign",
+      (gnostic.openapi.v3.property) = { description: "请求服务返回预签名信息（不上传文件而是获取预签名 URL）" }
+    ];
+  }
 
   optional string source_file_name = 4 [
     json_name = "sourceFileName",
@@ -140,7 +143,21 @@ message UploadFileRequest {
     json_name = "mime",
     (gnostic.openapi.v3.property) = { description: "文件的MIME类型" }
   ]; // 文件的MIME类型
+
+  optional int64 size = 6 [
+    json_name = "size",
+    (gnostic.openapi.v3.property) = { description: "文件大小（字节）" }
+  ]; // 文件大小（字节）
 }
+
 message UploadFileResponse {
-  string url = 1;
+  optional string object_name = 1 [
+    json_name = "objectName",
+    (gnostic.openapi.v3.property) = { description: "OSS 对象键" }
+  ]; // OSS 对象键
+
+  optional string presigned_url = 2 [
+    json_name = "presignedUrl",
+    (gnostic.openapi.v3.property) = { description: "预签名上传链接" }
+  ]; // 预签名上传链接
 }

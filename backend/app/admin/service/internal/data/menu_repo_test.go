@@ -18,7 +18,7 @@ import (
 func TestMenuMetaFieldMask(t *testing.T) {
 	updateMenuReq := &permissionV1.UpdateMenuRequest{
 		Data: &permissionV1.Menu{
-			Meta: &permissionV1.RouteMeta{
+			Meta: &permissionV1.MenuMeta{
 				Title: trans.Ptr("标题1"),
 				Order: trans.Ptr(int32(1)),
 			},

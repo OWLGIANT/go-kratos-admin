@@ -42,20 +42,20 @@ type File struct {
 	FileDirectory *string `json:"file_directory,omitempty"`
 	// 文件Guid
 	FileGUID *string `json:"file_guid,omitempty"`
-	// 保存文件名
+	// 实际存储文件名
 	SaveFileName *string `json:"save_file_name,omitempty"`
-	// 文件名
+	// 原始文件名
 	FileName *string `json:"file_name,omitempty"`
 	// 文件扩展名
 	Extension *string `json:"extension,omitempty"`
-	// 文件字节长度
+	// 文件长度，单位：字节
 	Size *uint64 `json:"size,omitempty"`
-	// 文件大小格式化
+	// 格式化后的文件长度字符串
 	SizeFormat *string `json:"size_format,omitempty"`
 	// 链接地址
 	LinkURL *string `json:"link_url,omitempty"`
-	// md5码，防止上传重复文件
-	Md5          *string `json:"md5,omitempty"`
+	// 文件内容hash值，防止上传重复文件
+	ContentHash  *string `json:"content_hash,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -66,7 +66,7 @@ func (*File) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case file.FieldID, file.FieldCreatedBy, file.FieldUpdatedBy, file.FieldDeletedBy, file.FieldTenantID, file.FieldSize:
 			values[i] = new(sql.NullInt64)
-		case file.FieldRemark, file.FieldProvider, file.FieldBucketName, file.FieldFileDirectory, file.FieldFileGUID, file.FieldSaveFileName, file.FieldFileName, file.FieldExtension, file.FieldSizeFormat, file.FieldLinkURL, file.FieldMd5:
+		case file.FieldRemark, file.FieldProvider, file.FieldBucketName, file.FieldFileDirectory, file.FieldFileGUID, file.FieldSaveFileName, file.FieldFileName, file.FieldExtension, file.FieldSizeFormat, file.FieldLinkURL, file.FieldContentHash:
 			values[i] = new(sql.NullString)
 		case file.FieldCreatedAt, file.FieldUpdatedAt, file.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -217,12 +217,12 @@ func (_m *File) assignValues(columns []string, values []any) error {
 				_m.LinkURL = new(string)
 				*_m.LinkURL = value.String
 			}
-		case file.FieldMd5:
+		case file.FieldContentHash:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field md5", values[i])
+				return fmt.Errorf("unexpected type %T for field content_hash", values[i])
 			} else if value.Valid {
-				_m.Md5 = new(string)
-				*_m.Md5 = value.String
+				_m.ContentHash = new(string)
+				*_m.ContentHash = value.String
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -350,8 +350,8 @@ func (_m *File) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.Md5; v != nil {
-		builder.WriteString("md5=")
+	if v := _m.ContentHash; v != nil {
+		builder.WriteString("content_hash=")
 		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')

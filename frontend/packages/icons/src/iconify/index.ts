@@ -48,3 +48,7 @@ export const LucideCirclePlus = createIconifyIcon('lucide:circle-plus');
 export const LucideBuilding = createIconifyIcon('lucide:building');
 
 export const LucideRefreshCw = createIconifyIcon('lucide:refresh-cw');
+
+export const LucideDownload = createIconifyIcon('lucide:download');
+export const LucideCloudDownload = createIconifyIcon('lucide:cloud-download');
+export const LucideFileDownload = createIconifyIcon('lucide:file-down');

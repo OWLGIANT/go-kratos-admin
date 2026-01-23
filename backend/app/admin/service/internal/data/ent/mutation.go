@@ -11493,7 +11493,7 @@ type FileMutation struct {
 	addsize        *int64
 	size_format    *string
 	link_url       *string
-	md5            *string
+	content_hash   *string
 	clearedFields  map[string]struct{}
 	done           bool
 	oldValue       func(context.Context) (*File, error)
@@ -12591,53 +12591,53 @@ func (m *FileMutation) ResetLinkURL() {
 	delete(m.clearedFields, file.FieldLinkURL)
 }
 
-// SetMd5 sets the "md5" field.
-func (m *FileMutation) SetMd5(s string) {
-	m.md5 = &s
+// SetContentHash sets the "content_hash" field.
+func (m *FileMutation) SetContentHash(s string) {
+	m.content_hash = &s
 }
 
-// Md5 returns the value of the "md5" field in the mutation.
-func (m *FileMutation) Md5() (r string, exists bool) {
-	v := m.md5
+// ContentHash returns the value of the "content_hash" field in the mutation.
+func (m *FileMutation) ContentHash() (r string, exists bool) {
+	v := m.content_hash
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldMd5 returns the old "md5" field's value of the File entity.
+// OldContentHash returns the old "content_hash" field's value of the File entity.
 // If the File object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *FileMutation) OldMd5(ctx context.Context) (v *string, err error) {
+func (m *FileMutation) OldContentHash(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldMd5 is only allowed on UpdateOne operations")
+		return v, errors.New("OldContentHash is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldMd5 requires an ID field in the mutation")
+		return v, errors.New("OldContentHash requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMd5: %w", err)
+		return v, fmt.Errorf("querying old value for OldContentHash: %w", err)
 	}
-	return oldValue.Md5, nil
+	return oldValue.ContentHash, nil
 }
 
-// ClearMd5 clears the value of the "md5" field.
-func (m *FileMutation) ClearMd5() {
-	m.md5 = nil
-	m.clearedFields[file.FieldMd5] = struct{}{}
+// ClearContentHash clears the value of the "content_hash" field.
+func (m *FileMutation) ClearContentHash() {
+	m.content_hash = nil
+	m.clearedFields[file.FieldContentHash] = struct{}{}
 }
 
-// Md5Cleared returns if the "md5" field was cleared in this mutation.
-func (m *FileMutation) Md5Cleared() bool {
-	_, ok := m.clearedFields[file.FieldMd5]
+// ContentHashCleared returns if the "content_hash" field was cleared in this mutation.
+func (m *FileMutation) ContentHashCleared() bool {
+	_, ok := m.clearedFields[file.FieldContentHash]
 	return ok
 }
 
-// ResetMd5 resets all changes to the "md5" field.
-func (m *FileMutation) ResetMd5() {
-	m.md5 = nil
-	delete(m.clearedFields, file.FieldMd5)
+// ResetContentHash resets all changes to the "content_hash" field.
+func (m *FileMutation) ResetContentHash() {
+	m.content_hash = nil
+	delete(m.clearedFields, file.FieldContentHash)
 }
 
 // Where appends a list predicates to the FileMutation builder.
@@ -12729,8 +12729,8 @@ func (m *FileMutation) Fields() []string {
 	if m.link_url != nil {
 		fields = append(fields, file.FieldLinkURL)
 	}
-	if m.md5 != nil {
-		fields = append(fields, file.FieldMd5)
+	if m.content_hash != nil {
+		fields = append(fields, file.FieldContentHash)
 	}
 	return fields
 }
@@ -12776,8 +12776,8 @@ func (m *FileMutation) Field(name string) (ent.Value, bool) {
 		return m.SizeFormat()
 	case file.FieldLinkURL:
 		return m.LinkURL()
-	case file.FieldMd5:
-		return m.Md5()
+	case file.FieldContentHash:
+		return m.ContentHash()
 	}
 	return nil, false
 }
@@ -12823,8 +12823,8 @@ func (m *FileMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldSizeFormat(ctx)
 	case file.FieldLinkURL:
 		return m.OldLinkURL(ctx)
-	case file.FieldMd5:
-		return m.OldMd5(ctx)
+	case file.FieldContentHash:
+		return m.OldContentHash(ctx)
 	}
 	return nil, fmt.Errorf("unknown File field %s", name)
 }
@@ -12960,12 +12960,12 @@ func (m *FileMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLinkURL(v)
 		return nil
-	case file.FieldMd5:
+	case file.FieldContentHash:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetMd5(v)
+		m.SetContentHash(v)
 		return nil
 	}
 	return fmt.Errorf("unknown File field %s", name)
@@ -13114,8 +13114,8 @@ func (m *FileMutation) ClearedFields() []string {
 	if m.FieldCleared(file.FieldLinkURL) {
 		fields = append(fields, file.FieldLinkURL)
 	}
-	if m.FieldCleared(file.FieldMd5) {
-		fields = append(fields, file.FieldMd5)
+	if m.FieldCleared(file.FieldContentHash) {
+		fields = append(fields, file.FieldContentHash)
 	}
 	return fields
 }
@@ -13185,8 +13185,8 @@ func (m *FileMutation) ClearField(name string) error {
 	case file.FieldLinkURL:
 		m.ClearLinkURL()
 		return nil
-	case file.FieldMd5:
-		m.ClearMd5()
+	case file.FieldContentHash:
+		m.ClearContentHash()
 		return nil
 	}
 	return fmt.Errorf("unknown File nullable field %s", name)
@@ -13250,8 +13250,8 @@ func (m *FileMutation) ResetField(name string) error {
 	case file.FieldLinkURL:
 		m.ResetLinkURL()
 		return nil
-	case file.FieldMd5:
-		m.ResetMd5()
+	case file.FieldContentHash:
+		m.ResetContentHash()
 		return nil
 	}
 	return fmt.Errorf("unknown File field %s", name)

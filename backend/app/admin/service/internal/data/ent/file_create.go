@@ -274,16 +274,16 @@ func (_c *FileCreate) SetNillableLinkURL(v *string) *FileCreate {
 	return _c
 }
 
-// SetMd5 sets the "md5" field.
-func (_c *FileCreate) SetMd5(v string) *FileCreate {
-	_c.mutation.SetMd5(v)
+// SetContentHash sets the "content_hash" field.
+func (_c *FileCreate) SetContentHash(v string) *FileCreate {
+	_c.mutation.SetContentHash(v)
 	return _c
 }
 
-// SetNillableMd5 sets the "md5" field if the given value is not nil.
-func (_c *FileCreate) SetNillableMd5(v *string) *FileCreate {
+// SetNillableContentHash sets the "content_hash" field if the given value is not nil.
+func (_c *FileCreate) SetNillableContentHash(v *string) *FileCreate {
 	if v != nil {
-		_c.SetMd5(*v)
+		_c.SetContentHash(*v)
 	}
 	return _c
 }
@@ -459,9 +459,9 @@ func (_c *FileCreate) createSpec() (*File, *sqlgraph.CreateSpec) {
 		_spec.SetField(file.FieldLinkURL, field.TypeString, value)
 		_node.LinkURL = &value
 	}
-	if value, ok := _c.mutation.Md5(); ok {
-		_spec.SetField(file.FieldMd5, field.TypeString, value)
-		_node.Md5 = &value
+	if value, ok := _c.mutation.ContentHash(); ok {
+		_spec.SetField(file.FieldContentHash, field.TypeString, value)
+		_node.ContentHash = &value
 	}
 	return _node, _spec
 }
@@ -827,21 +827,21 @@ func (u *FileUpsert) ClearLinkURL() *FileUpsert {
 	return u
 }
 
-// SetMd5 sets the "md5" field.
-func (u *FileUpsert) SetMd5(v string) *FileUpsert {
-	u.Set(file.FieldMd5, v)
+// SetContentHash sets the "content_hash" field.
+func (u *FileUpsert) SetContentHash(v string) *FileUpsert {
+	u.Set(file.FieldContentHash, v)
 	return u
 }
 
-// UpdateMd5 sets the "md5" field to the value that was provided on create.
-func (u *FileUpsert) UpdateMd5() *FileUpsert {
-	u.SetExcluded(file.FieldMd5)
+// UpdateContentHash sets the "content_hash" field to the value that was provided on create.
+func (u *FileUpsert) UpdateContentHash() *FileUpsert {
+	u.SetExcluded(file.FieldContentHash)
 	return u
 }
 
-// ClearMd5 clears the value of the "md5" field.
-func (u *FileUpsert) ClearMd5() *FileUpsert {
-	u.SetNull(file.FieldMd5)
+// ClearContentHash clears the value of the "content_hash" field.
+func (u *FileUpsert) ClearContentHash() *FileUpsert {
+	u.SetNull(file.FieldContentHash)
 	return u
 }
 
@@ -1263,24 +1263,24 @@ func (u *FileUpsertOne) ClearLinkURL() *FileUpsertOne {
 	})
 }
 
-// SetMd5 sets the "md5" field.
-func (u *FileUpsertOne) SetMd5(v string) *FileUpsertOne {
+// SetContentHash sets the "content_hash" field.
+func (u *FileUpsertOne) SetContentHash(v string) *FileUpsertOne {
 	return u.Update(func(s *FileUpsert) {
-		s.SetMd5(v)
+		s.SetContentHash(v)
 	})
 }
 
-// UpdateMd5 sets the "md5" field to the value that was provided on create.
-func (u *FileUpsertOne) UpdateMd5() *FileUpsertOne {
+// UpdateContentHash sets the "content_hash" field to the value that was provided on create.
+func (u *FileUpsertOne) UpdateContentHash() *FileUpsertOne {
 	return u.Update(func(s *FileUpsert) {
-		s.UpdateMd5()
+		s.UpdateContentHash()
 	})
 }
 
-// ClearMd5 clears the value of the "md5" field.
-func (u *FileUpsertOne) ClearMd5() *FileUpsertOne {
+// ClearContentHash clears the value of the "content_hash" field.
+func (u *FileUpsertOne) ClearContentHash() *FileUpsertOne {
 	return u.Update(func(s *FileUpsert) {
-		s.ClearMd5()
+		s.ClearContentHash()
 	})
 }
 
@@ -1868,24 +1868,24 @@ func (u *FileUpsertBulk) ClearLinkURL() *FileUpsertBulk {
 	})
 }
 
-// SetMd5 sets the "md5" field.
-func (u *FileUpsertBulk) SetMd5(v string) *FileUpsertBulk {
+// SetContentHash sets the "content_hash" field.
+func (u *FileUpsertBulk) SetContentHash(v string) *FileUpsertBulk {
 	return u.Update(func(s *FileUpsert) {
-		s.SetMd5(v)
+		s.SetContentHash(v)
 	})
 }
 
-// UpdateMd5 sets the "md5" field to the value that was provided on create.
-func (u *FileUpsertBulk) UpdateMd5() *FileUpsertBulk {
+// UpdateContentHash sets the "content_hash" field to the value that was provided on create.
+func (u *FileUpsertBulk) UpdateContentHash() *FileUpsertBulk {
 	return u.Update(func(s *FileUpsert) {
-		s.UpdateMd5()
+		s.UpdateContentHash()
 	})
 }
 
-// ClearMd5 clears the value of the "md5" field.
-func (u *FileUpsertBulk) ClearMd5() *FileUpsertBulk {
+// ClearContentHash clears the value of the "content_hash" field.
+func (u *FileUpsertBulk) ClearContentHash() *FileUpsertBulk {
 	return u.Update(func(s *FileUpsert) {
-		s.ClearMd5()
+		s.ClearContentHash()
 	})
 }
 

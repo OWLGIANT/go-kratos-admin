@@ -1868,7 +1868,7 @@ export type fileservicev1_File = {
   size?: number;
   sizeFormat?: string;
   linkUrl?: string;
-  md5?: string;
+  contentHash?: string;
   tenantId?: number;
   tenantName?: string;
   createdBy?: number;
@@ -1890,7 +1890,6 @@ export type fileservicev1_OSSProvider =
   | "TENCENT"
   | "GOOGLE"
   | "HUAWEI"
-  | "QCLOUD"
   | "LOCAL";
 // 查询 - 请求
 export type fileservicev1_GetFileRequest = {
@@ -1939,6 +1938,9 @@ export function createFileTransferServiceClient(
       }
       if (request.storageObject?.bucketName) {
         queryParams.push(`storageObject.bucketName=${encodeURIComponent(request.storageObject.bucketName.toString())}`)
+      }
+      if (request.storageObject?.fileDirectory) {
+        queryParams.push(`storageObject.fileDirectory=${encodeURIComponent(request.storageObject.fileDirectory.toString())}`)
       }
       if (request.storageObject?.objectName) {
         queryParams.push(`storageObject.objectName=${encodeURIComponent(request.storageObject.objectName.toString())}`)
@@ -2047,6 +2049,7 @@ export function createFileTransferServiceClient(
     },
   };
 }
+// 文件下载请求
 export type fileservicev1_DownloadFileRequest = {
   fileId?: number;
   storageObject?: fileservicev1_StorageObject;
@@ -2063,6 +2066,7 @@ export type fileservicev1_DownloadFileRequest = {
 // 对象存储对象
 export type fileservicev1_StorageObject = {
   bucketName?: string;
+  fileDirectory?: string;
   objectName?: string;
 };
 
@@ -2079,15 +2083,24 @@ export type fileservicev1_DownloadFileResponse = {
 };
 
 export type fileservicev1_UploadFileRequest = {
-  bucketName?: string;
-  objectName?: string;
+  storageObject: fileservicev1_StorageObject | undefined;
   file?: string;
+  presign?: fileservicev1_PresignOption;
   sourceFileName?: string;
   mime?: string;
+  size?: number;
+};
+
+// 预签名选项
+export type fileservicev1_PresignOption = {
+  method?: string;
+  expireSeconds?: number;
+  contentType?: string;
 };
 
 export type fileservicev1_UploadFileResponse = {
-  url: string | undefined;
+  objectName?: string;
+  presignedUrl?: string;
 };
 
 export type fileservicev1_UEditorUploadRequest = {
@@ -4161,204 +4174,6 @@ export type userservicev1_UpdateOrgUnitRequest = {
 // 删除组织单元 - 请求
 export type userservicev1_DeleteOrgUnitRequest = {
   id: number | undefined;
-};
-
-// OSS服务
-export interface OssService {
-  // 获取对象存储（OSS）上传用的预签名链接
-  GetUploadPresignedUrl(request: fileservicev1_GetUploadPresignedUrlRequest): Promise<fileservicev1_GetUploadPresignedUrlResponse>;
-  // 获取对象存储（OSS）下载链接
-  GetDownloadUrl(request: fileservicev1_GetDownloadInfoRequest): Promise<fileservicev1_GetDownloadInfoResponse>;
-  // 获取文件夹下面的文件列表
-  ListOssFile(request: fileservicev1_ListOssFileRequest): Promise<fileservicev1_ListOssFileResponse>;
-  // 删除一个文件
-  DeleteOssFile(request: fileservicev1_DeleteOssFileRequest): Promise<fileservicev1_DeleteOssFileResponse>;
-}
-
-export function createOssServiceClient(
-  handler: RequestHandler
-): OssService {
-  return {
-    GetUploadPresignedUrl(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/file/oss/upload-presign-url`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "OssService",
-        method: "GetUploadPresignedUrl",
-      }) as Promise<fileservicev1_GetUploadPresignedUrlResponse>;
-    },
-    GetDownloadUrl(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/file/oss/download-url`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.fileId) {
-        queryParams.push(`fileId=${encodeURIComponent(request.fileId.toString())}`)
-      }
-      if (request.storageObject?.bucketName) {
-        queryParams.push(`storageObject.bucketName=${encodeURIComponent(request.storageObject.bucketName.toString())}`)
-      }
-      if (request.storageObject?.objectName) {
-        queryParams.push(`storageObject.objectName=${encodeURIComponent(request.storageObject.objectName.toString())}`)
-      }
-      if (request.downloadUrl) {
-        queryParams.push(`downloadUrl=${encodeURIComponent(request.downloadUrl.toString())}`)
-      }
-      if (request.rangeStart) {
-        queryParams.push(`rangeStart=${encodeURIComponent(request.rangeStart.toString())}`)
-      }
-      if (request.rangeEnd) {
-        queryParams.push(`rangeEnd=${encodeURIComponent(request.rangeEnd.toString())}`)
-      }
-      if (request.preferPresignedUrl) {
-        queryParams.push(`preferPresignedUrl=${encodeURIComponent(request.preferPresignedUrl.toString())}`)
-      }
-      if (request.presignExpireSeconds) {
-        queryParams.push(`presignExpireSeconds=${encodeURIComponent(request.presignExpireSeconds.toString())}`)
-      }
-      if (request.disposition) {
-        queryParams.push(`disposition=${encodeURIComponent(request.disposition.toString())}`)
-      }
-      if (request.acceptMime) {
-        queryParams.push(`acceptMime=${encodeURIComponent(request.acceptMime.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "OssService",
-        method: "GetDownloadUrl",
-      }) as Promise<fileservicev1_GetDownloadInfoResponse>;
-    },
-    ListOssFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/file/oss/file-list`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.bucketName) {
-        queryParams.push(`bucketName=${encodeURIComponent(request.bucketName.toString())}`)
-      }
-      if (request.folder) {
-        queryParams.push(`folder=${encodeURIComponent(request.folder.toString())}`)
-      }
-      if (request.recursive) {
-        queryParams.push(`recursive=${encodeURIComponent(request.recursive.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "OssService",
-        method: "ListOssFile",
-      }) as Promise<fileservicev1_ListOssFileResponse>;
-    },
-    DeleteOssFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/file/oss/delete-file`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.bucketName) {
-        queryParams.push(`bucketName=${encodeURIComponent(request.bucketName.toString())}`)
-      }
-      if (request.objectName) {
-        queryParams.push(`objectName=${encodeURIComponent(request.objectName.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "DELETE",
-        body,
-      }, {
-        service: "OssService",
-        method: "DeleteOssFile",
-      }) as Promise<fileservicev1_DeleteOssFileResponse>;
-    },
-  };
-}
-// 获取对象存储上传链接 - 请求
-export type fileservicev1_GetUploadPresignedUrlRequest = {
-  method: fileservicev1_GetUploadPresignedUrlRequest_Method | undefined;
-  contentType?: string;
-  bucketName?: string;
-  filePath?: string;
-  fileName?: string;
-};
-
-// 前端上传文件所用的HTTP方法
-export type fileservicev1_GetUploadPresignedUrlRequest_Method =
-  | "Put"
-  | "Post";
-// 获取对象存储上传链接 - 回应
-export type fileservicev1_GetUploadPresignedUrlResponse = {
-  uploadUrl: string | undefined;
-  downloadUrl: string | undefined;
-  bucketName?: string;
-  objectName: string | undefined;
-  formData: { [key: string]: string } | undefined;
-};
-
-export type fileservicev1_GetDownloadInfoRequest = {
-  fileId?: number;
-  storageObject?: fileservicev1_StorageObject;
-  downloadUrl?: string;
-  // 可选的分段下载范围（闭区间 start，开区间 end；为 0/0 表示全量）
-  rangeStart?: number;
-  rangeEnd?: number;
-  preferPresignedUrl?: boolean;
-  presignExpireSeconds?: number;
-  disposition?: string;
-  // 客户端期望的 MIME 类型（可用于后端选择或转换）
-  acceptMime?: string;
-};
-
-export type fileservicev1_GetDownloadInfoResponse = {
-  file?: string;
-  downloadUrl?: string;
-  sourceFileName: string | undefined;
-  mime: string | undefined;
-  size: number | undefined;
-  checksum: string | undefined;
-  storagePath: string | undefined;
-  updatedAt?: wellKnownTimestamp;
-  headers: { [key: string]: string } | undefined;
-  method?: string;
-};
-
-export type fileservicev1_ListOssFileRequest = {
-  bucketName?: string;
-  folder?: string;
-  recursive?: boolean;
-};
-
-export type fileservicev1_ListOssFileResponse = {
-  files: string[] | undefined;
-};
-
-export type fileservicev1_DeleteOssFileRequest = {
-  bucketName?: string;
-  objectName?: string;
-};
-
-export type fileservicev1_DeleteOssFileResponse = {
 };
 
 // 权限点管理服务

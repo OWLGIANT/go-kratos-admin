@@ -122,15 +122,17 @@ func (x *UploadFileRequest) Redact() string {
 		return ""
 	}
 
-	// Safe field: BucketName
-
-	// Safe field: ObjectName
+	// Safe field: StorageObject
 
 	// Safe field: File
+
+	// Safe field: Presign
 
 	// Safe field: SourceFileName
 
 	// Safe field: Mime
+
+	// Safe field: Size
 	return x.String()
 }
 
@@ -140,6 +142,8 @@ func (x *UploadFileResponse) Redact() string {
 		return ""
 	}
 
-	// Safe field: Url
+	// Safe field: ObjectName
+
+	// Safe field: PresignedUrl
 	return x.String()
 }

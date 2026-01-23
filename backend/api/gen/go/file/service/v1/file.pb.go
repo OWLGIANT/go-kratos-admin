@@ -31,17 +31,16 @@ const (
 type OSSProvider int32
 
 const (
-	OSSProvider_MINIO   OSSProvider = 0
-	OSSProvider_ALIYUN  OSSProvider = 1
-	OSSProvider_AWS     OSSProvider = 2
-	OSSProvider_AZURE   OSSProvider = 3
-	OSSProvider_BAIDU   OSSProvider = 4
-	OSSProvider_QINIU   OSSProvider = 5
-	OSSProvider_TENCENT OSSProvider = 6
-	OSSProvider_GOOGLE  OSSProvider = 7
-	OSSProvider_HUAWEI  OSSProvider = 8
-	OSSProvider_QCLOUD  OSSProvider = 9
-	OSSProvider_LOCAL   OSSProvider = 10
+	OSSProvider_MINIO   OSSProvider = 0  // MinIO
+	OSSProvider_ALIYUN  OSSProvider = 1  // 阿里云
+	OSSProvider_AWS     OSSProvider = 2  // 亚马逊云
+	OSSProvider_AZURE   OSSProvider = 3  // 微软云
+	OSSProvider_BAIDU   OSSProvider = 4  // 百度云
+	OSSProvider_QINIU   OSSProvider = 5  // 七牛云
+	OSSProvider_TENCENT OSSProvider = 6  // 腾讯云
+	OSSProvider_GOOGLE  OSSProvider = 7  // 谷歌云
+	OSSProvider_HUAWEI  OSSProvider = 8  // 华为云
+	OSSProvider_LOCAL   OSSProvider = 10 // 本地文件系统
 )
 
 // Enum value maps for OSSProvider.
@@ -56,7 +55,6 @@ var (
 		6:  "TENCENT",
 		7:  "GOOGLE",
 		8:  "HUAWEI",
-		9:  "QCLOUD",
 		10: "LOCAL",
 	}
 	OSSProvider_value = map[string]int32{
@@ -69,7 +67,6 @@ var (
 		"TENCENT": 6,
 		"GOOGLE":  7,
 		"HUAWEI":  8,
-		"QCLOUD":  9,
 		"LOCAL":   10,
 	}
 )
@@ -109,13 +106,13 @@ type File struct {
 	BucketName    *string                `protobuf:"bytes,3,opt,name=bucket_name,json=bucketName,proto3,oneof" json:"bucket_name,omitempty"`             // 存储桶名称
 	FileDirectory *string                `protobuf:"bytes,4,opt,name=file_directory,json=fileDirectory,proto3,oneof" json:"file_directory,omitempty"`    // 文件目录
 	FileGuid      *string                `protobuf:"bytes,5,opt,name=file_guid,json=fileGuid,proto3,oneof" json:"file_guid,omitempty"`                   // 文件Guid
-	SaveFileName  *string                `protobuf:"bytes,6,opt,name=save_file_name,json=saveFileName,proto3,oneof" json:"save_file_name,omitempty"`     // 保存文件名
-	FileName      *string                `protobuf:"bytes,7,opt,name=file_name,json=fileName,proto3,oneof" json:"file_name,omitempty"`                   // 文件名
+	SaveFileName  *string                `protobuf:"bytes,6,opt,name=save_file_name,json=saveFileName,proto3,oneof" json:"save_file_name,omitempty"`     // 实际存储文件名（防止在服务器文件系统发生文件冲突）
+	FileName      *string                `protobuf:"bytes,7,opt,name=file_name,json=fileName,proto3,oneof" json:"file_name,omitempty"`                   // 原始文件名
 	Extension     *string                `protobuf:"bytes,8,opt,name=extension,proto3,oneof" json:"extension,omitempty"`                                 // 文件扩展名
 	Size          *uint64                `protobuf:"varint,9,opt,name=size,proto3,oneof" json:"size,omitempty"`                                          // 文件字节长度
-	SizeFormat    *string                `protobuf:"bytes,10,opt,name=size_format,json=sizeFormat,proto3,oneof" json:"size_format,omitempty"`            // 文件大小格式化
+	SizeFormat    *string                `protobuf:"bytes,10,opt,name=size_format,json=sizeFormat,proto3,oneof" json:"size_format,omitempty"`            // 格式化后的文件长度字符串
 	LinkUrl       *string                `protobuf:"bytes,11,opt,name=link_url,json=linkUrl,proto3,oneof" json:"link_url,omitempty"`                     // 链接地址
-	Md5           *string                `protobuf:"bytes,12,opt,name=md5,proto3,oneof" json:"md5,omitempty"`                                            // md5码，防止上传重复文件
+	ContentHash   *string                `protobuf:"bytes,12,opt,name=content_hash,json=contentHash,proto3,oneof" json:"content_hash,omitempty"`         // 文件内容hash值
 	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                 // 租户ID，0代表系统全局角色
 	TenantName    *string                `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`            // 租户名称
 	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`             // 创建者ID
@@ -235,9 +232,9 @@ func (x *File) GetLinkUrl() string {
 	return ""
 }
 
-func (x *File) GetMd5() string {
-	if x != nil && x.Md5 != nil {
-		return *x.Md5
+func (x *File) GetContentHash() string {
+	if x != nil && x.ContentHash != nil {
+		return *x.ContentHash
 	}
 	return ""
 }
@@ -589,25 +586,25 @@ var File_file_service_v1_file_proto protoreflect.FileDescriptor
 
 const file_file_service_v1_file_proto_rawDesc = "" +
 	"\n" +
-	"\x1afile/service/v1/file.proto\x12\x0ffile.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x97\f\n" +
+	"\x1afile/service/v1/file.proto\x12\x0ffile.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x81\x0e\n" +
 	"\x04File\x12&\n" +
 	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b文件IDH\x00R\x02id\x88\x01\x01\x12Q\n" +
 	"\bprovider\x18\x02 \x01(\x0e2\x1c.file.service.v1.OSSProviderB\x12\xbaG\x0f\x92\x02\fOSS供应商H\x01R\bprovider\x88\x01\x01\x12;\n" +
 	"\vbucket_name\x18\x03 \x01(\tB\x15\xbaG\x12\x92\x02\x0f存储桶名称H\x02R\n" +
-	"bucketName\x88\x01\x01\x12>\n" +
-	"\x0efile_directory\x18\x04 \x01(\tB\x12\xbaG\x0f\x92\x02\f文件目录H\x03R\rfileDirectory\x88\x01\x01\x122\n" +
+	"bucketName\x88\x01\x01\x12Z\n" +
+	"\x0efile_directory\x18\x04 \x01(\tB.\xbaG+:\x1a\x12\x18tenant/1001/user/avatar/\x92\x02\f文件目录H\x03R\rfileDirectory\x88\x01\x01\x122\n" +
 	"\tfile_guid\x18\x05 \x01(\tB\x10\xbaG\r\x92\x02\n" +
-	"文件GuidH\x04R\bfileGuid\x88\x01\x01\x12@\n" +
-	"\x0esave_file_name\x18\x06 \x01(\tB\x15\xbaG\x12\x92\x02\x0f保存文件名H\x05R\fsaveFileName\x88\x01\x01\x121\n" +
-	"\tfile_name\x18\a \x01(\tB\x0f\xbaG\f\x92\x02\t文件名H\x06R\bfileName\x88\x01\x01\x128\n" +
-	"\textension\x18\b \x01(\tB\x15\xbaG\x12\x92\x02\x0f文件扩展名H\aR\textension\x88\x01\x01\x121\n" +
-	"\x04size\x18\t \x01(\x04B\x18\xbaG\x15\x92\x02\x12文件字节长度H\bR\x04size\x88\x01\x01\x12A\n" +
+	"文件GuidH\x04R\bfileGuid\x88\x01\x01\x12\xa8\x01\n" +
+	"\x0esave_file_name\x18\x06 \x01(\tB}\xbaGz:*\x12(f8a3b9c0-1234-5678-90ab-cdef12345678.pdf\x92\x02K实际存储文件名（防止在服务器文件系统发生文件冲突）H\x05R\fsaveFileName\x88\x01\x01\x12^\n" +
+	"\tfile_name\x18\a \x01(\tB<\xbaG9:%\x12#2025年个人所得税申报表.pdf\x92\x02\x0f原始文件名H\x06R\bfileName\x88\x01\x01\x12?\n" +
+	"\textension\x18\b \x01(\tB\x1c\xbaG\x19:\x05\x12\x03pdf\x92\x02\x0f文件扩展名H\aR\textension\x88\x01\x01\x12=\n" +
+	"\x04size\x18\t \x01(\x04B$\xbaG!\x92\x02\x1e文件长度，单位：字节H\bR\x04size\x88\x01\x01\x12Z\n" +
 	"\vsize_format\x18\n" +
-	" \x01(\tB\x1b\xbaG\x18\x92\x02\x15文件大小格式化H\tR\n" +
+	" \x01(\tB4\xbaG1:\b\x12\x062.3 MB\x92\x02$格式化后的文件长度字符串H\tR\n" +
 	"sizeFormat\x88\x01\x01\x122\n" +
 	"\blink_url\x18\v \x01(\tB\x12\xbaG\x0f\x92\x02\f链接地址H\n" +
-	"R\alinkUrl\x88\x01\x01\x12>\n" +
-	"\x03md5\x18\f \x01(\tB'\xbaG$\x92\x02!md5码，防止上传重复文件H\vR\x03md5\x88\x01\x01\x12L\n" +
+	"R\alinkUrl\x88\x01\x01\x12A\n" +
+	"\fcontent_hash\x18\f \x01(\tB\x19\xbaG\x16\x92\x02\x13文件内容hash值H\vR\vcontentHash\x88\x01\x01\x12L\n" +
 	"\ttenant_id\x18( \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\fR\btenantId\x88\x01\x01\x128\n" +
 	"\vtenant_name\x18) \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\rR\n" +
 	"tenantName\x88\x01\x01\x125\n" +
@@ -636,8 +633,8 @@ const file_file_service_v1_file_proto_rawDesc = "" +
 	"_extensionB\a\n" +
 	"\x05_sizeB\x0e\n" +
 	"\f_size_formatB\v\n" +
-	"\t_link_urlB\x06\n" +
-	"\x04_md5B\f\n" +
+	"\t_link_urlB\x0f\n" +
+	"\r_content_hashB\f\n" +
 	"\n" +
 	"_tenant_idB\x0e\n" +
 	"\f_tenant_nameB\r\n" +
@@ -668,7 +665,7 @@ const file_file_service_v1_file_proto_rawDesc = "" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"#\n" +
 	"\x11DeleteFileRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id*\x8a\x01\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id*~\n" +
 	"\vOSSProvider\x12\t\n" +
 	"\x05MINIO\x10\x00\x12\n" +
 	"\n" +
@@ -681,9 +678,7 @@ const file_file_service_v1_file_proto_rawDesc = "" +
 	"\n" +
 	"\x06GOOGLE\x10\a\x12\n" +
 	"\n" +
-	"\x06HUAWEI\x10\b\x12\n" +
-	"\n" +
-	"\x06QCLOUD\x10\t\x12\t\n" +
+	"\x06HUAWEI\x10\b\x12\t\n" +
 	"\x05LOCAL\x10\n" +
 	"2\xee\x02\n" +
 	"\vFileService\x12F\n" +

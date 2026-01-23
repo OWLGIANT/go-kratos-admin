@@ -427,16 +427,91 @@ func (m *UploadFileRequest) validate(all bool) error {
 
 	var errors []error
 
-	if m.BucketName != nil {
-		// no validation rules for BucketName
+	if all {
+		switch v := interface{}(m.GetStorageObject()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, UploadFileRequestValidationError{
+					field:  "StorageObject",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, UploadFileRequestValidationError{
+					field:  "StorageObject",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetStorageObject()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return UploadFileRequestValidationError{
+				field:  "StorageObject",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
 	}
 
-	if m.ObjectName != nil {
-		// no validation rules for ObjectName
-	}
-
-	if m.File != nil {
+	switch v := m.Source.(type) {
+	case *UploadFileRequest_File:
+		if v == nil {
+			err := UploadFileRequestValidationError{
+				field:  "Source",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
 		// no validation rules for File
+	case *UploadFileRequest_Presign:
+		if v == nil {
+			err := UploadFileRequestValidationError{
+				field:  "Source",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+		if all {
+			switch v := interface{}(m.GetPresign()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, UploadFileRequestValidationError{
+						field:  "Presign",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, UploadFileRequestValidationError{
+						field:  "Presign",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetPresign()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return UploadFileRequestValidationError{
+					field:  "Presign",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	default:
+		_ = v // ensures v is used
 	}
 
 	if m.SourceFileName != nil {
@@ -445,6 +520,10 @@ func (m *UploadFileRequest) validate(all bool) error {
 
 	if m.Mime != nil {
 		// no validation rules for Mime
+	}
+
+	if m.Size != nil {
+		// no validation rules for Size
 	}
 
 	if len(errors) > 0 {
@@ -549,7 +628,13 @@ func (m *UploadFileResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Url
+	if m.ObjectName != nil {
+		// no validation rules for ObjectName
+	}
+
+	if m.PresignedUrl != nil {
+		// no validation rules for PresignedUrl
+	}
 
 	if len(errors) > 0 {
 		return UploadFileResponseMultiError(errors)

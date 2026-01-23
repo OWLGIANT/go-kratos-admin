@@ -15,6 +15,7 @@ import (
 	fileV1 "go-wind-admin/api/gen/go/file/service/v1"
 
 	"go-wind-admin/pkg/middleware/auth"
+	"go-wind-admin/pkg/oss"
 )
 
 type FileService struct {
@@ -23,12 +24,18 @@ type FileService struct {
 	log *log.Helper
 
 	fileRepo *data.FileRepo
+	mc       *oss.MinIOClient
 }
 
-func NewFileService(ctx *bootstrap.Context, repo *data.FileRepo) *FileService {
+func NewFileService(
+	ctx *bootstrap.Context,
+	fileRepo *data.FileRepo,
+	mc *oss.MinIOClient,
+) *FileService {
 	return &FileService{
 		log:      ctx.NewLoggerHelper("file/service/admin-service"),
-		fileRepo: repo,
+		fileRepo: fileRepo,
+		mc:       mc,
 	}
 }
 
@@ -81,8 +88,23 @@ func (s *FileService) Update(ctx context.Context, req *fileV1.UpdateFileRequest)
 }
 
 func (s *FileService) Delete(ctx context.Context, req *fileV1.DeleteFileRequest) (*emptypb.Empty, error) {
-	if err := s.fileRepo.Delete(ctx, req); err != nil {
+	f, err := s.fileRepo.Get(ctx, &fileV1.GetFileRequest{
+		QueryBy: &fileV1.GetFileRequest_Id{Id: req.GetId()},
+	})
+	if err != nil {
 		return nil, err
 	}
+
+	if err = s.fileRepo.Delete(ctx, req); err != nil {
+		return nil, err
+	}
+
+	if err = s.mc.DeleteFile(ctx,
+		f.GetBucketName(),
+		f.GetFileDirectory()+"/"+f.GetSaveFileName(),
+	); err != nil {
+		return nil, err
+	}
+
 	return &emptypb.Empty{}, nil
 }

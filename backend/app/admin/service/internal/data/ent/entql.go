@@ -282,7 +282,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			file.FieldSize:          {Type: field.TypeUint64, Column: file.FieldSize},
 			file.FieldSizeFormat:    {Type: field.TypeString, Column: file.FieldSizeFormat},
 			file.FieldLinkURL:       {Type: field.TypeString, Column: file.FieldLinkURL},
-			file.FieldMd5:           {Type: field.TypeString, Column: file.FieldMd5},
+			file.FieldContentHash:   {Type: field.TypeString, Column: file.FieldContentHash},
 		},
 	}
 	graph.Nodes[8] = &sqlgraph.Node{
@@ -2343,9 +2343,9 @@ func (f *FileFilter) WhereLinkURL(p entql.StringP) {
 	f.Where(p.Field(file.FieldLinkURL))
 }
 
-// WhereMd5 applies the entql string predicate on the md5 field.
-func (f *FileFilter) WhereMd5(p entql.StringP) {
-	f.Where(p.Field(file.FieldMd5))
+// WhereContentHash applies the entql string predicate on the content_hash field.
+func (f *FileFilter) WhereContentHash(p entql.StringP) {
+	f.Where(p.Field(file.FieldContentHash))
 }
 
 // addPredicate implements the predicateAdder interface.

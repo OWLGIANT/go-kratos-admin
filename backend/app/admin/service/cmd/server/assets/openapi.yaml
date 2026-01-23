@@ -917,6 +917,10 @@ paths:
                   in: query
                   schema:
                     type: string
+                - name: storageObject.fileDirectory
+                  in: query
+                  schema:
+                    type: string
                 - name: storageObject.objectName
                   in: query
                   schema:
@@ -958,130 +962,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/DownloadFileResponse'
-    /admin/v1/file/oss/delete-file:
-        delete:
-            tags:
-                - OssService
-            description: 删除一个文件
-            operationId: OssService_DeleteOssFile
-            parameters:
-                - name: bucketName
-                  in: query
-                  schema:
-                    type: string
-                - name: objectName
-                  in: query
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/DeleteOssFileResponse'
-    /admin/v1/file/oss/download-url:
-        get:
-            tags:
-                - OssService
-            description: 获取对象存储（OSS）下载链接
-            operationId: OssService_GetDownloadUrl
-            parameters:
-                - name: fileId
-                  in: query
-                  schema:
-                    type: string
-                - name: storageObject.bucketName
-                  in: query
-                  schema:
-                    type: string
-                - name: storageObject.objectName
-                  in: query
-                  schema:
-                    type: string
-                - name: downloadUrl
-                  in: query
-                  schema:
-                    type: string
-                - name: rangeStart
-                  in: query
-                  description: 可选的分段下载范围（闭区间 start，开区间 end；为 0/0 表示全量）
-                  schema:
-                    type: string
-                - name: rangeEnd
-                  in: query
-                  schema:
-                    type: string
-                - name: preferPresignedUrl
-                  in: query
-                  schema:
-                    type: boolean
-                - name: presignExpireSeconds
-                  in: query
-                  schema:
-                    type: integer
-                    format: int32
-                - name: disposition
-                  in: query
-                  schema:
-                    type: string
-                - name: acceptMime
-                  in: query
-                  description: 客户端期望的 MIME 类型（可用于后端选择或转换）
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/GetDownloadInfoResponse'
-    /admin/v1/file/oss/file-list:
-        get:
-            tags:
-                - OssService
-            description: 获取文件夹下面的文件列表
-            operationId: OssService_ListOssFile
-            parameters:
-                - name: bucketName
-                  in: query
-                  schema:
-                    type: string
-                - name: folder
-                  in: query
-                  schema:
-                    type: string
-                - name: recursive
-                  in: query
-                  schema:
-                    type: boolean
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListOssFileResponse'
-    /admin/v1/file/oss/upload-presign-url:
-        post:
-            tags:
-                - OssService
-            description: 获取对象存储（OSS）上传用的预签名链接
-            operationId: OssService_GetUploadPresignedUrl
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/GetUploadPresignedUrlRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/GetUploadPresignedUrlResponse'
     /admin/v1/file/upload:
         put:
             tags:
@@ -4705,9 +4585,6 @@ components:
                         type: integer
                         format: uint32
                     description: 收件箱记录ID列表
-        DeleteOssFileResponse:
-            type: object
-            properties: {}
         DeviceInfo:
             type: object
             properties:
@@ -5009,7 +4886,6 @@ components:
                         - TENCENT
                         - GOOGLE
                         - HUAWEI
-                        - QCLOUD
                         - LOCAL
                     type: string
                     description: OSS供应商
@@ -5018,32 +4894,37 @@ components:
                     type: string
                     description: 存储桶名称
                 fileDirectory:
+                    example: tenant/1001/user/avatar/
                     type: string
                     description: 文件目录
                 fileGuid:
                     type: string
                     description: 文件Guid
                 saveFileName:
+                    example: f8a3b9c0-1234-5678-90ab-cdef12345678.pdf
                     type: string
-                    description: 保存文件名
+                    description: 实际存储文件名（防止在服务器文件系统发生文件冲突）
                 fileName:
+                    example: 2025年个人所得税申报表.pdf
                     type: string
-                    description: 文件名
+                    description: 原始文件名
                 extension:
+                    example: pdf
                     type: string
                     description: 文件扩展名
                 size:
                     type: string
-                    description: 文件字节长度
+                    description: 文件长度，单位：字节
                 sizeFormat:
+                    example: 2.3 MB
                     type: string
-                    description: 文件大小格式化
+                    description: 格式化后的文件长度字符串
                 linkUrl:
                     type: string
                     description: 链接地址
-                md5:
+                contentHash:
                     type: string
-                    description: md5码，防止上传重复文件
+                    description: 文件内容hash值
                 tenantId:
                     type: integer
                     description: 租户ID，0代表系统全局角色
@@ -5101,87 +4982,6 @@ components:
                     type: string
                     description: 经度（微度）
             description: 地理位置
-        GetDownloadInfoResponse:
-            type: object
-            properties:
-                file:
-                    type: string
-                    description: 直接返回文件字节（小文件或同步场景）
-                    format: bytes
-                downloadUrl:
-                    type: string
-                    description: 预签名 URL（大文件或异步下载）
-                sourceFileName:
-                    type: string
-                    description: 原始文件名，客户端用于保存或显示
-                mime:
-                    type: string
-                    description: MIME 类型，默认 application/octet-stream
-                size:
-                    type: string
-                    description: 文件大小（字节），可用于进度或校验
-                checksum:
-                    type: string
-                    description: 可选，文件校验（如 MD5 或 SHA256）
-                storagePath:
-                    type: string
-                    description: 可选，后端存储位置或 key
-                updatedAt:
-                    type: string
-                    description: 可选，最后修改时间
-                    format: date-time
-                headers:
-                    type: object
-                    additionalProperties:
-                        type: string
-                    description: 当返回 presigned URL 时，可能需要额外的请求 headers（或表单字段）
-                method:
-                    type: string
-                    description: 请求方法建议（如 GET / HEAD），返回预签名 URL 时可说明
-        GetUploadPresignedUrlRequest:
-            type: object
-            properties:
-                method:
-                    enum:
-                        - Put
-                        - Post
-                    type: string
-                    description: 上传文件所用的HTTP方法，支持POST和PUT
-                    format: enum
-                contentType:
-                    type: string
-                    description: 文件的MIME类型
-                bucketName:
-                    type: string
-                    description: 文件桶名称，如果不填写，将会根据文件名或者MIME类型进行自动解析
-                filePath:
-                    type: string
-                    description: 远端的文件路径，可以不填写
-                fileName:
-                    type: string
-                    description: 文件名，如果不填写，则会生成UUID，有同名文件也会改为UUID
-            description: 获取对象存储上传链接 - 请求
-        GetUploadPresignedUrlResponse:
-            type: object
-            properties:
-                uploadUrl:
-                    type: string
-                    description: 文件的上传链接，默认1个小时的过期时间
-                downloadUrl:
-                    type: string
-                    description: 文件的下载链接
-                bucketName:
-                    type: string
-                    description: 文件桶名称
-                objectName:
-                    type: string
-                    description: 文件名
-                formData:
-                    type: object
-                    additionalProperties:
-                        type: string
-                    description: 表单数据，使用POST方法时填写
-            description: 获取对象存储上传链接 - 回应
         InitialContextResponse:
             type: object
             properties:
@@ -5605,14 +5405,6 @@ components:
                 total:
                     type: string
             description: 获取组织单元列表 - 答复
-        ListOssFileResponse:
-            type: object
-            properties:
-                files:
-                    type: array
-                    items:
-                        type: string
-                    description: 文件列表
         ListPermissionAuditLogResponse:
             type: object
             properties:
@@ -6824,6 +6616,20 @@ components:
                     description: 删除时间
                     format: date-time
             description: 职位
+        PresignOption:
+            type: object
+            properties:
+                method:
+                    type: string
+                    description: 预签名使用的 HTTP 方法，例如 PUT 或 POST
+                expireSeconds:
+                    type: integer
+                    description: 预签名有效期（秒）
+                    format: int32
+                contentType:
+                    type: string
+                    description: 预签名约束的 Content-Type（可选）
+            description: 预签名选项
         RestartAllTaskResponse:
             type: object
             properties:
@@ -6959,6 +6765,21 @@ components:
                     type: integer
                     description: 消息ID
                     format: uint32
+        StorageObject:
+            type: object
+            properties:
+                bucketName:
+                    type: string
+                    description: 目标文件桶名称
+                fileDirectory:
+                    example: tenant/1001/user/avatar/
+                    type: string
+                    description: 存储目录（如 'user/1001/avatar/'），服务端会在此目录下生成唯一文件名
+                objectName:
+                    example: user/1001/avatar.jpg
+                    type: string
+                    description: OSS 对象键（完整路径，如 'user/1001/avatar.jpg'）。若未提供，服务端将自动生成。
+            description: 对象存储对象
         Task:
             type: object
             properties:
@@ -7672,27 +7493,32 @@ components:
         UploadFileRequest:
             type: object
             properties:
-                bucketName:
-                    type: string
-                    description: 文件桶名称
-                objectName:
-                    type: string
-                    description: 文件名
+                storageObject:
+                    $ref: '#/components/schemas/StorageObject'
                 file:
                     type: string
-                    description: 文件内容
+                    description: 直接上传的文件内容（内联字节）
                     format: bytes
+                presign:
+                    $ref: '#/components/schemas/PresignOption'
                 sourceFileName:
                     type: string
                     description: 原文件文件名
                 mime:
                     type: string
                     description: 文件的MIME类型
+                size:
+                    type: string
+                    description: 文件大小（字节）
         UploadFileResponse:
             type: object
             properties:
-                url:
+                objectName:
                     type: string
+                    description: OSS 对象键
+                presignedUrl:
+                    type: string
+                    description: 预签名上传链接
         User:
             type: object
             properties:
@@ -7921,8 +7747,6 @@ tags:
       description: 操作审计日志管理服务
     - name: OrgUnitService
       description: 组织单元服务
-    - name: OssService
-      description: OSS服务
     - name: PermissionAuditLogService
       description: 权限变更审计日志服务
     - name: PermissionGroupService

@@ -7,21 +7,19 @@ import (
 
 	"github.com/go-kratos/kratos/v2/metadata"
 	"github.com/stretchr/testify/assert"
+	"github.com/tx7do/go-utils/trans"
 
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
-
-func ptrUint32(v uint32) *uint32 { return &v }
-func ptrBool(b bool) *bool       { return &b }
 
 func TestFromOperatorMetadata_JSON(t *testing.T) {
 	ctx := context.Background()
 
 	ds := permissionV1.DataScope(1)
 	src := OperatorInfo{
-		UserID:    ptrUint32(123),
-		TenantID:  ptrUint32(456),
-		OrgUnitID: ptrUint32(789),
+		UserID:    trans.Ptr(uint64(123)),
+		TenantID:  trans.Ptr(uint64(456)),
+		OrgUnitID: trans.Ptr(uint64(789)),
 		DataScope: &ds,
 	}
 	b, err := json.Marshal(src)
@@ -33,6 +31,7 @@ func TestFromOperatorMetadata_JSON(t *testing.T) {
 
 	got := FromOperatorMetadata(ctx)
 	if assert.NotNil(t, got) {
+		assert.NotNil(t, got)
 		assert.NotNil(t, got.UserID)
 		assert.Equal(t, uint32(123), *got.UserID)
 
