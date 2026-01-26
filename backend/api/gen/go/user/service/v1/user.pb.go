@@ -1884,7 +1884,7 @@ const file_user_service_v1_user_proto_rawDesc = "" +
 	"\x04code\x18\x02 \x01(\tB\x18\xe0A\x02\xbaG\x12\x92\x02\x0f短信验证码R\x04code\"k\n" +
 	"\x11EmailVerification\x12(\n" +
 	"\x05email\x18\x01 \x01(\tB\x12\xbaG\x0f\x92\x02\f邮箱地址R\x05email\x12,\n" +
-	"\x04code\x18\x02 \x01(\tB\x18\xe0A\x02\xbaG\x12\x92\x02\x0f邮箱验证码R\x04code2\xad\x04\n" +
+	"\x04code\x18\x02 \x01(\tB\x18\xe0A\x02\xbaG\x12\x92\x02\x0f邮箱验证码R\x04code2\x8b\x05\n" +
 	"\vUserService\x12F\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a!.user.service.v1.ListUserResponse\"\x00\x12?\n" +
 	"\x03Get\x12\x1f.user.service.v1.GetUserRequest\x1a\x15.user.service.v1.User\"\x00\x12F\n" +
@@ -1893,7 +1893,8 @@ const file_user_service_v1_user_proto_rawDesc = "" +
 	"\x06Delete\x12\".user.service.v1.DeleteUserRequest\x1a\x16.google.protobuf.Empty\"\x00\x12d\n" +
 	"\vBatchCreate\x12(.user.service.v1.BatchCreateUsersRequest\x1a).user.service.v1.BatchCreateUsersResponse\"\x00\x12W\n" +
 	"\n" +
-	"UserExists\x12\".user.service.v1.UserExistsRequest\x1a#.user.service.v1.UserExistsResponse\"\x00B\xaf\x01\n" +
+	"UserExists\x12\".user.service.v1.UserExistsRequest\x1a#.user.service.v1.UserExistsResponse\"\x00\x12\\\n" +
+	"\x0fUserExistsCheck\x12\".user.service.v1.UserExistsRequest\x1a#.user.service.v1.UserExistsResponse\"\x00B\xaf\x01\n" +
 	"\x13com.user.service.v1B\tUserProtoP\x01Z/go-wind-admin/api/gen/go/user/service/v1;userpb\xa2\x02\x03USX\xaa\x02\x0fUser.Service.V1\xca\x02\x0fUser\\Service\\V1\xe2\x02\x1bUser\\Service\\V1\\GPBMetadata\xea\x02\x11User::Service::V1b\x06proto3"
 
 var (
@@ -1964,15 +1965,17 @@ var file_user_service_v1_user_proto_depIdxs = []int32{
 	7,  // 21: user.service.v1.UserService.Delete:input_type -> user.service.v1.DeleteUserRequest
 	10, // 22: user.service.v1.UserService.BatchCreate:input_type -> user.service.v1.BatchCreateUsersRequest
 	8,  // 23: user.service.v1.UserService.UserExists:input_type -> user.service.v1.UserExistsRequest
-	3,  // 24: user.service.v1.UserService.List:output_type -> user.service.v1.ListUserResponse
-	2,  // 25: user.service.v1.UserService.Get:output_type -> user.service.v1.User
-	26, // 26: user.service.v1.UserService.Create:output_type -> google.protobuf.Empty
-	26, // 27: user.service.v1.UserService.Update:output_type -> google.protobuf.Empty
-	26, // 28: user.service.v1.UserService.Delete:output_type -> google.protobuf.Empty
-	11, // 29: user.service.v1.UserService.BatchCreate:output_type -> user.service.v1.BatchCreateUsersResponse
-	9,  // 30: user.service.v1.UserService.UserExists:output_type -> user.service.v1.UserExistsResponse
-	24, // [24:31] is the sub-list for method output_type
-	17, // [17:24] is the sub-list for method input_type
+	8,  // 24: user.service.v1.UserService.UserExistsCheck:input_type -> user.service.v1.UserExistsRequest
+	3,  // 25: user.service.v1.UserService.List:output_type -> user.service.v1.ListUserResponse
+	2,  // 26: user.service.v1.UserService.Get:output_type -> user.service.v1.User
+	26, // 27: user.service.v1.UserService.Create:output_type -> google.protobuf.Empty
+	26, // 28: user.service.v1.UserService.Update:output_type -> google.protobuf.Empty
+	26, // 29: user.service.v1.UserService.Delete:output_type -> google.protobuf.Empty
+	11, // 30: user.service.v1.UserService.BatchCreate:output_type -> user.service.v1.BatchCreateUsersResponse
+	9,  // 31: user.service.v1.UserService.UserExists:output_type -> user.service.v1.UserExistsResponse
+	9,  // 32: user.service.v1.UserService.UserExistsCheck:output_type -> user.service.v1.UserExistsResponse
+	25, // [25:33] is the sub-list for method output_type
+	17, // [17:25] is the sub-list for method input_type
 	17, // [17:17] is the sub-list for extension type_name
 	17, // [17:17] is the sub-list for extension extendee
 	0,  // [0:17] is the sub-list for field type_name

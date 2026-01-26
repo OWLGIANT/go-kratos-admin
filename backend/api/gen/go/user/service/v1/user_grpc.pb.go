@@ -21,13 +21,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_List_FullMethodName        = "/user.service.v1.UserService/List"
-	UserService_Get_FullMethodName         = "/user.service.v1.UserService/Get"
-	UserService_Create_FullMethodName      = "/user.service.v1.UserService/Create"
-	UserService_Update_FullMethodName      = "/user.service.v1.UserService/Update"
-	UserService_Delete_FullMethodName      = "/user.service.v1.UserService/Delete"
-	UserService_BatchCreate_FullMethodName = "/user.service.v1.UserService/BatchCreate"
-	UserService_UserExists_FullMethodName  = "/user.service.v1.UserService/UserExists"
+	UserService_List_FullMethodName            = "/user.service.v1.UserService/List"
+	UserService_Get_FullMethodName             = "/user.service.v1.UserService/Get"
+	UserService_Create_FullMethodName          = "/user.service.v1.UserService/Create"
+	UserService_Update_FullMethodName          = "/user.service.v1.UserService/Update"
+	UserService_Delete_FullMethodName          = "/user.service.v1.UserService/Delete"
+	UserService_BatchCreate_FullMethodName     = "/user.service.v1.UserService/BatchCreate"
+	UserService_UserExists_FullMethodName      = "/user.service.v1.UserService/UserExists"
+	UserService_UserExistsCheck_FullMethodName = "/user.service.v1.UserService/UserExistsCheck"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -50,6 +51,7 @@ type UserServiceClient interface {
 	BatchCreate(ctx context.Context, in *BatchCreateUsersRequest, opts ...grpc.CallOption) (*BatchCreateUsersResponse, error)
 	// 用户是否存在
 	UserExists(ctx context.Context, in *UserExistsRequest, opts ...grpc.CallOption) (*UserExistsResponse, error)
+	UserExistsCheck(ctx context.Context, in *UserExistsRequest, opts ...grpc.CallOption) (*UserExistsResponse, error)
 }
 
 type userServiceClient struct {
@@ -130,6 +132,16 @@ func (c *userServiceClient) UserExists(ctx context.Context, in *UserExistsReques
 	return out, nil
 }
 
+func (c *userServiceClient) UserExistsCheck(ctx context.Context, in *UserExistsRequest, opts ...grpc.CallOption) (*UserExistsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UserExistsResponse)
+	err := c.cc.Invoke(ctx, UserService_UserExistsCheck_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility.
@@ -150,6 +162,7 @@ type UserServiceServer interface {
 	BatchCreate(context.Context, *BatchCreateUsersRequest) (*BatchCreateUsersResponse, error)
 	// 用户是否存在
 	UserExists(context.Context, *UserExistsRequest) (*UserExistsResponse, error)
+	UserExistsCheck(context.Context, *UserExistsRequest) (*UserExistsResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -180,6 +193,9 @@ func (UnimplementedUserServiceServer) BatchCreate(context.Context, *BatchCreateU
 }
 func (UnimplementedUserServiceServer) UserExists(context.Context, *UserExistsRequest) (*UserExistsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method UserExists not implemented")
+}
+func (UnimplementedUserServiceServer) UserExistsCheck(context.Context, *UserExistsRequest) (*UserExistsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method UserExistsCheck not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 func (UnimplementedUserServiceServer) testEmbeddedByValue()                     {}
@@ -328,6 +344,24 @@ func _UserService_UserExists_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_UserExistsCheck_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserExistsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).UserExistsCheck(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_UserExistsCheck_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).UserExistsCheck(ctx, req.(*UserExistsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -362,6 +396,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UserExists",
 			Handler:    _UserService_UserExists_Handler,
+		},
+		{
+			MethodName: "UserExistsCheck",
+			Handler:    _UserService_UserExistsCheck_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

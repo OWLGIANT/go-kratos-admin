@@ -29,18 +29,18 @@ init: plugin cli
 # install protoc plugin
 plugin:
 	# go
-	@go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-	@go install github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2@latest
-	@go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2@latest
-	@go install github.com/google/gnostic/cmd/protoc-gen-openapi@latest
-	@go install github.com/envoyproxy/protoc-gen-validate@latest
-	@go install github.com/menta2k/protoc-gen-redact/v3@latest
-	@go install github.com/go-kratos/protoc-gen-typescript-http@latest
-	# Dart
-	@flutter pub global activate protoc_plugin
-	# Typescript
-	@npm install -g ts-proto
+	@GOPROXY=direct go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	@GOPROXY=direct go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	@GOPROXY=direct go install github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2@latest
+	@GOPROXY=direct go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2@latest
+	@GOPROXY=direct go install github.com/google/gnostic/cmd/protoc-gen-openapi@latest
+	@GOPROXY=direct go install github.com/envoyproxy/protoc-gen-validate@latest
+	@GOPROXY=direct go install github.com/menta2k/protoc-gen-redact/v3@latest
+	@GOPROXY=direct go install github.com/go-kratos/protoc-gen-typescript-http@latest
+	# Dart (optional)
+	@which flutter > /dev/null 2>&1 && flutter pub global activate protoc_plugin || echo "Flutter not found, skipping Dart plugin installation"
+	# Typescript (optional)
+	@which npm > /dev/null 2>&1 && npm install -g ts-proto || echo "npm not found, skipping TypeScript plugin installation"
 
 # install cli tools
 cli:

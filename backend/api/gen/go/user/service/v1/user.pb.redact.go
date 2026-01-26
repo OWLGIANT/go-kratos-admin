@@ -126,6 +126,17 @@ func (s *redactedUserServiceServer) UserExists(ctx context.Context, in *UserExis
 	return res, err
 }
 
+// UserExistsCheck is the redacted wrapper for the actual UserServiceServer.UserExistsCheck method
+// Unary RPC
+func (s *redactedUserServiceServer) UserExistsCheck(ctx context.Context, in *UserExistsRequest) (*UserExistsResponse, error) {
+	res, err := s.srv.UserExistsCheck(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
+}
+
 // Redact method implementation for User
 func (x *User) Redact() string {
 	if x == nil {
