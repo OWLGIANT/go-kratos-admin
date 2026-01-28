@@ -162,6 +162,23 @@ docker:
       make docker;\
     )
 
+# build docker image for Docker Hub
+docker-build:
+	$(foreach dir, $(dir $(realpath $(SRCS_MK))),\
+      cd $(dir);\
+      make docker-build;\
+    )
+
+# push docker image to Docker Hub
+docker-push:
+	$(foreach dir, $(dir $(realpath $(SRCS_MK))),\
+      cd $(dir);\
+      make docker-push;\
+    )
+
+# build and push docker image to Docker Hub
+docker-build-push: docker-build docker-push
+
 # show help
 help:
 	@echo ""

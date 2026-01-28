@@ -3,32 +3,32 @@ networks:
     driver: bridge
 
 services:
-  postgres:
-    image: docker.io/timescale/timescaledb:latest-pg15
-    restart: always
-    ports:
-      - "5432:5432"
-    networks:
-      - app-tier
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=*Abcd123456
-      - POSTGRES_DB=gwa
-
-#  mysql:
-#    image: docker.io/bitnami/mariadb:latest
+#  postgres:
+#    image: docker.io/timescale/timescaledb:latest-pg15
 #    restart: always
 #    ports:
-#      - "3306:3306"
+#      - "5432:5432"
 #    networks:
 #      - app-tier
 #    environment:
-#      - MARIADB_ROOT_PASSWORD=*Abcd123456
-#      - MARIADB_USER=admin
-#      - MARIADB_PASSWORD=*Abcd123456
-#      - MARIADB_DATABASE=gwa
-#      - ALLOW_EMPTY_PASSWORD=yes
-#      - TZ=Asia/Shanghai
+#      - POSTGRES_USER=postgres
+#      - POSTGRES_PASSWORD=*Abcd123456
+#      - POSTGRES_DB=gwa
+
+  mysql:
+    image: docker.io/bitnami/mariadb:latest
+    restart: always
+    ports:
+      - "3306:3306"
+    networks:
+      - app-tier
+    environment:
+      - MARIADB_ROOT_PASSWORD=*Abcd123456
+      - MARIADB_USER=admin
+      - MARIADB_PASSWORD=*Abcd123456
+      - MARIADB_DATABASE=gwa
+      - ALLOW_EMPTY_PASSWORD=yes
+      - TZ=Asia/Shanghai
 
   redis:
     image: docker.io/bitnami/redis:latest
@@ -118,7 +118,7 @@ services:
 #      - COLLECTOR_OTLP_ENABLED=true
 
   admin-service:
-    image: go-wind-admin/admin-service
+    image: wwttxx2/admin-service
     restart: always
     networks:
       - app-tier

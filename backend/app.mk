@@ -143,6 +143,22 @@ docker:
 				  --build-arg APP_VERSION=$(APP_VERSION) \
 				  -f ../../../Dockerfile ../../../
 
+# build docker image for Docker Hub
+docker-build:
+	@docker build -t wwttxx2/admin-service:$(VERSION) \
+				  -t wwttxx2/admin-service:latest \
+				  --build-arg SERVICE_NAME=$(SERVICE_NAME) \
+				  --build-arg APP_VERSION=$(APP_VERSION) \
+				  -f ../../../Dockerfile ../../../
+
+# push docker image to Docker Hub
+docker-push:
+	@docker push wwttxx2/admin-service:$(VERSION)
+	@docker push wwttxx2/admin-service:latest
+
+# build and push docker image to Docker Hub
+docker-build-push: docker-build docker-push
+
 # show help
 help:
 	@echo ""
