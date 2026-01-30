@@ -34,7 +34,7 @@ npx eslint --inspect-config
 
 ## API文档
 
-- 本地文档（内嵌在服务端）： <http://localhost:7788/docs/>
+- 本地文档（内嵌在服务端）： <http://43.134.189.161:7788/docs/>
 - 远端文档： <https://apifox.com/apidoc/shared-fd4db0fc-f515-4423-85e5-59ad9aaa6a1a>
 
 ## Mock
