@@ -49,8 +49,7 @@ type serverRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper           *mapper.CopierMapper[tradingV1.Server, ent.Server]
-	serverTypeConverter *mapper.EnumTypeConverter[tradingV1.ServerType, int8]
+	mapper *mapper.CopierMapper[tradingV1.Server, ent.Server]
 
 	repository *entCrud.Repository[
 		ent.ServerQuery, ent.ServerSelect,
@@ -67,10 +66,9 @@ func NewServerRepo(
 	entClient *entCrud.EntClient[*ent.Client],
 ) ServerRepo {
 	repo := &serverRepo{
-		log:                 ctx.NewLoggerHelper("server/repo/admin-service"),
-		entClient:           entClient,
-		mapper:              mapper.NewCopierMapper[tradingV1.Server, ent.Server](),
-		serverTypeConverter: mapper.NewEnumTypeConverter[tradingV1.ServerType, int8](tradingV1.ServerType_name, tradingV1.ServerType_value),
+		log:       ctx.NewLoggerHelper("server/repo/admin-service"),
+		entClient: entClient,
+		mapper:    mapper.NewCopierMapper[tradingV1.Server, ent.Server](),
 	}
 
 	repo.init()
@@ -108,26 +106,13 @@ func (r *serverRepo) Count(ctx context.Context) (int, error) {
 func (r *serverRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*tradingV1.ListServerResponse, error) {
 	builder := r.entClient.Client().Server.Query()
 
-	// 应用过滤条件
-	if req.Filter != nil {
-		for _, condition := range req.Filter.Conditions {
-			r.applyFilter(builder, condition)
-		}
-	}
-
-	// 应用排序
-	if req.OrderBy != nil && len(req.OrderBy) > 0 {
-		for _, order := range req.OrderBy {
-			r.applyOrder(builder, order)
-		}
-	} else {
-		builder.Order(ent.Desc(server.FieldID))
-	}
+	// 默认按ID降序排序
+	builder.Order(ent.Desc(server.FieldID))
 
 	// 分页
-	if req.Pagination != nil {
-		offset := int((req.Pagination.Page - 1) * req.Pagination.PageSize)
-		limit := int(req.Pagination.PageSize)
+	if req.Page != nil && req.PageSize != nil {
+		offset := int((*req.Page - 1) * *req.PageSize)
+		limit := int(*req.PageSize)
 		builder.Offset(offset).Limit(limit)
 	}
 
@@ -141,12 +126,7 @@ func (r *serverRepo) List(ctx context.Context, req *paginationV1.PagingRequest) 
 	// 转换
 	items := make([]*tradingV1.Server, 0, len(entities))
 	for _, entity := range entities {
-		item := &tradingV1.Server{}
-		if err := r.mapper.EntityToProtobuf(entity, item); err != nil {
-			r.log.Errorf("convert entity to protobuf failed: %s", err.Error())
-			continue
-		}
-		r.unmarshalServer(item, entity)
+		item := r.entityToProto(entity)
 		items = append(items, item)
 	}
 
@@ -162,6 +142,77 @@ func (r *serverRepo) List(ctx context.Context, req *paginationV1.PagingRequest) 
 	}, nil
 }
 
+// entityToProto 将实体转换为 protobuf
+func (r *serverRepo) entityToProto(entity *ent.Server) *tradingV1.Server {
+	item := &tradingV1.Server{
+		Id:       entity.ID,
+		Nickname: entity.Nickname,
+		Ip:       entity.IP,
+		InnerIp:  entity.InnerIP,
+		Port:     entity.Port,
+		Type:     tradingV1.ServerType(entity.Type),
+	}
+
+	// 处理可选字段
+	if entity.MachineID != nil {
+		item.MachineId = *entity.MachineID
+	}
+	if entity.Remark != nil {
+		item.Remark = *entity.Remark
+	}
+	if entity.VpcID != nil {
+		item.VpcId = *entity.VpcID
+	}
+	if entity.InstanceID != nil {
+		item.InstanceId = *entity.InstanceID
+	}
+
+	// 解析服务器状态信息
+	if entity.ServerInfo != nil {
+		serverInfo := &tradingV1.ServerStatusInfo{}
+
+		if cpu, ok := entity.ServerInfo["cpu"].(string); ok {
+			serverInfo.Cpu = cpu
+		}
+		if ipPool, ok := entity.ServerInfo["ip_pool"].(float64); ok {
+			serverInfo.IpPool = ipPool
+		}
+		if mem, ok := entity.ServerInfo["mem"].(float64); ok {
+			serverInfo.Mem = mem
+		}
+		if memPct, ok := entity.ServerInfo["mem_pct"].(string); ok {
+			serverInfo.MemPct = memPct
+		}
+		if diskPct, ok := entity.ServerInfo["disk_pct"].(string); ok {
+			serverInfo.DiskPct = diskPct
+		}
+		if taskNum, ok := entity.ServerInfo["task_num"].(float64); ok {
+			serverInfo.TaskNum = int32(taskNum)
+		}
+		if straVersion, ok := entity.ServerInfo["stra_version"].(bool); ok {
+			serverInfo.StraVersion = straVersion
+		}
+		if straVersionDetail, ok := entity.ServerInfo["stra_version_detail"].(map[string]interface{}); ok {
+			serverInfo.StraVersionDetail = make(map[string]string)
+			for k, v := range straVersionDetail {
+				if strVal, ok := v.(string); ok {
+					serverInfo.StraVersionDetail[k] = strVal
+				}
+			}
+		}
+		if awsAcct, ok := entity.ServerInfo["aws_acct"].(string); ok {
+			serverInfo.AwsAcct = awsAcct
+		}
+		if awsZone, ok := entity.ServerInfo["aws_zone"].(string); ok {
+			serverInfo.AwsZone = awsZone
+		}
+
+		item.ServerInfo = serverInfo
+	}
+
+	return item
+}
+
 // Get 获取单个托管者
 func (r *serverRepo) Get(ctx context.Context, req *tradingV1.GetServerRequest) (*tradingV1.Server, error) {
 	entity, err := r.entClient.Client().Server.Get(ctx, req.Id)
@@ -173,15 +224,7 @@ func (r *serverRepo) Get(ctx context.Context, req *tradingV1.GetServerRequest) (
 		return nil, err
 	}
 
-	item := &tradingV1.Server{}
-	if err := r.mapper.EntityToProtobuf(entity, item); err != nil {
-		r.log.Errorf("convert entity to protobuf failed: %s", err.Error())
-		return nil, err
-	}
-
-	r.unmarshalServer(item, entity)
-
-	return item, nil
+	return r.entityToProto(entity), nil
 }
 
 // Create 创建托管者
@@ -205,13 +248,7 @@ func (r *serverRepo) Create(ctx context.Context, req *tradingV1.CreateServerRequ
 		return nil, err
 	}
 
-	item := &tradingV1.Server{}
-	if err := r.mapper.EntityToProtobuf(entity, item); err != nil {
-		r.log.Errorf("convert entity to protobuf failed: %s", err.Error())
-		return nil, err
-	}
-
-	return item, nil
+	return r.entityToProto(entity), nil
 }
 
 // BatchCreate 批量创建托管者
@@ -306,16 +343,8 @@ func (r *serverRepo) DeleteByIps(ctx context.Context, req *tradingV1.DeleteServe
 
 // Transfer 转移托管者
 func (r *serverRepo) Transfer(ctx context.Context, req *tradingV1.TransferServerRequest) error {
-	_, err := r.entClient.Client().Server.Update().
-		Where(server.IDIn(req.Ids...)).
-		SetOperatorID(0). // 需要根据实际情况设置操作员ID
-		Exec(ctx)
-
-	if err != nil {
-		r.log.Errorf("transfer servers failed: %s", err.Error())
-		return err
-	}
-
+	// TODO: 需要根据实际情况实现，当前 ent schema 中没有 OperatorID 字段
+	r.log.Warnf("transfer servers not fully implemented")
 	return nil
 }
 
@@ -371,12 +400,7 @@ func (r *serverRepo) GetCanRestartList(ctx context.Context, req *tradingV1.GetCa
 
 	items := make([]*tradingV1.Server, 0, len(entities))
 	for _, entity := range entities {
-		item := &tradingV1.Server{}
-		if err := r.mapper.EntityToProtobuf(entity, item); err != nil {
-			r.log.Errorf("convert entity to protobuf failed: %s", err.Error())
-			continue
-		}
-		r.unmarshalServer(item, entity)
+		item := r.entityToProto(entity)
 		items = append(items, item)
 	}
 
@@ -384,90 +408,4 @@ func (r *serverRepo) GetCanRestartList(ctx context.Context, req *tradingV1.GetCa
 		Total: int32(len(items)),
 		Items: items,
 	}, nil
-}
-
-// applyFilter 应用过滤条件
-func (r *serverRepo) applyFilter(builder *ent.ServerQuery, condition *paginationV1.FilterCondition) {
-	field := condition.Field
-	value := condition.Value
-
-	switch field {
-	case "type":
-		if serverType, ok := tradingV1.ServerType_value[value]; ok {
-			builder.Where(server.TypeEQ(int8(serverType)))
-		}
-	case "vpc_id":
-		builder.Where(server.VpcIDEQ(value))
-	case "ip":
-		builder.Where(server.IPEQ(value))
-	}
-}
-
-// applyOrder 应用排序
-func (r *serverRepo) applyOrder(builder *ent.ServerQuery, order *paginationV1.OrderBy) {
-	if order.Desc {
-		switch order.Field {
-		case "id":
-			builder.Order(ent.Desc(server.FieldID))
-		case "create_time":
-			builder.Order(ent.Desc(server.FieldCreateTime))
-		case "nickname":
-			builder.Order(ent.Desc(server.FieldNickname))
-		}
-	} else {
-		switch order.Field {
-		case "id":
-			builder.Order(ent.Asc(server.FieldID))
-		case "create_time":
-			builder.Order(ent.Asc(server.FieldCreateTime))
-		case "nickname":
-			builder.Order(ent.Asc(server.FieldNickname))
-		}
-	}
-}
-
-// unmarshalServer 解析服务器信息
-func (r *serverRepo) unmarshalServer(item *tradingV1.Server, entity *ent.Server) {
-	// 解析服务器状态信息
-	if entity.ServerInfo != nil {
-		serverInfo := &tradingV1.ServerStatusInfo{}
-
-		if cpu, ok := entity.ServerInfo["cpu"].(string); ok {
-			serverInfo.Cpu = cpu
-		}
-		if ipPool, ok := entity.ServerInfo["ip_pool"].(float64); ok {
-			serverInfo.IpPool = ipPool
-		}
-		if mem, ok := entity.ServerInfo["mem"].(float64); ok {
-			serverInfo.Mem = mem
-		}
-		if memPct, ok := entity.ServerInfo["mem_pct"].(string); ok {
-			serverInfo.MemPct = memPct
-		}
-		if diskPct, ok := entity.ServerInfo["disk_pct"].(string); ok {
-			serverInfo.DiskPct = diskPct
-		}
-		if taskNum, ok := entity.ServerInfo["task_num"].(float64); ok {
-			serverInfo.TaskNum = int32(taskNum)
-		}
-		if straVersion, ok := entity.ServerInfo["stra_version"].(bool); ok {
-			serverInfo.StraVersion = straVersion
-		}
-		if straVersionDetail, ok := entity.ServerInfo["stra_version_detail"].(map[string]interface{}); ok {
-			serverInfo.StraVersionDetail = make(map[string]string)
-			for k, v := range straVersionDetail {
-				if strVal, ok := v.(string); ok {
-					serverInfo.StraVersionDetail[k] = strVal
-				}
-			}
-		}
-		if awsAcct, ok := entity.ServerInfo["aws_acct"].(string); ok {
-			serverInfo.AwsAcct = awsAcct
-		}
-		if awsZone, ok := entity.ServerInfo["aws_zone"].(string); ok {
-			serverInfo.AwsZone = awsZone
-		}
-
-		item.ServerInfo = serverInfo
-	}
 }

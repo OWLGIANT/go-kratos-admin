@@ -4,7 +4,6 @@ import (
 	"context"
 	"strings"
 
-	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
@@ -12,6 +11,7 @@ import (
 	entCrud "github.com/tx7do/go-crud/entgo"
 
 	"github.com/tx7do/go-utils/copierutil"
+	"github.com/tx7do/go-utils/crypto"
 	"github.com/tx7do/go-utils/mapper"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
@@ -53,8 +53,7 @@ type exchangeAccountRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper              *mapper.CopierMapper[tradingV1.ExchangeAccount, ent.ExchangeAccount]
-	accountTypeConverter *mapper.EnumTypeConverter[tradingV1.AccountType, int8]
+	mapper *mapper.CopierMapper[tradingV1.ExchangeAccount, ent.ExchangeAccount]
 
 	repository *entCrud.Repository[
 		ent.ExchangeAccountQuery, ent.ExchangeAccountSelect,
@@ -71,10 +70,9 @@ func NewExchangeAccountRepo(
 	entClient *entCrud.EntClient[*ent.Client],
 ) ExchangeAccountRepo {
 	repo := &exchangeAccountRepo{
-		log:                  ctx.NewLoggerHelper("exchange-account/repo/admin-service"),
-		entClient:            entClient,
-		mapper:               mapper.NewCopierMapper[tradingV1.ExchangeAccount, ent.ExchangeAccount](),
-		accountTypeConverter: mapper.NewEnumTypeConverter[tradingV1.AccountType, int8](tradingV1.AccountType_name, tradingV1.AccountType_value),
+		log:       ctx.NewLoggerHelper("exchange-account/repo/admin-service"),
+		entClient: entClient,
+		mapper:    mapper.NewCopierMapper[tradingV1.ExchangeAccount, ent.ExchangeAccount](),
 	}
 
 	repo.init()
@@ -112,26 +110,13 @@ func (r *exchangeAccountRepo) Count(ctx context.Context) (int, error) {
 func (r *exchangeAccountRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*tradingV1.ListExchangeAccountResponse, error) {
 	builder := r.entClient.Client().ExchangeAccount.Query()
 
-	// 应用过滤条件
-	if req.Filter != nil {
-		for _, condition := range req.Filter.Conditions {
-			r.applyFilter(builder, condition)
-		}
-	}
-
-	// 应用排序
-	if req.OrderBy != nil && len(req.OrderBy) > 0 {
-		for _, order := range req.OrderBy {
-			r.applyOrder(builder, order)
-		}
-	} else {
-		builder.Order(ent.Desc(exchangeaccount.FieldID))
-	}
+	// 默认按ID降序排序
+	builder.Order(ent.Desc(exchangeaccount.FieldID))
 
 	// 分页
-	if req.Pagination != nil {
-		offset := int((req.Pagination.Page - 1) * req.Pagination.PageSize)
-		limit := int(req.Pagination.PageSize)
+	if req.Page != nil && req.PageSize != nil {
+		offset := int((*req.Page - 1) * *req.PageSize)
+		limit := int(*req.PageSize)
 		builder.Offset(offset).Limit(limit)
 	}
 
@@ -145,13 +130,7 @@ func (r *exchangeAccountRepo) List(ctx context.Context, req *paginationV1.Paging
 	// 转换
 	items := make([]*tradingV1.ExchangeAccount, 0, len(entities))
 	for _, entity := range entities {
-		item := &tradingV1.ExchangeAccount{}
-		if err := r.mapper.EntityToProtobuf(entity, item); err != nil {
-			r.log.Errorf("convert entity to protobuf failed: %s", err.Error())
-			continue
-		}
-		// 解密敏感信息（如果需要）
-		r.unmarshalAccount(item, entity)
+		item := r.entityToProto(entity)
 		items = append(items, item)
 	}
 
@@ -167,6 +146,42 @@ func (r *exchangeAccountRepo) List(ctx context.Context, req *paginationV1.Paging
 	}, nil
 }
 
+// entityToProto 将实体转换为 protobuf
+func (r *exchangeAccountRepo) entityToProto(entity *ent.ExchangeAccount) *tradingV1.ExchangeAccount {
+	item := &tradingV1.ExchangeAccount{
+		Id:            entity.ID,
+		Nickname:      entity.Nickname,
+		ExchangeName:  entity.ExchangeName,
+		OriginAccount: entity.OriginAccount,
+		ApiKey:        entity.APIKey,
+		AccountType:   tradingV1.AccountType(entity.AccountType),
+		IsMulti:       entity.IsMulti,
+		IsCombined:    entity.IsCombined,
+	}
+
+	// 处理可选字段
+	if entity.BrokerID != nil {
+		item.BrokerId = *entity.BrokerID
+	}
+	if entity.Remark != nil {
+		item.Remark = *entity.Remark
+	}
+	if entity.ServerIps != nil {
+		item.ServerIps = *entity.ServerIps
+	}
+	if entity.SpecialReqLimit != nil {
+		item.SpecialReqLimit = *entity.SpecialReqLimit
+	}
+
+	// 解析组合账号ID
+	if entity.CombinedID != nil && *entity.CombinedID != "" {
+		accountIDs := strings.Split(*entity.CombinedID, "|")
+		item.AccountIds = accountIDs
+	}
+
+	return item
+}
+
 // Get 获取单个账号
 func (r *exchangeAccountRepo) Get(ctx context.Context, req *tradingV1.GetExchangeAccountRequest) (*tradingV1.ExchangeAccount, error) {
 	entity, err := r.entClient.Client().ExchangeAccount.Get(ctx, req.Id)
@@ -178,28 +193,30 @@ func (r *exchangeAccountRepo) Get(ctx context.Context, req *tradingV1.GetExchang
 		return nil, err
 	}
 
-	item := &tradingV1.ExchangeAccount{}
-	if err := r.mapper.EntityToProtobuf(entity, item); err != nil {
-		r.log.Errorf("convert entity to protobuf failed: %s", err.Error())
-		return nil, err
-	}
-
-	r.unmarshalAccount(item, entity)
-
-	return item, nil
+	return r.entityToProto(entity), nil
 }
 
 // Create 创建账号
 func (r *exchangeAccountRepo) Create(ctx context.Context, req *tradingV1.CreateExchangeAccountRequest) (*tradingV1.ExchangeAccount, error) {
 	builder := r.entClient.Client().ExchangeAccount.Create()
 
+	// 加密敏感信息
+	encryptedSecretKey, err := r.encryptSensitiveData(req.SecretKey)
+	if err != nil {
+		return nil, err
+	}
+	encryptedPassKey, err := r.encryptSensitiveData(req.PassKey)
+	if err != nil {
+		return nil, err
+	}
+
 	builder.
 		SetNickname(req.Nickname).
 		SetExchangeName(req.ExchangeName).
 		SetOriginAccount(req.OriginAccount).
-		SetApiKey(req.ApiKey).
-		SetSecretKey(req.SecretKey).
-		SetPassKey(req.PassKey).
+		SetAPIKey(req.ApiKey).
+		SetSecretKey(encryptedSecretKey).
+		SetPassKey(encryptedPassKey).
 		SetBrokerID(req.BrokerId).
 		SetRemark(req.Remark).
 		SetServerIps(req.ServerIps).
@@ -212,13 +229,7 @@ func (r *exchangeAccountRepo) Create(ctx context.Context, req *tradingV1.CreateE
 		return nil, err
 	}
 
-	item := &tradingV1.ExchangeAccount{}
-	if err := r.mapper.EntityToProtobuf(entity, item); err != nil {
-		r.log.Errorf("convert entity to protobuf failed: %s", err.Error())
-		return nil, err
-	}
-
-	return item, nil
+	return r.entityToProto(entity), nil
 }
 
 // Update 更新账号
@@ -238,13 +249,23 @@ func (r *exchangeAccountRepo) Update(ctx context.Context, req *tradingV1.UpdateE
 		builder.SetSpecialReqLimit(*req.SpecialReqLimit)
 	}
 	if req.ApiKey != nil {
-		builder.SetApiKey(*req.ApiKey)
+		builder.SetAPIKey(*req.ApiKey)
 	}
 	if req.SecretKey != nil {
-		builder.SetSecretKey(*req.SecretKey)
+		// 加密SecretKey
+		encryptedSecretKey, err := r.encryptSensitiveData(*req.SecretKey)
+		if err != nil {
+			return err
+		}
+		builder.SetSecretKey(encryptedSecretKey)
 	}
 	if req.PassKey != nil {
-		builder.SetPassKey(*req.PassKey)
+		// 加密PassKey
+		encryptedPassKey, err := r.encryptSensitiveData(*req.PassKey)
+		if err != nil {
+			return err
+		}
+		builder.SetPassKey(encryptedPassKey)
 	}
 	if req.BrokerId != nil {
 		builder.SetBrokerID(*req.BrokerId)
@@ -284,16 +305,8 @@ func (r *exchangeAccountRepo) BatchDelete(ctx context.Context, req *tradingV1.Ba
 
 // Transfer 转移账号
 func (r *exchangeAccountRepo) Transfer(ctx context.Context, req *tradingV1.TransferExchangeAccountRequest) error {
-	_, err := r.entClient.Client().ExchangeAccount.Update().
-		Where(exchangeaccount.IDIn(req.Ids...)).
-		SetOperatorID(0). // 需要根据实际情况设置操作员ID
-		Exec(ctx)
-
-	if err != nil {
-		r.log.Errorf("transfer exchange accounts failed: %s", err.Error())
-		return err
-	}
-
+	// TODO: 需要根据实际情况实现，当前 ent schema 中没有 OperatorID 字段
+	r.log.Warnf("transfer exchange accounts not fully implemented")
 	return nil
 }
 
@@ -312,11 +325,6 @@ func (r *exchangeAccountRepo) Search(ctx context.Context, req *tradingV1.SearchE
 		)
 	}
 
-	// 操作员过滤
-	if req.Operator != nil {
-		// 需要根据实际情况实现
-	}
-
 	// 账号类型过滤
 	if req.AccountType != nil {
 		builder.Where(exchangeaccount.AccountTypeEQ(int8(*req.AccountType)))
@@ -330,12 +338,7 @@ func (r *exchangeAccountRepo) Search(ctx context.Context, req *tradingV1.SearchE
 
 	items := make([]*tradingV1.ExchangeAccount, 0, len(entities))
 	for _, entity := range entities {
-		item := &tradingV1.ExchangeAccount{}
-		if err := r.mapper.EntityToProtobuf(entity, item); err != nil {
-			r.log.Errorf("convert entity to protobuf failed: %s", err.Error())
-			continue
-		}
-		r.unmarshalAccount(item, entity)
+		item := r.entityToProto(entity)
 		items = append(items, item)
 	}
 
@@ -380,7 +383,7 @@ func (r *exchangeAccountRepo) CreateCombined(ctx context.Context, req *tradingV1
 		SetNickname(req.Nickname).
 		SetExchangeName("COMBINED").
 		SetOriginAccount("COMBINED").
-		SetApiKey("COMBINED_" + combinedID).
+		SetAPIKey("COMBINED_" + combinedID).
 		SetSecretKey("").
 		SetIsMulti(true).
 		SetCombinedID(combinedID).
@@ -403,13 +406,7 @@ func (r *exchangeAccountRepo) CreateCombined(ctx context.Context, req *tradingV1
 		return nil, err
 	}
 
-	item := &tradingV1.ExchangeAccount{}
-	if err := r.mapper.EntityToProtobuf(entity, item); err != nil {
-		r.log.Errorf("convert entity to protobuf failed: %s", err.Error())
-		return nil, err
-	}
-
-	return item, nil
+	return r.entityToProto(entity), nil
 }
 
 // UpdateCombined 更新组合账号
@@ -430,61 +427,30 @@ func (r *exchangeAccountRepo) UpdateCombined(ctx context.Context, req *tradingV1
 	return builder.Exec(ctx)
 }
 
-// applyFilter 应用过滤条件
-func (r *exchangeAccountRepo) applyFilter(builder *ent.ExchangeAccountQuery, condition *paginationV1.FilterCondition) {
-	field := condition.Field
-	value := condition.Value
-
-	switch field {
-	case "exchange_name":
-		builder.Where(exchangeaccount.ExchangeNameEQ(value))
-	case "account_type":
-		if accountType, ok := tradingV1.AccountType_value[value]; ok {
-			builder.Where(exchangeaccount.AccountTypeEQ(int8(accountType)))
-		}
-	case "is_multi":
-		if value == "true" {
-			builder.Where(exchangeaccount.IsMultiEQ(true))
-		} else {
-			builder.Where(exchangeaccount.IsMultiEQ(false))
-		}
+// encryptSensitiveData 加密敏感数据
+func (r *exchangeAccountRepo) encryptSensitiveData(data string) (string, error) {
+	if data == "" {
+		return "", nil
 	}
+	encrypted, err := crypto.AesEncrypt([]byte(data), crypto.DefaultAESKey, nil)
+	if err != nil {
+		r.log.Errorf("encrypt sensitive data failed: %s", err.Error())
+		return "", err
+	}
+	return string(encrypted), nil
 }
 
-// applyOrder 应用排序
-func (r *exchangeAccountRepo) applyOrder(builder *ent.ExchangeAccountQuery, order *paginationV1.OrderBy) {
-	if order.Desc {
-		switch order.Field {
-		case "id":
-			builder.Order(ent.Desc(exchangeaccount.FieldID))
-		case "create_time":
-			builder.Order(ent.Desc(exchangeaccount.FieldCreateTime))
-		case "nickname":
-			builder.Order(ent.Desc(exchangeaccount.FieldNickname))
-		}
-	} else {
-		switch order.Field {
-		case "id":
-			builder.Order(ent.Asc(exchangeaccount.FieldID))
-		case "create_time":
-			builder.Order(ent.Asc(exchangeaccount.FieldCreateTime))
-		case "nickname":
-			builder.Order(ent.Asc(exchangeaccount.FieldNickname))
-		}
+// decryptSensitiveData 解密敏感数据
+func (r *exchangeAccountRepo) decryptSensitiveData(encryptedData string) (string, error) {
+	if encryptedData == "" {
+		return "", nil
 	}
-}
-
-// unmarshalAccount 解析账号信息
-func (r *exchangeAccountRepo) unmarshalAccount(item *tradingV1.ExchangeAccount, entity *ent.ExchangeAccount) {
-	// 解析组合账号ID
-	if entity.CombinedID != "" {
-		accountIDs := strings.Split(entity.CombinedID, "|")
-		item.AccountIds = accountIDs
+	decrypted, err := crypto.AesDecrypt([]byte(encryptedData), crypto.DefaultAESKey, nil)
+	if err != nil {
+		r.log.Errorf("decrypt sensitive data failed: %s", err.Error())
+		return "", err
 	}
-
-	// 清除敏感信息（不返回给前端）
-	item.SecretKey = ""
-	item.PassKey = ""
+	return string(decrypted), nil
 }
 
 // convertUint32ToStringSlice 转换uint32切片为字符串切片

@@ -15,7 +15,7 @@ ROOT_DIR	:= $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 SRCS_MK		:= $(foreach dir, app, $(wildcard $(dir)/*/*/Makefile))
 
-.PHONY: help wire gen ent build api openapi init all vendor dep test cover vet lint docker
+.PHONY: help wire gen ent build api openapi init all vendor dep test cover vet lint docker build-bin docker-image docker-image-only docker-image-push docker-image-all
 
 # show environment variables
 env:
@@ -138,6 +138,46 @@ all:
       cd $(dir);\
       make app;\
     )
+
+# Variables for docker image
+IMAGE_NAME ?= go-wind-admin
+IMAGE_TAG ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "latest")
+REGISTRY ?=
+
+# build binary using build.sh
+build-bin:
+	@chmod +x ./build.sh && ./build.sh
+
+# build docker image (requires build-bin first)
+docker-image: build-bin
+	@echo "构建 Docker 镜像: $(IMAGE_NAME):$(IMAGE_TAG)"
+	@docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+	@docker tag $(IMAGE_NAME):$(IMAGE_TAG) $(IMAGE_NAME):latest
+	@echo "镜像构建完成: $(IMAGE_NAME):$(IMAGE_TAG)"
+
+# build docker image without rebuilding binary
+docker-image-only:
+	@echo "构建 Docker 镜像: $(IMAGE_NAME):$(IMAGE_TAG)"
+	@docker build -t $(IMAGE_NAME):$(IMAGE_TAG) .
+	@docker tag $(IMAGE_NAME):$(IMAGE_TAG) $(IMAGE_NAME):latest
+	@echo "镜像构建完成: $(IMAGE_NAME):$(IMAGE_TAG)"
+
+# push docker image to registry
+docker-image-push:
+ifdef REGISTRY
+	@docker tag $(IMAGE_NAME):$(IMAGE_TAG) $(REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG)
+	@docker tag $(IMAGE_NAME):$(IMAGE_TAG) $(REGISTRY)/$(IMAGE_NAME):latest
+	@docker push $(REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG)
+	@docker push $(REGISTRY)/$(IMAGE_NAME):latest
+	@echo "镜像推送完成: $(REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG)"
+else
+	@docker push $(IMAGE_NAME):$(IMAGE_TAG)
+	@docker push $(IMAGE_NAME):latest
+	@echo "镜像推送完成: $(IMAGE_NAME):$(IMAGE_TAG)"
+endif
+
+# build and push docker image
+docker-image-all: docker-image docker-image-push
 
 # use docker compose to run backend services and all its dependency services like redis, mysql, etc.
 compose-up:

@@ -46,7 +46,7 @@ func (s *ExchangeAccountService) GetExchangeAccount(ctx context.Context, req *tr
 
 // CreateExchangeAccount 创建交易账号
 func (s *ExchangeAccountService) CreateExchangeAccount(ctx context.Context, req *tradingV1.CreateExchangeAccountRequest) (*emptypb.Empty, error) {
-	// TODO: 加密敏感信息
+	// 敏感信息加密在Repository层处理
 	_, err := s.exchangeAccountRepo.Create(ctx, req)
 	if err != nil {
 		s.log.Errorf("create exchange account failed: %s", err.Error())
@@ -58,7 +58,7 @@ func (s *ExchangeAccountService) CreateExchangeAccount(ctx context.Context, req 
 
 // UpdateExchangeAccount 更新交易账号
 func (s *ExchangeAccountService) UpdateExchangeAccount(ctx context.Context, req *tradingV1.UpdateExchangeAccountRequest) (*emptypb.Empty, error) {
-	// TODO: 加密敏感信息
+	// 敏感信息加密在Repository层处理
 	err := s.exchangeAccountRepo.Update(ctx, req)
 	if err != nil {
 		s.log.Errorf("update exchange account failed: %s", err.Error())
