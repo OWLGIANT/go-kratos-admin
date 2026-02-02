@@ -27,6 +27,9 @@ export * from './role.state';
 export * from './task.state';
 export * from './tenant.state';
 export * from './user.state';
+export * from './asset.state';
+export * from './robot.state';
+export * from './strategy.state';
 
 export const enableList = computed(() => [
   { value: 'true', label: $t('enum.enable.true') },

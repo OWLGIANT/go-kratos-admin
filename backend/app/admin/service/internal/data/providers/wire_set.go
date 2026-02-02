@@ -79,4 +79,6 @@ var ProviderSet = wire.NewSet(
 	data.NewInternalMessageRecipientRepo,
 
 	data.NewUserTokenRepo,
+
+	data.NewRobotRepo,
 )

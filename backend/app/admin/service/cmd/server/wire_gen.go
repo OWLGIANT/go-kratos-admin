@@ -123,7 +123,10 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	app := newApp(context, httpServer, asynqServer, sseServer)
+	robotRepo := data.NewRobotRepo(context)
+	robotSyncService := service.NewRobotSyncService(context, robotRepo)
+	webSocketServer := server.NewWebSocketServer(context, authenticator, robotSyncService)
+	app := newApp(context, httpServer, asynqServer, sseServer, webSocketServer)
 	return app, func() {
 		cleanup2()
 		cleanup()

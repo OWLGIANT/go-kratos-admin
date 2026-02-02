@@ -4,12 +4,15 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2"
-	"github.com/go-kratos/kratos/v2/transport/http"
+	kratosHttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/tx7do/kratos-transport/transport/asynq"
 	"github.com/tx7do/kratos-transport/transport/sse"
 
 	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+
+	"go-wind-admin/app/admin/service/internal/server"
+	"go-wind-admin/pkg/service"
 
 	//_ "github.com/tx7do/kratos-bootstrap/config/apollo"
 	//_ "github.com/tx7do/kratos-bootstrap/config/consul"
@@ -35,8 +38,6 @@ import (
 	//_ "github.com/tx7do/kratos-bootstrap/registry/zookeeper"
 
 	//_ "github.com/tx7do/kratos-bootstrap/tracer"
-
-	"go-wind-admin/pkg/service"
 )
 
 var version = "1.0.0"
@@ -45,15 +46,22 @@ var version = "1.0.0"
 
 func newApp(
 	ctx *bootstrap.Context,
-	hs *http.Server,
+	hs *kratosHttp.Server,
 	as *asynq.Server,
 	ss *sse.Server,
+	ws *server.WebSocketServer,
 ) *kratos.App {
-	return bootstrap.NewApp(ctx,
-		hs,
-		as,
-		ss,
-	)
+	// Add WebSocket server if configured
+	if ws != nil {
+		// Start WebSocket server in a goroutine
+		go func() {
+			if err := ws.Start(); err != nil {
+				ctx.NewLoggerHelper("websocket-server").Errorf("WebSocket server error: %v", err)
+			}
+		}()
+	}
+
+	return bootstrap.NewApp(ctx, hs, as, ss)
 }
 
 func runApp() error {

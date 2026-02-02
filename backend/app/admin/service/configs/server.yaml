@@ -46,3 +46,21 @@ server:
     path: "/events"
     auto_stream: true
     auto_reply: false
+
+  websocket:
+    addr: ":7790"
+    path: "/ws"
+    read_buffer_size: 1024
+    write_buffer_size: 1024
+    max_message_size: 8192
+    heartbeat:
+      ping_interval: 30s
+      pong_wait: 60s
+      write_wait: 10s
+    connection:
+      max_connections: 10000
+      max_connections_per_user: 5
+    protocol:
+      enable_legacy: true
+      enable_actor: true
+      auto_detect: true

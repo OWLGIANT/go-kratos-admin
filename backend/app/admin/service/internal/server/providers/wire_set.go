@@ -21,5 +21,6 @@ var ProviderSet = wire.NewSet(
 	server.NewRestServer,
 	server.NewAsynqServer,
 	server.NewSseServer,
+	server.NewWebSocketServer,
 	server.NewRestMiddleware,
 )

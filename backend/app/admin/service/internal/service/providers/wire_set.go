@@ -48,4 +48,5 @@ var ProviderSet = wire.NewSet(
 	service.NewDataAccessAuditLogService,
 	service.NewOperationAuditLogService,
 	service.NewFileTransferService,
+	service.NewRobotSyncService,
 )

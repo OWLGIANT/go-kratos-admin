@@ -14,6 +14,7 @@
     "$/*": "./generated/*"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
     "@iconify/json": "catalog:",
     "@iconify/vue": "catalog:",
     "@vben-core/shadcn-ui": "workspace:*",
@@ -36,8 +37,10 @@
     "ant-design-vue": "catalog:",
     "crypto-js": "^4.2.0",
     "dayjs": "catalog:",
+    "echarts": "catalog:",
     "pinia": "2.2.2",
     "vue": "^3.5.22",
+    "vue-echarts": "^8.0.1",
     "vue-router": "catalog:",
     "vue-ueditor-wrap": "catalog:"
   },
