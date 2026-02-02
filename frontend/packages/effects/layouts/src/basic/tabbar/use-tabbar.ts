@@ -70,8 +70,18 @@ export function useTabbar() {
   };
 
   // 点击tab,跳转路由
-  const handleClick = (key: string) => {
-    router.push(key);
+  const handleClick = async (key: string) => {
+    // 避免重复导航到当前路由
+    if (route.fullPath === key) {
+      return;
+    }
+
+    try {
+      await router.push(key);
+    } catch (error) {
+      // 忽略导航错误（例如导航到相同路由）
+      console.warn('Navigation error:', error);
+    }
   };
 
   // 关闭tab

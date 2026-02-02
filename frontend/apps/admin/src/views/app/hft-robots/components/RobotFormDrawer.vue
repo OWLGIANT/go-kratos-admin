@@ -243,6 +243,21 @@ const availableVersions = computed(() => {
   return currentStrategy.value?.versions || [];
 });
 
+// Define resetForm before watch to avoid initialization error
+const resetForm = () => {
+  formData.value = {
+    nickname: '',
+    account: '',
+    exchange: 'okx_spot',
+    pair: '',
+    strategy: '',
+    strategyVersion: '',
+    strategyParams: {},
+    remark: '',
+  };
+  formRef.value?.resetFields();
+};
+
 // Watch for robot prop changes to populate form
 watch(
   () => props.robot,
@@ -304,20 +319,6 @@ const handleSubmit = async () => {
 const handleClose = () => {
   visible.value = false;
   resetForm();
-};
-
-const resetForm = () => {
-  formData.value = {
-    nickname: '',
-    account: '',
-    exchange: 'okx_spot',
-    pair: '',
-    strategy: '',
-    strategyVersion: '',
-    strategyParams: {},
-    remark: '',
-  };
-  formRef.value?.resetFields();
 };
 </script>
 

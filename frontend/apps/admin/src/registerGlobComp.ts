@@ -6,12 +6,19 @@ import {
   Card,
   Divider,
   Dropdown,
+  Form,
   Input,
   Layout,
   Menu,
+  Modal,
+  PageHeader,
   Popconfirm,
+  Radio,
+  Select,
   Space,
+  Spin,
   Switch,
+  Table,
   Tabs,
   Tag,
   Tree,
@@ -35,6 +42,13 @@ export function registerGlobComp(app: App) {
     .use(Tabs)
     .use(Divider)
     .use(Menu)
+    .use(Table)
+    .use(Form)
+    .use(Select)
+    .use(Radio)
+    .use(Modal)
+    .use(Spin)
+    .use(PageHeader)
     .use(VueUeditorWrap)
     .use(Tree);
 }
