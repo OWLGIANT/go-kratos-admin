@@ -1,0 +1,269 @@
+syntax = "proto3";
+
+package trading.service.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "kratos-admin/api/gen/go/trading/service/v1;tradingV1";
+
+// 交易账号类型
+enum AccountType {
+  ACCOUNT_TYPE_UNSPECIFIED = 0;
+  ACCOUNT_TYPE_SELF_BUILT = 1;  // 自建账号
+  ACCOUNT_TYPE_PLATFORM = 2;    // 平台账号
+}
+
+// 交易账号
+message ExchangeAccount {
+  // 账号ID
+  uint32 id = 1;
+
+  // 账号昵称
+  string nickname = 2;
+
+  // 交易所名称
+  string exchange_name = 3;
+
+  // 原始账号
+  string origin_account = 4;
+
+  // API密钥
+  string api_key = 5;
+
+  // 密钥（加密存储，不返回给前端）
+  string secret_key = 6;
+
+  // 密码密钥
+  string pass_key = 7;
+
+  // 经纪商ID
+  string broker_id = 8;
+
+  // 操作员
+  string operator = 9;
+
+  // 备注
+  string remark = 10;
+
+  // 绑定的托管者IP列表（逗号分隔）
+  string server_ips = 11;
+
+  // 特殊限频
+  double special_req_limit = 12;
+
+  // 账号类型
+  AccountType account_type = 13;
+
+  // 申请时间
+  int64 apply_time = 14;
+
+  // 是否参与组合账号
+  bool is_combined = 15;
+
+  // 是否是组合账号
+  bool is_multi = 16;
+
+  // 组合账号ID列表
+  repeated string account_ids = 17;
+
+  // 母账号ID
+  uint32 mother_id = 18;
+
+  // 创建时间
+  google.protobuf.Timestamp create_time = 19;
+
+  // 更新时间
+  google.protobuf.Timestamp update_time = 20;
+}
+
+// 获取交易账号列表响应
+message ListExchangeAccountResponse {
+  // 总数
+  int32 total = 1;
+
+  // 账号列表
+  repeated ExchangeAccount items = 2;
+}
+
+// 获取交易账号请求
+message GetExchangeAccountRequest {
+  // 账号ID
+  uint32 id = 1;
+}
+
+// 创建交易账号请求
+message CreateExchangeAccountRequest {
+  // 账号昵称
+  string nickname = 1;
+
+  // 交易所名称
+  string exchange_name = 2;
+
+  // 原始账号
+  string origin_account = 3;
+
+  // API密钥
+  string api_key = 4;
+
+  // 密钥
+  string secret_key = 5;
+
+  // 密码密钥
+  string pass_key = 6;
+
+  // 经纪商ID
+  string broker_id = 7;
+
+  // 备注
+  string remark = 8;
+
+  // 绑定的托管者IP列表
+  string server_ips = 9;
+
+  // 特殊限频
+  double special_req_limit = 10;
+
+  // 账号类型
+  AccountType account_type = 11;
+}
+
+// 更新交易账号请求
+message UpdateExchangeAccountRequest {
+  // 账号ID
+  uint32 id = 1;
+
+  // 账号昵称
+  optional string nickname = 2;
+
+  // 备注
+  optional string remark = 3;
+
+  // 绑定的托管者IP列表
+  optional string server_ips = 4;
+
+  // 特殊限频
+  optional double special_req_limit = 5;
+
+  // API密钥
+  optional string api_key = 6;
+
+  // 密钥
+  optional string secret_key = 7;
+
+  // 密码密钥
+  optional string pass_key = 8;
+
+  // 经纪商ID
+  optional string broker_id = 9;
+}
+
+// 删除交易账号请求
+message DeleteExchangeAccountRequest {
+  // 账号ID
+  uint32 id = 1;
+}
+
+// 批量删除交易账号请求
+message BatchDeleteExchangeAccountRequest {
+  // API密钥列表
+  repeated string api_keys = 1;
+}
+
+// 转移交易账号请求
+message TransferExchangeAccountRequest {
+  // 账号ID列表
+  repeated uint32 ids = 1;
+
+  // 目标操作员
+  string target_operator = 2;
+}
+
+// 搜索交易账号请求
+message SearchExchangeAccountRequest {
+  // 搜索关键词（昵称、交易所名称、原始账号）
+  string keyword = 1;
+
+  // 操作员
+  optional string operator = 2;
+
+  // 账号类型
+  optional AccountType account_type = 3;
+}
+
+// 获取账号资金曲线请求
+message GetAccountEquityRequest {
+  // 账号ID
+  uint32 id = 1;
+
+  // 开始时间
+  int64 start_time = 2;
+
+  // 结束时间
+  int64 end_time = 3;
+}
+
+// 账号资金数据点
+message EquityDataPoint {
+  // 时间戳
+  int64 timestamp = 1;
+
+  // 资金
+  double equity = 2;
+}
+
+// 获取账号资金曲线响应
+message GetAccountEquityResponse {
+  // 资金曲线数据
+  repeated EquityDataPoint data_points = 1;
+}
+
+// 创建组合账号请求
+message CreateCombinedAccountRequest {
+  // 组合账号昵称
+  string nickname = 1;
+
+  // 子账号ID列表
+  repeated uint32 account_ids = 2;
+
+  // 备注
+  string remark = 3;
+}
+
+// 更新组合账号请求
+message UpdateCombinedAccountRequest {
+  // 组合账号ID
+  uint32 id = 1;
+
+  // 组合账号昵称
+  optional string nickname = 2;
+
+  // 子账号ID列表
+  repeated uint32 account_ids = 3;
+
+  // 备注
+  optional string remark = 4;
+}
+
+// 更新账号备注请求
+message UpdateAccountRemarkRequest {
+  // 账号ID
+  uint32 id = 1;
+
+  // 备注
+  string remark = 2;
+}
+
+// 更新账号经纪商ID请求
+message UpdateAccountBrokerIdRequest {
+  // API密钥列表
+  repeated string api_keys = 1;
+
+  // 交易所名称
+  string exchange_name = 2;
+
+  // 原始账号
+  string origin_account = 3;
+
+  // 经纪商ID
+  string broker_id = 4;
+}

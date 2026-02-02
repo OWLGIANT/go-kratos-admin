@@ -1,0 +1,260 @@
+syntax = "proto3";
+
+package trading.service.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "kratos-admin/api/gen/go/trading/service/v1;tradingV1";
+
+// 托管者类型
+enum ServerType {
+  SERVER_TYPE_UNSPECIFIED = 0;
+  SERVER_TYPE_SELF_BUILT = 1;  // 自建
+  SERVER_TYPE_PLATFORM = 2;    // 大后台
+}
+
+// 服务器状态信息
+message ServerStatusInfo {
+  // CPU信息
+  string cpu = 1;
+
+  // IP池
+  double ip_pool = 2;
+
+  // 内存
+  double mem = 3;
+
+  // 内存百分比
+  string mem_pct = 4;
+
+  // 磁盘百分比
+  string disk_pct = 5;
+
+  // 任务数
+  int32 task_num = 6;
+
+  // 策略版本
+  bool stra_version = 7;
+
+  // 策略版本详情
+  map<string, string> stra_version_detail = 8;
+
+  // AWS账户
+  string aws_acct = 9;
+
+  // AWS区域
+  string aws_zone = 10;
+}
+
+// 托管者（服务器）
+message Server {
+  // 服务器ID
+  uint32 id = 1;
+
+  // 托管者昵称
+  string nickname = 2;
+
+  // 外网IP
+  string ip = 3;
+
+  // 内网IP
+  string inner_ip = 4;
+
+  // 端口
+  string port = 5;
+
+  // 操作员
+  string operator = 6;
+
+  // 机器ID
+  string machine_id = 7;
+
+  // 备注
+  string remark = 8;
+
+  // VPC ID
+  string vpc_id = 9;
+
+  // 实例ID
+  string instance_id = 10;
+
+  // 服务器状态信息
+  ServerStatusInfo server_info = 11;
+
+  // 类型
+  ServerType type = 12;
+
+  // 创建时间
+  google.protobuf.Timestamp create_time = 13;
+
+  // 更新时间
+  google.protobuf.Timestamp update_time = 14;
+}
+
+// 获取托管者列表响应
+message ListServerResponse {
+  // 总数
+  int32 total = 1;
+
+  // 托管者列表
+  repeated Server items = 2;
+}
+
+// 获取托管者请求
+message GetServerRequest {
+  // 服务器ID
+  uint32 id = 1;
+}
+
+// 创建托管者请求
+message CreateServerRequest {
+  // 托管者昵称
+  string nickname = 1;
+
+  // 外网IP
+  string ip = 2;
+
+  // 内网IP
+  string inner_ip = 3;
+
+  // 端口
+  string port = 4;
+
+  // 机器ID
+  string machine_id = 5;
+
+  // 备注
+  string remark = 6;
+
+  // VPC ID
+  string vpc_id = 7;
+
+  // 实例ID
+  string instance_id = 8;
+
+  // 类型
+  ServerType type = 9;
+}
+
+// 批量创建托管者请求
+message BatchCreateServerRequest {
+  // 托管者列表
+  repeated CreateServerRequest servers = 1;
+}
+
+// 更新托管者请求
+message UpdateServerRequest {
+  // 服务器ID
+  uint32 id = 1;
+
+  // 托管者昵称
+  optional string nickname = 2;
+
+  // 外网IP
+  optional string ip = 3;
+
+  // 内网IP
+  optional string inner_ip = 4;
+
+  // 端口
+  optional string port = 5;
+
+  // 机器ID
+  optional string machine_id = 6;
+
+  // 备注
+  optional string remark = 7;
+
+  // VPC ID
+  optional string vpc_id = 8;
+
+  // 实例ID
+  optional string instance_id = 9;
+
+  // 类型
+  optional ServerType type = 10;
+}
+
+// 删除托管者请求
+message DeleteServerRequest {
+  // 服务器ID
+  uint32 id = 1;
+}
+
+// 按IP删除托管者请求
+message DeleteServerByIpsRequest {
+  // IP列表
+  repeated string ips = 1;
+}
+
+// 重启托管者请求
+message RebootServerRequest {
+  // 服务器ID
+  uint32 id = 1;
+}
+
+// 获取托管者日志请求
+message GetServerLogRequest {
+  // 服务器ID
+  uint32 id = 1;
+
+  // 日志行数
+  int32 lines = 2;
+}
+
+// 获取托管者日志响应
+message GetServerLogResponse {
+  // 日志内容
+  string log_content = 1;
+}
+
+// 停止托管者上的机器人请求
+message StopServerRobotRequest {
+  // 服务器ID
+  uint32 id = 1;
+
+  // 机器人ID
+  string robot_id = 2;
+}
+
+// 转移托管者请求
+message TransferServerRequest {
+  // 服务器ID列表
+  repeated uint32 ids = 1;
+
+  // 目标操作员
+  string target_operator = 2;
+}
+
+// 删除托管者日志请求
+message DeleteServerLogRequest {
+  // 服务器ID
+  uint32 id = 1;
+}
+
+// 更新托管者策略请求
+message UpdateServerStrategyRequest {
+  // 服务器ID
+  uint32 id = 1;
+
+  // 策略名称
+  string strategy_name = 2;
+
+  // 策略版本
+  string strategy_version = 3;
+}
+
+// 更新托管者备注请求
+message UpdateServerRemarkRequest {
+  // 服务器ID
+  uint32 id = 1;
+
+  // 备注
+  string remark = 2;
+}
+
+// 获取可重启的托管者列表请求
+message GetCanRestartServerListRequest {
+  // 操作员
+  optional string operator = 1;
+}

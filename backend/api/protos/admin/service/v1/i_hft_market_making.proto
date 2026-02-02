@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+import "google/api/annotations.proto";
+
+import "trading/service/v1/hft_market_making.proto";
+
+// 高频做市管理服务
+service HftMarketMakingService {
+  // 获取 MidSigExec 订单列表
+  rpc ListMidSigExecOrders (trading.service.v1.ListMidSigExecOrdersRequest) returns (trading.service.v1.ListMidSigExecOrdersResponse) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/hft/midsigexec/orders"
+      body: "*"
+    };
+  }
+
+  // 获取 MidSigExec 信号列表
+  rpc ListMidSigExecSignals (trading.service.v1.ListMidSigExecSignalsRequest) returns (trading.service.v1.ListMidSigExecSignalsResponse) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/hft/midsigexec/signals"
+      body: "*"
+    };
+  }
+
+  // 获取 MidSigExec 结果列表
+  rpc ListMidSigExecDetails (trading.service.v1.ListMidSigExecDetailsRequest) returns (trading.service.v1.ListMidSigExecDetailsResponse) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/hft/midsigexec/details"
+      body: "*"
+    };
+  }
+
+  // 获取 HFT 信息
+  rpc GetHftInfo (trading.service.v1.GetHftInfoRequest) returns (trading.service.v1.GetHftInfoResponse) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/hft/info"
+      body: "*"
+    };
+  }
+
+  // 下载 MidSigExec 信息
+  rpc DownloadMidSigExec (trading.service.v1.DownloadMidSigExecRequest) returns (trading.service.v1.DownloadMidSigExecResponse) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/hft/midsigexec/download"
+      body: "*"
+    };
+  }
+
+  // 获取 HFT 通知报告
+  rpc GetHftNotifyReport (trading.service.v1.GetHftNotifyReportRequest) returns (trading.service.v1.HftNotifyReport) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/hft/notify-report"
+      body: "*"
+    };
+  }
+}

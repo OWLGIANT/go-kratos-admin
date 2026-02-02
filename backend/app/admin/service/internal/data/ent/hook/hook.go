@@ -92,6 +92,18 @@ func (f DictTypeI18nFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DictTypeI18nMutation", m)
 }
 
+// The ExchangeAccountFunc type is an adapter to allow the use of ordinary
+// function as ExchangeAccount mutator.
+type ExchangeAccountFunc func(context.Context, *ent.ExchangeAccountMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ExchangeAccountFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ExchangeAccountMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ExchangeAccountMutation", m)
+}
+
 // The FileFunc type is an adapter to allow the use of ordinary
 // function as File mutator.
 type FileFunc func(context.Context, *ent.FileMutation) (ent.Value, error)
@@ -356,6 +368,18 @@ func (f PositionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PositionMutation", m)
 }
 
+// The RobotFunc type is an adapter to allow the use of ordinary
+// function as Robot mutator.
+type RobotFunc func(context.Context, *ent.RobotMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f RobotFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.RobotMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RobotMutation", m)
+}
+
 // The RoleFunc type is an adapter to allow the use of ordinary
 // function as Role mutator.
 type RoleFunc func(context.Context, *ent.RoleMutation) (ent.Value, error)
@@ -390,6 +414,18 @@ func (f RolePermissionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RolePermissionMutation", m)
+}
+
+// The ServerFunc type is an adapter to allow the use of ordinary
+// function as Server mutator.
+type ServerFunc func(context.Context, *ent.ServerMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ServerFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ServerMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ServerMutation", m)
 }
 
 // The TaskFunc type is an adapter to allow the use of ordinary

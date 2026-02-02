@@ -26,6 +26,8 @@ type Tx struct {
 	DictType *DictTypeClient
 	// DictTypeI18n is the client for interacting with the DictTypeI18n builders.
 	DictTypeI18n *DictTypeI18nClient
+	// ExchangeAccount is the client for interacting with the ExchangeAccount builders.
+	ExchangeAccount *ExchangeAccountClient
 	// File is the client for interacting with the File builders.
 	File *FileClient
 	// InternalMessage is the client for interacting with the InternalMessage builders.
@@ -70,12 +72,16 @@ type Tx struct {
 	PolicyEvaluationLog *PolicyEvaluationLogClient
 	// Position is the client for interacting with the Position builders.
 	Position *PositionClient
+	// Robot is the client for interacting with the Robot builders.
+	Robot *RobotClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
 	// RoleMetadata is the client for interacting with the RoleMetadata builders.
 	RoleMetadata *RoleMetadataClient
 	// RolePermission is the client for interacting with the RolePermission builders.
 	RolePermission *RolePermissionClient
+	// Server is the client for interacting with the Server builders.
+	Server *ServerClient
 	// Task is the client for interacting with the Task builders.
 	Task *TaskClient
 	// Tenant is the client for interacting with the Tenant builders.
@@ -228,6 +234,7 @@ func (tx *Tx) init() {
 	tx.DictEntryI18n = NewDictEntryI18nClient(tx.config)
 	tx.DictType = NewDictTypeClient(tx.config)
 	tx.DictTypeI18n = NewDictTypeI18nClient(tx.config)
+	tx.ExchangeAccount = NewExchangeAccountClient(tx.config)
 	tx.File = NewFileClient(tx.config)
 	tx.InternalMessage = NewInternalMessageClient(tx.config)
 	tx.InternalMessageCategory = NewInternalMessageCategoryClient(tx.config)
@@ -250,9 +257,11 @@ func (tx *Tx) init() {
 	tx.PermissionPolicy = NewPermissionPolicyClient(tx.config)
 	tx.PolicyEvaluationLog = NewPolicyEvaluationLogClient(tx.config)
 	tx.Position = NewPositionClient(tx.config)
+	tx.Robot = NewRobotClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.RoleMetadata = NewRoleMetadataClient(tx.config)
 	tx.RolePermission = NewRolePermissionClient(tx.config)
+	tx.Server = NewServerClient(tx.config)
 	tx.Task = NewTaskClient(tx.config)
 	tx.Tenant = NewTenantClient(tx.config)
 	tx.User = NewUserClient(tx.config)

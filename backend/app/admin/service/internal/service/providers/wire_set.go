@@ -49,4 +49,9 @@ var ProviderSet = wire.NewSet(
 	service.NewOperationAuditLogService,
 	service.NewFileTransferService,
 	service.NewRobotSyncService,
+
+	// Trading services
+	service.NewExchangeAccountService,
+	service.NewServerService,
+	service.NewHftMarketMakingService,
 )

@@ -18,6 +18,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentryi18n"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttypei18n"
+	"go-wind-admin/app/admin/service/internal/data/ent/exchangeaccount"
 	"go-wind-admin/app/admin/service/internal/data/ent/file"
 	"go-wind-admin/app/admin/service/internal/data/ent/internalmessage"
 	"go-wind-admin/app/admin/service/internal/data/ent/internalmessagecategory"
@@ -40,9 +41,11 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionpolicy"
 	"go-wind-admin/app/admin/service/internal/data/ent/policyevaluationlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/position"
+	"go-wind-admin/app/admin/service/internal/data/ent/robot"
 	"go-wind-admin/app/admin/service/internal/data/ent/role"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolemetadata"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolepermission"
+	"go-wind-admin/app/admin/service/internal/data/ent/server"
 	"go-wind-admin/app/admin/service/internal/data/ent/task"
 	"go-wind-admin/app/admin/service/internal/data/ent/tenant"
 	"go-wind-admin/app/admin/service/internal/data/ent/user"
@@ -76,6 +79,8 @@ type Client struct {
 	DictType *DictTypeClient
 	// DictTypeI18n is the client for interacting with the DictTypeI18n builders.
 	DictTypeI18n *DictTypeI18nClient
+	// ExchangeAccount is the client for interacting with the ExchangeAccount builders.
+	ExchangeAccount *ExchangeAccountClient
 	// File is the client for interacting with the File builders.
 	File *FileClient
 	// InternalMessage is the client for interacting with the InternalMessage builders.
@@ -120,12 +125,16 @@ type Client struct {
 	PolicyEvaluationLog *PolicyEvaluationLogClient
 	// Position is the client for interacting with the Position builders.
 	Position *PositionClient
+	// Robot is the client for interacting with the Robot builders.
+	Robot *RobotClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
 	// RoleMetadata is the client for interacting with the RoleMetadata builders.
 	RoleMetadata *RoleMetadataClient
 	// RolePermission is the client for interacting with the RolePermission builders.
 	RolePermission *RolePermissionClient
+	// Server is the client for interacting with the Server builders.
+	Server *ServerClient
 	// Task is the client for interacting with the Task builders.
 	Task *TaskClient
 	// Tenant is the client for interacting with the Tenant builders.
@@ -158,6 +167,7 @@ func (c *Client) init() {
 	c.DictEntryI18n = NewDictEntryI18nClient(c.config)
 	c.DictType = NewDictTypeClient(c.config)
 	c.DictTypeI18n = NewDictTypeI18nClient(c.config)
+	c.ExchangeAccount = NewExchangeAccountClient(c.config)
 	c.File = NewFileClient(c.config)
 	c.InternalMessage = NewInternalMessageClient(c.config)
 	c.InternalMessageCategory = NewInternalMessageCategoryClient(c.config)
@@ -180,9 +190,11 @@ func (c *Client) init() {
 	c.PermissionPolicy = NewPermissionPolicyClient(c.config)
 	c.PolicyEvaluationLog = NewPolicyEvaluationLogClient(c.config)
 	c.Position = NewPositionClient(c.config)
+	c.Robot = NewRobotClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.RoleMetadata = NewRoleMetadataClient(c.config)
 	c.RolePermission = NewRolePermissionClient(c.config)
+	c.Server = NewServerClient(c.config)
 	c.Task = NewTaskClient(c.config)
 	c.Tenant = NewTenantClient(c.config)
 	c.User = NewUserClient(c.config)
@@ -289,6 +301,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		DictEntryI18n:            NewDictEntryI18nClient(cfg),
 		DictType:                 NewDictTypeClient(cfg),
 		DictTypeI18n:             NewDictTypeI18nClient(cfg),
+		ExchangeAccount:          NewExchangeAccountClient(cfg),
 		File:                     NewFileClient(cfg),
 		InternalMessage:          NewInternalMessageClient(cfg),
 		InternalMessageCategory:  NewInternalMessageCategoryClient(cfg),
@@ -311,9 +324,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		PermissionPolicy:         NewPermissionPolicyClient(cfg),
 		PolicyEvaluationLog:      NewPolicyEvaluationLogClient(cfg),
 		Position:                 NewPositionClient(cfg),
+		Robot:                    NewRobotClient(cfg),
 		Role:                     NewRoleClient(cfg),
 		RoleMetadata:             NewRoleMetadataClient(cfg),
 		RolePermission:           NewRolePermissionClient(cfg),
+		Server:                   NewServerClient(cfg),
 		Task:                     NewTaskClient(cfg),
 		Tenant:                   NewTenantClient(cfg),
 		User:                     NewUserClient(cfg),
@@ -347,6 +362,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		DictEntryI18n:            NewDictEntryI18nClient(cfg),
 		DictType:                 NewDictTypeClient(cfg),
 		DictTypeI18n:             NewDictTypeI18nClient(cfg),
+		ExchangeAccount:          NewExchangeAccountClient(cfg),
 		File:                     NewFileClient(cfg),
 		InternalMessage:          NewInternalMessageClient(cfg),
 		InternalMessageCategory:  NewInternalMessageCategoryClient(cfg),
@@ -369,9 +385,11 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		PermissionPolicy:         NewPermissionPolicyClient(cfg),
 		PolicyEvaluationLog:      NewPolicyEvaluationLogClient(cfg),
 		Position:                 NewPositionClient(cfg),
+		Robot:                    NewRobotClient(cfg),
 		Role:                     NewRoleClient(cfg),
 		RoleMetadata:             NewRoleMetadataClient(cfg),
 		RolePermission:           NewRolePermissionClient(cfg),
+		Server:                   NewServerClient(cfg),
 		Task:                     NewTaskClient(cfg),
 		Tenant:                   NewTenantClient(cfg),
 		User:                     NewUserClient(cfg),
@@ -409,14 +427,14 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Api, c.ApiAuditLog, c.DataAccessAuditLog, c.DictEntry, c.DictEntryI18n,
-		c.DictType, c.DictTypeI18n, c.File, c.InternalMessage,
+		c.DictType, c.DictTypeI18n, c.ExchangeAccount, c.File, c.InternalMessage,
 		c.InternalMessageCategory, c.InternalMessageRecipient, c.Language,
 		c.LoginAuditLog, c.LoginPolicy, c.Membership, c.MembershipOrgUnit,
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.OperationAuditLog, c.OrgUnit,
 		c.Permission, c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup,
 		c.PermissionMenu, c.PermissionPolicy, c.PolicyEvaluationLog, c.Position,
-		c.Role, c.RoleMetadata, c.RolePermission, c.Task, c.Tenant, c.User,
-		c.UserCredential, c.UserOrgUnit, c.UserPosition, c.UserRole,
+		c.Robot, c.Role, c.RoleMetadata, c.RolePermission, c.Server, c.Task, c.Tenant,
+		c.User, c.UserCredential, c.UserOrgUnit, c.UserPosition, c.UserRole,
 	} {
 		n.Use(hooks...)
 	}
@@ -427,14 +445,14 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Api, c.ApiAuditLog, c.DataAccessAuditLog, c.DictEntry, c.DictEntryI18n,
-		c.DictType, c.DictTypeI18n, c.File, c.InternalMessage,
+		c.DictType, c.DictTypeI18n, c.ExchangeAccount, c.File, c.InternalMessage,
 		c.InternalMessageCategory, c.InternalMessageRecipient, c.Language,
 		c.LoginAuditLog, c.LoginPolicy, c.Membership, c.MembershipOrgUnit,
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.OperationAuditLog, c.OrgUnit,
 		c.Permission, c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup,
 		c.PermissionMenu, c.PermissionPolicy, c.PolicyEvaluationLog, c.Position,
-		c.Role, c.RoleMetadata, c.RolePermission, c.Task, c.Tenant, c.User,
-		c.UserCredential, c.UserOrgUnit, c.UserPosition, c.UserRole,
+		c.Robot, c.Role, c.RoleMetadata, c.RolePermission, c.Server, c.Task, c.Tenant,
+		c.User, c.UserCredential, c.UserOrgUnit, c.UserPosition, c.UserRole,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -457,6 +475,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.DictType.mutate(ctx, m)
 	case *DictTypeI18nMutation:
 		return c.DictTypeI18n.mutate(ctx, m)
+	case *ExchangeAccountMutation:
+		return c.ExchangeAccount.mutate(ctx, m)
 	case *FileMutation:
 		return c.File.mutate(ctx, m)
 	case *InternalMessageMutation:
@@ -501,12 +521,16 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.PolicyEvaluationLog.mutate(ctx, m)
 	case *PositionMutation:
 		return c.Position.mutate(ctx, m)
+	case *RobotMutation:
+		return c.Robot.mutate(ctx, m)
 	case *RoleMutation:
 		return c.Role.mutate(ctx, m)
 	case *RoleMetadataMutation:
 		return c.RoleMetadata.mutate(ctx, m)
 	case *RolePermissionMutation:
 		return c.RolePermission.mutate(ctx, m)
+	case *ServerMutation:
+		return c.Server.mutate(ctx, m)
 	case *TaskMutation:
 		return c.Task.mutate(ctx, m)
 	case *TenantMutation:
@@ -1556,6 +1580,139 @@ func (c *DictTypeI18nClient) mutate(ctx context.Context, m *DictTypeI18nMutation
 		return (&DictTypeI18nDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown DictTypeI18n mutation op: %q", m.Op())
+	}
+}
+
+// ExchangeAccountClient is a client for the ExchangeAccount schema.
+type ExchangeAccountClient struct {
+	config
+}
+
+// NewExchangeAccountClient returns a client for the ExchangeAccount from the given config.
+func NewExchangeAccountClient(c config) *ExchangeAccountClient {
+	return &ExchangeAccountClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `exchangeaccount.Hooks(f(g(h())))`.
+func (c *ExchangeAccountClient) Use(hooks ...Hook) {
+	c.hooks.ExchangeAccount = append(c.hooks.ExchangeAccount, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `exchangeaccount.Intercept(f(g(h())))`.
+func (c *ExchangeAccountClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ExchangeAccount = append(c.inters.ExchangeAccount, interceptors...)
+}
+
+// Create returns a builder for creating a ExchangeAccount entity.
+func (c *ExchangeAccountClient) Create() *ExchangeAccountCreate {
+	mutation := newExchangeAccountMutation(c.config, OpCreate)
+	return &ExchangeAccountCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ExchangeAccount entities.
+func (c *ExchangeAccountClient) CreateBulk(builders ...*ExchangeAccountCreate) *ExchangeAccountCreateBulk {
+	return &ExchangeAccountCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ExchangeAccountClient) MapCreateBulk(slice any, setFunc func(*ExchangeAccountCreate, int)) *ExchangeAccountCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ExchangeAccountCreateBulk{err: fmt.Errorf("calling to ExchangeAccountClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ExchangeAccountCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ExchangeAccountCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ExchangeAccount.
+func (c *ExchangeAccountClient) Update() *ExchangeAccountUpdate {
+	mutation := newExchangeAccountMutation(c.config, OpUpdate)
+	return &ExchangeAccountUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ExchangeAccountClient) UpdateOne(_m *ExchangeAccount) *ExchangeAccountUpdateOne {
+	mutation := newExchangeAccountMutation(c.config, OpUpdateOne, withExchangeAccount(_m))
+	return &ExchangeAccountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ExchangeAccountClient) UpdateOneID(id uint32) *ExchangeAccountUpdateOne {
+	mutation := newExchangeAccountMutation(c.config, OpUpdateOne, withExchangeAccountID(id))
+	return &ExchangeAccountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ExchangeAccount.
+func (c *ExchangeAccountClient) Delete() *ExchangeAccountDelete {
+	mutation := newExchangeAccountMutation(c.config, OpDelete)
+	return &ExchangeAccountDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ExchangeAccountClient) DeleteOne(_m *ExchangeAccount) *ExchangeAccountDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ExchangeAccountClient) DeleteOneID(id uint32) *ExchangeAccountDeleteOne {
+	builder := c.Delete().Where(exchangeaccount.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ExchangeAccountDeleteOne{builder}
+}
+
+// Query returns a query builder for ExchangeAccount.
+func (c *ExchangeAccountClient) Query() *ExchangeAccountQuery {
+	return &ExchangeAccountQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeExchangeAccount},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ExchangeAccount entity by its id.
+func (c *ExchangeAccountClient) Get(ctx context.Context, id uint32) (*ExchangeAccount, error) {
+	return c.Query().Where(exchangeaccount.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ExchangeAccountClient) GetX(ctx context.Context, id uint32) *ExchangeAccount {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ExchangeAccountClient) Hooks() []Hook {
+	return c.hooks.ExchangeAccount
+}
+
+// Interceptors returns the client interceptors.
+func (c *ExchangeAccountClient) Interceptors() []Interceptor {
+	return c.inters.ExchangeAccount
+}
+
+func (c *ExchangeAccountClient) mutate(ctx context.Context, m *ExchangeAccountMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ExchangeAccountCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ExchangeAccountUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ExchangeAccountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ExchangeAccountDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ExchangeAccount mutation op: %q", m.Op())
 	}
 }
 
@@ -4596,6 +4753,140 @@ func (c *PositionClient) mutate(ctx context.Context, m *PositionMutation) (Value
 	}
 }
 
+// RobotClient is a client for the Robot schema.
+type RobotClient struct {
+	config
+}
+
+// NewRobotClient returns a client for the Robot from the given config.
+func NewRobotClient(c config) *RobotClient {
+	return &RobotClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `robot.Hooks(f(g(h())))`.
+func (c *RobotClient) Use(hooks ...Hook) {
+	c.hooks.Robot = append(c.hooks.Robot, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `robot.Intercept(f(g(h())))`.
+func (c *RobotClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Robot = append(c.inters.Robot, interceptors...)
+}
+
+// Create returns a builder for creating a Robot entity.
+func (c *RobotClient) Create() *RobotCreate {
+	mutation := newRobotMutation(c.config, OpCreate)
+	return &RobotCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Robot entities.
+func (c *RobotClient) CreateBulk(builders ...*RobotCreate) *RobotCreateBulk {
+	return &RobotCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *RobotClient) MapCreateBulk(slice any, setFunc func(*RobotCreate, int)) *RobotCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &RobotCreateBulk{err: fmt.Errorf("calling to RobotClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*RobotCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &RobotCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Robot.
+func (c *RobotClient) Update() *RobotUpdate {
+	mutation := newRobotMutation(c.config, OpUpdate)
+	return &RobotUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *RobotClient) UpdateOne(_m *Robot) *RobotUpdateOne {
+	mutation := newRobotMutation(c.config, OpUpdateOne, withRobot(_m))
+	return &RobotUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *RobotClient) UpdateOneID(id uint32) *RobotUpdateOne {
+	mutation := newRobotMutation(c.config, OpUpdateOne, withRobotID(id))
+	return &RobotUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Robot.
+func (c *RobotClient) Delete() *RobotDelete {
+	mutation := newRobotMutation(c.config, OpDelete)
+	return &RobotDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *RobotClient) DeleteOne(_m *Robot) *RobotDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *RobotClient) DeleteOneID(id uint32) *RobotDeleteOne {
+	builder := c.Delete().Where(robot.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &RobotDeleteOne{builder}
+}
+
+// Query returns a query builder for Robot.
+func (c *RobotClient) Query() *RobotQuery {
+	return &RobotQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeRobot},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Robot entity by its id.
+func (c *RobotClient) Get(ctx context.Context, id uint32) (*Robot, error) {
+	return c.Query().Where(robot.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *RobotClient) GetX(ctx context.Context, id uint32) *Robot {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *RobotClient) Hooks() []Hook {
+	hooks := c.hooks.Robot
+	return append(hooks[:len(hooks):len(hooks)], robot.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *RobotClient) Interceptors() []Interceptor {
+	return c.inters.Robot
+}
+
+func (c *RobotClient) mutate(ctx context.Context, m *RobotMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&RobotCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&RobotUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&RobotUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&RobotDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Robot mutation op: %q", m.Op())
+	}
+}
+
 // RoleClient is a client for the Role schema.
 type RoleClient struct {
 	config
@@ -4995,6 +5286,139 @@ func (c *RolePermissionClient) mutate(ctx context.Context, m *RolePermissionMuta
 		return (&RolePermissionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown RolePermission mutation op: %q", m.Op())
+	}
+}
+
+// ServerClient is a client for the Server schema.
+type ServerClient struct {
+	config
+}
+
+// NewServerClient returns a client for the Server from the given config.
+func NewServerClient(c config) *ServerClient {
+	return &ServerClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `server.Hooks(f(g(h())))`.
+func (c *ServerClient) Use(hooks ...Hook) {
+	c.hooks.Server = append(c.hooks.Server, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `server.Intercept(f(g(h())))`.
+func (c *ServerClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Server = append(c.inters.Server, interceptors...)
+}
+
+// Create returns a builder for creating a Server entity.
+func (c *ServerClient) Create() *ServerCreate {
+	mutation := newServerMutation(c.config, OpCreate)
+	return &ServerCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Server entities.
+func (c *ServerClient) CreateBulk(builders ...*ServerCreate) *ServerCreateBulk {
+	return &ServerCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ServerClient) MapCreateBulk(slice any, setFunc func(*ServerCreate, int)) *ServerCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ServerCreateBulk{err: fmt.Errorf("calling to ServerClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ServerCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ServerCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Server.
+func (c *ServerClient) Update() *ServerUpdate {
+	mutation := newServerMutation(c.config, OpUpdate)
+	return &ServerUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ServerClient) UpdateOne(_m *Server) *ServerUpdateOne {
+	mutation := newServerMutation(c.config, OpUpdateOne, withServer(_m))
+	return &ServerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ServerClient) UpdateOneID(id uint32) *ServerUpdateOne {
+	mutation := newServerMutation(c.config, OpUpdateOne, withServerID(id))
+	return &ServerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Server.
+func (c *ServerClient) Delete() *ServerDelete {
+	mutation := newServerMutation(c.config, OpDelete)
+	return &ServerDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ServerClient) DeleteOne(_m *Server) *ServerDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ServerClient) DeleteOneID(id uint32) *ServerDeleteOne {
+	builder := c.Delete().Where(server.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ServerDeleteOne{builder}
+}
+
+// Query returns a query builder for Server.
+func (c *ServerClient) Query() *ServerQuery {
+	return &ServerQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeServer},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Server entity by its id.
+func (c *ServerClient) Get(ctx context.Context, id uint32) (*Server, error) {
+	return c.Query().Where(server.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ServerClient) GetX(ctx context.Context, id uint32) *Server {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ServerClient) Hooks() []Hook {
+	return c.hooks.Server
+}
+
+// Interceptors returns the client interceptors.
+func (c *ServerClient) Interceptors() []Interceptor {
+	return c.inters.Server
+}
+
+func (c *ServerClient) mutate(ctx context.Context, m *ServerMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ServerCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ServerUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ServerUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ServerDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Server mutation op: %q", m.Op())
 	}
 }
 
@@ -5939,22 +6363,22 @@ func (c *UserRoleClient) mutate(ctx context.Context, m *UserRoleMutation) (Value
 type (
 	hooks struct {
 		Api, ApiAuditLog, DataAccessAuditLog, DictEntry, DictEntryI18n, DictType,
-		DictTypeI18n, File, InternalMessage, InternalMessageCategory,
+		DictTypeI18n, ExchangeAccount, File, InternalMessage, InternalMessageCategory,
 		InternalMessageRecipient, Language, LoginAuditLog, LoginPolicy, Membership,
 		MembershipOrgUnit, MembershipPosition, MembershipRole, Menu, OperationAuditLog,
 		OrgUnit, Permission, PermissionApi, PermissionAuditLog, PermissionGroup,
-		PermissionMenu, PermissionPolicy, PolicyEvaluationLog, Position, Role,
-		RoleMetadata, RolePermission, Task, Tenant, User, UserCredential, UserOrgUnit,
-		UserPosition, UserRole []ent.Hook
+		PermissionMenu, PermissionPolicy, PolicyEvaluationLog, Position, Robot, Role,
+		RoleMetadata, RolePermission, Server, Task, Tenant, User, UserCredential,
+		UserOrgUnit, UserPosition, UserRole []ent.Hook
 	}
 	inters struct {
 		Api, ApiAuditLog, DataAccessAuditLog, DictEntry, DictEntryI18n, DictType,
-		DictTypeI18n, File, InternalMessage, InternalMessageCategory,
+		DictTypeI18n, ExchangeAccount, File, InternalMessage, InternalMessageCategory,
 		InternalMessageRecipient, Language, LoginAuditLog, LoginPolicy, Membership,
 		MembershipOrgUnit, MembershipPosition, MembershipRole, Menu, OperationAuditLog,
 		OrgUnit, Permission, PermissionApi, PermissionAuditLog, PermissionGroup,
-		PermissionMenu, PermissionPolicy, PolicyEvaluationLog, Position, Role,
-		RoleMetadata, RolePermission, Task, Tenant, User, UserCredential, UserOrgUnit,
-		UserPosition, UserRole []ent.Interceptor
+		PermissionMenu, PermissionPolicy, PolicyEvaluationLog, Position, Robot, Role,
+		RoleMetadata, RolePermission, Server, Task, Tenant, User, UserCredential,
+		UserOrgUnit, UserPosition, UserRole []ent.Interceptor
 	}
 )

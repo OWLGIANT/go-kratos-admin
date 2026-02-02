@@ -13,6 +13,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentryi18n"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttypei18n"
+	"go-wind-admin/app/admin/service/internal/data/ent/exchangeaccount"
 	"go-wind-admin/app/admin/service/internal/data/ent/file"
 	"go-wind-admin/app/admin/service/internal/data/ent/internalmessage"
 	"go-wind-admin/app/admin/service/internal/data/ent/internalmessagecategory"
@@ -35,9 +36,11 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionpolicy"
 	"go-wind-admin/app/admin/service/internal/data/ent/policyevaluationlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/position"
+	"go-wind-admin/app/admin/service/internal/data/ent/robot"
 	"go-wind-admin/app/admin/service/internal/data/ent/role"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolemetadata"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolepermission"
+	"go-wind-admin/app/admin/service/internal/data/ent/server"
 	"go-wind-admin/app/admin/service/internal/data/ent/task"
 	"go-wind-admin/app/admin/service/internal/data/ent/tenant"
 	"go-wind-admin/app/admin/service/internal/data/ent/user"
@@ -118,6 +121,7 @@ func checkColumn(t, c string) error {
 			dictentryi18n.Table:            dictentryi18n.ValidColumn,
 			dicttype.Table:                 dicttype.ValidColumn,
 			dicttypei18n.Table:             dicttypei18n.ValidColumn,
+			exchangeaccount.Table:          exchangeaccount.ValidColumn,
 			file.Table:                     file.ValidColumn,
 			internalmessage.Table:          internalmessage.ValidColumn,
 			internalmessagecategory.Table:  internalmessagecategory.ValidColumn,
@@ -140,9 +144,11 @@ func checkColumn(t, c string) error {
 			permissionpolicy.Table:         permissionpolicy.ValidColumn,
 			policyevaluationlog.Table:      policyevaluationlog.ValidColumn,
 			position.Table:                 position.ValidColumn,
+			robot.Table:                    robot.ValidColumn,
 			role.Table:                     role.ValidColumn,
 			rolemetadata.Table:             rolemetadata.ValidColumn,
 			rolepermission.Table:           rolepermission.ValidColumn,
+			server.Table:                   server.ValidColumn,
 			task.Table:                     task.ValidColumn,
 			tenant.Table:                   tenant.ValidColumn,
 			user.Table:                     user.ValidColumn,

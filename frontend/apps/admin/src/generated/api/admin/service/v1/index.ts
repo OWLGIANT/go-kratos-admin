@@ -1674,6 +1674,553 @@ export type dictservicev1_DeleteDictTypeRequest = {
   ids: number[] | undefined;
 };
 
+// 交易账号管理服务
+export interface ExchangeAccountService {
+  // 获取交易账号列表
+  ListExchangeAccount(request: pagination_PagingRequest): Promise<tradingservicev1_ListExchangeAccountResponse>;
+  // 获取交易账号
+  GetExchangeAccount(request: tradingservicev1_GetExchangeAccountRequest): Promise<tradingservicev1_ExchangeAccount>;
+  // 创建交易账号
+  CreateExchangeAccount(request: tradingservicev1_CreateExchangeAccountRequest): Promise<wellKnownEmpty>;
+  // 更新交易账号
+  UpdateExchangeAccount(request: tradingservicev1_UpdateExchangeAccountRequest): Promise<wellKnownEmpty>;
+  // 删除交易账号
+  DeleteExchangeAccount(request: tradingservicev1_DeleteExchangeAccountRequest): Promise<wellKnownEmpty>;
+  // 批量删除交易账号
+  BatchDeleteExchangeAccount(request: tradingservicev1_BatchDeleteExchangeAccountRequest): Promise<wellKnownEmpty>;
+  // 转移交易账号
+  TransferExchangeAccount(request: tradingservicev1_TransferExchangeAccountRequest): Promise<wellKnownEmpty>;
+  // 搜索交易账号
+  SearchExchangeAccount(request: tradingservicev1_SearchExchangeAccountRequest): Promise<tradingservicev1_ListExchangeAccountResponse>;
+  // 获取账号资金曲线
+  GetAccountEquity(request: tradingservicev1_GetAccountEquityRequest): Promise<tradingservicev1_GetAccountEquityResponse>;
+  // 创建组合账号
+  CreateCombinedAccount(request: tradingservicev1_CreateCombinedAccountRequest): Promise<wellKnownEmpty>;
+  // 更新组合账号
+  UpdateCombinedAccount(request: tradingservicev1_UpdateCombinedAccountRequest): Promise<wellKnownEmpty>;
+  // 更新账号备注
+  UpdateAccountRemark(request: tradingservicev1_UpdateAccountRemarkRequest): Promise<wellKnownEmpty>;
+  // 更新账号经纪商ID
+  UpdateAccountBrokerId(request: tradingservicev1_UpdateAccountBrokerIdRequest): Promise<wellKnownEmpty>;
+}
+
+export function createExchangeAccountServiceClient(
+  handler: RequestHandler
+): ExchangeAccountService {
+  return {
+    ListExchangeAccount(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/exchange-accounts`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
+      }
+      if (request.pageSize) {
+        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
+      }
+      if (request.offset) {
+        queryParams.push(`offset=${encodeURIComponent(request.offset.toString())}`)
+      }
+      if (request.limit) {
+        queryParams.push(`limit=${encodeURIComponent(request.limit.toString())}`)
+      }
+      if (request.token) {
+        queryParams.push(`token=${encodeURIComponent(request.token.toString())}`)
+      }
+      if (request.noPaging) {
+        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
+      }
+      if (request.query) {
+        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(`filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(`filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
+      }
+      if (request.fieldMask) {
+        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "ExchangeAccountService",
+        method: "ListExchangeAccount",
+      }) as Promise<tradingservicev1_ListExchangeAccountResponse>;
+    },
+    GetExchangeAccount(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/trading/exchange-accounts/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "ExchangeAccountService",
+        method: "GetExchangeAccount",
+      }) as Promise<tradingservicev1_ExchangeAccount>;
+    },
+    CreateExchangeAccount(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/exchange-accounts`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ExchangeAccountService",
+        method: "CreateExchangeAccount",
+      }) as Promise<wellKnownEmpty>;
+    },
+    UpdateExchangeAccount(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/trading/exchange-accounts/${request.id}`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "PUT",
+        body,
+      }, {
+        service: "ExchangeAccountService",
+        method: "UpdateExchangeAccount",
+      }) as Promise<wellKnownEmpty>;
+    },
+    DeleteExchangeAccount(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/trading/exchange-accounts/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "DELETE",
+        body,
+      }, {
+        service: "ExchangeAccountService",
+        method: "DeleteExchangeAccount",
+      }) as Promise<wellKnownEmpty>;
+    },
+    BatchDeleteExchangeAccount(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/exchange-accounts:batchDelete`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ExchangeAccountService",
+        method: "BatchDeleteExchangeAccount",
+      }) as Promise<wellKnownEmpty>;
+    },
+    TransferExchangeAccount(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/exchange-accounts:transfer`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ExchangeAccountService",
+        method: "TransferExchangeAccount",
+      }) as Promise<wellKnownEmpty>;
+    },
+    SearchExchangeAccount(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/exchange-accounts:search`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ExchangeAccountService",
+        method: "SearchExchangeAccount",
+      }) as Promise<tradingservicev1_ListExchangeAccountResponse>;
+    },
+    GetAccountEquity(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/trading/exchange-accounts/${request.id}/equity`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.startTime) {
+        queryParams.push(`startTime=${encodeURIComponent(request.startTime.toString())}`)
+      }
+      if (request.endTime) {
+        queryParams.push(`endTime=${encodeURIComponent(request.endTime.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "ExchangeAccountService",
+        method: "GetAccountEquity",
+      }) as Promise<tradingservicev1_GetAccountEquityResponse>;
+    },
+    CreateCombinedAccount(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/exchange-accounts:createCombined`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ExchangeAccountService",
+        method: "CreateCombinedAccount",
+      }) as Promise<wellKnownEmpty>;
+    },
+    UpdateCombinedAccount(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/exchange-accounts:updateCombined`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "PUT",
+        body,
+      }, {
+        service: "ExchangeAccountService",
+        method: "UpdateCombinedAccount",
+      }) as Promise<wellKnownEmpty>;
+    },
+    UpdateAccountRemark(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/trading/exchange-accounts/${request.id}/remark`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ExchangeAccountService",
+        method: "UpdateAccountRemark",
+      }) as Promise<wellKnownEmpty>;
+    },
+    UpdateAccountBrokerId(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/exchange-accounts:updateBrokerId`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ExchangeAccountService",
+        method: "UpdateAccountBrokerId",
+      }) as Promise<wellKnownEmpty>;
+    },
+  };
+}
+// 获取交易账号列表响应
+export type tradingservicev1_ListExchangeAccountResponse = {
+  // 总数
+  total: number | undefined;
+  // 账号列表
+  items: tradingservicev1_ExchangeAccount[] | undefined;
+};
+
+// 交易账号
+export type tradingservicev1_ExchangeAccount = {
+  // 账号ID
+  id: number | undefined;
+  // 账号昵称
+  nickname: string | undefined;
+  // 交易所名称
+  exchangeName: string | undefined;
+  // 原始账号
+  originAccount: string | undefined;
+  // API密钥
+  apiKey: string | undefined;
+  // 密钥（加密存储，不返回给前端）
+  secretKey: string | undefined;
+  // 密码密钥
+  passKey: string | undefined;
+  // 经纪商ID
+  brokerId: string | undefined;
+  // 操作员
+  operator: string | undefined;
+  // 备注
+  remark: string | undefined;
+  // 绑定的托管者IP列表（逗号分隔）
+  serverIps: string | undefined;
+  // 特殊限频
+  specialReqLimit: number | undefined;
+  // 账号类型
+  accountType: tradingservicev1_AccountType | undefined;
+  // 申请时间
+  applyTime: number | undefined;
+  // 是否参与组合账号
+  isCombined: boolean | undefined;
+  // 是否是组合账号
+  isMulti: boolean | undefined;
+  // 组合账号ID列表
+  accountIds: string[] | undefined;
+  // 母账号ID
+  motherId: number | undefined;
+  // 创建时间
+  createTime: wellKnownTimestamp | undefined;
+  // 更新时间
+  updateTime: wellKnownTimestamp | undefined;
+};
+
+// 交易账号类型
+export type tradingservicev1_AccountType =
+  | "ACCOUNT_TYPE_UNSPECIFIED"
+  | "ACCOUNT_TYPE_SELF_BUILT"
+  | "ACCOUNT_TYPE_PLATFORM";
+// 获取交易账号请求
+export type tradingservicev1_GetExchangeAccountRequest = {
+  // 账号ID
+  id: number | undefined;
+};
+
+// 创建交易账号请求
+export type tradingservicev1_CreateExchangeAccountRequest = {
+  // 账号昵称
+  nickname: string | undefined;
+  // 交易所名称
+  exchangeName: string | undefined;
+  // 原始账号
+  originAccount: string | undefined;
+  // API密钥
+  apiKey: string | undefined;
+  // 密钥
+  secretKey: string | undefined;
+  // 密码密钥
+  passKey: string | undefined;
+  // 经纪商ID
+  brokerId: string | undefined;
+  // 备注
+  remark: string | undefined;
+  // 绑定的托管者IP列表
+  serverIps: string | undefined;
+  // 特殊限频
+  specialReqLimit: number | undefined;
+  // 账号类型
+  accountType: tradingservicev1_AccountType | undefined;
+};
+
+// 更新交易账号请求
+export type tradingservicev1_UpdateExchangeAccountRequest = {
+  // 账号ID
+  id: number | undefined;
+  // 账号昵称
+  nickname?: string;
+  // 备注
+  remark?: string;
+  // 绑定的托管者IP列表
+  serverIps?: string;
+  // 特殊限频
+  specialReqLimit?: number;
+  // API密钥
+  apiKey?: string;
+  // 密钥
+  secretKey?: string;
+  // 密码密钥
+  passKey?: string;
+  // 经纪商ID
+  brokerId?: string;
+};
+
+// 删除交易账号请求
+export type tradingservicev1_DeleteExchangeAccountRequest = {
+  // 账号ID
+  id: number | undefined;
+};
+
+// 批量删除交易账号请求
+export type tradingservicev1_BatchDeleteExchangeAccountRequest = {
+  // API密钥列表
+  apiKeys: string[] | undefined;
+};
+
+// 转移交易账号请求
+export type tradingservicev1_TransferExchangeAccountRequest = {
+  // 账号ID列表
+  ids: number[] | undefined;
+  // 目标操作员
+  targetOperator: string | undefined;
+};
+
+// 搜索交易账号请求
+export type tradingservicev1_SearchExchangeAccountRequest = {
+  // 搜索关键词（昵称、交易所名称、原始账号）
+  keyword: string | undefined;
+  // 操作员
+  operator?: string;
+  // 账号类型
+  accountType?: tradingservicev1_AccountType;
+};
+
+// 获取账号资金曲线请求
+export type tradingservicev1_GetAccountEquityRequest = {
+  // 账号ID
+  id: number | undefined;
+  // 开始时间
+  startTime: number | undefined;
+  // 结束时间
+  endTime: number | undefined;
+};
+
+// 获取账号资金曲线响应
+export type tradingservicev1_GetAccountEquityResponse = {
+  // 资金曲线数据
+  dataPoints: tradingservicev1_EquityDataPoint[] | undefined;
+};
+
+// 账号资金数据点
+export type tradingservicev1_EquityDataPoint = {
+  // 时间戳
+  timestamp: number | undefined;
+  // 资金
+  equity: number | undefined;
+};
+
+// 创建组合账号请求
+export type tradingservicev1_CreateCombinedAccountRequest = {
+  // 组合账号昵称
+  nickname: string | undefined;
+  // 子账号ID列表
+  accountIds: number[] | undefined;
+  // 备注
+  remark: string | undefined;
+};
+
+// 更新组合账号请求
+export type tradingservicev1_UpdateCombinedAccountRequest = {
+  // 组合账号ID
+  id: number | undefined;
+  // 组合账号昵称
+  nickname?: string;
+  // 子账号ID列表
+  accountIds: number[] | undefined;
+  // 备注
+  remark?: string;
+};
+
+// 更新账号备注请求
+export type tradingservicev1_UpdateAccountRemarkRequest = {
+  // 账号ID
+  id: number | undefined;
+  // 备注
+  remark: string | undefined;
+};
+
+// 更新账号经纪商ID请求
+export type tradingservicev1_UpdateAccountBrokerIdRequest = {
+  // API密钥列表
+  apiKeys: string[] | undefined;
+  // 交易所名称
+  exchangeName: string | undefined;
+  // 原始账号
+  originAccount: string | undefined;
+  // 经纪商ID
+  brokerId: string | undefined;
+};
+
 // 文件管理服务
 export interface FileService {
   // 查询文件列表
@@ -2133,6 +2680,391 @@ export type fileservicev1_UEditorUploadResponse_Item = {
   original?: string;
   type?: string;
   size?: number;
+};
+
+// 高频做市管理服务
+export interface HftMarketMakingService {
+  // 获取 MidSigExec 订单列表
+  ListMidSigExecOrders(request: tradingservicev1_ListMidSigExecOrdersRequest): Promise<tradingservicev1_ListMidSigExecOrdersResponse>;
+  // 获取 MidSigExec 信号列表
+  ListMidSigExecSignals(request: tradingservicev1_ListMidSigExecSignalsRequest): Promise<tradingservicev1_ListMidSigExecSignalsResponse>;
+  // 获取 MidSigExec 结果列表
+  ListMidSigExecDetails(request: tradingservicev1_ListMidSigExecDetailsRequest): Promise<tradingservicev1_ListMidSigExecDetailsResponse>;
+  // 获取 HFT 信息
+  GetHftInfo(request: tradingservicev1_GetHftInfoRequest): Promise<tradingservicev1_GetHftInfoResponse>;
+  // 下载 MidSigExec 信息
+  DownloadMidSigExec(request: tradingservicev1_DownloadMidSigExecRequest): Promise<tradingservicev1_DownloadMidSigExecResponse>;
+  // 获取 HFT 通知报告
+  GetHftNotifyReport(request: tradingservicev1_GetHftNotifyReportRequest): Promise<tradingservicev1_HftNotifyReport>;
+}
+
+export function createHftMarketMakingServiceClient(
+  handler: RequestHandler
+): HftMarketMakingService {
+  return {
+    ListMidSigExecOrders(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/hft/midsigexec/orders`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "HftMarketMakingService",
+        method: "ListMidSigExecOrders",
+      }) as Promise<tradingservicev1_ListMidSigExecOrdersResponse>;
+    },
+    ListMidSigExecSignals(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/hft/midsigexec/signals`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "HftMarketMakingService",
+        method: "ListMidSigExecSignals",
+      }) as Promise<tradingservicev1_ListMidSigExecSignalsResponse>;
+    },
+    ListMidSigExecDetails(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/hft/midsigexec/details`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "HftMarketMakingService",
+        method: "ListMidSigExecDetails",
+      }) as Promise<tradingservicev1_ListMidSigExecDetailsResponse>;
+    },
+    GetHftInfo(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/hft/info`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "HftMarketMakingService",
+        method: "GetHftInfo",
+      }) as Promise<tradingservicev1_GetHftInfoResponse>;
+    },
+    DownloadMidSigExec(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/hft/midsigexec/download`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "HftMarketMakingService",
+        method: "DownloadMidSigExec",
+      }) as Promise<tradingservicev1_DownloadMidSigExecResponse>;
+    },
+    GetHftNotifyReport(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/hft/notify-report`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "HftMarketMakingService",
+        method: "GetHftNotifyReport",
+      }) as Promise<tradingservicev1_HftNotifyReport>;
+    },
+  };
+}
+// 获取 MidSigExec 订单列表请求
+export type tradingservicev1_ListMidSigExecOrdersRequest = {
+  // 机器人ID
+  robotId: string | undefined;
+  // 开始时间
+  startTime: number | undefined;
+  // 结束时间
+  endTime: number | undefined;
+  // 交易对
+  symbol?: string;
+  // 页码
+  page: number | undefined;
+  // 每页数量
+  pageSize: number | undefined;
+};
+
+// 获取 MidSigExec 订单列表响应
+export type tradingservicev1_ListMidSigExecOrdersResponse = {
+  // 总数
+  total: number | undefined;
+  // 订单列表
+  items: tradingservicev1_MidSigExecOrder[] | undefined;
+};
+
+// MidSigExec 订单
+export type tradingservicev1_MidSigExecOrder = {
+  // 订单ID
+  orderId: string | undefined;
+  // 机器人ID
+  robotId: string | undefined;
+  // 交易对
+  symbol: string | undefined;
+  // 订单方向（buy/sell）
+  side: string | undefined;
+  // 订单类型
+  orderType: string | undefined;
+  // 价格
+  price: number | undefined;
+  // 数量
+  quantity: number | undefined;
+  // 成交数量
+  filledQuantity: number | undefined;
+  // 订单状态
+  status: string | undefined;
+  // 创建时间
+  createTime: wellKnownTimestamp | undefined;
+  // 更新时间
+  updateTime: wellKnownTimestamp | undefined;
+};
+
+// 获取 MidSigExec 信号列表请求
+export type tradingservicev1_ListMidSigExecSignalsRequest = {
+  // 机器人ID
+  robotId: string | undefined;
+  // 开始时间
+  startTime: number | undefined;
+  // 结束时间
+  endTime: number | undefined;
+  // 交易对
+  symbol?: string;
+  // 页码
+  page: number | undefined;
+  // 每页数量
+  pageSize: number | undefined;
+};
+
+// 获取 MidSigExec 信号列表响应
+export type tradingservicev1_ListMidSigExecSignalsResponse = {
+  // 总数
+  total: number | undefined;
+  // 信号列表
+  items: tradingservicev1_MidSigExecSignal[] | undefined;
+};
+
+// MidSigExec 信号
+export type tradingservicev1_MidSigExecSignal = {
+  // 信号ID
+  signalId: string | undefined;
+  // 机器人ID
+  robotId: string | undefined;
+  // 交易对
+  symbol: string | undefined;
+  // 信号类型
+  signalType: string | undefined;
+  // 信号强度
+  signalStrength: number | undefined;
+  // 价格
+  price: number | undefined;
+  // 数量
+  quantity: number | undefined;
+  // 创建时间
+  createTime: wellKnownTimestamp | undefined;
+};
+
+// 获取 MidSigExec 结果列表请求
+export type tradingservicev1_ListMidSigExecDetailsRequest = {
+  // 机器人ID
+  robotId: string | undefined;
+  // 开始时间
+  startTime: number | undefined;
+  // 结束时间
+  endTime: number | undefined;
+  // 页码
+  page: number | undefined;
+  // 每页数量
+  pageSize: number | undefined;
+};
+
+// 获取 MidSigExec 结果列表响应
+export type tradingservicev1_ListMidSigExecDetailsResponse = {
+  // 总数
+  total: number | undefined;
+  // 结果列表
+  items: tradingservicev1_MidSigExecDetail[] | undefined;
+};
+
+// MidSigExec 结果详情
+export type tradingservicev1_MidSigExecDetail = {
+  // 详情ID
+  detailId: string | undefined;
+  // 机器人ID
+  robotId: string | undefined;
+  // 交易对
+  symbol: string | undefined;
+  // 总收益
+  totalProfit: number | undefined;
+  // 总交易次数
+  totalTrades: number | undefined;
+  // 胜率
+  winRate: number | undefined;
+  // 平均收益
+  avgProfit: number | undefined;
+  // 最大回撤
+  maxDrawdown: number | undefined;
+  // 统计时间
+  statTime: wellKnownTimestamp | undefined;
+};
+
+// 获取 HFT 信息请求
+export type tradingservicev1_GetHftInfoRequest = {
+  // 机器人ID
+  robotId?: string;
+  // 策略类型
+  strategyType?: tradingservicev1_HftStrategyType;
+  // 操作员
+  operator?: string;
+};
+
+// HFT策略类型
+export type tradingservicev1_HftStrategyType =
+  | "HFT_STRATEGY_TYPE_UNSPECIFIED"
+  | "HFT_STRATEGY_TYPE_DINO"
+  | "HFT_STRATEGY_TYPE_CAT"
+  | "HFT_STRATEGY_TYPE_TREX"
+  | "HFT_STRATEGY_TYPE_TIGER";
+// 获取 HFT 信息响应
+export type tradingservicev1_GetHftInfoResponse = {
+  // HFT 信息列表
+  items: tradingservicev1_HftInfo[] | undefined;
+  // 总权益
+  totalEquity: number | undefined;
+  // 总收益
+  totalProfit: number | undefined;
+  // 总收益率
+  totalProfitPct: number | undefined;
+};
+
+// HFT 信息
+export type tradingservicev1_HftInfo = {
+  // 机器人ID
+  robotId: string | undefined;
+  // 策略类型
+  strategyType: tradingservicev1_HftStrategyType | undefined;
+  // 账号昵称
+  accountNickname: string | undefined;
+  // 交易对
+  symbol: string | undefined;
+  // 当前权益
+  currentEquity: number | undefined;
+  // 初始权益
+  initialEquity: number | undefined;
+  // 权益变化
+  equityChange: number | undefined;
+  // 权益变化百分比
+  equityChangePct: number | undefined;
+  // 今日收益
+  todayProfit: number | undefined;
+  // 今日收益率
+  todayProfitPct: number | undefined;
+  // 运行状态
+  status: string | undefined;
+  // 最后更新时间
+  lastUpdateTime: wellKnownTimestamp | undefined;
+};
+
+// 下载 MidSigExec 信息请求
+export type tradingservicev1_DownloadMidSigExecRequest = {
+  // 机器人ID
+  robotId: string | undefined;
+  // 开始时间
+  startTime: number | undefined;
+  // 结束时间
+  endTime: number | undefined;
+  // 数据类型（orders/signals/details）
+  dataType: string | undefined;
+};
+
+// 下载 MidSigExec 信息响应
+export type tradingservicev1_DownloadMidSigExecResponse = {
+  // 文件URL
+  fileUrl: string | undefined;
+  // 文件名
+  fileName: string | undefined;
+};
+
+// 获取 HFT 通知报告请求
+export type tradingservicev1_GetHftNotifyReportRequest = {
+  // 开始时间
+  startTime: number | undefined;
+  // 结束时间
+  endTime: number | undefined;
+};
+
+// HFT 通知报告
+export type tradingservicev1_HftNotifyReport = {
+  // 报告ID
+  reportId: string | undefined;
+  // BTC价格
+  btcPrice: number | undefined;
+  // 交易员权益变化列表
+  traderEquityChanges: tradingservicev1_TraderEquityChange[] | undefined;
+  // 交易对盈利统计
+  symbolProfitStats: tradingservicev1_SymbolProfitStat[] | undefined;
+  // 生成时间
+  generateTime: wellKnownTimestamp | undefined;
+};
+
+// 交易员权益变化
+export type tradingservicev1_TraderEquityChange = {
+  // 交易员名称
+  traderName: string | undefined;
+  // 当前权益
+  currentEquity: number | undefined;
+  // 权益变化
+  equityChange: number | undefined;
+  // 权益变化百分比
+  equityChangePct: number | undefined;
+};
+
+// 交易对盈利统计
+export type tradingservicev1_SymbolProfitStat = {
+  // 交易对
+  symbol: string | undefined;
+  // 总收益
+  totalProfit: number | undefined;
+  // 交易次数
+  tradeCount: number | undefined;
+  // 胜率
+  winRate: number | undefined;
 };
 
 // 站内信消息管理服务
@@ -5481,6 +6413,604 @@ export type userservicev1_UpdateRoleRequest = {
 // 删除角色 - 请求
 export type userservicev1_DeleteRoleRequest = {
   id: number | undefined;
+};
+
+// 托管者管理服务
+export interface ServerService {
+  // 获取托管者列表
+  ListServer(request: pagination_PagingRequest): Promise<tradingservicev1_ListServerResponse>;
+  // 获取托管者
+  GetServer(request: tradingservicev1_GetServerRequest): Promise<tradingservicev1_Server>;
+  // 创建托管者
+  CreateServer(request: tradingservicev1_CreateServerRequest): Promise<wellKnownEmpty>;
+  // 批量创建托管者
+  BatchCreateServer(request: tradingservicev1_BatchCreateServerRequest): Promise<wellKnownEmpty>;
+  // 更新托管者
+  UpdateServer(request: tradingservicev1_UpdateServerRequest): Promise<wellKnownEmpty>;
+  // 删除托管者
+  DeleteServer(request: tradingservicev1_DeleteServerRequest): Promise<wellKnownEmpty>;
+  // 按IP删除托管者
+  DeleteServerByIps(request: tradingservicev1_DeleteServerByIpsRequest): Promise<wellKnownEmpty>;
+  // 重启托管者
+  RebootServer(request: tradingservicev1_RebootServerRequest): Promise<wellKnownEmpty>;
+  // 获取托管者日志
+  GetServerLog(request: tradingservicev1_GetServerLogRequest): Promise<tradingservicev1_GetServerLogResponse>;
+  // 停止托管者上的机器人
+  StopServerRobot(request: tradingservicev1_StopServerRobotRequest): Promise<wellKnownEmpty>;
+  // 转移托管者
+  TransferServer(request: tradingservicev1_TransferServerRequest): Promise<wellKnownEmpty>;
+  // 删除托管者日志
+  DeleteServerLog(request: tradingservicev1_DeleteServerLogRequest): Promise<wellKnownEmpty>;
+  // 更新托管者策略
+  UpdateServerStrategy(request: tradingservicev1_UpdateServerStrategyRequest): Promise<wellKnownEmpty>;
+  // 更新托管者备注
+  UpdateServerRemark(request: tradingservicev1_UpdateServerRemarkRequest): Promise<wellKnownEmpty>;
+  // 获取可重启的托管者列表
+  GetCanRestartServerList(request: tradingservicev1_GetCanRestartServerListRequest): Promise<tradingservicev1_ListServerResponse>;
+}
+
+export function createServerServiceClient(
+  handler: RequestHandler
+): ServerService {
+  return {
+    ListServer(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/servers`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
+      }
+      if (request.pageSize) {
+        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
+      }
+      if (request.offset) {
+        queryParams.push(`offset=${encodeURIComponent(request.offset.toString())}`)
+      }
+      if (request.limit) {
+        queryParams.push(`limit=${encodeURIComponent(request.limit.toString())}`)
+      }
+      if (request.token) {
+        queryParams.push(`token=${encodeURIComponent(request.token.toString())}`)
+      }
+      if (request.noPaging) {
+        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
+      }
+      if (request.query) {
+        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(`filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(`filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
+      }
+      if (request.fieldMask) {
+        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "ServerService",
+        method: "ListServer",
+      }) as Promise<tradingservicev1_ListServerResponse>;
+    },
+    GetServer(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/trading/servers/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "ServerService",
+        method: "GetServer",
+      }) as Promise<tradingservicev1_Server>;
+    },
+    CreateServer(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/servers`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ServerService",
+        method: "CreateServer",
+      }) as Promise<wellKnownEmpty>;
+    },
+    BatchCreateServer(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/servers:batchCreate`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ServerService",
+        method: "BatchCreateServer",
+      }) as Promise<wellKnownEmpty>;
+    },
+    UpdateServer(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/trading/servers/${request.id}`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "PUT",
+        body,
+      }, {
+        service: "ServerService",
+        method: "UpdateServer",
+      }) as Promise<wellKnownEmpty>;
+    },
+    DeleteServer(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/trading/servers/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "DELETE",
+        body,
+      }, {
+        service: "ServerService",
+        method: "DeleteServer",
+      }) as Promise<wellKnownEmpty>;
+    },
+    DeleteServerByIps(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/servers:deleteByIps`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ServerService",
+        method: "DeleteServerByIps",
+      }) as Promise<wellKnownEmpty>;
+    },
+    RebootServer(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/trading/servers/${request.id}:reboot`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ServerService",
+        method: "RebootServer",
+      }) as Promise<wellKnownEmpty>;
+    },
+    GetServerLog(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/trading/servers/${request.id}/log`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.lines) {
+        queryParams.push(`lines=${encodeURIComponent(request.lines.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "ServerService",
+        method: "GetServerLog",
+      }) as Promise<tradingservicev1_GetServerLogResponse>;
+    },
+    StopServerRobot(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      if (!request.robotId) {
+        throw new Error("missing required field request.robot_id");
+      }
+      const path = `admin/v1/trading/servers/${request.id}/robots/${request.robotId}:stop`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ServerService",
+        method: "StopServerRobot",
+      }) as Promise<wellKnownEmpty>;
+    },
+    TransferServer(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/servers:transfer`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ServerService",
+        method: "TransferServer",
+      }) as Promise<wellKnownEmpty>;
+    },
+    DeleteServerLog(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/trading/servers/${request.id}/log`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "DELETE",
+        body,
+      }, {
+        service: "ServerService",
+        method: "DeleteServerLog",
+      }) as Promise<wellKnownEmpty>;
+    },
+    UpdateServerStrategy(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/trading/servers/${request.id}/strategy`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ServerService",
+        method: "UpdateServerStrategy",
+      }) as Promise<wellKnownEmpty>;
+    },
+    UpdateServerRemark(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/trading/servers/${request.id}/remark`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "ServerService",
+        method: "UpdateServerRemark",
+      }) as Promise<wellKnownEmpty>;
+    },
+    GetCanRestartServerList(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/servers:canRestart`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.operator) {
+        queryParams.push(`operator=${encodeURIComponent(request.operator.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "ServerService",
+        method: "GetCanRestartServerList",
+      }) as Promise<tradingservicev1_ListServerResponse>;
+    },
+  };
+}
+// 获取托管者列表响应
+export type tradingservicev1_ListServerResponse = {
+  // 总数
+  total: number | undefined;
+  // 托管者列表
+  items: tradingservicev1_Server[] | undefined;
+};
+
+// 托管者（服务器）
+export type tradingservicev1_Server = {
+  // 服务器ID
+  id: number | undefined;
+  // 托管者昵称
+  nickname: string | undefined;
+  // 外网IP
+  ip: string | undefined;
+  // 内网IP
+  innerIp: string | undefined;
+  // 端口
+  port: string | undefined;
+  // 操作员
+  operator: string | undefined;
+  // 机器ID
+  machineId: string | undefined;
+  // 备注
+  remark: string | undefined;
+  // VPC ID
+  vpcId: string | undefined;
+  // 实例ID
+  instanceId: string | undefined;
+  // 服务器状态信息
+  serverInfo: tradingservicev1_ServerStatusInfo | undefined;
+  // 类型
+  type: tradingservicev1_ServerType | undefined;
+  // 创建时间
+  createTime: wellKnownTimestamp | undefined;
+  // 更新时间
+  updateTime: wellKnownTimestamp | undefined;
+};
+
+// 服务器状态信息
+export type tradingservicev1_ServerStatusInfo = {
+  // CPU信息
+  cpu: string | undefined;
+  // IP池
+  ipPool: number | undefined;
+  // 内存
+  mem: number | undefined;
+  // 内存百分比
+  memPct: string | undefined;
+  // 磁盘百分比
+  diskPct: string | undefined;
+  // 任务数
+  taskNum: number | undefined;
+  // 策略版本
+  straVersion: boolean | undefined;
+  // 策略版本详情
+  straVersionDetail: { [key: string]: string } | undefined;
+  // AWS账户
+  awsAcct: string | undefined;
+  // AWS区域
+  awsZone: string | undefined;
+};
+
+// 托管者类型
+export type tradingservicev1_ServerType =
+  | "SERVER_TYPE_UNSPECIFIED"
+  | "SERVER_TYPE_SELF_BUILT"
+  | "SERVER_TYPE_PLATFORM";
+// 获取托管者请求
+export type tradingservicev1_GetServerRequest = {
+  // 服务器ID
+  id: number | undefined;
+};
+
+// 创建托管者请求
+export type tradingservicev1_CreateServerRequest = {
+  // 托管者昵称
+  nickname: string | undefined;
+  // 外网IP
+  ip: string | undefined;
+  // 内网IP
+  innerIp: string | undefined;
+  // 端口
+  port: string | undefined;
+  // 机器ID
+  machineId: string | undefined;
+  // 备注
+  remark: string | undefined;
+  // VPC ID
+  vpcId: string | undefined;
+  // 实例ID
+  instanceId: string | undefined;
+  // 类型
+  type: tradingservicev1_ServerType | undefined;
+};
+
+// 批量创建托管者请求
+export type tradingservicev1_BatchCreateServerRequest = {
+  // 托管者列表
+  servers: tradingservicev1_CreateServerRequest[] | undefined;
+};
+
+// 更新托管者请求
+export type tradingservicev1_UpdateServerRequest = {
+  // 服务器ID
+  id: number | undefined;
+  // 托管者昵称
+  nickname?: string;
+  // 外网IP
+  ip?: string;
+  // 内网IP
+  innerIp?: string;
+  // 端口
+  port?: string;
+  // 机器ID
+  machineId?: string;
+  // 备注
+  remark?: string;
+  // VPC ID
+  vpcId?: string;
+  // 实例ID
+  instanceId?: string;
+  // 类型
+  type?: tradingservicev1_ServerType;
+};
+
+// 删除托管者请求
+export type tradingservicev1_DeleteServerRequest = {
+  // 服务器ID
+  id: number | undefined;
+};
+
+// 按IP删除托管者请求
+export type tradingservicev1_DeleteServerByIpsRequest = {
+  // IP列表
+  ips: string[] | undefined;
+};
+
+// 重启托管者请求
+export type tradingservicev1_RebootServerRequest = {
+  // 服务器ID
+  id: number | undefined;
+};
+
+// 获取托管者日志请求
+export type tradingservicev1_GetServerLogRequest = {
+  // 服务器ID
+  id: number | undefined;
+  // 日志行数
+  lines: number | undefined;
+};
+
+// 获取托管者日志响应
+export type tradingservicev1_GetServerLogResponse = {
+  // 日志内容
+  logContent: string | undefined;
+};
+
+// 停止托管者上的机器人请求
+export type tradingservicev1_StopServerRobotRequest = {
+  // 服务器ID
+  id: number | undefined;
+  // 机器人ID
+  robotId: string | undefined;
+};
+
+// 转移托管者请求
+export type tradingservicev1_TransferServerRequest = {
+  // 服务器ID列表
+  ids: number[] | undefined;
+  // 目标操作员
+  targetOperator: string | undefined;
+};
+
+// 删除托管者日志请求
+export type tradingservicev1_DeleteServerLogRequest = {
+  // 服务器ID
+  id: number | undefined;
+};
+
+// 更新托管者策略请求
+export type tradingservicev1_UpdateServerStrategyRequest = {
+  // 服务器ID
+  id: number | undefined;
+  // 策略名称
+  strategyName: string | undefined;
+  // 策略版本
+  strategyVersion: string | undefined;
+};
+
+// 更新托管者备注请求
+export type tradingservicev1_UpdateServerRemarkRequest = {
+  // 服务器ID
+  id: number | undefined;
+  // 备注
+  remark: string | undefined;
+};
+
+// 获取可重启的托管者列表请求
+export type tradingservicev1_GetCanRestartServerListRequest = {
+  // 操作员
+  operator?: string;
 };
 
 // 调度任务管理服务

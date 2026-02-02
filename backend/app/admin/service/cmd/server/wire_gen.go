@@ -111,7 +111,12 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	internalMessageService := service.NewInternalMessageService(context, internalMessageRepo, internalMessageCategoryRepo, internalMessageRecipientRepo, userRepo, sseServer, userTokenCacheRepo)
 	internalMessageCategoryService := service.NewInternalMessageCategoryService(context, internalMessageCategoryRepo)
 	internalMessageRecipientService := service.NewInternalMessageRecipientService(context, internalMessageRepo, internalMessageRecipientRepo)
-	httpServer, err := server.NewRestServer(context, v, authorizer, authenticationService, loginPolicyService, adminPortalService, taskService, uEditorService, fileService, fileTransferService, dictTypeService, dictEntryService, languageService, tenantService, userService, userProfileService, roleService, positionService, orgUnitService, menuService, apiService, permissionService, permissionGroupService, permissionAuditLogService, policyEvaluationLogService, loginAuditLogService, apiAuditLogService, operationAuditLogService, dataAccessAuditLogService, internalMessageService, internalMessageCategoryService, internalMessageRecipientService)
+	exchangeAccountRepo := data.NewExchangeAccountRepo(context, entClient)
+	exchangeAccountService := service.NewExchangeAccountService(context, exchangeAccountRepo)
+	serverRepo := data.NewServerRepo(context, entClient)
+	serverService := service.NewServerService(context, serverRepo)
+	hftMarketMakingService := service.NewHftMarketMakingService(context)
+	httpServer, err := server.NewRestServer(context, v, authorizer, authenticationService, loginPolicyService, adminPortalService, taskService, uEditorService, fileService, fileTransferService, dictTypeService, dictEntryService, languageService, tenantService, userService, userProfileService, roleService, positionService, orgUnitService, menuService, apiService, permissionService, permissionGroupService, permissionAuditLogService, policyEvaluationLogService, loginAuditLogService, apiAuditLogService, operationAuditLogService, dataAccessAuditLogService, internalMessageService, internalMessageCategoryService, internalMessageRecipientService, exchangeAccountService, serverService, hftMarketMakingService)
 	if err != nil {
 		cleanup2()
 		cleanup()

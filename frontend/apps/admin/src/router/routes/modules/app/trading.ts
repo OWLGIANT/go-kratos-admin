@@ -15,6 +15,24 @@ const routes: RouteRecordRaw[] = [
     },
     children: [
       {
+        path: 'exchange-account',
+        name: 'ExchangeAccount',
+        meta: {
+          icon: 'lucide:key',
+          title: '交易账号',
+        },
+        component: () => import('#/views/app/trading/exchange-account/index.vue'),
+      },
+      {
+        path: 'server',
+        name: 'ServerManagement',
+        meta: {
+          icon: 'lucide:server',
+          title: '托管者管理',
+        },
+        component: () => import('#/views/app/trading/server/index.vue'),
+      },
+      {
         path: 'hft-robots',
         name: 'HftRobots',
         meta: {

@@ -1,0 +1,127 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+import "pagination/v1/pagination.proto";
+import "trading/service/v1/server.proto";
+
+// 托管者管理服务
+service ServerService {
+  // 获取托管者列表
+  rpc ListServer (pagination.PagingRequest) returns (trading.service.v1.ListServerResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/trading/servers"
+    };
+  }
+
+  // 获取托管者
+  rpc GetServer (trading.service.v1.GetServerRequest) returns (trading.service.v1.Server) {
+    option (google.api.http) = {
+      get: "/admin/v1/trading/servers/{id}"
+    };
+  }
+
+  // 创建托管者
+  rpc CreateServer (trading.service.v1.CreateServerRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/servers"
+      body: "*"
+    };
+  }
+
+  // 批量创建托管者
+  rpc BatchCreateServer (trading.service.v1.BatchCreateServerRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/servers:batchCreate"
+      body: "*"
+    };
+  }
+
+  // 更新托管者
+  rpc UpdateServer (trading.service.v1.UpdateServerRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/admin/v1/trading/servers/{id}"
+      body: "*"
+    };
+  }
+
+  // 删除托管者
+  rpc DeleteServer (trading.service.v1.DeleteServerRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/trading/servers/{id}"
+    };
+  }
+
+  // 按IP删除托管者
+  rpc DeleteServerByIps (trading.service.v1.DeleteServerByIpsRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/servers:deleteByIps"
+      body: "*"
+    };
+  }
+
+  // 重启托管者
+  rpc RebootServer (trading.service.v1.RebootServerRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/servers/{id}:reboot"
+      body: "*"
+    };
+  }
+
+  // 获取托管者日志
+  rpc GetServerLog (trading.service.v1.GetServerLogRequest) returns (trading.service.v1.GetServerLogResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/trading/servers/{id}/log"
+    };
+  }
+
+  // 停止托管者上的机器人
+  rpc StopServerRobot (trading.service.v1.StopServerRobotRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/servers/{id}/robots/{robot_id}:stop"
+      body: "*"
+    };
+  }
+
+  // 转移托管者
+  rpc TransferServer (trading.service.v1.TransferServerRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/servers:transfer"
+      body: "*"
+    };
+  }
+
+  // 删除托管者日志
+  rpc DeleteServerLog (trading.service.v1.DeleteServerLogRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/trading/servers/{id}/log"
+    };
+  }
+
+  // 更新托管者策略
+  rpc UpdateServerStrategy (trading.service.v1.UpdateServerStrategyRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/servers/{id}/strategy"
+      body: "*"
+    };
+  }
+
+  // 更新托管者备注
+  rpc UpdateServerRemark (trading.service.v1.UpdateServerRemarkRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/servers/{id}/remark"
+      body: "*"
+    };
+  }
+
+  // 获取可重启的托管者列表
+  rpc GetCanRestartServerList (trading.service.v1.GetCanRestartServerListRequest) returns (trading.service.v1.ListServerResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/trading/servers:canRestart"
+    };
+  }
+}

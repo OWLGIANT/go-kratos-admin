@@ -1,0 +1,113 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+import "pagination/v1/pagination.proto";
+import "trading/service/v1/exchange_account.proto";
+
+// 交易账号管理服务
+service ExchangeAccountService {
+  // 获取交易账号列表
+  rpc ListExchangeAccount (pagination.PagingRequest) returns (trading.service.v1.ListExchangeAccountResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/trading/exchange-accounts"
+    };
+  }
+
+  // 获取交易账号
+  rpc GetExchangeAccount (trading.service.v1.GetExchangeAccountRequest) returns (trading.service.v1.ExchangeAccount) {
+    option (google.api.http) = {
+      get: "/admin/v1/trading/exchange-accounts/{id}"
+    };
+  }
+
+  // 创建交易账号
+  rpc CreateExchangeAccount (trading.service.v1.CreateExchangeAccountRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/exchange-accounts"
+      body: "*"
+    };
+  }
+
+  // 更新交易账号
+  rpc UpdateExchangeAccount (trading.service.v1.UpdateExchangeAccountRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/admin/v1/trading/exchange-accounts/{id}"
+      body: "*"
+    };
+  }
+
+  // 删除交易账号
+  rpc DeleteExchangeAccount (trading.service.v1.DeleteExchangeAccountRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/trading/exchange-accounts/{id}"
+    };
+  }
+
+  // 批量删除交易账号
+  rpc BatchDeleteExchangeAccount (trading.service.v1.BatchDeleteExchangeAccountRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/exchange-accounts:batchDelete"
+      body: "*"
+    };
+  }
+
+  // 转移交易账号
+  rpc TransferExchangeAccount (trading.service.v1.TransferExchangeAccountRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/exchange-accounts:transfer"
+      body: "*"
+    };
+  }
+
+  // 搜索交易账号
+  rpc SearchExchangeAccount (trading.service.v1.SearchExchangeAccountRequest) returns (trading.service.v1.ListExchangeAccountResponse) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/exchange-accounts:search"
+      body: "*"
+    };
+  }
+
+  // 获取账号资金曲线
+  rpc GetAccountEquity (trading.service.v1.GetAccountEquityRequest) returns (trading.service.v1.GetAccountEquityResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/trading/exchange-accounts/{id}/equity"
+    };
+  }
+
+  // 创建组合账号
+  rpc CreateCombinedAccount (trading.service.v1.CreateCombinedAccountRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/exchange-accounts:createCombined"
+      body: "*"
+    };
+  }
+
+  // 更新组合账号
+  rpc UpdateCombinedAccount (trading.service.v1.UpdateCombinedAccountRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/admin/v1/trading/exchange-accounts:updateCombined"
+      body: "*"
+    };
+  }
+
+  // 更新账号备注
+  rpc UpdateAccountRemark (trading.service.v1.UpdateAccountRemarkRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/exchange-accounts/{id}/remark"
+      body: "*"
+    };
+  }
+
+  // 更新账号经纪商ID
+  rpc UpdateAccountBrokerId (trading.service.v1.UpdateAccountBrokerIdRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/exchange-accounts:updateBrokerId"
+      body: "*"
+    };
+  }
+}

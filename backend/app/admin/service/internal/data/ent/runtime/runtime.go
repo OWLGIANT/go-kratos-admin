@@ -12,6 +12,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentryi18n"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttypei18n"
+	"go-wind-admin/app/admin/service/internal/data/ent/exchangeaccount"
 	"go-wind-admin/app/admin/service/internal/data/ent/file"
 	"go-wind-admin/app/admin/service/internal/data/ent/internalmessage"
 	"go-wind-admin/app/admin/service/internal/data/ent/internalmessagecategory"
@@ -34,10 +35,12 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionpolicy"
 	"go-wind-admin/app/admin/service/internal/data/ent/policyevaluationlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/position"
+	"go-wind-admin/app/admin/service/internal/data/ent/robot"
 	"go-wind-admin/app/admin/service/internal/data/ent/role"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolemetadata"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolepermission"
 	"go-wind-admin/app/admin/service/internal/data/ent/schema"
+	"go-wind-admin/app/admin/service/internal/data/ent/server"
 	"go-wind-admin/app/admin/service/internal/data/ent/task"
 	"go-wind-admin/app/admin/service/internal/data/ent/tenant"
 	"go-wind-admin/app/admin/service/internal/data/ent/user"
@@ -263,6 +266,155 @@ func init() {
 	dicttypei18nDescID := dicttypei18nMixinFields0[0].Descriptor()
 	// dicttypei18n.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	dicttypei18n.IDValidator = dicttypei18nDescID.Validators[0].(func(uint32) error)
+	exchangeaccountMixin := schema.ExchangeAccount{}.Mixin()
+	exchangeaccountMixinFields0 := exchangeaccountMixin[0].Fields()
+	_ = exchangeaccountMixinFields0
+	exchangeaccountFields := schema.ExchangeAccount{}.Fields()
+	_ = exchangeaccountFields
+	// exchangeaccountDescNickname is the schema descriptor for nickname field.
+	exchangeaccountDescNickname := exchangeaccountFields[0].Descriptor()
+	// exchangeaccount.NicknameValidator is a validator for the "nickname" field. It is called by the builders before save.
+	exchangeaccount.NicknameValidator = func() func(string) error {
+		validators := exchangeaccountDescNickname.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(nickname string) error {
+			for _, fn := range fns {
+				if err := fn(nickname); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// exchangeaccountDescExchangeName is the schema descriptor for exchange_name field.
+	exchangeaccountDescExchangeName := exchangeaccountFields[1].Descriptor()
+	// exchangeaccount.ExchangeNameValidator is a validator for the "exchange_name" field. It is called by the builders before save.
+	exchangeaccount.ExchangeNameValidator = func() func(string) error {
+		validators := exchangeaccountDescExchangeName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(exchange_name string) error {
+			for _, fn := range fns {
+				if err := fn(exchange_name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// exchangeaccountDescOriginAccount is the schema descriptor for origin_account field.
+	exchangeaccountDescOriginAccount := exchangeaccountFields[2].Descriptor()
+	// exchangeaccount.OriginAccountValidator is a validator for the "origin_account" field. It is called by the builders before save.
+	exchangeaccount.OriginAccountValidator = func() func(string) error {
+		validators := exchangeaccountDescOriginAccount.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(origin_account string) error {
+			for _, fn := range fns {
+				if err := fn(origin_account); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// exchangeaccountDescAPIKey is the schema descriptor for api_key field.
+	exchangeaccountDescAPIKey := exchangeaccountFields[3].Descriptor()
+	// exchangeaccount.APIKeyValidator is a validator for the "api_key" field. It is called by the builders before save.
+	exchangeaccount.APIKeyValidator = func() func(string) error {
+		validators := exchangeaccountDescAPIKey.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(api_key string) error {
+			for _, fn := range fns {
+				if err := fn(api_key); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// exchangeaccountDescSecretKey is the schema descriptor for secret_key field.
+	exchangeaccountDescSecretKey := exchangeaccountFields[4].Descriptor()
+	// exchangeaccount.SecretKeyValidator is a validator for the "secret_key" field. It is called by the builders before save.
+	exchangeaccount.SecretKeyValidator = func() func(string) error {
+		validators := exchangeaccountDescSecretKey.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(secret_key string) error {
+			for _, fn := range fns {
+				if err := fn(secret_key); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// exchangeaccountDescPassKey is the schema descriptor for pass_key field.
+	exchangeaccountDescPassKey := exchangeaccountFields[5].Descriptor()
+	// exchangeaccount.DefaultPassKey holds the default value on creation for the pass_key field.
+	exchangeaccount.DefaultPassKey = exchangeaccountDescPassKey.Default.(string)
+	// exchangeaccount.PassKeyValidator is a validator for the "pass_key" field. It is called by the builders before save.
+	exchangeaccount.PassKeyValidator = exchangeaccountDescPassKey.Validators[0].(func(string) error)
+	// exchangeaccountDescBrokerID is the schema descriptor for broker_id field.
+	exchangeaccountDescBrokerID := exchangeaccountFields[6].Descriptor()
+	// exchangeaccount.DefaultBrokerID holds the default value on creation for the broker_id field.
+	exchangeaccount.DefaultBrokerID = exchangeaccountDescBrokerID.Default.(string)
+	// exchangeaccount.BrokerIDValidator is a validator for the "broker_id" field. It is called by the builders before save.
+	exchangeaccount.BrokerIDValidator = exchangeaccountDescBrokerID.Validators[0].(func(string) error)
+	// exchangeaccountDescRemark is the schema descriptor for remark field.
+	exchangeaccountDescRemark := exchangeaccountFields[7].Descriptor()
+	// exchangeaccount.DefaultRemark holds the default value on creation for the remark field.
+	exchangeaccount.DefaultRemark = exchangeaccountDescRemark.Default.(string)
+	// exchangeaccount.RemarkValidator is a validator for the "remark" field. It is called by the builders before save.
+	exchangeaccount.RemarkValidator = exchangeaccountDescRemark.Validators[0].(func(string) error)
+	// exchangeaccountDescServerIps is the schema descriptor for server_ips field.
+	exchangeaccountDescServerIps := exchangeaccountFields[8].Descriptor()
+	// exchangeaccount.DefaultServerIps holds the default value on creation for the server_ips field.
+	exchangeaccount.DefaultServerIps = exchangeaccountDescServerIps.Default.(string)
+	// exchangeaccountDescSpecialReqLimit is the schema descriptor for special_req_limit field.
+	exchangeaccountDescSpecialReqLimit := exchangeaccountFields[9].Descriptor()
+	// exchangeaccount.DefaultSpecialReqLimit holds the default value on creation for the special_req_limit field.
+	exchangeaccount.DefaultSpecialReqLimit = exchangeaccountDescSpecialReqLimit.Default.(float64)
+	// exchangeaccountDescAccountType is the schema descriptor for account_type field.
+	exchangeaccountDescAccountType := exchangeaccountFields[10].Descriptor()
+	// exchangeaccount.DefaultAccountType holds the default value on creation for the account_type field.
+	exchangeaccount.DefaultAccountType = exchangeaccountDescAccountType.Default.(int8)
+	// exchangeaccountDescApplyTime is the schema descriptor for apply_time field.
+	exchangeaccountDescApplyTime := exchangeaccountFields[11].Descriptor()
+	// exchangeaccount.DefaultApplyTime holds the default value on creation for the apply_time field.
+	exchangeaccount.DefaultApplyTime = exchangeaccountDescApplyTime.Default.(int64)
+	// exchangeaccountDescIsCombined is the schema descriptor for is_combined field.
+	exchangeaccountDescIsCombined := exchangeaccountFields[12].Descriptor()
+	// exchangeaccount.DefaultIsCombined holds the default value on creation for the is_combined field.
+	exchangeaccount.DefaultIsCombined = exchangeaccountDescIsCombined.Default.(bool)
+	// exchangeaccountDescIsMulti is the schema descriptor for is_multi field.
+	exchangeaccountDescIsMulti := exchangeaccountFields[13].Descriptor()
+	// exchangeaccount.DefaultIsMulti holds the default value on creation for the is_multi field.
+	exchangeaccount.DefaultIsMulti = exchangeaccountDescIsMulti.Default.(bool)
+	// exchangeaccountDescCombinedID is the schema descriptor for combined_id field.
+	exchangeaccountDescCombinedID := exchangeaccountFields[14].Descriptor()
+	// exchangeaccount.DefaultCombinedID holds the default value on creation for the combined_id field.
+	exchangeaccount.DefaultCombinedID = exchangeaccountDescCombinedID.Default.(string)
+	// exchangeaccountDescMotherID is the schema descriptor for mother_id field.
+	exchangeaccountDescMotherID := exchangeaccountFields[15].Descriptor()
+	// exchangeaccount.DefaultMotherID holds the default value on creation for the mother_id field.
+	exchangeaccount.DefaultMotherID = exchangeaccountDescMotherID.Default.(uint32)
+	// exchangeaccountDescID is the schema descriptor for id field.
+	exchangeaccountDescID := exchangeaccountMixinFields0[0].Descriptor()
+	// exchangeaccount.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	exchangeaccount.IDValidator = exchangeaccountDescID.Validators[0].(func(uint32) error)
 	fileMixin := schema.File{}.Mixin()
 	file.Policy = privacy.NewPolicies(fileMixin[4], schema.File{})
 	file.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -848,6 +1000,42 @@ func init() {
 	positionDescID := positionMixinFields0[0].Descriptor()
 	// position.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	position.IDValidator = positionDescID.Validators[0].(func(uint32) error)
+	robotMixin := schema.Robot{}.Mixin()
+	robot.Policy = privacy.NewPolicies(robotMixin[4], schema.Robot{})
+	robot.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := robot.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	robotMixinFields0 := robotMixin[0].Fields()
+	_ = robotMixinFields0
+	robotMixinFields4 := robotMixin[4].Fields()
+	_ = robotMixinFields4
+	robotFields := schema.Robot{}.Fields()
+	_ = robotFields
+	// robotDescTenantID is the schema descriptor for tenant_id field.
+	robotDescTenantID := robotMixinFields4[0].Descriptor()
+	// robot.DefaultTenantID holds the default value on creation for the tenant_id field.
+	robot.DefaultTenantID = robotDescTenantID.Default.(uint32)
+	// robotDescRid is the schema descriptor for rid field.
+	robotDescRid := robotFields[0].Descriptor()
+	// robot.RidValidator is a validator for the "rid" field. It is called by the builders before save.
+	robot.RidValidator = robotDescRid.Validators[0].(func(string) error)
+	// robotDescStatus is the schema descriptor for status field.
+	robotDescStatus := robotFields[1].Descriptor()
+	// robot.DefaultStatus holds the default value on creation for the status field.
+	robot.DefaultStatus = robotDescStatus.Default.(uint)
+	// robotDescBalance is the schema descriptor for balance field.
+	robotDescBalance := robotFields[2].Descriptor()
+	// robot.DefaultBalance holds the default value on creation for the balance field.
+	robot.DefaultBalance = robotDescBalance.Default.(float64)
+	// robotDescID is the schema descriptor for id field.
+	robotDescID := robotMixinFields0[0].Descriptor()
+	// robot.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	robot.IDValidator = robotDescID.Validators[0].(func(uint32) error)
 	roleMixin := schema.Role{}.Mixin()
 	role.Policy = privacy.NewPolicies(roleMixin[6], schema.Role{})
 	role.Hooks[0] = func(next ent.Mutator) ent.Mutator {
@@ -962,6 +1150,115 @@ func init() {
 	rolepermissionDescID := rolepermissionMixinFields0[0].Descriptor()
 	// rolepermission.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	rolepermission.IDValidator = rolepermissionDescID.Validators[0].(func(uint32) error)
+	serverMixin := schema.Server{}.Mixin()
+	serverMixinFields0 := serverMixin[0].Fields()
+	_ = serverMixinFields0
+	serverFields := schema.Server{}.Fields()
+	_ = serverFields
+	// serverDescNickname is the schema descriptor for nickname field.
+	serverDescNickname := serverFields[0].Descriptor()
+	// server.NicknameValidator is a validator for the "nickname" field. It is called by the builders before save.
+	server.NicknameValidator = func() func(string) error {
+		validators := serverDescNickname.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(nickname string) error {
+			for _, fn := range fns {
+				if err := fn(nickname); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// serverDescIP is the schema descriptor for ip field.
+	serverDescIP := serverFields[1].Descriptor()
+	// server.IPValidator is a validator for the "ip" field. It is called by the builders before save.
+	server.IPValidator = func() func(string) error {
+		validators := serverDescIP.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(ip string) error {
+			for _, fn := range fns {
+				if err := fn(ip); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// serverDescInnerIP is the schema descriptor for inner_ip field.
+	serverDescInnerIP := serverFields[2].Descriptor()
+	// server.InnerIPValidator is a validator for the "inner_ip" field. It is called by the builders before save.
+	server.InnerIPValidator = func() func(string) error {
+		validators := serverDescInnerIP.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(inner_ip string) error {
+			for _, fn := range fns {
+				if err := fn(inner_ip); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// serverDescPort is the schema descriptor for port field.
+	serverDescPort := serverFields[3].Descriptor()
+	// server.PortValidator is a validator for the "port" field. It is called by the builders before save.
+	server.PortValidator = func() func(string) error {
+		validators := serverDescPort.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(port string) error {
+			for _, fn := range fns {
+				if err := fn(port); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// serverDescMachineID is the schema descriptor for machine_id field.
+	serverDescMachineID := serverFields[4].Descriptor()
+	// server.DefaultMachineID holds the default value on creation for the machine_id field.
+	server.DefaultMachineID = serverDescMachineID.Default.(string)
+	// server.MachineIDValidator is a validator for the "machine_id" field. It is called by the builders before save.
+	server.MachineIDValidator = serverDescMachineID.Validators[0].(func(string) error)
+	// serverDescRemark is the schema descriptor for remark field.
+	serverDescRemark := serverFields[5].Descriptor()
+	// server.DefaultRemark holds the default value on creation for the remark field.
+	server.DefaultRemark = serverDescRemark.Default.(string)
+	// server.RemarkValidator is a validator for the "remark" field. It is called by the builders before save.
+	server.RemarkValidator = serverDescRemark.Validators[0].(func(string) error)
+	// serverDescVpcID is the schema descriptor for vpc_id field.
+	serverDescVpcID := serverFields[6].Descriptor()
+	// server.DefaultVpcID holds the default value on creation for the vpc_id field.
+	server.DefaultVpcID = serverDescVpcID.Default.(string)
+	// server.VpcIDValidator is a validator for the "vpc_id" field. It is called by the builders before save.
+	server.VpcIDValidator = serverDescVpcID.Validators[0].(func(string) error)
+	// serverDescInstanceID is the schema descriptor for instance_id field.
+	serverDescInstanceID := serverFields[7].Descriptor()
+	// server.DefaultInstanceID holds the default value on creation for the instance_id field.
+	server.DefaultInstanceID = serverDescInstanceID.Default.(string)
+	// server.InstanceIDValidator is a validator for the "instance_id" field. It is called by the builders before save.
+	server.InstanceIDValidator = serverDescInstanceID.Validators[0].(func(string) error)
+	// serverDescType is the schema descriptor for type field.
+	serverDescType := serverFields[8].Descriptor()
+	// server.DefaultType holds the default value on creation for the type field.
+	server.DefaultType = serverDescType.Default.(int8)
+	// serverDescID is the schema descriptor for id field.
+	serverDescID := serverMixinFields0[0].Descriptor()
+	// server.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	server.IDValidator = serverDescID.Validators[0].(func(uint32) error)
 	taskMixin := schema.Task{}.Mixin()
 	task.Policy = privacy.NewPolicies(taskMixin[4], schema.Task{})
 	task.Hooks[0] = func(next ent.Mutator) ent.Mutator {

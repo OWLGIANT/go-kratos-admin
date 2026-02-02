@@ -456,6 +456,66 @@ var (
 			},
 		},
 	}
+	// TradingExchangeAccountsColumns holds the columns for the "trading_exchange_accounts" table.
+	TradingExchangeAccountsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "nickname", Type: field.TypeString, Size: 300, Comment: "账号昵称"},
+		{Name: "exchange_name", Type: field.TypeString, Size: 300, Comment: "交易所名称"},
+		{Name: "origin_account", Type: field.TypeString, Size: 300, Comment: "原始账号"},
+		{Name: "api_key", Type: field.TypeString, Size: 600, Comment: "API密钥"},
+		{Name: "secret_key", Type: field.TypeString, Size: 2000, Comment: "密钥（加密存储）"},
+		{Name: "pass_key", Type: field.TypeString, Nullable: true, Size: 600, Comment: "密码密钥", Default: ""},
+		{Name: "broker_id", Type: field.TypeString, Nullable: true, Size: 128, Comment: "经纪商ID", Default: ""},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Size: 256, Comment: "备注", Default: ""},
+		{Name: "server_ips", Type: field.TypeString, Nullable: true, Comment: "绑定的托管者IP列表（逗号分隔）", Default: ""},
+		{Name: "special_req_limit", Type: field.TypeFloat64, Nullable: true, Comment: "特殊限频", Default: 0},
+		{Name: "account_type", Type: field.TypeInt8, Comment: "账号类型：1=自建，2=平台", Default: 1},
+		{Name: "apply_time", Type: field.TypeInt64, Nullable: true, Comment: "申请时间", Default: 0},
+		{Name: "is_combined", Type: field.TypeBool, Comment: "是否参与组合账号", Default: false},
+		{Name: "is_multi", Type: field.TypeBool, Comment: "是否是组合账号", Default: false},
+		{Name: "combined_id", Type: field.TypeString, Nullable: true, Comment: "参与组合的账号ID（用|分隔）", Default: ""},
+		{Name: "mother_id", Type: field.TypeUint32, Nullable: true, Comment: "母账号ID", Default: 0},
+	}
+	// TradingExchangeAccountsTable holds the schema information for the "trading_exchange_accounts" table.
+	TradingExchangeAccountsTable = &schema.Table{
+		Name:       "trading_exchange_accounts",
+		Comment:    "交易账号表",
+		Columns:    TradingExchangeAccountsColumns,
+		PrimaryKey: []*schema.Column{TradingExchangeAccountsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "exchangeaccount_exchange_name",
+				Unique:  false,
+				Columns: []*schema.Column{TradingExchangeAccountsColumns[8]},
+			},
+			{
+				Name:    "exchangeaccount_origin_account",
+				Unique:  false,
+				Columns: []*schema.Column{TradingExchangeAccountsColumns[9]},
+			},
+			{
+				Name:    "exchangeaccount_api_key",
+				Unique:  true,
+				Columns: []*schema.Column{TradingExchangeAccountsColumns[10]},
+			},
+			{
+				Name:    "exchangeaccount_account_type",
+				Unique:  false,
+				Columns: []*schema.Column{TradingExchangeAccountsColumns[17]},
+			},
+			{
+				Name:    "exchangeaccount_is_multi",
+				Unique:  false,
+				Columns: []*schema.Column{TradingExchangeAccountsColumns[20]},
+			},
+		},
+	}
 	// FilesColumns holds the columns for the "files" table.
 	FilesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -2076,6 +2136,45 @@ var (
 			},
 		},
 	}
+	// AppRobotsColumns holds the columns for the "app_robots" table.
+	AppRobotsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "rid", Type: field.TypeString, Comment: "机器人ID"},
+		{Name: "status", Type: field.TypeUint, Comment: "机器人状态", Default: 0},
+		{Name: "balance", Type: field.TypeFloat64, Comment: "当前资金", Default: 0},
+	}
+	// AppRobotsTable holds the schema information for the "app_robots" table.
+	AppRobotsTable = &schema.Table{
+		Name:       "app_robots",
+		Comment:    "机器人表",
+		Columns:    AppRobotsColumns,
+		PrimaryKey: []*schema.Column{AppRobotsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_app_robot_tenant_rid",
+				Unique:  true,
+				Columns: []*schema.Column{AppRobotsColumns[8], AppRobotsColumns[9]},
+			},
+			{
+				Name:    "idx_app_robot_tenant_status",
+				Unique:  false,
+				Columns: []*schema.Column{AppRobotsColumns[8], AppRobotsColumns[10]},
+			},
+			{
+				Name:    "idx_app_robot_tenant_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{AppRobotsColumns[8], AppRobotsColumns[4]},
+			},
+		},
+	}
 	// SysRolesColumns holds the columns for the "sys_roles" table.
 	SysRolesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -2280,6 +2379,55 @@ var (
 				Name:    "idx_rp_created_by",
 				Unique:  false,
 				Columns: []*schema.Column{SysRolePermissionsColumns[4]},
+			},
+		},
+	}
+	// TradingServersColumns holds the columns for the "trading_servers" table.
+	TradingServersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "nickname", Type: field.TypeString, Size: 32, Comment: "托管者昵称"},
+		{Name: "ip", Type: field.TypeString, Size: 32, Comment: "外网IP"},
+		{Name: "inner_ip", Type: field.TypeString, Size: 32, Comment: "内网IP"},
+		{Name: "port", Type: field.TypeString, Size: 8, Comment: "端口"},
+		{Name: "machine_id", Type: field.TypeString, Nullable: true, Size: 64, Comment: "机器ID", Default: ""},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Size: 256, Comment: "备注", Default: ""},
+		{Name: "vpc_id", Type: field.TypeString, Nullable: true, Size: 50, Comment: "VPC ID", Default: "NOT_COMMON"},
+		{Name: "instance_id", Type: field.TypeString, Nullable: true, Size: 64, Comment: "实例ID", Default: ""},
+		{Name: "type", Type: field.TypeInt8, Comment: "类型：1=自建，2=大后台", Default: 1},
+		{Name: "server_info", Type: field.TypeJSON, Nullable: true, Comment: "服务器状态信息"},
+	}
+	// TradingServersTable holds the schema information for the "trading_servers" table.
+	TradingServersTable = &schema.Table{
+		Name:       "trading_servers",
+		Comment:    "托管者（服务器）表",
+		Columns:    TradingServersColumns,
+		PrimaryKey: []*schema.Column{TradingServersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "server_ip",
+				Unique:  true,
+				Columns: []*schema.Column{TradingServersColumns[8]},
+			},
+			{
+				Name:    "server_inner_ip",
+				Unique:  false,
+				Columns: []*schema.Column{TradingServersColumns[9]},
+			},
+			{
+				Name:    "server_type",
+				Unique:  false,
+				Columns: []*schema.Column{TradingServersColumns[15]},
+			},
+			{
+				Name:    "server_vpc_id",
+				Unique:  false,
+				Columns: []*schema.Column{TradingServersColumns[13]},
 			},
 		},
 	}
@@ -2848,6 +2996,7 @@ var (
 		SysDictEntryI18nTable,
 		SysDictTypesTable,
 		SysDictTypeI18nTable,
+		TradingExchangeAccountsTable,
 		FilesTable,
 		InternalMessagesTable,
 		InternalMessageCategoriesTable,
@@ -2870,9 +3019,11 @@ var (
 		SysPermissionPoliciesTable,
 		SysPolicyEvaluationLogsTable,
 		SysPositionsTable,
+		AppRobotsTable,
 		SysRolesTable,
 		SysRoleMetadataTable,
 		SysRolePermissionsTable,
+		TradingServersTable,
 		SysTasksTable,
 		SysTenantsTable,
 		SysUsersTable,
@@ -2919,6 +3070,11 @@ func init() {
 	SysDictTypeI18nTable.ForeignKeys[0].RefTable = SysDictTypesTable
 	SysDictTypeI18nTable.Annotation = &entsql.Annotation{
 		Table:     "sys_dict_type_i18n",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	TradingExchangeAccountsTable.Annotation = &entsql.Annotation{
+		Table:     "trading_exchange_accounts",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
@@ -3035,6 +3191,11 @@ func init() {
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
+	AppRobotsTable.Annotation = &entsql.Annotation{
+		Table:     "app_robots",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
 	SysRolesTable.Annotation = &entsql.Annotation{
 		Table:     "sys_roles",
 		Charset:   "utf8mb4",
@@ -3047,6 +3208,11 @@ func init() {
 	}
 	SysRolePermissionsTable.Annotation = &entsql.Annotation{
 		Table:     "sys_role_permissions",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	TradingServersTable.Annotation = &entsql.Annotation{
+		Table:     "trading_servers",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

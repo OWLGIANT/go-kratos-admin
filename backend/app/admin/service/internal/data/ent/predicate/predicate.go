@@ -27,6 +27,9 @@ type DictType func(*sql.Selector)
 // DictTypeI18n is the predicate function for dicttypei18n builders.
 type DictTypeI18n func(*sql.Selector)
 
+// ExchangeAccount is the predicate function for exchangeaccount builders.
+type ExchangeAccount func(*sql.Selector)
+
 // File is the predicate function for file builders.
 type File func(*sql.Selector)
 
@@ -93,6 +96,9 @@ type PolicyEvaluationLog func(*sql.Selector)
 // Position is the predicate function for position builders.
 type Position func(*sql.Selector)
 
+// Robot is the predicate function for robot builders.
+type Robot func(*sql.Selector)
+
 // Role is the predicate function for role builders.
 type Role func(*sql.Selector)
 
@@ -101,6 +107,9 @@ type RoleMetadata func(*sql.Selector)
 
 // RolePermission is the predicate function for rolepermission builders.
 type RolePermission func(*sql.Selector)
+
+// Server is the predicate function for server builders.
+type Server func(*sql.Selector)
 
 // Task is the predicate function for task builders.
 type Task func(*sql.Selector)

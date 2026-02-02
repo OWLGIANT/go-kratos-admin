@@ -119,6 +119,10 @@ func NewRestServer(
 	internalMessageCategoryService *service.InternalMessageCategoryService,
 	internalMessageRecipientService *service.InternalMessageRecipientService,
 
+	exchangeAccountService *service.ExchangeAccountService,
+	serverService *service.ServerService,
+	hftMarketMakingService *service.HftMarketMakingService,
+
 ) (*http.Server, error) {
 	cfg := ctx.GetConfig()
 
@@ -177,6 +181,11 @@ func NewRestServer(
 	adminV1.RegisterInternalMessageServiceHTTPServer(srv, internalMessageService)
 	adminV1.RegisterInternalMessageCategoryServiceHTTPServer(srv, internalMessageCategoryService)
 	adminV1.RegisterInternalMessageRecipientServiceHTTPServer(srv, internalMessageRecipientService)
+
+	// Trading services
+	adminV1.RegisterExchangeAccountServiceHTTPServer(srv, exchangeAccountService)
+	adminV1.RegisterServerServiceHTTPServer(srv, serverService)
+	adminV1.RegisterHftMarketMakingServiceHTTPServer(srv, hftMarketMakingService)
 
 	if cfg.GetServer().GetRest().GetEnableSwagger() {
 		swaggerUI.RegisterSwaggerUIServerWithOption(

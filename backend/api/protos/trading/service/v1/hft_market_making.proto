@@ -1,0 +1,343 @@
+syntax = "proto3";
+
+package trading.service.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "kratos-admin/api/gen/go/trading/service/v1;tradingV1";
+
+// HFT策略类型
+enum HftStrategyType {
+  HFT_STRATEGY_TYPE_UNSPECIFIED = 0;
+  HFT_STRATEGY_TYPE_DINO = 1;   // 恐龙策略
+  HFT_STRATEGY_TYPE_CAT = 2;    // 猫策略
+  HFT_STRATEGY_TYPE_TREX = 3;   // 霸王龙策略
+  HFT_STRATEGY_TYPE_TIGER = 4;  // 老虎策略
+}
+
+// MidSigExec 订单
+message MidSigExecOrder {
+  // 订单ID
+  string order_id = 1;
+
+  // 机器人ID
+  string robot_id = 2;
+
+  // 交易对
+  string symbol = 3;
+
+  // 订单方向（buy/sell）
+  string side = 4;
+
+  // 订单类型
+  string order_type = 5;
+
+  // 价格
+  double price = 6;
+
+  // 数量
+  double quantity = 7;
+
+  // 成交数量
+  double filled_quantity = 8;
+
+  // 订单状态
+  string status = 9;
+
+  // 创建时间
+  google.protobuf.Timestamp create_time = 10;
+
+  // 更新时间
+  google.protobuf.Timestamp update_time = 11;
+}
+
+// MidSigExec 信号
+message MidSigExecSignal {
+  // 信号ID
+  string signal_id = 1;
+
+  // 机器人ID
+  string robot_id = 2;
+
+  // 交易对
+  string symbol = 3;
+
+  // 信号类型
+  string signal_type = 4;
+
+  // 信号强度
+  double signal_strength = 5;
+
+  // 价格
+  double price = 6;
+
+  // 数量
+  double quantity = 7;
+
+  // 创建时间
+  google.protobuf.Timestamp create_time = 8;
+}
+
+// MidSigExec 结果详情
+message MidSigExecDetail {
+  // 详情ID
+  string detail_id = 1;
+
+  // 机器人ID
+  string robot_id = 2;
+
+  // 交易对
+  string symbol = 3;
+
+  // 总收益
+  double total_profit = 4;
+
+  // 总交易次数
+  int32 total_trades = 5;
+
+  // 胜率
+  double win_rate = 6;
+
+  // 平均收益
+  double avg_profit = 7;
+
+  // 最大回撤
+  double max_drawdown = 8;
+
+  // 统计时间
+  google.protobuf.Timestamp stat_time = 9;
+}
+
+// HFT 信息
+message HftInfo {
+  // 机器人ID
+  string robot_id = 1;
+
+  // 策略类型
+  HftStrategyType strategy_type = 2;
+
+  // 账号昵称
+  string account_nickname = 3;
+
+  // 交易对
+  string symbol = 4;
+
+  // 当前权益
+  double current_equity = 5;
+
+  // 初始权益
+  double initial_equity = 6;
+
+  // 权益变化
+  double equity_change = 7;
+
+  // 权益变化百分比
+  double equity_change_pct = 8;
+
+  // 今日收益
+  double today_profit = 9;
+
+  // 今日收益率
+  double today_profit_pct = 10;
+
+  // 运行状态
+  string status = 11;
+
+  // 最后更新时间
+  google.protobuf.Timestamp last_update_time = 12;
+}
+
+// 获取 MidSigExec 订单列表请求
+message ListMidSigExecOrdersRequest {
+  // 机器人ID
+  string robot_id = 1;
+
+  // 开始时间
+  int64 start_time = 2;
+
+  // 结束时间
+  int64 end_time = 3;
+
+  // 交易对
+  optional string symbol = 4;
+
+  // 页码
+  int32 page = 5;
+
+  // 每页数量
+  int32 page_size = 6;
+}
+
+// 获取 MidSigExec 订单列表响应
+message ListMidSigExecOrdersResponse {
+  // 总数
+  int32 total = 1;
+
+  // 订单列表
+  repeated MidSigExecOrder items = 2;
+}
+
+// 获取 MidSigExec 信号列表请求
+message ListMidSigExecSignalsRequest {
+  // 机器人ID
+  string robot_id = 1;
+
+  // 开始时间
+  int64 start_time = 2;
+
+  // 结束时间
+  int64 end_time = 3;
+
+  // 交易对
+  optional string symbol = 4;
+
+  // 页码
+  int32 page = 5;
+
+  // 每页数量
+  int32 page_size = 6;
+}
+
+// 获取 MidSigExec 信号列表响应
+message ListMidSigExecSignalsResponse {
+  // 总数
+  int32 total = 1;
+
+  // 信号列表
+  repeated MidSigExecSignal items = 2;
+}
+
+// 获取 MidSigExec 结果列表请求
+message ListMidSigExecDetailsRequest {
+  // 机器人ID
+  string robot_id = 1;
+
+  // 开始时间
+  int64 start_time = 2;
+
+  // 结束时间
+  int64 end_time = 3;
+
+  // 页码
+  int32 page = 4;
+
+  // 每页数量
+  int32 page_size = 5;
+}
+
+// 获取 MidSigExec 结果列表响应
+message ListMidSigExecDetailsResponse {
+  // 总数
+  int32 total = 1;
+
+  // 结果列表
+  repeated MidSigExecDetail items = 2;
+}
+
+// 获取 HFT 信息请求
+message GetHftInfoRequest {
+  // 机器人ID
+  optional string robot_id = 1;
+
+  // 策略类型
+  optional HftStrategyType strategy_type = 2;
+
+  // 操作员
+  optional string operator = 3;
+}
+
+// 获取 HFT 信息响应
+message GetHftInfoResponse {
+  // HFT 信息列表
+  repeated HftInfo items = 1;
+
+  // 总权益
+  double total_equity = 2;
+
+  // 总收益
+  double total_profit = 3;
+
+  // 总收益率
+  double total_profit_pct = 4;
+}
+
+// 下载 MidSigExec 信息请求
+message DownloadMidSigExecRequest {
+  // 机器人ID
+  string robot_id = 1;
+
+  // 开始时间
+  int64 start_time = 2;
+
+  // 结束时间
+  int64 end_time = 3;
+
+  // 数据类型（orders/signals/details）
+  string data_type = 4;
+}
+
+// 下载 MidSigExec 信息响应
+message DownloadMidSigExecResponse {
+  // 文件URL
+  string file_url = 1;
+
+  // 文件名
+  string file_name = 2;
+}
+
+// HFT 通知报告
+message HftNotifyReport {
+  // 报告ID
+  string report_id = 1;
+
+  // BTC价格
+  double btc_price = 2;
+
+  // 交易员权益变化列表
+  repeated TraderEquityChange trader_equity_changes = 3;
+
+  // 交易对盈利统计
+  repeated SymbolProfitStat symbol_profit_stats = 4;
+
+  // 生成时间
+  google.protobuf.Timestamp generate_time = 5;
+}
+
+// 交易员权益变化
+message TraderEquityChange {
+  // 交易员名称
+  string trader_name = 1;
+
+  // 当前权益
+  double current_equity = 2;
+
+  // 权益变化
+  double equity_change = 3;
+
+  // 权益变化百分比
+  double equity_change_pct = 4;
+}
+
+// 交易对盈利统计
+message SymbolProfitStat {
+  // 交易对
+  string symbol = 1;
+
+  // 总收益
+  double total_profit = 2;
+
+  // 交易次数
+  int32 trade_count = 3;
+
+  // 胜率
+  double win_rate = 4;
+}
+
+// 获取 HFT 通知报告请求
+message GetHftNotifyReportRequest {
+  // 开始时间
+  int64 start_time = 1;
+
+  // 结束时间
+  int64 end_time = 2;
+}

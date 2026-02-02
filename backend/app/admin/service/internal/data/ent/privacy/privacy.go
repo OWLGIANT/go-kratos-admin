@@ -279,6 +279,30 @@ func (f DictTypeI18nMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mu
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.DictTypeI18nMutation", m)
 }
 
+// The ExchangeAccountQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type ExchangeAccountQueryRuleFunc func(context.Context, *ent.ExchangeAccountQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f ExchangeAccountQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.ExchangeAccountQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.ExchangeAccountQuery", q)
+}
+
+// The ExchangeAccountMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type ExchangeAccountMutationRuleFunc func(context.Context, *ent.ExchangeAccountMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f ExchangeAccountMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.ExchangeAccountMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ExchangeAccountMutation", m)
+}
+
 // The FileQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type FileQueryRuleFunc func(context.Context, *ent.FileQuery) error
@@ -807,6 +831,30 @@ func (f PositionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutati
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PositionMutation", m)
 }
 
+// The RobotQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type RobotQueryRuleFunc func(context.Context, *ent.RobotQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f RobotQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.RobotQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.RobotQuery", q)
+}
+
+// The RobotMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type RobotMutationRuleFunc func(context.Context, *ent.RobotMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f RobotMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.RobotMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.RobotMutation", m)
+}
+
 // The RoleQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type RoleQueryRuleFunc func(context.Context, *ent.RoleQuery) error
@@ -877,6 +925,30 @@ func (f RolePermissionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.
 		return f(ctx, m)
 	}
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.RolePermissionMutation", m)
+}
+
+// The ServerQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type ServerQueryRuleFunc func(context.Context, *ent.ServerQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f ServerQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.ServerQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.ServerQuery", q)
+}
+
+// The ServerMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type ServerMutationRuleFunc func(context.Context, *ent.ServerMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f ServerMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.ServerMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ServerMutation", m)
 }
 
 // The TaskQueryRuleFunc type is an adapter to allow the use of ordinary
@@ -1096,6 +1168,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.DictTypeI18nQuery:
 		return q.Filter(), nil
+	case *ent.ExchangeAccountQuery:
+		return q.Filter(), nil
 	case *ent.FileQuery:
 		return q.Filter(), nil
 	case *ent.InternalMessageQuery:
@@ -1140,11 +1214,15 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.PositionQuery:
 		return q.Filter(), nil
+	case *ent.RobotQuery:
+		return q.Filter(), nil
 	case *ent.RoleQuery:
 		return q.Filter(), nil
 	case *ent.RoleMetadataQuery:
 		return q.Filter(), nil
 	case *ent.RolePermissionQuery:
+		return q.Filter(), nil
+	case *ent.ServerQuery:
 		return q.Filter(), nil
 	case *ent.TaskQuery:
 		return q.Filter(), nil
@@ -1180,6 +1258,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.DictTypeMutation:
 		return m.Filter(), nil
 	case *ent.DictTypeI18nMutation:
+		return m.Filter(), nil
+	case *ent.ExchangeAccountMutation:
 		return m.Filter(), nil
 	case *ent.FileMutation:
 		return m.Filter(), nil
@@ -1225,11 +1305,15 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 		return m.Filter(), nil
 	case *ent.PositionMutation:
 		return m.Filter(), nil
+	case *ent.RobotMutation:
+		return m.Filter(), nil
 	case *ent.RoleMutation:
 		return m.Filter(), nil
 	case *ent.RoleMetadataMutation:
 		return m.Filter(), nil
 	case *ent.RolePermissionMutation:
+		return m.Filter(), nil
+	case *ent.ServerMutation:
 		return m.Filter(), nil
 	case *ent.TaskMutation:
 		return m.Filter(), nil

@@ -2,9 +2,6 @@
   <div class="hft-robots-page">
     <a-page-header title="高频做市" />
 
-    <!-- Filter Bar -->
-    <FilterBar @filter="handleFilter" @reset="handleResetFilter" />
-
     <!-- Operation Bar -->
     <div class="operation-bar">
       <div class="operation-left">
@@ -49,6 +46,12 @@
 
       <div class="operation-right">
         <a-space>
+          <a-input-search
+            v-model:value="searchKeyword"
+            placeholder="搜索机器人昵称、交易对..."
+            style="width: 250px"
+            allow-clear
+          />
           <ExportButton :selected-ids="selectedRowKeys" />
           <span v-if="hasSelected" class="selected-info">
             已选择 {{ selectedRowKeys.length }} 项
@@ -239,9 +242,8 @@ import {
 import { Modal } from 'ant-design-vue';
 import type { TableColumnsType, TableProps } from 'ant-design-vue';
 import { useRobotStore } from '#/stores';
-import type { Robot, FilterConditions, ColumnConfig } from './types';
+import type { Robot, ColumnConfig } from './types';
 import { loadColumnConfig, getStatusConfig } from './config';
-import FilterBar from './components/FilterBar.vue';
 import EquityChart from './components/EquityChart.vue';
 import ShowMore from './components/ShowMore.vue';
 import RobotFormDrawer from './components/RobotFormDrawer.vue';
@@ -252,6 +254,9 @@ import StatusHistoryModal from './components/StatusHistoryModal.vue';
 import ExportButton from './components/ExportButton.vue';
 
 const robotStore = useRobotStore();
+
+// Search keyword
+const searchKeyword = ref('');
 
 // Column configuration
 const columnConfig = ref<ColumnConfig[]>(loadColumnConfig());
@@ -300,7 +305,22 @@ const visibleColumns = computed<TableColumnsType>(() => {
 
 // Filtered robot list
 const filteredRobotList = computed(() => {
-  return robotStore.robotList;
+  let list = robotStore.robotList;
+
+  // Apply search filter
+  if (searchKeyword.value) {
+    const keyword = searchKeyword.value.toLowerCase().trim();
+    list = list.filter((robot) => {
+      return (
+        robot.nickname?.toLowerCase().includes(keyword) ||
+        robot.pair?.toLowerCase().includes(keyword) ||
+        robot.exchange?.toLowerCase().includes(keyword) ||
+        robot.account?.toLowerCase().includes(keyword)
+      );
+    });
+  }
+
+  return list;
 });
 
 // Pagination config
@@ -334,16 +354,6 @@ const formatNumber = (num: number): string => {
 };
 
 // Event handlers
-const handleFilter = (filters: FilterConditions) => {
-  robotStore.applyFilters(filters);
-  robotStore.getRobotList();
-};
-
-const handleResetFilter = () => {
-  robotStore.clearFilters();
-  robotStore.getRobotList();
-};
-
 const handleAddRobot = () => {
   selectedRobot.value = null;
   showRobotForm.value = true;

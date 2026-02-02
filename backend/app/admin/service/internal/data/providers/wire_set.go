@@ -81,4 +81,8 @@ var ProviderSet = wire.NewSet(
 	data.NewUserTokenRepo,
 
 	data.NewRobotRepo,
+
+	// Trading repositories
+	data.NewExchangeAccountRepo,
+	data.NewServerRepo,
 )

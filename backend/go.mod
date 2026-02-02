@@ -12,6 +12,7 @@ require (
 	github.com/google/gnostic v0.7.1
 	github.com/google/uuid v1.6.0
 	github.com/google/wire v0.7.0
+	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674
 	github.com/hibiken/asynq v0.25.1
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/jinzhu/copier v0.4.0
@@ -37,10 +38,10 @@ require (
 	github.com/tx7do/kratos-authn/middleware v1.1.10
 	github.com/tx7do/kratos-authz v1.1.7
 	github.com/tx7do/kratos-authz/engine/casbin v1.1.11
-	github.com/tx7do/kratos-authz/engine/opa v1.1.14
+	github.com/tx7do/kratos-authz/engine/opa v1.1.13
 	github.com/tx7do/kratos-authz/middleware v1.1.12
 	github.com/tx7do/kratos-bootstrap/api v0.0.34
-	github.com/tx7do/kratos-bootstrap/bootstrap v0.1.16
+	github.com/tx7do/kratos-bootstrap/bootstrap v0.0.15
 	github.com/tx7do/kratos-bootstrap/cache/redis v0.1.1
 	github.com/tx7do/kratos-bootstrap/database/ent v0.1.3
 	github.com/tx7do/kratos-bootstrap/database/gorm v0.1.3
@@ -53,6 +54,7 @@ require (
 	github.com/tx7do/kratos-transport/transport/asynq v1.2.37
 	github.com/tx7do/kratos-transport/transport/sse v1.2.25
 	github.com/yuin/gopher-lua v1.1.1
+	go.opentelemetry.io/otel/trace v1.39.0
 	google.golang.org/genproto v0.0.0-20260120221211-b8f7ae30c516
 	google.golang.org/genproto/googleapis/api v0.0.0-20260120221211-b8f7ae30c516
 	google.golang.org/grpc v1.78.0
@@ -91,14 +93,12 @@ require (
 	github.com/casbin/govaluate v1.10.0 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
-	github.com/clipperhouse/displaywidth v0.6.2 // indirect
 	github.com/clipperhouse/stringish v0.1.1 // indirect
-	github.com/clipperhouse/uax29/v2 v2.3.0 // indirect
+	github.com/clipperhouse/uax29/v2 v2.5.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/fatih/color v1.18.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/glebarez/go-sqlite v1.22.0 // indirect
@@ -128,7 +128,6 @@ require (
 	github.com/googleapis/gax-go/v2 v2.16.0 // indirect
 	github.com/gorilla/handlers v1.5.2 // indirect
 	github.com/gorilla/mux v1.8.1 // indirect
-	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.3 // indirect
 	github.com/hashicorp/go-version v1.8.0 // indirect
@@ -152,7 +151,6 @@ require (
 	github.com/lithammer/shortuuid/v4 v4.2.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20251013123823-9fd1530e3ec3 // indirect
 	github.com/mailru/easyjson v0.9.1 // indirect
-	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.19 // indirect
 	github.com/mattn/go-sqlite3 v1.14.33 // indirect
@@ -165,11 +163,8 @@ require (
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/oasdiff/yaml v0.0.0-20250309154309-f31be36b4037 // indirect
 	github.com/oasdiff/yaml3 v0.0.0-20250309153720-d2182401db90 // indirect
-	github.com/olekukonko/cat v0.0.0-20250911104152-50322a0618f6 // indirect
-	github.com/olekukonko/errors v1.1.0 // indirect
-	github.com/olekukonko/ll v0.1.3 // indirect
-	github.com/olekukonko/tablewriter v1.1.2 // indirect
-	github.com/open-policy-agent/opa v1.12.1 // indirect
+	github.com/olekukonko/tablewriter v0.0.5 // indirect
+	github.com/open-policy-agent/opa v1.9.0 // indirect
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
 	github.com/oschwald/geoip2-golang v1.13.0 // indirect
 	github.com/oschwald/maxminddb-golang v1.13.1 // indirect
@@ -214,6 +209,7 @@ require (
 	github.com/tx7do/kratos-bootstrap/logger v0.1.2 // indirect
 	github.com/tx7do/kratos-bootstrap/registry v0.2.2 // indirect
 	github.com/tx7do/kratos-bootstrap/tracer v0.1.3 // indirect
+	github.com/tx7do/kratos-bootstrap/utils v0.1.3 // indirect
 	github.com/tx7do/kratos-transport/transport/keepalive v1.0.7 // indirect
 	github.com/valyala/fastjson v1.6.7 // indirect
 	github.com/vearutop/statigz v1.5.0 // indirect
@@ -239,7 +235,6 @@ require (
 	go.opentelemetry.io/otel/exporters/zipkin v1.39.0 // indirect
 	go.opentelemetry.io/otel/metric v1.39.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.39.0 // indirect
-	go.opentelemetry.io/otel/trace v1.39.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.9.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
