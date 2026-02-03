@@ -47,8 +47,8 @@ const formOptions: VbenFormProps = {
         placeholder: '请选择服务器类型',
         allowClear: true,
         options: [
-          { label: '生产', value: 1 },
-          { label: '测试', value: 2 },
+          { label: '自建', value: 1 },
+          { label: '平台', value: 2 },
         ],
       },
     },
@@ -78,10 +78,8 @@ const gridOptions: VxeGridProps = {
           formValues,
         );
         return {
-          page: {
-            total: Number(result.total || 0),
-          },
-          result: result.items || [],
+          total: Number(result.total || 0),
+          items: result.items || [],
         };
       },
     },
@@ -100,12 +98,8 @@ const gridOptions: VxeGridProps = {
       width: 100,
       slots: { default: 'type' },
     },
-    {
-      title: '状态',
-      field: 'status',
-      width: 100,
-      slots: { default: 'status' },
-    },
+    { title: 'VPC ID', field: 'vpcId', width: 120 },
+    { title: '实例ID', field: 'instanceId', width: 150 },
     { title: '备注', field: 'remark', minWidth: 150 },
     {
       title: '操作',
@@ -199,25 +193,7 @@ async function handleViewLog(row: any) {
 }
 
 function getServerTypeText(type: number) {
-  return type === 1 ? '生产' : '测试';
-}
-
-function getServerStatusText(status: number) {
-  const statusMap: Record<number, string> = {
-    1: '运行中',
-    2: '已停止',
-    3: '维护中',
-  };
-  return statusMap[status] || '未知';
-}
-
-function getServerStatusColor(status: number) {
-  const colorMap: Record<number, string> = {
-    1: 'green',
-    2: 'red',
-    3: 'orange',
-  };
-  return colorMap[status] || 'default';
+  return type === 1 ? '自建' : '平台';
 }
 </script>
 
@@ -231,14 +207,8 @@ function getServerStatusColor(status: number) {
       </template>
 
       <template #type="{ row }">
-        <a-tag :color="row.type === 1 ? 'blue' : 'orange'">
+        <a-tag :color="row.type === 1 ? 'blue' : 'green'">
           {{ getServerTypeText(row.type) }}
-        </a-tag>
-      </template>
-
-      <template #status="{ row }">
-        <a-tag :color="getServerStatusColor(row.status)">
-          {{ getServerStatusText(row.status) }}
         </a-tag>
       </template>
 

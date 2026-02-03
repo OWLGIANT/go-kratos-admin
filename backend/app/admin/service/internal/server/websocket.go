@@ -32,6 +32,11 @@ type WebSocketServer struct {
 	recoveryMw  *middleware.RecoveryMiddleware
 	log         *log.Helper
 
+	// Actor management
+	actorRegistry       *handler.ActorRegistry
+	actorRegisterHandler *handler.ActorRegisterHandler
+	actorCommandHandler  *handler.ActorCommandHandler
+
 	// Configuration
 	readTimeout   time.Duration
 	writeTimeout  time.Duration
@@ -84,6 +89,19 @@ func NewWebSocketServer(
 	kickHandler := handler.NewKickHandler(manager, logger)
 	router.Register("auth.kick", recoveryMw.Recover(kickHandler.Handle))
 
+	// Actor handlers
+	actorRegistry := handler.NewActorRegistry()
+	actorRegisterHandler := handler.NewActorRegisterHandler(actorRegistry, manager, logger)
+	router.Register("actor.register", recoveryMw.Recover(actorRegisterHandler.Handle))
+	router.Register("actor.unregister", recoveryMw.Recover(actorRegisterHandler.HandleUnregister))
+
+	actorStatusHandler := handler.NewActorStatusHandler(actorRegistry, logger)
+	router.Register("actor.status_update", recoveryMw.Recover(actorStatusHandler.Handle))
+	router.Register("actor.heartbeat", recoveryMw.Recover(actorStatusHandler.HandleHeartbeat))
+
+	actorCommandHandler := handler.NewActorCommandHandler(actorRegistry, manager, logger)
+	router.Register("actor.command_result", recoveryMw.Recover(actorCommandHandler.Handle))
+
 	// Set message handler
 	manager.SetMessageHandler(router)
 
@@ -91,15 +109,18 @@ func NewWebSocketServer(
 	mux := http.NewServeMux()
 
 	wsServer := &WebSocketServer{
-		manager:        manager,
-		router:         router,
-		authMw:         authMw,
-		recoveryMw:     recoveryMw,
-		log:            log.NewHelper(log.With(logger, "module", "websocket-server")),
-		readTimeout:    60 * time.Second,  // Default pong wait
-		writeTimeout:   10 * time.Second,  // Default write wait
-		pingInterval:   54 * time.Second,  // Default ping interval
-		maxMessageSize: 512 * 1024,        // Default 512KB
+		manager:              manager,
+		router:               router,
+		authMw:               authMw,
+		recoveryMw:           recoveryMw,
+		log:                  log.NewHelper(log.With(logger, "module", "websocket-server")),
+		actorRegistry:        actorRegistry,
+		actorRegisterHandler: actorRegisterHandler,
+		actorCommandHandler:  actorCommandHandler,
+		readTimeout:          60 * time.Second,  // Default pong wait
+		writeTimeout:         10 * time.Second,  // Default write wait
+		pingInterval:         54 * time.Second,  // Default ping interval
+		maxMessageSize:       512 * 1024,        // Default 512KB
 	}
 
 	mux.HandleFunc(wsCfg.Path, wsServer.handleWebSocket)
@@ -161,4 +182,29 @@ func (s *WebSocketServer) Start() error {
 func (s *WebSocketServer) Stop() error {
 	s.log.Info("Stopping WebSocket server")
 	return s.server.Close()
+}
+
+// GetActorRegistry returns the actor registry
+func (s *WebSocketServer) GetActorRegistry() *handler.ActorRegistry {
+	return s.actorRegistry
+}
+
+// GetActorCommandHandler returns the actor command handler
+func (s *WebSocketServer) GetActorCommandHandler() *handler.ActorCommandHandler {
+	return s.actorCommandHandler
+}
+
+// SendActorCommand sends a command to an actor
+func (s *WebSocketServer) SendActorCommand(robotID, action string, data map[string]interface{}) (*handler.CommandResultData, error) {
+	return s.actorCommandHandler.SendCommand(robotID, action, data)
+}
+
+// GetConnectedActors returns all connected actors
+func (s *WebSocketServer) GetConnectedActors() []*handler.ActorInfo {
+	return s.actorRegistry.GetAll()
+}
+
+// GetActorsByTenant returns all actors for a tenant
+func (s *WebSocketServer) GetActorsByTenant(tenantID uint32) []*handler.ActorInfo {
+	return s.actorRegistry.GetByTenant(tenantID)
 }

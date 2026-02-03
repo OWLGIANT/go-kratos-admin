@@ -92,26 +92,20 @@ const [BaseForm, baseFormApi] = useVbenForm({
       componentProps: {
         placeholder: '请选择服务器类型',
         options: [
-          { label: '生产', value: 1 },
-          { label: '测试', value: 2 },
+          { label: '自建', value: 1 },
+          { label: '平台', value: 2 },
         ],
       },
       rules: 'selectRequired',
     },
     {
-      component: 'Select',
-      fieldName: 'status',
-      label: '服务器状态',
-      defaultValue: 1,
+      component: 'Input',
+      fieldName: 'instanceId',
+      label: '实例ID',
       componentProps: {
-        placeholder: '请选择服务器状态',
-        options: [
-          { label: '运行中', value: 1 },
-          { label: '已停止', value: 2 },
-          { label: '维护中', value: 3 },
-        ],
+        placeholder: '请输入实例ID',
+        allowClear: true,
       },
-      rules: 'selectRequired',
     },
     {
       component: 'Textarea',

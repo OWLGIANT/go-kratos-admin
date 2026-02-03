@@ -12,8 +12,6 @@ import (
 	authnEngine "github.com/tx7do/kratos-authn/engine"
 	authn "github.com/tx7do/kratos-authn/middleware"
 
-	authz "github.com/tx7do/kratos-authz/middleware"
-
 	swaggerUI "github.com/tx7do/kratos-swagger-ui"
 
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -66,7 +64,7 @@ func NewRestMiddleware(
 		auth.Server(
 			auth.WithInjectEnt(true),
 		),
-		authz.Server(authorizer.Engine()),
+		//authz.Server(authorizer.Engine()), // Disabled: API permission verification
 	).
 		Match(rpc.NewRestWhiteListMatcher()).
 		Build(),

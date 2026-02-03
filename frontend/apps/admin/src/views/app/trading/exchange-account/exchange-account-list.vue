@@ -78,10 +78,8 @@ const gridOptions: VxeGridProps = {
           formValues,
         );
         return {
-          page: {
-            total: Number(result.total || 0),
-          },
-          result: result.items || [],
+          total: Number(result.total || 0),
+          items: result.items || [],
         };
       },
     },
@@ -93,6 +91,7 @@ const gridOptions: VxeGridProps = {
     { title: '交易所', field: 'exchangeName', width: 120 },
     { title: '原始账号', field: 'originAccount', minWidth: 150 },
     { title: 'API Key', field: 'apiKey', minWidth: 200 },
+    { title: '经纪商ID', field: 'brokerId', width: 120 },
     {
       title: '账号类型',
       field: 'accountType',
@@ -105,6 +104,8 @@ const gridOptions: VxeGridProps = {
       width: 100,
       slots: { default: 'isMulti' },
     },
+    { title: '绑定托管者IP', field: 'serverIps', minWidth: 150 },
+    { title: '特殊限频', field: 'specialReqLimit', width: 100 },
     { title: '备注', field: 'remark', minWidth: 150 },
     {
       title: '操作',
