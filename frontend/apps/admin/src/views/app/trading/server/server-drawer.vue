@@ -2,7 +2,6 @@
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
-import { $t } from '@vben/locales';
 
 import { notification } from 'ant-design-vue';
 
@@ -28,7 +27,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'nickname',
-      label: '托管者昵称',
+      label: '昵称',
       componentProps: {
         placeholder: '请输入托管者昵称',
         allowClear: true,
@@ -38,12 +37,12 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'ip',
-      label: 'IP地址',
+      label: '外网IP',
       componentProps: {
-        placeholder: '请输入IP地址',
+        placeholder: '请输入外网IP',
         allowClear: true,
       },
-      rules: z.string().min(1, { message: '请输入IP地址' }),
+      rules: z.string().min(1, { message: '请输入外网IP' }),
     },
     {
       component: 'Input',
@@ -53,25 +52,24 @@ const [BaseForm, baseFormApi] = useVbenForm({
         placeholder: '请输入内网IP',
         allowClear: true,
       },
+      rules: z.string().min(1, { message: '请输入内网IP' }),
     },
     {
-      component: 'InputNumber',
+      component: 'Input',
       fieldName: 'port',
       label: '端口',
-      defaultValue: 8080,
       componentProps: {
         placeholder: '请输入端口',
-        min: 1,
-        max: 65535,
+        allowClear: true,
       },
-      rules: z.number().min(1).max(65535),
+      rules: z.string().min(1, { message: '请输入端口' }),
     },
     {
       component: 'Input',
       fieldName: 'machineId',
       label: '机器ID',
       componentProps: {
-        placeholder: '请输入机器ID',
+        placeholder: '请输入机器ID（可选）',
         allowClear: true,
       },
     },
@@ -80,39 +78,39 @@ const [BaseForm, baseFormApi] = useVbenForm({
       fieldName: 'vpcId',
       label: 'VPC ID',
       componentProps: {
-        placeholder: '请输入VPC ID',
+        placeholder: '请输入VPC ID（可选）',
         allowClear: true,
       },
-    },
-    {
-      component: 'Select',
-      fieldName: 'type',
-      label: '服务器类型',
-      defaultValue: 1,
-      componentProps: {
-        placeholder: '请选择服务器类型',
-        options: [
-          { label: '自建', value: 1 },
-          { label: '平台', value: 2 },
-        ],
-      },
-      rules: 'selectRequired',
     },
     {
       component: 'Input',
       fieldName: 'instanceId',
       label: '实例ID',
       componentProps: {
-        placeholder: '请输入实例ID',
+        placeholder: '请输入实例ID（可选）',
         allowClear: true,
       },
+    },
+    {
+      component: 'Select',
+      fieldName: 'type',
+      label: '类型',
+      defaultValue: 'SERVER_TYPE_SELF_BUILT',
+      componentProps: {
+        placeholder: '请选择类型',
+        options: [
+          { label: '自建', value: 'SERVER_TYPE_SELF_BUILT' },
+          { label: '平台', value: 'SERVER_TYPE_PLATFORM' },
+        ],
+      },
+      rules: 'selectRequired',
     },
     {
       component: 'Textarea',
       fieldName: 'remark',
       label: '备注',
       componentProps: {
-        placeholder: '请输入备注',
+        placeholder: '请输入备注（可选）',
         rows: 3,
       },
     },

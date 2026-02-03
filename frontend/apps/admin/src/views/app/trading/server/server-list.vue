@@ -6,10 +6,9 @@ import { h } from 'vue';
 import { useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideTrash2, LucideRefreshCw, LucideFileText } from '@vben/icons';
 
-import { notification } from 'ant-design-vue';
+import { notification, Modal } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { $t } from '#/locales';
 import { useServerStore } from '#/stores/server.state';
 
 import ServerDrawer from './server-drawer.vue';
@@ -24,7 +23,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'nickname',
-      label: '托管者昵称',
+      label: '昵称',
       componentProps: {
         placeholder: '请输入托管者昵称',
         allowClear: true,
@@ -33,22 +32,31 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'ip',
-      label: 'IP地址',
+      label: '外网IP',
       componentProps: {
-        placeholder: '请输入IP地址',
+        placeholder: '请输入外网IP',
+        allowClear: true,
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'inner_ip',
+      label: '内网IP',
+      componentProps: {
+        placeholder: '请输入内网IP',
         allowClear: true,
       },
     },
     {
       component: 'Select',
       fieldName: 'type',
-      label: '服务器类型',
+      label: '类型',
       componentProps: {
-        placeholder: '请选择服务器类型',
+        placeholder: '请选择类型',
         allowClear: true,
         options: [
-          { label: '自建', value: 1 },
-          { label: '平台', value: 2 },
+          { label: '自建', value: 'SERVER_TYPE_SELF_BUILT' },
+          { label: '平台', value: 'SERVER_TYPE_PLATFORM' },
         ],
       },
     },
@@ -87,19 +95,44 @@ const gridOptions: VxeGridProps = {
 
   columns: [
     { title: 'ID', field: 'id', width: 80 },
-    { title: '托管者昵称', field: 'nickname', minWidth: 150 },
-    { title: 'IP地址', field: 'ip', width: 150 },
-    { title: '内网IP', field: 'innerIp', width: 150 },
-    { title: '端口', field: 'port', width: 100 },
-    { title: '机器ID', field: 'machineId', width: 120 },
+    { title: '昵称', field: 'nickname', minWidth: 120 },
+    { title: '外网IP', field: 'ip', minWidth: 140 },
+    { title: '内网IP', field: 'innerIp', minWidth: 140 },
+    { title: '端口', field: 'port', width: 80 },
+    { title: '机器ID', field: 'machineId', minWidth: 150 },
+    { title: 'VPC ID', field: 'vpcId', minWidth: 120 },
+    { title: '实例ID', field: 'instanceId', minWidth: 150 },
     {
-      title: '服务器类型',
+      title: '类型',
       field: 'type',
       width: 100,
       slots: { default: 'type' },
     },
-    { title: 'VPC ID', field: 'vpcId', width: 120 },
-    { title: '实例ID', field: 'instanceId', width: 150 },
+    {
+      title: 'CPU',
+      field: 'serverInfo',
+      width: 80,
+      slots: { default: 'cpu' },
+    },
+    {
+      title: '内存',
+      field: 'serverInfo',
+      width: 80,
+      slots: { default: 'memPct' },
+    },
+    {
+      title: '磁盘',
+      field: 'serverInfo',
+      width: 80,
+      slots: { default: 'diskPct' },
+    },
+    {
+      title: '任务数',
+      field: 'serverInfo',
+      width: 80,
+      slots: { default: 'taskNum' },
+    },
+    { title: '操作员', field: 'operator', width: 100 },
     { title: '备注', field: 'remark', minWidth: 150 },
     {
       title: '操作',
@@ -178,11 +211,23 @@ async function handleReboot(row: any) {
 
 async function handleViewLog(row: any) {
   try {
-    const result = await serverStore.getServerLog(row.id, 100);
-    notification.info({
-      message: '服务器日志',
-      description: result.log || '暂无日志',
-      duration: 10,
+    const result = await serverStore.getServerLog(row.id, 200);
+    Modal.info({
+      title: `服务器日志 - ${row.nickname}`,
+      content: h('pre', {
+        style: {
+          maxHeight: '400px',
+          overflow: 'auto',
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-all',
+          fontSize: '12px',
+          backgroundColor: '#f5f5f5',
+          padding: '10px',
+          borderRadius: '4px',
+        },
+      }, result.logContent || '暂无日志'),
+      width: 800,
+      okText: '关闭',
     });
   } catch (error: any) {
     notification.error({
@@ -192,8 +237,26 @@ async function handleViewLog(row: any) {
   }
 }
 
-function getServerTypeText(type: number) {
-  return type === 1 ? '自建' : '平台';
+function getTypeText(type: string) {
+  switch (type) {
+    case 'SERVER_TYPE_SELF_BUILT':
+      return '自建';
+    case 'SERVER_TYPE_PLATFORM':
+      return '平台';
+    default:
+      return '未知';
+  }
+}
+
+function getTypeColor(type: string) {
+  switch (type) {
+    case 'SERVER_TYPE_SELF_BUILT':
+      return 'blue';
+    case 'SERVER_TYPE_PLATFORM':
+      return 'green';
+    default:
+      return 'default';
+  }
 }
 </script>
 
@@ -207,54 +270,82 @@ function getServerTypeText(type: number) {
       </template>
 
       <template #type="{ row }">
-        <a-tag :color="row.type === 1 ? 'blue' : 'green'">
-          {{ getServerTypeText(row.type) }}
+        <a-tag :color="getTypeColor(row.type)">
+          {{ getTypeText(row.type) }}
         </a-tag>
+      </template>
+
+      <template #cpu="{ row }">
+        <span>{{ row.serverInfo?.cpu || '-' }}</span>
+      </template>
+
+      <template #memPct="{ row }">
+        <span>{{ row.serverInfo?.memPct || '-' }}</span>
+      </template>
+
+      <template #diskPct="{ row }">
+        <span>{{ row.serverInfo?.diskPct || '-' }}</span>
+      </template>
+
+      <template #taskNum="{ row }">
+        <span>{{ row.serverInfo?.taskNum ?? '-' }}</span>
       </template>
 
       <template #action="{ row }">
         <a-space>
-          <a-button
-            size="small"
-            type="link"
-            @click="handleEdit(row)"
-          >
-            <template #icon>
-              <component :is="h(LucideFilePenLine)" />
-            </template>
-          </a-button>
-          <a-button
-            size="small"
-            type="link"
-            @click="handleReboot(row)"
-          >
-            <template #icon>
-              <component :is="h(LucideRefreshCw)" />
-            </template>
-          </a-button>
-          <a-button
-            size="small"
-            type="link"
-            @click="handleViewLog(row)"
-          >
-            <template #icon>
-              <component :is="h(LucideFileText)" />
-            </template>
-          </a-button>
-          <a-popconfirm
-            title="确定要删除这个托管者吗？"
-            @confirm="handleDelete(row)"
-          >
+          <a-tooltip title="编辑">
             <a-button
-              danger
               size="small"
               type="link"
+              @click="handleEdit(row)"
             >
               <template #icon>
-                <component :is="h(LucideTrash2)" />
+                <component :is="h(LucideFilePenLine)" />
               </template>
             </a-button>
-          </a-popconfirm>
+          </a-tooltip>
+          <a-tooltip title="重启">
+            <a-popconfirm
+              title="确定要重启这个托管者吗？"
+              @confirm="handleReboot(row)"
+            >
+              <a-button
+                size="small"
+                type="link"
+              >
+                <template #icon>
+                  <component :is="h(LucideRefreshCw)" />
+                </template>
+              </a-button>
+            </a-popconfirm>
+          </a-tooltip>
+          <a-tooltip title="查看日志">
+            <a-button
+              size="small"
+              type="link"
+              @click="handleViewLog(row)"
+            >
+              <template #icon>
+                <component :is="h(LucideFileText)" />
+              </template>
+            </a-button>
+          </a-tooltip>
+          <a-tooltip title="删除">
+            <a-popconfirm
+              title="确定要删除这个托管者吗？"
+              @confirm="handleDelete(row)"
+            >
+              <a-button
+                danger
+                size="small"
+                type="link"
+              >
+                <template #icon>
+                  <component :is="h(LucideTrash2)" />
+                </template>
+              </a-button>
+            </a-popconfirm>
+          </a-tooltip>
         </a-space>
       </template>
     </Grid>
