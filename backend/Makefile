@@ -140,7 +140,7 @@ all:
     )
 
 # Variables for docker image
-IMAGE_NAME ?= go-wind-admin
+IMAGE_NAME ?= admin-service
 IMAGE_TAG ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "latest")
 REGISTRY ?=
 
@@ -164,17 +164,11 @@ docker-image-only:
 
 # push docker image to registry
 docker-image-push:
-ifdef REGISTRY
 	@docker tag $(IMAGE_NAME):$(IMAGE_TAG) $(REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG)
 	@docker tag $(IMAGE_NAME):$(IMAGE_TAG) $(REGISTRY)/$(IMAGE_NAME):latest
 	@docker push $(REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG)
 	@docker push $(REGISTRY)/$(IMAGE_NAME):latest
 	@echo "镜像推送完成: $(REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG)"
-else
-	@docker push $(IMAGE_NAME):$(IMAGE_TAG)
-	@docker push $(IMAGE_NAME):latest
-	@echo "镜像推送完成: $(IMAGE_NAME):$(IMAGE_TAG)"
-endif
 
 # build and push docker image
 docker-image-all: docker-image docker-image-push
