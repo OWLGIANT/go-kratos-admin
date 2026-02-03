@@ -16,7 +16,7 @@ ROOT_DIR	:= $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 SRCS_MK		:= $(foreach dir, app, $(wildcard $(dir)/*/*/Makefile))
 
 .PHONY: help wire gen ent build api openapi init all vendor dep test cover vet lint docker build-bin docker-image docker-image-only docker-image-push docker-image-all
-
+export https_proxy=http://127.0.0.1:33210 http_proxy=http://127.0.0.1:33210 all_proxy=socks5://127.0.0.1:33211
 # show environment variables
 env:
 	@echo "CURRENT_DIR: $(CURRENT_DIR)"
@@ -140,9 +140,8 @@ all:
     )
 
 # Variables for docker image
-IMAGE_NAME ?= admin-service
+IMAGE_NAME ?= wwttxx2/admin-service
 IMAGE_TAG ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo "latest")
-REGISTRY ?=
 
 # build binary using build.sh
 build-bin:
@@ -164,11 +163,10 @@ docker-image-only:
 
 # push docker image to registry
 docker-image-push:
-	@docker tag $(IMAGE_NAME):$(IMAGE_TAG) $(REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG)
-	@docker tag $(IMAGE_NAME):$(IMAGE_TAG) $(REGISTRY)/$(IMAGE_NAME):latest
-	@docker push $(REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG)
-	@docker push $(REGISTRY)/$(IMAGE_NAME):latest
-	@echo "镜像推送完成: $(REGISTRY)/$(IMAGE_NAME):$(IMAGE_TAG)"
+	@docker push $(IMAGE_NAME):$(IMAGE_TAG)
+	@docker push $(IMAGE_NAME):latest
+	@echo "镜像推送完成: $(IMAGE_NAME):$(IMAGE_TAG)"
+
 
 # build and push docker image
 docker-image-all: docker-image docker-image-push
