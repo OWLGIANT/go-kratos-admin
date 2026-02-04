@@ -12,15 +12,36 @@ import (
 
 // ActorInfo stores information about a connected actor
 type ActorInfo struct {
-	ClientID     string    `json:"client_id"`
-	RobotID      string    `json:"robot_id"`
-	Exchange     string    `json:"exchange"`
-	Version      string    `json:"version"`
-	TenantID     uint32    `json:"tenant_id"`
-	Status       string    `json:"status"`
-	Balance      float64   `json:"balance"`
-	RegisteredAt time.Time `json:"registered_at"`
+	ClientID      string    `json:"client_id"`
+	RobotID       string    `json:"robot_id"`
+	Exchange      string    `json:"exchange"`
+	Version       string    `json:"version"`
+	TenantID      uint32    `json:"tenant_id"`
+	Status        string    `json:"status"`
+	Balance       float64   `json:"balance"`
+	RegisteredAt  time.Time `json:"registered_at"`
 	LastHeartbeat time.Time `json:"last_heartbeat"`
+	// Server related info
+	ServerInfo *ServerStatusInfo `json:"server_info,omitempty"`
+	IP         string            `json:"ip,omitempty"`
+	InnerIP    string            `json:"inner_ip,omitempty"`
+	Port       string            `json:"port,omitempty"`
+	MachineID  string            `json:"machine_id,omitempty"`
+	Nickname   string            `json:"nickname,omitempty"`
+}
+
+// ServerStatusInfo stores server status information
+type ServerStatusInfo struct {
+	CPU              string            `json:"cpu,omitempty"`
+	IPPool           float64           `json:"ip_pool,omitempty"`
+	Mem              float64           `json:"mem,omitempty"`
+	MemPct           string            `json:"mem_pct,omitempty"`
+	DiskPct          string            `json:"disk_pct,omitempty"`
+	TaskNum          int32             `json:"task_num,omitempty"`
+	StraVersion      bool              `json:"stra_version,omitempty"`
+	StraVersionDetail map[string]string `json:"stra_version_detail,omitempty"`
+	AwsAcct          string            `json:"aws_acct,omitempty"`
+	AwsZone          string            `json:"aws_zone,omitempty"`
 }
 
 // ActorRegistry manages registered actors
@@ -154,6 +175,35 @@ func (r *ActorRegistry) UpdateHeartbeat(robotID string) bool {
 	return true
 }
 
+// UpdateServerInfo updates actor server information
+func (r *ActorRegistry) UpdateServerInfo(robotID string, serverInfo *ServerStatusInfo, ip, innerIP, port, machineID, nickname string) bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	info, ok := r.actors[robotID]
+	if !ok {
+		return false
+	}
+
+	info.ServerInfo = serverInfo
+	if ip != "" {
+		info.IP = ip
+	}
+	if innerIP != "" {
+		info.InnerIP = innerIP
+	}
+	if port != "" {
+		info.Port = port
+	}
+	if machineID != "" {
+		info.MachineID = machineID
+	}
+	if nickname != "" {
+		info.Nickname = nickname
+	}
+	return true
+}
+
 // ActorRegisterHandler handles actor registration messages
 type ActorRegisterHandler struct {
 	registry *ActorRegistry
@@ -172,6 +222,8 @@ func NewActorRegisterHandler(registry *ActorRegistry, manager *websocket.Manager
 
 // Handle processes actor registration messages
 func (h *ActorRegisterHandler) Handle(client *websocket.Client, msg *protocol.UnifiedMessage) error {
+	h.log.Infof("Received actor.register: client=%s, isActor=%v, data=%v", client.ID, client.IsActor, msg.Data)
+
 	robotID, _ := msg.Data["robot_id"].(string)
 	if robotID == "" {
 		h.log.Error("Missing robot_id in registration")

@@ -24,13 +24,13 @@ const routes: RouteRecordRaw[] = [
         component: () => import('#/views/app/trading/exchange-account/index.vue'),
       },
       {
-        path: 'server',
-        name: 'ServerManagement',
+        path: 'actor',
+        name: 'ActorManagement',
         meta: {
-          icon: 'lucide:server',
-          title: '托管者管理',
+          icon: 'lucide:cpu',
+          title: 'Actor管理',
         },
-        component: () => import('#/views/app/trading/server/index.vue'),
+        component: () => import('#/views/app/trading/actor/index.vue'),
       },
       {
         path: 'hft-robots',

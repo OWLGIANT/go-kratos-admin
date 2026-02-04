@@ -120,6 +120,7 @@ func NewRestServer(
 	exchangeAccountService *service.ExchangeAccountService,
 	serverService *service.ServerService,
 	hftMarketMakingService *service.HftMarketMakingService,
+	actorService *service.ActorService,
 
 ) (*http.Server, error) {
 	cfg := ctx.GetConfig()
@@ -184,6 +185,7 @@ func NewRestServer(
 	adminV1.RegisterExchangeAccountServiceHTTPServer(srv, exchangeAccountService)
 	adminV1.RegisterServerServiceHTTPServer(srv, serverService)
 	adminV1.RegisterHftMarketMakingServiceHTTPServer(srv, hftMarketMakingService)
+	adminV1.RegisterActorServiceHTTPServer(srv, actorService)
 
 	if cfg.GetServer().GetRest().GetEnableSwagger() {
 		swaggerUI.RegisterSwaggerUIServerWithOption(

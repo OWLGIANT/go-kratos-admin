@@ -33,9 +33,10 @@ type WebSocketServer struct {
 	log         *log.Helper
 
 	// Actor management
-	actorRegistry       *handler.ActorRegistry
+	actorRegistry        *handler.ActorRegistry
 	actorRegisterHandler *handler.ActorRegisterHandler
 	actorCommandHandler  *handler.ActorCommandHandler
+	actorListHandler     *handler.ActorListHandler
 
 	// Configuration
 	readTimeout   time.Duration
@@ -102,6 +103,14 @@ func NewWebSocketServer(
 	actorCommandHandler := handler.NewActorCommandHandler(actorRegistry, manager, logger)
 	router.Register("actor.command_result", recoveryMw.Recover(actorCommandHandler.Handle))
 
+	// Actor list handler
+	actorListHandler := handler.NewActorListHandler(actorRegistry, manager, logger)
+	router.Register("actor.list", recoveryMw.Recover(actorListHandler.Handle))
+
+	// Actor server sync handler
+	actorServerSyncHandler := handler.NewActorServerSyncHandler(actorRegistry, manager, actorListHandler, logger)
+	router.Register("actor.server_sync", recoveryMw.Recover(actorServerSyncHandler.Handle))
+
 	// Set message handler
 	manager.SetMessageHandler(router)
 
@@ -117,6 +126,7 @@ func NewWebSocketServer(
 		actorRegistry:        actorRegistry,
 		actorRegisterHandler: actorRegisterHandler,
 		actorCommandHandler:  actorCommandHandler,
+		actorListHandler:     actorListHandler,
 		readTimeout:          60 * time.Second,  // Default pong wait
 		writeTimeout:         10 * time.Second,  // Default write wait
 		pingInterval:         54 * time.Second,  // Default ping interval

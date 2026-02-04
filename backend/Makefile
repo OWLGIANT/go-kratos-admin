@@ -16,7 +16,7 @@ ROOT_DIR	:= $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 SRCS_MK		:= $(foreach dir, app, $(wildcard $(dir)/*/*/Makefile))
 
 .PHONY: help wire gen ent build api openapi init all vendor dep test cover vet lint docker build-bin docker-image docker-image-only docker-image-push docker-image-all
-export https_proxy=http://127.0.0.1:33210 http_proxy=http://127.0.0.1:33210 all_proxy=socks5://127.0.0.1:33211
+
 # show environment variables
 env:
 	@echo "CURRENT_DIR: $(CURRENT_DIR)"
@@ -169,7 +169,7 @@ docker-image-push:
 
 
 # build and push docker image
-docker-image-all: docker-image docker-image-push
+deploy: docker-image docker-image-push
 
 # use docker compose to run backend services and all its dependency services like redis, mysql, etc.
 compose-up:

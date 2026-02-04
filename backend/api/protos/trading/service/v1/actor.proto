@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package trading.service.v1;
+
+import "google/protobuf/timestamp.proto";
+import "trading/service/v1/server.proto";
+
+option go_package = "kratos-admin/api/gen/go/trading/service/v1;tradingV1";
+
+// Actor 状态
+enum ActorStatus {
+  ACTOR_STATUS_UNSPECIFIED = 0;
+  ACTOR_STATUS_CONNECTED = 1;    // 在线
+  ACTOR_STATUS_DISCONNECTED = 2; // 离线
+  ACTOR_STATUS_IDLE = 3;         // 空闲
+  ACTOR_STATUS_ERROR = 4;        // 错误
+}
+
+// Actor 信息
+message Actor {
+  // 客户端ID
+  string client_id = 1;
+
+  // 机器人ID
+  string robot_id = 2;
+
+  // 交易所
+  string exchange = 3;
+
+  // 版本
+  string version = 4;
+
+  // 租户ID
+  uint32 tenant_id = 5;
+
+  // 状态
+  string status = 6;
+
+  // 余额
+  double balance = 7;
+
+  // 注册时间
+  google.protobuf.Timestamp registered_at = 8;
+
+  // 最后心跳时间
+  google.protobuf.Timestamp last_heartbeat = 9;
+
+  // 服务器状态信息
+  ServerStatusInfo server_info = 10;
+
+  // 外网IP
+  string ip = 11;
+
+  // 内网IP
+  string inner_ip = 12;
+
+  // 端口
+  string port = 13;
+
+  // 机器ID
+  string machine_id = 14;
+
+  // 昵称
+  string nickname = 15;
+}
+
+// 获取 Actor 列表响应
+message ListActorResponse {
+  // 总数
+  int32 total = 1;
+
+  // Actor 列表
+  repeated Actor items = 2;
+}
+
+// 获取 Actor 请求
+message GetActorRequest {
+  // 机器人ID
+  string robot_id = 1;
+}

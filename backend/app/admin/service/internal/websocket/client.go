@@ -21,6 +21,10 @@ type Client struct {
 	TenantID uint32
 	Username string
 
+	// Actor information (for actor clients)
+	IsActor bool
+	RobotID string
+
 	// WebSocket connection
 	conn *websocket.Conn
 
@@ -42,6 +46,9 @@ type Client struct {
 
 	// Manager reference
 	manager *Manager
+
+	// Ensure Close is only called once
+	closeOnce sync.Once
 }
 
 // NewClient creates a new WebSocket client
@@ -67,6 +74,15 @@ func (c *Client) SetUserInfo(userID, tenantID uint32, username string) {
 	c.UserID = userID
 	c.TenantID = tenantID
 	c.Username = username
+}
+
+// SetActorInfo sets the actor information for this client
+func (c *Client) SetActorInfo(robotID string) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.IsActor = true
+	c.RobotID = robotID
 }
 
 // SetProtocolType sets the protocol type for this client
@@ -127,9 +143,13 @@ func (c *Client) SendResponse(resp *protocol.UnifiedResponse, action string) err
 
 // Close closes the client connection
 func (c *Client) Close() error {
-	c.cancel()
-	close(c.send)
-	return c.conn.Close()
+	var err error
+	c.closeOnce.Do(func() {
+		c.cancel()
+		close(c.send)
+		err = c.conn.Close()
+	})
+	return err
 }
 
 // ReadPump pumps messages from the WebSocket connection to the manager
@@ -157,6 +177,8 @@ func (c *Client) ReadPump(readTimeout time.Duration, maxMessageSize int64) {
 			break
 		}
 
+		// Reset read deadline on any message received
+		c.conn.SetReadDeadline(time.Now().Add(readTimeout))
 		c.UpdateActivity()
 
 		// Handle the message through the manager

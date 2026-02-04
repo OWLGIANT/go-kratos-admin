@@ -99,6 +99,367 @@ export type AdminErrorReason =
   | "NETWORK_READ_TIMEOUT_ERROR"
   // 599
   | "NETWORK_CONNECT_TIMEOUT_ERROR";
+// Actor 管理服务
+export interface ActorService {
+  // 获取 Actor 列表
+  ListActor(request: pagination_PagingRequest): Promise<tradingservicev1_ListActorResponse>;
+  // 获取 Actor
+  GetActor(request: tradingservicev1_GetActorRequest): Promise<tradingservicev1_Actor>;
+}
+
+type RequestType = {
+  path: string;
+  method: string;
+  body: string | null;
+};
+
+type RequestHandler = (request: RequestType, meta: { service: string, method: string }) => Promise<unknown>;
+
+export function createActorServiceClient(
+  handler: RequestHandler
+): ActorService {
+  return {
+    ListActor(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/actors`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
+      }
+      if (request.pageSize) {
+        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
+      }
+      if (request.offset) {
+        queryParams.push(`offset=${encodeURIComponent(request.offset.toString())}`)
+      }
+      if (request.limit) {
+        queryParams.push(`limit=${encodeURIComponent(request.limit.toString())}`)
+      }
+      if (request.token) {
+        queryParams.push(`token=${encodeURIComponent(request.token.toString())}`)
+      }
+      if (request.noPaging) {
+        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
+      }
+      if (request.query) {
+        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(`filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(`filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
+      }
+      if (request.fieldMask) {
+        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "ActorService",
+        method: "ListActor",
+      }) as Promise<tradingservicev1_ListActorResponse>;
+    },
+    GetActor(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.robotId) {
+        throw new Error("missing required field request.robot_id");
+      }
+      const path = `admin/v1/trading/actors/${request.robotId}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "ActorService",
+        method: "GetActor",
+      }) as Promise<tradingservicev1_Actor>;
+    },
+  };
+}
+// ------------------------------
+// 分页通用请求
+// ------------------------------
+export type pagination_PagingRequest = {
+  // 当前页码（从1开始，默认1）
+  page?: number;
+  // 每页条数（默认10，建议设置上限如100）
+  pageSize?: number;
+  // 跳过的记录数（从0开始，默认0）
+  offset?: number;
+  // 最多返回的记录数（默认10，建议设置上限如100）
+  limit?: number;
+  // 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+  token?: string;
+  // 是否不分页，如果为true，则page和pageSize参数无效。
+  noPaging?: boolean;
+  // JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+  query?: string;
+  // Google AIP规范字符串过滤条件
+  filter?: string;
+  // 复杂过滤表达式（优先使用）
+  filterExpr?: pagination_FilterExpr;
+  // 排序条件
+  orderBy?: string;
+  // 排序规则
+  sorting: pagination_Sorting[] | undefined;
+  // 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+  fieldMask?: wellKnownFieldMask;
+};
+
+// 过滤表达式
+export type pagination_FilterExpr = {
+  // 过滤表达式类型
+  type: pagination_ExprType | undefined;
+  // 条件列表
+  conditions: pagination_FilterCondition[] | undefined;
+  // 子表达式列表
+  groups: pagination_FilterExpr[] | undefined;
+};
+
+// 过滤表达式类型
+export type pagination_ExprType =
+  | "EXPR_TYPE_UNSPECIFIED"
+  | "AND"
+  | "OR";
+// 过滤条件
+export type pagination_FilterCondition = {
+  // 过滤字段名
+  field: string | undefined;
+  // 过滤操作符
+  op: pagination_Operator | undefined;
+  // 过滤值（单值）
+  value?: string;
+  // 当需要使用非字符串类型的比较值（对象/数组/数字/布尔）时使用此字段，
+  // 使用 google.protobuf.Value 能表达任意 JSON 值。
+  jsonValue?: wellKnownValue;
+  // 过滤值（多值，如IN操作符）
+  values: string[] | undefined;
+  // 日期时间部分（可选，仅在字段为日期时间类型时使用）
+  datePart?: pagination_DatePart;
+  // 当字段为 JSON/JSONB 类型时，可指定要抽取的子路径（例如: "meta.user.name" 或 JSONPath）
+  // 服务端应把此路径用于 JSON_EXTRACT / -> 操作，再对抽取结果应用 op。
+  jsonPath?: string;
+};
+
+// 操作符枚举
+export type pagination_Operator =
+  // 未指定
+  | "OPERATOR_UNSPECIFIED"
+  // 基本比较
+  | "EQ"
+  | "NEQ"
+  | "GT"
+  | "GTE"
+  | "LT"
+  | "LTE"
+  // 模糊 / 大小写不敏感模糊 / 非模糊
+  | "LIKE"
+  | "ILIKE"
+  | "NOT_LIKE"
+  // 集合操作
+  | "IN"
+  | "NIN"
+  // 空值判断
+  | "IS_NULL"
+  | "IS_NOT_NULL"
+  // 范围与正则
+  | "BETWEEN"
+  | "REGEXP"
+  | "IREGEXP"
+  // 语义化的字符串操作
+  | "CONTAINS"
+  | "STARTS_WITH"
+  | "ENDS_WITH"
+  | "ICONTAINS"
+  | "ISTARTS_WITH"
+  | "IENDS_WITH"
+  // JSON / 数组 / 集合相关（按需在服务端映射为具体 DB 运算）
+  | "JSON_CONTAINS"
+  | "ARRAY_CONTAINS"
+  | "EXISTS"
+  | "SEARCH"
+  | "EXACT"
+  | "IEXACT";
+type wellKnownValue = unknown;
+
+// 日期时间部分枚举
+export type pagination_DatePart =
+  | "DATE_PART_UNSPECIFIED"
+  | "DATE"
+  | "YEAR"
+  | "ISO_YEAR"
+  | "QUARTER"
+  | "MONTH"
+  | "WEEK"
+  | "WEEK_DAY"
+  | "ISO_WEEK_DAY"
+  | "DAY"
+  | "TIME"
+  | "HOUR"
+  | "MINUTE"
+  | "SECOND"
+  | "MICROSECOND";
+// 排序规则（分页场景通常需配合排序保证结果稳定）
+export type pagination_Sorting = {
+  // 排序字段（如"id"、"create_time"）
+  field: string | undefined;
+  // 排序方向
+  direction: pagination_Sorting_Direction | undefined;
+};
+
+// 排序方向（ASC/DESC，默认ASC）
+export type pagination_Sorting_Direction =
+  | "ASC"
+  | "DESC";
+// In JSON, a field mask is encoded as a single string where paths are
+// separated by a comma. Fields name in each path are converted
+// to/from lower-camel naming conventions.
+// As an example, consider the following message declarations:
+//
+//     message Profile {
+//       User user = 1;
+//       Photo photo = 2;
+//     }
+//     message User {
+//       string display_name = 1;
+//       string address = 2;
+//     }
+//
+// In proto a field mask for `Profile` may look as such:
+//
+//     mask {
+//       paths: "user.display_name"
+//       paths: "photo"
+//     }
+//
+// In JSON, the same mask is represented as below:
+//
+//     {
+//       mask: "user.displayName,photo"
+//     }
+type wellKnownFieldMask = string;
+
+// 获取 Actor 列表响应
+export type tradingservicev1_ListActorResponse = {
+  // 总数
+  total: number | undefined;
+  // Actor 列表
+  items: tradingservicev1_Actor[] | undefined;
+};
+
+// Actor 信息
+export type tradingservicev1_Actor = {
+  // 客户端ID
+  clientId: string | undefined;
+  // 机器人ID
+  robotId: string | undefined;
+  // 交易所
+  exchange: string | undefined;
+  // 版本
+  version: string | undefined;
+  // 租户ID
+  tenantId: number | undefined;
+  // 状态
+  status: string | undefined;
+  // 余额
+  balance: number | undefined;
+  // 注册时间
+  registeredAt: wellKnownTimestamp | undefined;
+  // 最后心跳时间
+  lastHeartbeat: wellKnownTimestamp | undefined;
+  // 服务器状态信息
+  serverInfo: tradingservicev1_ServerStatusInfo | undefined;
+  // 外网IP
+  ip: string | undefined;
+  // 内网IP
+  innerIp: string | undefined;
+  // 端口
+  port: string | undefined;
+  // 机器ID
+  machineId: string | undefined;
+  // 昵称
+  nickname: string | undefined;
+};
+
+// Encoded using RFC 3339, where generated output will always be Z-normalized
+// and uses 0, 3, 6 or 9 fractional digits.
+// Offsets other than "Z" are also accepted.
+type wellKnownTimestamp = string;
+
+// 服务器状态信息
+export type tradingservicev1_ServerStatusInfo = {
+  // CPU信息
+  cpu: string | undefined;
+  // IP池
+  ipPool: number | undefined;
+  // 内存
+  mem: number | undefined;
+  // 内存百分比
+  memPct: string | undefined;
+  // 磁盘百分比
+  diskPct: string | undefined;
+  // 任务数
+  taskNum: number | undefined;
+  // 策略版本
+  straVersion: boolean | undefined;
+  // 策略版本详情
+  straVersionDetail: { [key: string]: string } | undefined;
+  // AWS账户
+  awsAcct: string | undefined;
+  // AWS区域
+  awsZone: string | undefined;
+};
+
+// 获取 Actor 请求
+export type tradingservicev1_GetActorRequest = {
+  // 机器人ID
+  robotId: string | undefined;
+};
+
 // 查询路由列表 - 回应
 export type ListRouteResponse = {
   items: permissionservicev1_MenuRouteItem[] | undefined;
@@ -219,14 +580,6 @@ export interface AdminPortalService {
   // 一次性获取进入后台所需的所有上下文
   GetInitialContext(request: wellKnownEmpty): Promise<InitialContextResponse>;
 }
-
-type RequestType = {
-  path: string;
-  method: string;
-  body: string | null;
-};
-
-type RequestHandler = (request: RequestType, meta: { service: string, method: string }) => Promise<unknown>;
 
 export function createAdminPortalServiceClient(
   handler: RequestHandler
@@ -505,169 +858,6 @@ export function createApiServiceClient(
     },
   };
 }
-// ------------------------------
-// 分页通用请求
-// ------------------------------
-export type pagination_PagingRequest = {
-  // 当前页码（从1开始，默认1）
-  page?: number;
-  // 每页条数（默认10，建议设置上限如100）
-  pageSize?: number;
-  // 跳过的记录数（从0开始，默认0）
-  offset?: number;
-  // 最多返回的记录数（默认10，建议设置上限如100）
-  limit?: number;
-  // 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
-  token?: string;
-  // 是否不分页，如果为true，则page和pageSize参数无效。
-  noPaging?: boolean;
-  // JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
-  query?: string;
-  // Google AIP规范字符串过滤条件
-  filter?: string;
-  // 复杂过滤表达式（优先使用）
-  filterExpr?: pagination_FilterExpr;
-  // 排序条件
-  orderBy?: string;
-  // 排序规则
-  sorting: pagination_Sorting[] | undefined;
-  // 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
-  fieldMask?: wellKnownFieldMask;
-};
-
-// 过滤表达式
-export type pagination_FilterExpr = {
-  // 过滤表达式类型
-  type: pagination_ExprType | undefined;
-  // 条件列表
-  conditions: pagination_FilterCondition[] | undefined;
-  // 子表达式列表
-  groups: pagination_FilterExpr[] | undefined;
-};
-
-// 过滤表达式类型
-export type pagination_ExprType =
-  | "EXPR_TYPE_UNSPECIFIED"
-  | "AND"
-  | "OR";
-// 过滤条件
-export type pagination_FilterCondition = {
-  // 过滤字段名
-  field: string | undefined;
-  // 过滤操作符
-  op: pagination_Operator | undefined;
-  // 过滤值（单值）
-  value?: string;
-  // 当需要使用非字符串类型的比较值（对象/数组/数字/布尔）时使用此字段，
-  // 使用 google.protobuf.Value 能表达任意 JSON 值。
-  jsonValue?: wellKnownValue;
-  // 过滤值（多值，如IN操作符）
-  values: string[] | undefined;
-  // 日期时间部分（可选，仅在字段为日期时间类型时使用）
-  datePart?: pagination_DatePart;
-  // 当字段为 JSON/JSONB 类型时，可指定要抽取的子路径（例如: "meta.user.name" 或 JSONPath）
-  // 服务端应把此路径用于 JSON_EXTRACT / -> 操作，再对抽取结果应用 op。
-  jsonPath?: string;
-};
-
-// 操作符枚举
-export type pagination_Operator =
-  // 未指定
-  | "OPERATOR_UNSPECIFIED"
-  // 基本比较
-  | "EQ"
-  | "NEQ"
-  | "GT"
-  | "GTE"
-  | "LT"
-  | "LTE"
-  // 模糊 / 大小写不敏感模糊 / 非模糊
-  | "LIKE"
-  | "ILIKE"
-  | "NOT_LIKE"
-  // 集合操作
-  | "IN"
-  | "NIN"
-  // 空值判断
-  | "IS_NULL"
-  | "IS_NOT_NULL"
-  // 范围与正则
-  | "BETWEEN"
-  | "REGEXP"
-  | "IREGEXP"
-  // 语义化的字符串操作
-  | "CONTAINS"
-  | "STARTS_WITH"
-  | "ENDS_WITH"
-  | "ICONTAINS"
-  | "ISTARTS_WITH"
-  | "IENDS_WITH"
-  // JSON / 数组 / 集合相关（按需在服务端映射为具体 DB 运算）
-  | "JSON_CONTAINS"
-  | "ARRAY_CONTAINS"
-  | "EXISTS"
-  | "SEARCH"
-  | "EXACT"
-  | "IEXACT";
-type wellKnownValue = unknown;
-
-// 日期时间部分枚举
-export type pagination_DatePart =
-  | "DATE_PART_UNSPECIFIED"
-  | "DATE"
-  | "YEAR"
-  | "ISO_YEAR"
-  | "QUARTER"
-  | "MONTH"
-  | "WEEK"
-  | "WEEK_DAY"
-  | "ISO_WEEK_DAY"
-  | "DAY"
-  | "TIME"
-  | "HOUR"
-  | "MINUTE"
-  | "SECOND"
-  | "MICROSECOND";
-// 排序规则（分页场景通常需配合排序保证结果稳定）
-export type pagination_Sorting = {
-  // 排序字段（如"id"、"create_time"）
-  field: string | undefined;
-  // 排序方向
-  direction: pagination_Sorting_Direction | undefined;
-};
-
-// 排序方向（ASC/DESC，默认ASC）
-export type pagination_Sorting_Direction =
-  | "ASC"
-  | "DESC";
-// In JSON, a field mask is encoded as a single string where paths are
-// separated by a comma. Fields name in each path are converted
-// to/from lower-camel naming conventions.
-// As an example, consider the following message declarations:
-//
-//     message Profile {
-//       User user = 1;
-//       Photo photo = 2;
-//     }
-//     message User {
-//       string display_name = 1;
-//       string address = 2;
-//     }
-//
-// In proto a field mask for `Profile` may look as such:
-//
-//     mask {
-//       paths: "user.display_name"
-//       paths: "photo"
-//     }
-//
-// In JSON, the same mask is represented as below:
-//
-//     {
-//       mask: "user.displayName,photo"
-//     }
-type wellKnownFieldMask = string;
-
 // 查询列表 - 回应
 export type permissionservicev1_ListApiResponse = {
   items: permissionservicev1_Api[] | undefined;
@@ -702,11 +892,6 @@ export type permissionservicev1_Api_Scope =
 export type permissionservicev1_Api_Status =
   | "OFF"
   | "ON";
-// Encoded using RFC 3339, where generated output will always be Z-normalized
-// and uses 0, 3, 6 or 9 fractional digits.
-// Offsets other than "Z" are also accepted.
-type wellKnownTimestamp = string;
-
 // 查询 - 请求
 export type permissionservicev1_GetApiRequest = {
   id?: number;
@@ -6846,30 +7031,6 @@ export type tradingservicev1_Server = {
   createTime: wellKnownTimestamp | undefined;
   // 更新时间
   updateTime: wellKnownTimestamp | undefined;
-};
-
-// 服务器状态信息
-export type tradingservicev1_ServerStatusInfo = {
-  // CPU信息
-  cpu: string | undefined;
-  // IP池
-  ipPool: number | undefined;
-  // 内存
-  mem: number | undefined;
-  // 内存百分比
-  memPct: string | undefined;
-  // 磁盘百分比
-  diskPct: string | undefined;
-  // 任务数
-  taskNum: number | undefined;
-  // 策略版本
-  straVersion: boolean | undefined;
-  // 策略版本详情
-  straVersionDetail: { [key: string]: string } | undefined;
-  // AWS账户
-  awsAcct: string | undefined;
-  // AWS区域
-  awsZone: string | undefined;
 };
 
 // 托管者类型

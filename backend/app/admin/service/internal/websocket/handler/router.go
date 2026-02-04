@@ -34,6 +34,8 @@ func (r *Router) Register(action string, handler HandlerFunc) {
 
 // HandleMessage routes a message to the appropriate handler
 func (r *Router) HandleMessage(client *websocket.Client, msg *protocol.UnifiedMessage) error {
+	r.log.Infof("Received message: action=%s, client=%s, isActor=%v, data=%v", msg.Action, client.ID, client.IsActor, msg.Data)
+
 	handler, ok := r.handlers[msg.Action]
 	if !ok {
 		r.log.Warnf("No handler found for action: %s", msg.Action)
@@ -41,6 +43,6 @@ func (r *Router) HandleMessage(client *websocket.Client, msg *protocol.UnifiedMe
 		return client.SendResponse(resp, msg.Action)
 	}
 
-	r.log.Debugf("Routing message to handler: action=%s, client=%s", msg.Action, client.ID)
+	r.log.Infof("Routing message to handler: action=%s, client=%s", msg.Action, client.ID)
 	return handler(client, msg)
 }

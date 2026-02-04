@@ -12,7 +12,8 @@ import (
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	"go-wind-admin/app/admin/service/internal/server"
-	"go-wind-admin/pkg/service"
+	internalService "go-wind-admin/app/admin/service/internal/service"
+	pkgService "go-wind-admin/pkg/service"
 
 	//_ "github.com/tx7do/kratos-bootstrap/config/apollo"
 	//_ "github.com/tx7do/kratos-bootstrap/config/consul"
@@ -50,9 +51,15 @@ func newApp(
 	as *asynq.Server,
 	ss *sse.Server,
 	ws *server.WebSocketServer,
+	actorService *internalService.ActorService,
 ) *kratos.App {
 	// Add WebSocket server if configured
 	if ws != nil {
+		// Set actor registry for HTTP API
+		if actorService != nil {
+			actorService.SetRegistry(ws.GetActorRegistry())
+		}
+
 		// Start WebSocket server in a goroutine
 		go func() {
 			if err := ws.Start(); err != nil {
@@ -68,8 +75,8 @@ func runApp() error {
 	ctx := bootstrap.NewContext(
 		context.Background(),
 		&conf.AppInfo{
-			Project: service.Project,
-			AppId:   service.AdminService,
+			Project: pkgService.Project,
+			AppId:   pkgService.AdminService,
 			Version: version,
 		},
 	)
