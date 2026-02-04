@@ -69,14 +69,6 @@ func (m *ServerStatusInfo) validate(all bool) error {
 
 	// no validation rules for TaskNum
 
-	// no validation rules for StraVersion
-
-	// no validation rules for StraVersionDetail
-
-	// no validation rules for AwsAcct
-
-	// no validation rules for AwsZone
-
 	if len(errors) > 0 {
 		return ServerStatusInfoMultiError(errors)
 	}

@@ -26,9 +26,8 @@ const (
 type ServerType int32
 
 const (
-	ServerType_SERVER_TYPE_UNSPECIFIED ServerType = 0
-	ServerType_SERVER_TYPE_SELF_BUILT  ServerType = 1 // 自建
-	ServerType_SERVER_TYPE_PLATFORM    ServerType = 2 // 大后台
+	ServerType_SERVER_TYPE_UNSPECIFIED ServerType = 0 // 自动注册
+	ServerType_SERVER_TYPE_SELF_BUILT  ServerType = 1 // 手动创建
 )
 
 // Enum value maps for ServerType.
@@ -36,12 +35,10 @@ var (
 	ServerType_name = map[int32]string{
 		0: "SERVER_TYPE_UNSPECIFIED",
 		1: "SERVER_TYPE_SELF_BUILT",
-		2: "SERVER_TYPE_PLATFORM",
 	}
 	ServerType_value = map[string]int32{
 		"SERVER_TYPE_UNSPECIFIED": 0,
 		"SERVER_TYPE_SELF_BUILT":  1,
-		"SERVER_TYPE_PLATFORM":    2,
 	}
 )
 
@@ -86,15 +83,7 @@ type ServerStatusInfo struct {
 	// 磁盘百分比
 	DiskPct string `protobuf:"bytes,5,opt,name=disk_pct,json=diskPct,proto3" json:"disk_pct,omitempty"`
 	// 任务数
-	TaskNum int32 `protobuf:"varint,6,opt,name=task_num,json=taskNum,proto3" json:"task_num,omitempty"`
-	// 策略版本
-	StraVersion bool `protobuf:"varint,7,opt,name=stra_version,json=straVersion,proto3" json:"stra_version,omitempty"`
-	// 策略版本详情
-	StraVersionDetail map[string]string `protobuf:"bytes,8,rep,name=stra_version_detail,json=straVersionDetail,proto3" json:"stra_version_detail,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// AWS账户
-	AwsAcct string `protobuf:"bytes,9,opt,name=aws_acct,json=awsAcct,proto3" json:"aws_acct,omitempty"`
-	// AWS区域
-	AwsZone       string `protobuf:"bytes,10,opt,name=aws_zone,json=awsZone,proto3" json:"aws_zone,omitempty"`
+	TaskNum       int32 `protobuf:"varint,6,opt,name=task_num,json=taskNum,proto3" json:"task_num,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -169,34 +158,6 @@ func (x *ServerStatusInfo) GetTaskNum() int32 {
 		return x.TaskNum
 	}
 	return 0
-}
-
-func (x *ServerStatusInfo) GetStraVersion() bool {
-	if x != nil {
-		return x.StraVersion
-	}
-	return false
-}
-
-func (x *ServerStatusInfo) GetStraVersionDetail() map[string]string {
-	if x != nil {
-		return x.StraVersionDetail
-	}
-	return nil
-}
-
-func (x *ServerStatusInfo) GetAwsAcct() string {
-	if x != nil {
-		return x.AwsAcct
-	}
-	return ""
-}
-
-func (x *ServerStatusInfo) GetAwsZone() string {
-	if x != nil {
-		return x.AwsZone
-	}
-	return ""
 }
 
 // 托管者（服务器）
@@ -1318,22 +1279,14 @@ var File_trading_service_v1_server_proto protoreflect.FileDescriptor
 
 const file_trading_service_v1_server_proto_rawDesc = "" +
 	"\n" +
-	"\x1ftrading/service/v1/server.proto\x12\x12trading.service.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaa\x03\n" +
+	"\x1ftrading/service/v1/server.proto\x12\x12trading.service.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9e\x01\n" +
 	"\x10ServerStatusInfo\x12\x10\n" +
 	"\x03cpu\x18\x01 \x01(\tR\x03cpu\x12\x17\n" +
 	"\aip_pool\x18\x02 \x01(\x01R\x06ipPool\x12\x10\n" +
 	"\x03mem\x18\x03 \x01(\x01R\x03mem\x12\x17\n" +
 	"\amem_pct\x18\x04 \x01(\tR\x06memPct\x12\x19\n" +
 	"\bdisk_pct\x18\x05 \x01(\tR\adiskPct\x12\x19\n" +
-	"\btask_num\x18\x06 \x01(\x05R\ataskNum\x12!\n" +
-	"\fstra_version\x18\a \x01(\bR\vstraVersion\x12k\n" +
-	"\x13stra_version_detail\x18\b \x03(\v2;.trading.service.v1.ServerStatusInfo.StraVersionDetailEntryR\x11straVersionDetail\x12\x19\n" +
-	"\baws_acct\x18\t \x01(\tR\aawsAcct\x12\x19\n" +
-	"\baws_zone\x18\n" +
-	" \x01(\tR\aawsZone\x1aD\n" +
-	"\x16StraVersionDetailEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf3\x03\n" +
+	"\btask_num\x18\x06 \x01(\x05R\ataskNum\"\xf3\x03\n" +
 	"\x06Server\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\rR\x02id\x12\x1a\n" +
 	"\bnickname\x18\x02 \x01(\tR\bnickname\x12\x0e\n" +
@@ -1426,12 +1379,11 @@ const file_trading_service_v1_server_proto_rawDesc = "" +
 	"\x06remark\x18\x02 \x01(\tR\x06remark\"N\n" +
 	"\x1eGetCanRestartServerListRequest\x12\x1f\n" +
 	"\boperator\x18\x01 \x01(\tH\x00R\boperator\x88\x01\x01B\v\n" +
-	"\t_operator*_\n" +
+	"\t_operator*E\n" +
 	"\n" +
 	"ServerType\x12\x1b\n" +
 	"\x17SERVER_TYPE_UNSPECIFIED\x10\x00\x12\x1a\n" +
-	"\x16SERVER_TYPE_SELF_BUILT\x10\x01\x12\x18\n" +
-	"\x14SERVER_TYPE_PLATFORM\x10\x02B\xc6\x01\n" +
+	"\x16SERVER_TYPE_SELF_BUILT\x10\x01B\xc6\x01\n" +
 	"\x16com.trading.service.v1B\vServerProtoP\x01Z5go-wind-admin/api/gen/go/trading/service/v1;servicev1\xa2\x02\x03TSX\xaa\x02\x12Trading.Service.V1\xca\x02\x12Trading\\Service\\V1\xe2\x02\x1eTrading\\Service\\V1\\GPBMetadata\xea\x02\x14Trading::Service::V1b\x06proto3"
 
 var (
@@ -1447,7 +1399,7 @@ func file_trading_service_v1_server_proto_rawDescGZIP() []byte {
 }
 
 var file_trading_service_v1_server_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_trading_service_v1_server_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_trading_service_v1_server_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
 var file_trading_service_v1_server_proto_goTypes = []any{
 	(ServerType)(0),                        // 0: trading.service.v1.ServerType
 	(*ServerStatusInfo)(nil),               // 1: trading.service.v1.ServerStatusInfo
@@ -1468,24 +1420,22 @@ var file_trading_service_v1_server_proto_goTypes = []any{
 	(*UpdateServerStrategyRequest)(nil),    // 16: trading.service.v1.UpdateServerStrategyRequest
 	(*UpdateServerRemarkRequest)(nil),      // 17: trading.service.v1.UpdateServerRemarkRequest
 	(*GetCanRestartServerListRequest)(nil), // 18: trading.service.v1.GetCanRestartServerListRequest
-	nil,                                    // 19: trading.service.v1.ServerStatusInfo.StraVersionDetailEntry
-	(*timestamppb.Timestamp)(nil),          // 20: google.protobuf.Timestamp
+	(*timestamppb.Timestamp)(nil),          // 19: google.protobuf.Timestamp
 }
 var file_trading_service_v1_server_proto_depIdxs = []int32{
-	19, // 0: trading.service.v1.ServerStatusInfo.stra_version_detail:type_name -> trading.service.v1.ServerStatusInfo.StraVersionDetailEntry
-	1,  // 1: trading.service.v1.Server.server_info:type_name -> trading.service.v1.ServerStatusInfo
-	0,  // 2: trading.service.v1.Server.type:type_name -> trading.service.v1.ServerType
-	20, // 3: trading.service.v1.Server.create_time:type_name -> google.protobuf.Timestamp
-	20, // 4: trading.service.v1.Server.update_time:type_name -> google.protobuf.Timestamp
-	2,  // 5: trading.service.v1.ListServerResponse.items:type_name -> trading.service.v1.Server
-	0,  // 6: trading.service.v1.CreateServerRequest.type:type_name -> trading.service.v1.ServerType
-	5,  // 7: trading.service.v1.BatchCreateServerRequest.servers:type_name -> trading.service.v1.CreateServerRequest
-	0,  // 8: trading.service.v1.UpdateServerRequest.type:type_name -> trading.service.v1.ServerType
-	9,  // [9:9] is the sub-list for method output_type
-	9,  // [9:9] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	1,  // 0: trading.service.v1.Server.server_info:type_name -> trading.service.v1.ServerStatusInfo
+	0,  // 1: trading.service.v1.Server.type:type_name -> trading.service.v1.ServerType
+	19, // 2: trading.service.v1.Server.create_time:type_name -> google.protobuf.Timestamp
+	19, // 3: trading.service.v1.Server.update_time:type_name -> google.protobuf.Timestamp
+	2,  // 4: trading.service.v1.ListServerResponse.items:type_name -> trading.service.v1.Server
+	0,  // 5: trading.service.v1.CreateServerRequest.type:type_name -> trading.service.v1.ServerType
+	5,  // 6: trading.service.v1.BatchCreateServerRequest.servers:type_name -> trading.service.v1.CreateServerRequest
+	0,  // 7: trading.service.v1.UpdateServerRequest.type:type_name -> trading.service.v1.ServerType
+	8,  // [8:8] is the sub-list for method output_type
+	8,  // [8:8] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_trading_service_v1_server_proto_init() }
@@ -1501,7 +1451,7 @@ func file_trading_service_v1_server_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_trading_service_v1_server_proto_rawDesc), len(file_trading_service_v1_server_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   19,
+			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

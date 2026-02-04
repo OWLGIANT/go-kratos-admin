@@ -39,14 +39,6 @@ func (x *ServerStatusInfo) Redact() string {
 	// Safe field: DiskPct
 
 	// Safe field: TaskNum
-
-	// Safe field: StraVersion
-
-	// Safe field: StraVersionDetail
-
-	// Safe field: AwsAcct
-
-	// Safe field: AwsZone
 	return x.String()
 }
 

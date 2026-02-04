@@ -7,17 +7,17 @@ import "trading/service/v1/server.proto";
 
 option go_package = "kratos-admin/api/gen/go/trading/service/v1;tradingV1";
 
-// Actor 状态
-enum ActorStatus {
-  ACTOR_STATUS_UNSPECIFIED = 0;
-  ACTOR_STATUS_CONNECTED = 1;    // 在线
-  ACTOR_STATUS_DISCONNECTED = 2; // 离线
-  ACTOR_STATUS_IDLE = 3;         // 空闲
-  ACTOR_STATUS_ERROR = 4;        // 错误
+// Robot 状态
+enum RobotStatus {
+  Robot_STATUS_UNSPECIFIED = 0;
+  Robot_STATUS_CONNECTED = 1;    // 在线
+  Robot_STATUS_DISCONNECTED = 2; // 离线
+  Robot_STATUS_IDLE = 3;         // 空闲
+  Robot_STATUS_ERROR = 4;        // 错误
 }
 
-// Actor 信息
-message Actor {
+// Robot 信息
+message Robot {
   // 客户端ID
   string client_id = 1;
 
@@ -64,17 +64,17 @@ message Actor {
   string nickname = 15;
 }
 
-// 获取 Actor 列表响应
-message ListActorResponse {
+// 获取 Robot 列表响应
+message ListRobotResponse {
   // 总数
   int32 total = 1;
 
-  // Actor 列表
-  repeated Actor items = 2;
+  // Robot 列表
+  repeated Robot items = 2;
 }
 
-// 获取 Actor 请求
-message GetActorRequest {
+// 获取 Robot 请求
+message GetRobotRequest {
   // 机器人ID
   string robot_id = 1;
 }

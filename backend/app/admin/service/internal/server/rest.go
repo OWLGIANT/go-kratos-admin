@@ -185,7 +185,7 @@ func NewRestServer(
 	adminV1.RegisterExchangeAccountServiceHTTPServer(srv, exchangeAccountService)
 	adminV1.RegisterServerServiceHTTPServer(srv, serverService)
 	adminV1.RegisterHftMarketMakingServiceHTTPServer(srv, hftMarketMakingService)
-	adminV1.RegisterActorServiceHTTPServer(srv, actorService)
+	adminV1.RegisterRobotServiceHTTPServer(srv, actorService)
 
 	if cfg.GetServer().GetRest().GetEnableSwagger() {
 		swaggerUI.RegisterSwaggerUIServerWithOption(

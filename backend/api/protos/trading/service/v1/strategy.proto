@@ -7,7 +7,7 @@ import "google/protobuf/timestamp.proto";
 option go_package = "kratos-admin/api/gen/go/trading/service/v1;tradingV1";
 
 // HFT策略类型
-enum HftStrategyType {
+enum StrategyType {
   HFT_STRATEGY_TYPE_UNSPECIFIED = 0;
   HFT_STRATEGY_TYPE_DINO = 1;   // 恐龙策略
   HFT_STRATEGY_TYPE_CAT = 2;    // 猫策略
@@ -114,7 +114,7 @@ message HftInfo {
   string robot_id = 1;
 
   // 策略类型
-  HftStrategyType strategy_type = 2;
+  StrategyType strategy_type = 2;
 
   // 账号昵称
   string account_nickname = 3;
@@ -240,7 +240,7 @@ message GetHftInfoRequest {
   optional string robot_id = 1;
 
   // 策略类型
-  optional HftStrategyType strategy_type = 2;
+  optional StrategyType strategy_type = 2;
 
   // 操作员
   optional string operator = 3;

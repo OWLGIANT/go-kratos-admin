@@ -27,7 +27,7 @@ var File_admin_service_v1_i_hft_market_making_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_hft_market_making_proto_rawDesc = "" +
 	"\n" +
-	"*admin/service/v1/i_hft_market_making.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a*trading/service/v1/hft_market_making.proto2\xfc\a\n" +
+	"*admin/service/v1/i_hft_market_making.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a!trading/service/v1/strategy.proto2\xfc\a\n" +
 	"\x16HftMarketMakingService\x12\xad\x01\n" +
 	"\x14ListMidSigExecOrders\x12/.trading.service.v1.ListMidSigExecOrdersRequest\x1a0.trading.service.v1.ListMidSigExecOrdersResponse\"2\x82\xd3\xe4\x93\x02,:\x01*\"'/admin/v1/trading/hft/midsigexec/orders\x12\xb1\x01\n" +
 	"\x15ListMidSigExecSignals\x120.trading.service.v1.ListMidSigExecSignalsRequest\x1a1.trading.service.v1.ListMidSigExecSignalsResponse\"3\x82\xd3\xe4\x93\x02-:\x01*\"(/admin/v1/trading/hft/midsigexec/signals\x12\xb1\x01\n" +

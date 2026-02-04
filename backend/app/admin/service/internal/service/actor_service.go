@@ -20,7 +20,7 @@ type ActorRegistry interface {
 }
 
 type ActorService struct {
-	adminV1.ActorServiceHTTPServer
+	adminV1.RobotServiceHTTPClient
 
 	log      *log.Helper
 	registry ActorRegistry
@@ -41,32 +41,32 @@ func (s *ActorService) SetRegistry(registry ActorRegistry) {
 	s.registry = registry
 }
 
-// ListActor 获取 Actor 列表
-func (s *ActorService) ListActor(ctx context.Context, req *paginationV1.PagingRequest) (*tradingV1.ListActorResponse, error) {
+// ListRobot 获取 Robot 列表
+func (s *ActorService) ListRobot(ctx context.Context, req *paginationV1.PagingRequest) (*tradingV1.ListRobotResponse, error) {
 	if s.registry == nil {
 		s.log.Warn("Actor registry not set")
-		return &tradingV1.ListActorResponse{
+		return &tradingV1.ListRobotResponse{
 			Total: 0,
-			Items: []*tradingV1.Actor{},
+			Items: []*tradingV1.Robot{},
 		}, nil
 	}
 
 	actors := s.registry.GetAll()
-	s.log.Infof("ListActor: found %d actors", len(actors))
+	s.log.Infof("ListRobot: found %d robots", len(actors))
 
-	items := make([]*tradingV1.Actor, 0, len(actors))
+	items := make([]*tradingV1.Robot, 0, len(actors))
 	for _, actor := range actors {
 		items = append(items, s.convertActorInfo(actor))
 	}
 
-	return &tradingV1.ListActorResponse{
+	return &tradingV1.ListRobotResponse{
 		Total: int32(len(items)),
 		Items: items,
 	}, nil
 }
 
-// GetActor 获取单个 Actor
-func (s *ActorService) GetActor(ctx context.Context, req *tradingV1.GetActorRequest) (*tradingV1.Actor, error) {
+// GetRobot 获取单个 Robot
+func (s *ActorService) GetRobot(ctx context.Context, req *tradingV1.GetRobotRequest) (*tradingV1.Robot, error) {
 	if s.registry == nil {
 		s.log.Warn("Actor registry not set")
 		return nil, nil
@@ -81,8 +81,8 @@ func (s *ActorService) GetActor(ctx context.Context, req *tradingV1.GetActorRequ
 }
 
 // convertActorInfo 将内部 ActorInfo 转换为 proto Actor
-func (s *ActorService) convertActorInfo(info *handler.ActorInfo) *tradingV1.Actor {
-	actor := &tradingV1.Actor{
+func (s *ActorService) convertActorInfo(info *handler.ActorInfo) *tradingV1.Robot {
+	actor := &tradingV1.Robot{
 		ClientId:      info.ClientID,
 		RobotId:       info.RobotID,
 		Exchange:      info.Exchange,
@@ -101,16 +101,12 @@ func (s *ActorService) convertActorInfo(info *handler.ActorInfo) *tradingV1.Acto
 
 	if info.ServerInfo != nil {
 		actor.ServerInfo = &tradingV1.ServerStatusInfo{
-			Cpu:               info.ServerInfo.CPU,
-			IpPool:            info.ServerInfo.IPPool,
-			Mem:               info.ServerInfo.Mem,
-			MemPct:            info.ServerInfo.MemPct,
-			DiskPct:           info.ServerInfo.DiskPct,
-			TaskNum:           info.ServerInfo.TaskNum,
-			StraVersion:       info.ServerInfo.StraVersion,
-			StraVersionDetail: info.ServerInfo.StraVersionDetail,
-			AwsAcct:           info.ServerInfo.AwsAcct,
-			AwsZone:           info.ServerInfo.AwsZone,
+			Cpu:     info.ServerInfo.CPU,
+			IpPool:  info.ServerInfo.IPPool,
+			Mem:     info.ServerInfo.Mem,
+			MemPct:  info.ServerInfo.MemPct,
+			DiskPct: info.ServerInfo.DiskPct,
+			TaskNum: info.ServerInfo.TaskNum,
 		}
 	}
 

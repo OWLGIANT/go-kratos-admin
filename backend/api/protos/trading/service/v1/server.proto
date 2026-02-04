@@ -8,9 +8,8 @@ option go_package = "kratos-admin/api/gen/go/trading/service/v1;tradingV1";
 
 // 托管者类型
 enum ServerType {
-  SERVER_TYPE_UNSPECIFIED = 0;
-  SERVER_TYPE_SELF_BUILT = 1;  // 自建
-  SERVER_TYPE_PLATFORM = 2;    // 大后台
+  SERVER_TYPE_UNSPECIFIED = 0;  // 自动注册
+  SERVER_TYPE_SELF_BUILT = 1;  // 手动创建
 }
 
 // 服务器状态信息
@@ -32,18 +31,6 @@ message ServerStatusInfo {
 
   // 任务数
   int32 task_num = 6;
-
-  // 策略版本
-  bool stra_version = 7;
-
-  // 策略版本详情
-  map<string, string> stra_version_detail = 8;
-
-  // AWS账户
-  string aws_acct = 9;
-
-  // AWS区域
-  string aws_zone = 10;
 }
 
 // 托管者（服务器）

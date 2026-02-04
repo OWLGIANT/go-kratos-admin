@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: trading/service/v1/hft_market_making.proto
+// source: trading/service/v1/strategy.proto
 
 package servicev1
 
@@ -23,26 +23,26 @@ const (
 )
 
 // HFT策略类型
-type HftStrategyType int32
+type StrategyType int32
 
 const (
-	HftStrategyType_HFT_STRATEGY_TYPE_UNSPECIFIED HftStrategyType = 0
-	HftStrategyType_HFT_STRATEGY_TYPE_DINO        HftStrategyType = 1 // 恐龙策略
-	HftStrategyType_HFT_STRATEGY_TYPE_CAT         HftStrategyType = 2 // 猫策略
-	HftStrategyType_HFT_STRATEGY_TYPE_TREX        HftStrategyType = 3 // 霸王龙策略
-	HftStrategyType_HFT_STRATEGY_TYPE_TIGER       HftStrategyType = 4 // 老虎策略
+	StrategyType_HFT_STRATEGY_TYPE_UNSPECIFIED StrategyType = 0
+	StrategyType_HFT_STRATEGY_TYPE_DINO        StrategyType = 1 // 恐龙策略
+	StrategyType_HFT_STRATEGY_TYPE_CAT         StrategyType = 2 // 猫策略
+	StrategyType_HFT_STRATEGY_TYPE_TREX        StrategyType = 3 // 霸王龙策略
+	StrategyType_HFT_STRATEGY_TYPE_TIGER       StrategyType = 4 // 老虎策略
 )
 
-// Enum value maps for HftStrategyType.
+// Enum value maps for StrategyType.
 var (
-	HftStrategyType_name = map[int32]string{
+	StrategyType_name = map[int32]string{
 		0: "HFT_STRATEGY_TYPE_UNSPECIFIED",
 		1: "HFT_STRATEGY_TYPE_DINO",
 		2: "HFT_STRATEGY_TYPE_CAT",
 		3: "HFT_STRATEGY_TYPE_TREX",
 		4: "HFT_STRATEGY_TYPE_TIGER",
 	}
-	HftStrategyType_value = map[string]int32{
+	StrategyType_value = map[string]int32{
 		"HFT_STRATEGY_TYPE_UNSPECIFIED": 0,
 		"HFT_STRATEGY_TYPE_DINO":        1,
 		"HFT_STRATEGY_TYPE_CAT":         2,
@@ -51,31 +51,31 @@ var (
 	}
 )
 
-func (x HftStrategyType) Enum() *HftStrategyType {
-	p := new(HftStrategyType)
+func (x StrategyType) Enum() *StrategyType {
+	p := new(StrategyType)
 	*p = x
 	return p
 }
 
-func (x HftStrategyType) String() string {
+func (x StrategyType) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (HftStrategyType) Descriptor() protoreflect.EnumDescriptor {
-	return file_trading_service_v1_hft_market_making_proto_enumTypes[0].Descriptor()
+func (StrategyType) Descriptor() protoreflect.EnumDescriptor {
+	return file_trading_service_v1_strategy_proto_enumTypes[0].Descriptor()
 }
 
-func (HftStrategyType) Type() protoreflect.EnumType {
-	return &file_trading_service_v1_hft_market_making_proto_enumTypes[0]
+func (StrategyType) Type() protoreflect.EnumType {
+	return &file_trading_service_v1_strategy_proto_enumTypes[0]
 }
 
-func (x HftStrategyType) Number() protoreflect.EnumNumber {
+func (x StrategyType) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use HftStrategyType.Descriptor instead.
-func (HftStrategyType) EnumDescriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{0}
+// Deprecated: Use StrategyType.Descriptor instead.
+func (StrategyType) EnumDescriptor() ([]byte, []int) {
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{0}
 }
 
 // MidSigExec 订单
@@ -109,7 +109,7 @@ type MidSigExecOrder struct {
 
 func (x *MidSigExecOrder) Reset() {
 	*x = MidSigExecOrder{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[0]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -121,7 +121,7 @@ func (x *MidSigExecOrder) String() string {
 func (*MidSigExecOrder) ProtoMessage() {}
 
 func (x *MidSigExecOrder) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[0]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -134,7 +134,7 @@ func (x *MidSigExecOrder) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MidSigExecOrder.ProtoReflect.Descriptor instead.
 func (*MidSigExecOrder) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{0}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *MidSigExecOrder) GetOrderId() string {
@@ -239,7 +239,7 @@ type MidSigExecSignal struct {
 
 func (x *MidSigExecSignal) Reset() {
 	*x = MidSigExecSignal{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[1]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -251,7 +251,7 @@ func (x *MidSigExecSignal) String() string {
 func (*MidSigExecSignal) ProtoMessage() {}
 
 func (x *MidSigExecSignal) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[1]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -264,7 +264,7 @@ func (x *MidSigExecSignal) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MidSigExecSignal.ProtoReflect.Descriptor instead.
 func (*MidSigExecSignal) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{1}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *MidSigExecSignal) GetSignalId() string {
@@ -350,7 +350,7 @@ type MidSigExecDetail struct {
 
 func (x *MidSigExecDetail) Reset() {
 	*x = MidSigExecDetail{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[2]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -362,7 +362,7 @@ func (x *MidSigExecDetail) String() string {
 func (*MidSigExecDetail) ProtoMessage() {}
 
 func (x *MidSigExecDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[2]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -375,7 +375,7 @@ func (x *MidSigExecDetail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MidSigExecDetail.ProtoReflect.Descriptor instead.
 func (*MidSigExecDetail) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{2}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *MidSigExecDetail) GetDetailId() string {
@@ -447,7 +447,7 @@ type HftInfo struct {
 	// 机器人ID
 	RobotId string `protobuf:"bytes,1,opt,name=robot_id,json=robotId,proto3" json:"robot_id,omitempty"`
 	// 策略类型
-	StrategyType HftStrategyType `protobuf:"varint,2,opt,name=strategy_type,json=strategyType,proto3,enum=trading.service.v1.HftStrategyType" json:"strategy_type,omitempty"`
+	StrategyType StrategyType `protobuf:"varint,2,opt,name=strategy_type,json=strategyType,proto3,enum=trading.service.v1.StrategyType" json:"strategy_type,omitempty"`
 	// 账号昵称
 	AccountNickname string `protobuf:"bytes,3,opt,name=account_nickname,json=accountNickname,proto3" json:"account_nickname,omitempty"`
 	// 交易对
@@ -474,7 +474,7 @@ type HftInfo struct {
 
 func (x *HftInfo) Reset() {
 	*x = HftInfo{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[3]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -486,7 +486,7 @@ func (x *HftInfo) String() string {
 func (*HftInfo) ProtoMessage() {}
 
 func (x *HftInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[3]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -499,7 +499,7 @@ func (x *HftInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HftInfo.ProtoReflect.Descriptor instead.
 func (*HftInfo) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{3}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *HftInfo) GetRobotId() string {
@@ -509,11 +509,11 @@ func (x *HftInfo) GetRobotId() string {
 	return ""
 }
 
-func (x *HftInfo) GetStrategyType() HftStrategyType {
+func (x *HftInfo) GetStrategyType() StrategyType {
 	if x != nil {
 		return x.StrategyType
 	}
-	return HftStrategyType_HFT_STRATEGY_TYPE_UNSPECIFIED
+	return StrategyType_HFT_STRATEGY_TYPE_UNSPECIFIED
 }
 
 func (x *HftInfo) GetAccountNickname() string {
@@ -607,7 +607,7 @@ type ListMidSigExecOrdersRequest struct {
 
 func (x *ListMidSigExecOrdersRequest) Reset() {
 	*x = ListMidSigExecOrdersRequest{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[4]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -619,7 +619,7 @@ func (x *ListMidSigExecOrdersRequest) String() string {
 func (*ListMidSigExecOrdersRequest) ProtoMessage() {}
 
 func (x *ListMidSigExecOrdersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[4]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -632,7 +632,7 @@ func (x *ListMidSigExecOrdersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMidSigExecOrdersRequest.ProtoReflect.Descriptor instead.
 func (*ListMidSigExecOrdersRequest) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{4}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ListMidSigExecOrdersRequest) GetRobotId() string {
@@ -690,7 +690,7 @@ type ListMidSigExecOrdersResponse struct {
 
 func (x *ListMidSigExecOrdersResponse) Reset() {
 	*x = ListMidSigExecOrdersResponse{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[5]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -702,7 +702,7 @@ func (x *ListMidSigExecOrdersResponse) String() string {
 func (*ListMidSigExecOrdersResponse) ProtoMessage() {}
 
 func (x *ListMidSigExecOrdersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[5]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -715,7 +715,7 @@ func (x *ListMidSigExecOrdersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMidSigExecOrdersResponse.ProtoReflect.Descriptor instead.
 func (*ListMidSigExecOrdersResponse) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{5}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ListMidSigExecOrdersResponse) GetTotal() int32 {
@@ -753,7 +753,7 @@ type ListMidSigExecSignalsRequest struct {
 
 func (x *ListMidSigExecSignalsRequest) Reset() {
 	*x = ListMidSigExecSignalsRequest{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[6]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -765,7 +765,7 @@ func (x *ListMidSigExecSignalsRequest) String() string {
 func (*ListMidSigExecSignalsRequest) ProtoMessage() {}
 
 func (x *ListMidSigExecSignalsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[6]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -778,7 +778,7 @@ func (x *ListMidSigExecSignalsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMidSigExecSignalsRequest.ProtoReflect.Descriptor instead.
 func (*ListMidSigExecSignalsRequest) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{6}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ListMidSigExecSignalsRequest) GetRobotId() string {
@@ -836,7 +836,7 @@ type ListMidSigExecSignalsResponse struct {
 
 func (x *ListMidSigExecSignalsResponse) Reset() {
 	*x = ListMidSigExecSignalsResponse{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[7]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -848,7 +848,7 @@ func (x *ListMidSigExecSignalsResponse) String() string {
 func (*ListMidSigExecSignalsResponse) ProtoMessage() {}
 
 func (x *ListMidSigExecSignalsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[7]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -861,7 +861,7 @@ func (x *ListMidSigExecSignalsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMidSigExecSignalsResponse.ProtoReflect.Descriptor instead.
 func (*ListMidSigExecSignalsResponse) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{7}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListMidSigExecSignalsResponse) GetTotal() int32 {
@@ -897,7 +897,7 @@ type ListMidSigExecDetailsRequest struct {
 
 func (x *ListMidSigExecDetailsRequest) Reset() {
 	*x = ListMidSigExecDetailsRequest{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[8]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -909,7 +909,7 @@ func (x *ListMidSigExecDetailsRequest) String() string {
 func (*ListMidSigExecDetailsRequest) ProtoMessage() {}
 
 func (x *ListMidSigExecDetailsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[8]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -922,7 +922,7 @@ func (x *ListMidSigExecDetailsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMidSigExecDetailsRequest.ProtoReflect.Descriptor instead.
 func (*ListMidSigExecDetailsRequest) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{8}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListMidSigExecDetailsRequest) GetRobotId() string {
@@ -973,7 +973,7 @@ type ListMidSigExecDetailsResponse struct {
 
 func (x *ListMidSigExecDetailsResponse) Reset() {
 	*x = ListMidSigExecDetailsResponse{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[9]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -985,7 +985,7 @@ func (x *ListMidSigExecDetailsResponse) String() string {
 func (*ListMidSigExecDetailsResponse) ProtoMessage() {}
 
 func (x *ListMidSigExecDetailsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[9]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -998,7 +998,7 @@ func (x *ListMidSigExecDetailsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMidSigExecDetailsResponse.ProtoReflect.Descriptor instead.
 func (*ListMidSigExecDetailsResponse) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{9}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ListMidSigExecDetailsResponse) GetTotal() int32 {
@@ -1021,7 +1021,7 @@ type GetHftInfoRequest struct {
 	// 机器人ID
 	RobotId *string `protobuf:"bytes,1,opt,name=robot_id,json=robotId,proto3,oneof" json:"robot_id,omitempty"`
 	// 策略类型
-	StrategyType *HftStrategyType `protobuf:"varint,2,opt,name=strategy_type,json=strategyType,proto3,enum=trading.service.v1.HftStrategyType,oneof" json:"strategy_type,omitempty"`
+	StrategyType *StrategyType `protobuf:"varint,2,opt,name=strategy_type,json=strategyType,proto3,enum=trading.service.v1.StrategyType,oneof" json:"strategy_type,omitempty"`
 	// 操作员
 	Operator      *string `protobuf:"bytes,3,opt,name=operator,proto3,oneof" json:"operator,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -1030,7 +1030,7 @@ type GetHftInfoRequest struct {
 
 func (x *GetHftInfoRequest) Reset() {
 	*x = GetHftInfoRequest{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[10]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1042,7 +1042,7 @@ func (x *GetHftInfoRequest) String() string {
 func (*GetHftInfoRequest) ProtoMessage() {}
 
 func (x *GetHftInfoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[10]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1055,7 +1055,7 @@ func (x *GetHftInfoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHftInfoRequest.ProtoReflect.Descriptor instead.
 func (*GetHftInfoRequest) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{10}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetHftInfoRequest) GetRobotId() string {
@@ -1065,11 +1065,11 @@ func (x *GetHftInfoRequest) GetRobotId() string {
 	return ""
 }
 
-func (x *GetHftInfoRequest) GetStrategyType() HftStrategyType {
+func (x *GetHftInfoRequest) GetStrategyType() StrategyType {
 	if x != nil && x.StrategyType != nil {
 		return *x.StrategyType
 	}
-	return HftStrategyType_HFT_STRATEGY_TYPE_UNSPECIFIED
+	return StrategyType_HFT_STRATEGY_TYPE_UNSPECIFIED
 }
 
 func (x *GetHftInfoRequest) GetOperator() string {
@@ -1096,7 +1096,7 @@ type GetHftInfoResponse struct {
 
 func (x *GetHftInfoResponse) Reset() {
 	*x = GetHftInfoResponse{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[11]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1108,7 +1108,7 @@ func (x *GetHftInfoResponse) String() string {
 func (*GetHftInfoResponse) ProtoMessage() {}
 
 func (x *GetHftInfoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[11]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1121,7 +1121,7 @@ func (x *GetHftInfoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHftInfoResponse.ProtoReflect.Descriptor instead.
 func (*GetHftInfoResponse) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{11}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetHftInfoResponse) GetItems() []*HftInfo {
@@ -1169,7 +1169,7 @@ type DownloadMidSigExecRequest struct {
 
 func (x *DownloadMidSigExecRequest) Reset() {
 	*x = DownloadMidSigExecRequest{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[12]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1181,7 +1181,7 @@ func (x *DownloadMidSigExecRequest) String() string {
 func (*DownloadMidSigExecRequest) ProtoMessage() {}
 
 func (x *DownloadMidSigExecRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[12]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1194,7 +1194,7 @@ func (x *DownloadMidSigExecRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DownloadMidSigExecRequest.ProtoReflect.Descriptor instead.
 func (*DownloadMidSigExecRequest) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{12}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DownloadMidSigExecRequest) GetRobotId() string {
@@ -1238,7 +1238,7 @@ type DownloadMidSigExecResponse struct {
 
 func (x *DownloadMidSigExecResponse) Reset() {
 	*x = DownloadMidSigExecResponse{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[13]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1250,7 +1250,7 @@ func (x *DownloadMidSigExecResponse) String() string {
 func (*DownloadMidSigExecResponse) ProtoMessage() {}
 
 func (x *DownloadMidSigExecResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[13]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1263,7 +1263,7 @@ func (x *DownloadMidSigExecResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DownloadMidSigExecResponse.ProtoReflect.Descriptor instead.
 func (*DownloadMidSigExecResponse) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{13}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DownloadMidSigExecResponse) GetFileUrl() string {
@@ -1299,7 +1299,7 @@ type HftNotifyReport struct {
 
 func (x *HftNotifyReport) Reset() {
 	*x = HftNotifyReport{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[14]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1311,7 +1311,7 @@ func (x *HftNotifyReport) String() string {
 func (*HftNotifyReport) ProtoMessage() {}
 
 func (x *HftNotifyReport) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[14]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1324,7 +1324,7 @@ func (x *HftNotifyReport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HftNotifyReport.ProtoReflect.Descriptor instead.
 func (*HftNotifyReport) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{14}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *HftNotifyReport) GetReportId() string {
@@ -1379,7 +1379,7 @@ type TraderEquityChange struct {
 
 func (x *TraderEquityChange) Reset() {
 	*x = TraderEquityChange{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[15]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1391,7 +1391,7 @@ func (x *TraderEquityChange) String() string {
 func (*TraderEquityChange) ProtoMessage() {}
 
 func (x *TraderEquityChange) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[15]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1404,7 +1404,7 @@ func (x *TraderEquityChange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TraderEquityChange.ProtoReflect.Descriptor instead.
 func (*TraderEquityChange) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{15}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *TraderEquityChange) GetTraderName() string {
@@ -1452,7 +1452,7 @@ type SymbolProfitStat struct {
 
 func (x *SymbolProfitStat) Reset() {
 	*x = SymbolProfitStat{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[16]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1464,7 +1464,7 @@ func (x *SymbolProfitStat) String() string {
 func (*SymbolProfitStat) ProtoMessage() {}
 
 func (x *SymbolProfitStat) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[16]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1477,7 +1477,7 @@ func (x *SymbolProfitStat) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SymbolProfitStat.ProtoReflect.Descriptor instead.
 func (*SymbolProfitStat) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{16}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *SymbolProfitStat) GetSymbol() string {
@@ -1521,7 +1521,7 @@ type GetHftNotifyReportRequest struct {
 
 func (x *GetHftNotifyReportRequest) Reset() {
 	*x = GetHftNotifyReportRequest{}
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[17]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1533,7 +1533,7 @@ func (x *GetHftNotifyReportRequest) String() string {
 func (*GetHftNotifyReportRequest) ProtoMessage() {}
 
 func (x *GetHftNotifyReportRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_trading_service_v1_hft_market_making_proto_msgTypes[17]
+	mi := &file_trading_service_v1_strategy_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1546,7 +1546,7 @@ func (x *GetHftNotifyReportRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHftNotifyReportRequest.ProtoReflect.Descriptor instead.
 func (*GetHftNotifyReportRequest) Descriptor() ([]byte, []int) {
-	return file_trading_service_v1_hft_market_making_proto_rawDescGZIP(), []int{17}
+	return file_trading_service_v1_strategy_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *GetHftNotifyReportRequest) GetStartTime() int64 {
@@ -1563,11 +1563,11 @@ func (x *GetHftNotifyReportRequest) GetEndTime() int64 {
 	return 0
 }
 
-var File_trading_service_v1_hft_market_making_proto protoreflect.FileDescriptor
+var File_trading_service_v1_strategy_proto protoreflect.FileDescriptor
 
-const file_trading_service_v1_hft_market_making_proto_rawDesc = "" +
+const file_trading_service_v1_strategy_proto_rawDesc = "" +
 	"\n" +
-	"*trading/service/v1/hft_market_making.proto\x12\x12trading.service.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xff\x02\n" +
+	"!trading/service/v1/strategy.proto\x12\x12trading.service.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xff\x02\n" +
 	"\x0fMidSigExecOrder\x12\x19\n" +
 	"\border_id\x18\x01 \x01(\tR\aorderId\x12\x19\n" +
 	"\brobot_id\x18\x02 \x01(\tR\arobotId\x12\x16\n" +
@@ -1605,10 +1605,10 @@ const file_trading_service_v1_hft_market_making_proto_rawDesc = "" +
 	"\n" +
 	"avg_profit\x18\a \x01(\x01R\tavgProfit\x12!\n" +
 	"\fmax_drawdown\x18\b \x01(\x01R\vmaxDrawdown\x127\n" +
-	"\tstat_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\bstatTime\"\xfb\x03\n" +
+	"\tstat_time\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\bstatTime\"\xf8\x03\n" +
 	"\aHftInfo\x12\x19\n" +
-	"\brobot_id\x18\x01 \x01(\tR\arobotId\x12H\n" +
-	"\rstrategy_type\x18\x02 \x01(\x0e2#.trading.service.v1.HftStrategyTypeR\fstrategyType\x12)\n" +
+	"\brobot_id\x18\x01 \x01(\tR\arobotId\x12E\n" +
+	"\rstrategy_type\x18\x02 \x01(\x0e2 .trading.service.v1.StrategyTypeR\fstrategyType\x12)\n" +
 	"\x10account_nickname\x18\x03 \x01(\tR\x0faccountNickname\x12\x16\n" +
 	"\x06symbol\x18\x04 \x01(\tR\x06symbol\x12%\n" +
 	"\x0ecurrent_equity\x18\x05 \x01(\x01R\rcurrentEquity\x12%\n" +
@@ -1653,10 +1653,10 @@ const file_trading_service_v1_hft_market_making_proto_rawDesc = "" +
 	"\tpage_size\x18\x05 \x01(\x05R\bpageSize\"q\n" +
 	"\x1dListMidSigExecDetailsResponse\x12\x14\n" +
 	"\x05total\x18\x01 \x01(\x05R\x05total\x12:\n" +
-	"\x05items\x18\x02 \x03(\v2$.trading.service.v1.MidSigExecDetailR\x05items\"\xcf\x01\n" +
+	"\x05items\x18\x02 \x03(\v2$.trading.service.v1.MidSigExecDetailR\x05items\"\xcc\x01\n" +
 	"\x11GetHftInfoRequest\x12\x1e\n" +
-	"\brobot_id\x18\x01 \x01(\tH\x00R\arobotId\x88\x01\x01\x12M\n" +
-	"\rstrategy_type\x18\x02 \x01(\x0e2#.trading.service.v1.HftStrategyTypeH\x01R\fstrategyType\x88\x01\x01\x12\x1f\n" +
+	"\brobot_id\x18\x01 \x01(\tH\x00R\arobotId\x88\x01\x01\x12J\n" +
+	"\rstrategy_type\x18\x02 \x01(\x0e2 .trading.service.v1.StrategyTypeH\x01R\fstrategyType\x88\x01\x01\x12\x1f\n" +
 	"\boperator\x18\x03 \x01(\tH\x02R\boperator\x88\x01\x01B\v\n" +
 	"\t_robot_idB\x10\n" +
 	"\x0e_strategy_typeB\v\n" +
@@ -1696,31 +1696,31 @@ const file_trading_service_v1_hft_market_making_proto_rawDesc = "" +
 	"\x19GetHftNotifyReportRequest\x12\x1d\n" +
 	"\n" +
 	"start_time\x18\x01 \x01(\x03R\tstartTime\x12\x19\n" +
-	"\bend_time\x18\x02 \x01(\x03R\aendTime*\xa4\x01\n" +
-	"\x0fHftStrategyType\x12!\n" +
+	"\bend_time\x18\x02 \x01(\x03R\aendTime*\xa1\x01\n" +
+	"\fStrategyType\x12!\n" +
 	"\x1dHFT_STRATEGY_TYPE_UNSPECIFIED\x10\x00\x12\x1a\n" +
 	"\x16HFT_STRATEGY_TYPE_DINO\x10\x01\x12\x19\n" +
 	"\x15HFT_STRATEGY_TYPE_CAT\x10\x02\x12\x1a\n" +
 	"\x16HFT_STRATEGY_TYPE_TREX\x10\x03\x12\x1b\n" +
-	"\x17HFT_STRATEGY_TYPE_TIGER\x10\x04B\xcf\x01\n" +
-	"\x16com.trading.service.v1B\x14HftMarketMakingProtoP\x01Z5go-wind-admin/api/gen/go/trading/service/v1;servicev1\xa2\x02\x03TSX\xaa\x02\x12Trading.Service.V1\xca\x02\x12Trading\\Service\\V1\xe2\x02\x1eTrading\\Service\\V1\\GPBMetadata\xea\x02\x14Trading::Service::V1b\x06proto3"
+	"\x17HFT_STRATEGY_TYPE_TIGER\x10\x04B\xc8\x01\n" +
+	"\x16com.trading.service.v1B\rStrategyProtoP\x01Z5go-wind-admin/api/gen/go/trading/service/v1;servicev1\xa2\x02\x03TSX\xaa\x02\x12Trading.Service.V1\xca\x02\x12Trading\\Service\\V1\xe2\x02\x1eTrading\\Service\\V1\\GPBMetadata\xea\x02\x14Trading::Service::V1b\x06proto3"
 
 var (
-	file_trading_service_v1_hft_market_making_proto_rawDescOnce sync.Once
-	file_trading_service_v1_hft_market_making_proto_rawDescData []byte
+	file_trading_service_v1_strategy_proto_rawDescOnce sync.Once
+	file_trading_service_v1_strategy_proto_rawDescData []byte
 )
 
-func file_trading_service_v1_hft_market_making_proto_rawDescGZIP() []byte {
-	file_trading_service_v1_hft_market_making_proto_rawDescOnce.Do(func() {
-		file_trading_service_v1_hft_market_making_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_trading_service_v1_hft_market_making_proto_rawDesc), len(file_trading_service_v1_hft_market_making_proto_rawDesc)))
+func file_trading_service_v1_strategy_proto_rawDescGZIP() []byte {
+	file_trading_service_v1_strategy_proto_rawDescOnce.Do(func() {
+		file_trading_service_v1_strategy_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_trading_service_v1_strategy_proto_rawDesc), len(file_trading_service_v1_strategy_proto_rawDesc)))
 	})
-	return file_trading_service_v1_hft_market_making_proto_rawDescData
+	return file_trading_service_v1_strategy_proto_rawDescData
 }
 
-var file_trading_service_v1_hft_market_making_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_trading_service_v1_hft_market_making_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
-var file_trading_service_v1_hft_market_making_proto_goTypes = []any{
-	(HftStrategyType)(0),                  // 0: trading.service.v1.HftStrategyType
+var file_trading_service_v1_strategy_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_trading_service_v1_strategy_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_trading_service_v1_strategy_proto_goTypes = []any{
+	(StrategyType)(0),                     // 0: trading.service.v1.StrategyType
 	(*MidSigExecOrder)(nil),               // 1: trading.service.v1.MidSigExecOrder
 	(*MidSigExecSignal)(nil),              // 2: trading.service.v1.MidSigExecSignal
 	(*MidSigExecDetail)(nil),              // 3: trading.service.v1.MidSigExecDetail
@@ -1741,17 +1741,17 @@ var file_trading_service_v1_hft_market_making_proto_goTypes = []any{
 	(*GetHftNotifyReportRequest)(nil),     // 18: trading.service.v1.GetHftNotifyReportRequest
 	(*timestamppb.Timestamp)(nil),         // 19: google.protobuf.Timestamp
 }
-var file_trading_service_v1_hft_market_making_proto_depIdxs = []int32{
+var file_trading_service_v1_strategy_proto_depIdxs = []int32{
 	19, // 0: trading.service.v1.MidSigExecOrder.create_time:type_name -> google.protobuf.Timestamp
 	19, // 1: trading.service.v1.MidSigExecOrder.update_time:type_name -> google.protobuf.Timestamp
 	19, // 2: trading.service.v1.MidSigExecSignal.create_time:type_name -> google.protobuf.Timestamp
 	19, // 3: trading.service.v1.MidSigExecDetail.stat_time:type_name -> google.protobuf.Timestamp
-	0,  // 4: trading.service.v1.HftInfo.strategy_type:type_name -> trading.service.v1.HftStrategyType
+	0,  // 4: trading.service.v1.HftInfo.strategy_type:type_name -> trading.service.v1.StrategyType
 	19, // 5: trading.service.v1.HftInfo.last_update_time:type_name -> google.protobuf.Timestamp
 	1,  // 6: trading.service.v1.ListMidSigExecOrdersResponse.items:type_name -> trading.service.v1.MidSigExecOrder
 	2,  // 7: trading.service.v1.ListMidSigExecSignalsResponse.items:type_name -> trading.service.v1.MidSigExecSignal
 	3,  // 8: trading.service.v1.ListMidSigExecDetailsResponse.items:type_name -> trading.service.v1.MidSigExecDetail
-	0,  // 9: trading.service.v1.GetHftInfoRequest.strategy_type:type_name -> trading.service.v1.HftStrategyType
+	0,  // 9: trading.service.v1.GetHftInfoRequest.strategy_type:type_name -> trading.service.v1.StrategyType
 	4,  // 10: trading.service.v1.GetHftInfoResponse.items:type_name -> trading.service.v1.HftInfo
 	16, // 11: trading.service.v1.HftNotifyReport.trader_equity_changes:type_name -> trading.service.v1.TraderEquityChange
 	17, // 12: trading.service.v1.HftNotifyReport.symbol_profit_stats:type_name -> trading.service.v1.SymbolProfitStat
@@ -1763,30 +1763,30 @@ var file_trading_service_v1_hft_market_making_proto_depIdxs = []int32{
 	0,  // [0:14] is the sub-list for field type_name
 }
 
-func init() { file_trading_service_v1_hft_market_making_proto_init() }
-func file_trading_service_v1_hft_market_making_proto_init() {
-	if File_trading_service_v1_hft_market_making_proto != nil {
+func init() { file_trading_service_v1_strategy_proto_init() }
+func file_trading_service_v1_strategy_proto_init() {
+	if File_trading_service_v1_strategy_proto != nil {
 		return
 	}
-	file_trading_service_v1_hft_market_making_proto_msgTypes[4].OneofWrappers = []any{}
-	file_trading_service_v1_hft_market_making_proto_msgTypes[6].OneofWrappers = []any{}
-	file_trading_service_v1_hft_market_making_proto_msgTypes[10].OneofWrappers = []any{}
+	file_trading_service_v1_strategy_proto_msgTypes[4].OneofWrappers = []any{}
+	file_trading_service_v1_strategy_proto_msgTypes[6].OneofWrappers = []any{}
+	file_trading_service_v1_strategy_proto_msgTypes[10].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_trading_service_v1_hft_market_making_proto_rawDesc), len(file_trading_service_v1_hft_market_making_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_trading_service_v1_strategy_proto_rawDesc), len(file_trading_service_v1_strategy_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_trading_service_v1_hft_market_making_proto_goTypes,
-		DependencyIndexes: file_trading_service_v1_hft_market_making_proto_depIdxs,
-		EnumInfos:         file_trading_service_v1_hft_market_making_proto_enumTypes,
-		MessageInfos:      file_trading_service_v1_hft_market_making_proto_msgTypes,
+		GoTypes:           file_trading_service_v1_strategy_proto_goTypes,
+		DependencyIndexes: file_trading_service_v1_strategy_proto_depIdxs,
+		EnumInfos:         file_trading_service_v1_strategy_proto_enumTypes,
+		MessageInfos:      file_trading_service_v1_strategy_proto_msgTypes,
 	}.Build()
-	File_trading_service_v1_hft_market_making_proto = out.File
-	file_trading_service_v1_hft_market_making_proto_goTypes = nil
-	file_trading_service_v1_hft_market_making_proto_depIdxs = nil
+	File_trading_service_v1_strategy_proto = out.File
+	file_trading_service_v1_strategy_proto_goTypes = nil
+	file_trading_service_v1_strategy_proto_depIdxs = nil
 }

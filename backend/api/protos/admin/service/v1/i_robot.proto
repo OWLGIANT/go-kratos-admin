@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+import "google/api/annotations.proto";
+
+import "pagination/v1/pagination.proto";
+import "trading/service/v1/robot.proto";
+
+// Robot 管理服务
+service RobotService {
+  // 获取 Robot 列表
+  rpc ListRobot (pagination.PagingRequest) returns (trading.service.v1.ListRobotResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/trading/actors"
+    };
+  }
+
+  // 获取 Actor
+  rpc GetRobot (trading.service.v1.GetRobotRequest) returns (trading.service.v1.Robot) {
+    option (google.api.http) = {
+      get: "/admin/v1/trading/robots/{robot_id}"
+    };
+  }
+}

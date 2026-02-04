@@ -5,7 +5,7 @@ package admin.service.v1;
 import "gnostic/openapi/v3/annotations.proto";
 import "google/api/annotations.proto";
 
-import "trading/service/v1/hft_market_making.proto";
+import "trading/service/v1/strategy.proto";
 
 // 高频做市管理服务
 service HftMarketMakingService {
