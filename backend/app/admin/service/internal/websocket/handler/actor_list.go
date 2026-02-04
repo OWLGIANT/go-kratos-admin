@@ -7,14 +7,14 @@ import (
 	"go-wind-admin/app/admin/service/internal/websocket/protocol"
 )
 
-// ActorListHandler handles actor list requests
+// ActorListHandler Actor 列表处理器
 type ActorListHandler struct {
 	registry *ActorRegistry
 	manager  *websocket.Manager
 	log      *log.Helper
 }
 
-// NewActorListHandler creates a new actor list handler
+// NewActorListHandler 创建新的 Actor 列表处理器
 func NewActorListHandler(registry *ActorRegistry, manager *websocket.Manager, logger log.Logger) *ActorListHandler {
 	return &ActorListHandler{
 		registry: registry,
@@ -23,113 +23,106 @@ func NewActorListHandler(registry *ActorRegistry, manager *websocket.Manager, lo
 	}
 }
 
-// Handle processes actor list requests
-func (h *ActorListHandler) Handle(client *websocket.Client, msg *protocol.UnifiedMessage) error {
+// Handle 处理 Actor 列表请求
+func (h *ActorListHandler) Handle(client *websocket.Client, cmd *protocol.Command) error {
 	h.log.Infof("Received actor.list request: client=%s, isActor=%v", client.ID, client.IsActor)
 
-	// Get all actors
-	actors := h.registry.GetAll()
-	h.log.Infof("Actor registry has %d actors", len(actors))
+	payload, _ := cmd.Payload.(*protocol.ActorListCmd)
 
-	// Convert to response format
-	actorList := make([]map[string]interface{}, 0, len(actors))
-	for _, actor := range actors {
-		actorData := map[string]interface{}{
-			"clientId":      actor.ClientID,
-			"robotId":       actor.RobotID,
-			"exchange":      actor.Exchange,
-			"version":       actor.Version,
-			"tenantId":      actor.TenantID,
-			"status":        actor.Status,
-			"balance":       actor.Balance,
-			"registeredAt":  actor.RegisteredAt.Format("2006-01-02T15:04:05Z07:00"),
-			"lastHeartbeat": actor.LastHeartbeat.Format("2006-01-02T15:04:05Z07:00"),
-		}
-
-		// Add server info if available
-		if actor.ServerInfo != nil {
-			actorData["serverInfo"] = actor.ServerInfo
-		}
-		if actor.IP != "" {
-			actorData["ip"] = actor.IP
-		}
-		if actor.InnerIP != "" {
-			actorData["innerIp"] = actor.InnerIP
-		}
-		if actor.Port != "" {
-			actorData["port"] = actor.Port
-		}
-		if actor.MachineID != "" {
-			actorData["machineId"] = actor.MachineID
-		}
-		if actor.Nickname != "" {
-			actorData["nickname"] = actor.Nickname
-		}
-
-		actorList = append(actorList, actorData)
+	var tenantID uint32
+	var status string
+	if payload != nil && payload.Request != nil {
+		tenantID = payload.Request.TenantID
+		status = payload.Request.Status
 	}
 
-	h.log.Infof("Actor list requested: client=%s, count=%d", client.ID, len(actorList))
+	// 获取 Actor 列表
+	var actors []*ActorInfo
+	if tenantID > 0 {
+		actors = h.registry.GetByTenant(tenantID)
+	} else {
+		actors = h.registry.GetAll()
+	}
 
-	// Send response
-	resp := protocol.NewSuccessResponse(map[string]interface{}{
-		"actors": actorList,
-	})
-	return client.SendResponse(resp, msg.Action)
+	// 按状态过滤
+	if status != "" {
+		filtered := make([]*ActorInfo, 0)
+		for _, actor := range actors {
+			if actor.Status == status {
+				filtered = append(filtered, actor)
+			}
+		}
+		actors = filtered
+	}
+
+	h.log.Infof("Actor list requested: client=%s, count=%d", client.ID, len(actors))
+
+	// 转换为协议格式
+	protoActors := make([]*protocol.ActorInfo, len(actors))
+	for i, actor := range actors {
+		protoActors[i] = &protocol.ActorInfo{
+			ClientID:      actor.ClientID,
+			RobotID:       actor.RobotID,
+			Exchange:      actor.Exchange,
+			Version:       actor.Version,
+			TenantID:      actor.TenantID,
+			Status:        actor.Status,
+			Balance:       actor.Balance,
+			RegisteredAt:  actor.RegisteredAt,
+			LastHeartbeat: actor.LastHeartbeat,
+			ServerInfo:    actor.ServerInfo,
+			IP:            actor.IP,
+			InnerIP:       actor.InnerIP,
+			Port:          actor.Port,
+			MachineID:     actor.MachineID,
+			Nickname:      actor.Nickname,
+		}
+	}
+
+	// 发送响应
+	respPayload := &protocol.ActorListCmd{
+		Response: &protocol.ActorListResponse{
+			Actors: protoActors,
+			Total:  int32(len(protoActors)),
+		},
+	}
+	return client.SendResponse(protocol.CommandTypeActorList, cmd.RequestID, cmd.Seq, respPayload)
 }
 
-// BroadcastActorList broadcasts the actor list to all connected clients
+// BroadcastActorList 广播 Actor 列表给所有客户端
 func (h *ActorListHandler) BroadcastActorList() {
 	actors := h.registry.GetAll()
 
-	actorList := make([]map[string]interface{}, 0, len(actors))
-	for _, actor := range actors {
-		actorData := map[string]interface{}{
-			"clientId":      actor.ClientID,
-			"robotId":       actor.RobotID,
-			"exchange":      actor.Exchange,
-			"version":       actor.Version,
-			"tenantId":      actor.TenantID,
-			"status":        actor.Status,
-			"balance":       actor.Balance,
-			"registeredAt":  actor.RegisteredAt.Format("2006-01-02T15:04:05Z07:00"),
-			"lastHeartbeat": actor.LastHeartbeat.Format("2006-01-02T15:04:05Z07:00"),
+	// 转换为协议格式
+	protoActors := make([]*protocol.ActorInfo, len(actors))
+	for i, actor := range actors {
+		protoActors[i] = &protocol.ActorInfo{
+			ClientID:      actor.ClientID,
+			RobotID:       actor.RobotID,
+			Exchange:      actor.Exchange,
+			Version:       actor.Version,
+			TenantID:      actor.TenantID,
+			Status:        actor.Status,
+			Balance:       actor.Balance,
+			RegisteredAt:  actor.RegisteredAt,
+			LastHeartbeat: actor.LastHeartbeat,
+			ServerInfo:    actor.ServerInfo,
+			IP:            actor.IP,
+			InnerIP:       actor.InnerIP,
+			Port:          actor.Port,
+			MachineID:     actor.MachineID,
+			Nickname:      actor.Nickname,
 		}
-
-		if actor.ServerInfo != nil {
-			actorData["serverInfo"] = actor.ServerInfo
-		}
-		if actor.IP != "" {
-			actorData["ip"] = actor.IP
-		}
-		if actor.InnerIP != "" {
-			actorData["innerIp"] = actor.InnerIP
-		}
-		if actor.Port != "" {
-			actorData["port"] = actor.Port
-		}
-		if actor.MachineID != "" {
-			actorData["machineId"] = actor.MachineID
-		}
-		if actor.Nickname != "" {
-			actorData["nickname"] = actor.Nickname
-		}
-
-		actorList = append(actorList, actorData)
 	}
 
-	// Create broadcast message
-	resp := protocol.NewSuccessResponse(map[string]interface{}{
-		"actors": actorList,
-	})
-
-	adapter := protocol.NewAdapter()
-	data, err := adapter.ConvertResponse(resp, protocol.ProtocolTypeLegacy, "actor.sync")
-	if err != nil {
-		h.log.Errorf("Failed to convert actor list response: %v", err)
-		return
+	cmd := protocol.NewCommand(protocol.CommandTypeActorList)
+	cmd.Payload = &protocol.ActorListCmd{
+		Response: &protocol.ActorListResponse{
+			Actors: protoActors,
+			Total:  int32(len(protoActors)),
+		},
 	}
 
-	h.manager.Broadcast(data)
-	h.log.Infof("Actor list broadcasted: count=%d", len(actorList))
+	h.manager.BroadcastCommand(cmd)
+	h.log.Infof("Actor list broadcasted: count=%d", len(actors))
 }

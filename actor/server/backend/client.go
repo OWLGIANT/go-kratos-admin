@@ -149,14 +149,14 @@ func (c *Client) connect() error {
 
 // register sends registration message to backend
 func (c *Client) register() error {
-	msg := NewRegisterMessage(
+	cmd := NewRegisterCommand(
 		c.config.RobotID,
 		c.config.Exchange,
 		c.config.Version,
 		c.config.TenantID,
 	)
 
-	data, err := msg.ToJSON()
+	data, err := cmd.ToJSON()
 	if err != nil {
 		return err
 	}
@@ -253,58 +253,227 @@ func (c *Client) writeMessage(data []byte) error {
 func (c *Client) handleMessage(data []byte) {
 	c.logger.Infof("Received message from backend: %s", string(data))
 
-	// Try to parse as a command (from backend)
-	var msg Message
-	if err := json.Unmarshal(data, &msg); err != nil {
+	// Parse as new protocol Command
+	var rawCmd struct {
+		Type      CommandType     `json:"type"`
+		Seq       uint64          `json:"seq"`
+		RequestID string          `json:"request_id,omitempty"`
+		Error     *ErrorMessage   `json:"error,omitempty"`
+		Timestamp string          `json:"timestamp"`
+		Payload   json.RawMessage `json:"payload,omitempty"`
+	}
+
+	if err := json.Unmarshal(data, &rawCmd); err != nil {
 		c.logger.Errorf("Failed to parse message: %v", err)
 		return
 	}
 
-	// Check for pong response (text-based heartbeat response)
-	// This resets the read deadline similar to WebSocket protocol pong
-	if msgType, ok := msg.Data["type"].(string); ok && msgType == "pong" {
+	// Check for heartbeat response
+	if rawCmd.Type == CommandTypeActorHeartbeat {
 		c.mu.RLock()
 		conn := c.conn
 		c.mu.RUnlock()
 		if conn != nil {
 			conn.SetReadDeadline(time.Now().Add(c.config.PongWait))
 		}
-		c.logger.Debugf("Received pong, reset read deadline")
+		c.logger.Debugf("Received heartbeat response, reset read deadline")
 		return
 	}
 
-	// Check if it's a command for actor
-	switch msg.Action {
-	case ActionStart, ActionStop, ActionStatus, ActionConfig:
-		c.handleCommand(&msg)
+	// Check for error response
+	if rawCmd.Error != nil {
+		c.logger.Errorf("Received error from backend: code=%d, message=%s", rawCmd.Error.Code, rawCmd.Error.Message)
+		return
+	}
+
+	// Handle commands from backend
+	switch rawCmd.Type {
+	case CommandTypeRobotStart:
+		c.handleRobotStart(rawCmd.RequestID, rawCmd.Payload)
+	case CommandTypeRobotStop:
+		c.handleRobotStop(rawCmd.RequestID, rawCmd.Payload)
+	case CommandTypeRobotConfig:
+		c.handleRobotConfig(rawCmd.RequestID, rawCmd.Payload)
+	case CommandTypeRobotCommand:
+		c.handleRobotCommand(rawCmd.RequestID, rawCmd.Payload)
 	default:
-		c.logger.Infof("Received message: action=%s, data=%v", msg.Action, msg.Data)
+		c.logger.Infof("Received message: type=%s (%d)", CommandTypeToString[rawCmd.Type], rawCmd.Type)
 	}
 }
 
-// handleCommand processes a command from backend
-func (c *Client) handleCommand(msg *Message) {
+// handleRobotStart handles robot start command
+func (c *Client) handleRobotStart(requestID string, payload json.RawMessage) {
 	if c.handler == nil {
 		c.logger.Warn("No command handler registered")
 		return
 	}
 
-	cmd := &Command{
-		Action:    msg.Action,
-		Data:      msg.Data,
-		RequestID: msg.RequestID,
+	var cmd RobotStartCmd
+	if err := json.Unmarshal(payload, &cmd); err != nil {
+		c.logger.Errorf("Failed to parse robot start payload: %v", err)
+		c.sendCommandResult(requestID, false, nil, "invalid payload")
+		return
 	}
 
-	c.logger.Infof("Handling command: action=%s, request_id=%s", cmd.Action, cmd.RequestID)
+	if cmd.Request == nil {
+		c.logger.Error("Missing request in robot start command")
+		c.sendCommandResult(requestID, false, nil, "missing request")
+		return
+	}
 
-	// Execute command
-	result := c.handler.HandleCommand(cmd)
+	c.logger.Infof("Handling robot.start: robot_id=%s, request_id=%s", cmd.Request.RobotID, requestID)
 
-	// Send result back to backend
-	resultMsg := NewCommandResultMessage(result.RequestID, result.Success, result.Result, result.Error)
-	data, err := resultMsg.ToJSON()
+	// Convert config to map[string]interface{}
+	data := make(map[string]interface{})
+	if cmd.Request.Config != nil {
+		for k, v := range cmd.Request.Config {
+			data[k] = v
+		}
+	}
+
+	incomingCmd := &IncomingCommand{
+		Type:      CommandTypeRobotStart,
+		RequestID: requestID,
+		RobotID:   cmd.Request.RobotID,
+		Action:    "robot.start",
+		Data:      data,
+	}
+
+	result := c.handler.HandleCommand(incomingCmd)
+	c.sendCommandResult(result.RequestID, result.Success, result.Result, result.Error)
+}
+
+// handleRobotStop handles robot stop command
+func (c *Client) handleRobotStop(requestID string, payload json.RawMessage) {
+	if c.handler == nil {
+		c.logger.Warn("No command handler registered")
+		return
+	}
+
+	var cmd RobotStopCmd
+	if err := json.Unmarshal(payload, &cmd); err != nil {
+		c.logger.Errorf("Failed to parse robot stop payload: %v", err)
+		c.sendCommandResult(requestID, false, nil, "invalid payload")
+		return
+	}
+
+	if cmd.Request == nil {
+		c.logger.Error("Missing request in robot stop command")
+		c.sendCommandResult(requestID, false, nil, "missing request")
+		return
+	}
+
+	c.logger.Infof("Handling robot.stop: robot_id=%s, graceful=%v, request_id=%s", cmd.Request.RobotID, cmd.Request.Graceful, requestID)
+
+	data := map[string]interface{}{
+		"graceful": cmd.Request.Graceful,
+		"reason":   cmd.Request.Reason,
+	}
+
+	incomingCmd := &IncomingCommand{
+		Type:      CommandTypeRobotStop,
+		RequestID: requestID,
+		RobotID:   cmd.Request.RobotID,
+		Action:    "robot.stop",
+		Data:      data,
+	}
+
+	result := c.handler.HandleCommand(incomingCmd)
+	c.sendCommandResult(result.RequestID, result.Success, result.Result, result.Error)
+}
+
+// handleRobotConfig handles robot config command
+func (c *Client) handleRobotConfig(requestID string, payload json.RawMessage) {
+	if c.handler == nil {
+		c.logger.Warn("No command handler registered")
+		return
+	}
+
+	var cmd RobotConfigCmd
+	if err := json.Unmarshal(payload, &cmd); err != nil {
+		c.logger.Errorf("Failed to parse robot config payload: %v", err)
+		c.sendCommandResult(requestID, false, nil, "invalid payload")
+		return
+	}
+
+	if cmd.Request == nil {
+		c.logger.Error("Missing request in robot config command")
+		c.sendCommandResult(requestID, false, nil, "missing request")
+		return
+	}
+
+	c.logger.Infof("Handling robot.config: robot_id=%s, request_id=%s", cmd.Request.RobotID, requestID)
+
+	// Convert config to map[string]interface{}
+	data := make(map[string]interface{})
+	if cmd.Request.Config != nil {
+		for k, v := range cmd.Request.Config {
+			data[k] = v
+		}
+	}
+
+	incomingCmd := &IncomingCommand{
+		Type:      CommandTypeRobotConfig,
+		RequestID: requestID,
+		RobotID:   cmd.Request.RobotID,
+		Action:    "robot.config",
+		Data:      data,
+	}
+
+	result := c.handler.HandleCommand(incomingCmd)
+	c.sendCommandResult(result.RequestID, result.Success, result.Result, result.Error)
+}
+
+// handleRobotCommand handles generic robot command
+func (c *Client) handleRobotCommand(requestID string, payload json.RawMessage) {
+	if c.handler == nil {
+		c.logger.Warn("No command handler registered")
+		return
+	}
+
+	var cmd RobotCommandCmd
+	if err := json.Unmarshal(payload, &cmd); err != nil {
+		c.logger.Errorf("Failed to parse robot command payload: %v", err)
+		c.sendCommandResult(requestID, false, nil, "invalid payload")
+		return
+	}
+
+	if cmd.Request == nil {
+		c.logger.Error("Missing request in robot command")
+		c.sendCommandResult(requestID, false, nil, "missing request")
+		return
+	}
+
+	c.logger.Infof("Handling robot.command: robot_id=%s, action=%s, request_id=%s", cmd.Request.RobotID, cmd.Request.Action, requestID)
+
+	incomingCmd := &IncomingCommand{
+		Type:      CommandTypeRobotCommand,
+		RequestID: requestID,
+		RobotID:   cmd.Request.RobotID,
+		Action:    cmd.Request.Action,
+		Payload:   cmd.Request.Payload,
+		TimeoutMs: cmd.Request.TimeoutMs,
+	}
+
+	result := c.handler.HandleCommand(incomingCmd)
+	c.sendCommandResult(result.RequestID, result.Success, result.Result, result.Error)
+}
+
+// sendCommandResult sends command result back to backend
+func (c *Client) sendCommandResult(requestID string, success bool, result interface{}, errMsg string) {
+	var resultBytes []byte
+	if result != nil {
+		var err error
+		resultBytes, err = json.Marshal(result)
+		if err != nil {
+			c.logger.Errorf("Failed to marshal command result: %v", err)
+		}
+	}
+
+	cmd := NewRobotResultCommand(requestID, success, resultBytes, errMsg)
+	data, err := cmd.ToJSON()
 	if err != nil {
-		c.logger.Errorf("Failed to marshal command result: %v", err)
+		c.logger.Errorf("Failed to marshal command result message: %v", err)
 		return
 	}
 
@@ -349,8 +518,8 @@ func (c *Client) Send(data []byte) error {
 
 // SendStatus sends a status update to backend
 func (c *Client) SendStatus(status string, balance float64) error {
-	msg := NewStatusUpdateMessage(c.config.RobotID, status, balance)
-	data, err := msg.ToJSON()
+	cmd := NewStatusCommand(c.config.RobotID, status, balance)
+	data, err := cmd.ToJSON()
 	if err != nil {
 		return err
 	}
@@ -362,13 +531,13 @@ func (c *Client) SendServerSync(serverData *ServerSyncData) error {
 	if serverData.RobotID == "" {
 		serverData.RobotID = c.config.RobotID
 	}
-	msg := NewServerSyncMessage(serverData)
-	data, err := msg.ToJSON()
+	cmd := NewServerSyncCommand(serverData)
+	data, err := cmd.ToJSON()
 	if err != nil {
 		return err
 	}
 
-	c.logger.Infof("Sending actor.server_sync: robot_id=%s, ip=%s, machine_id=%s, data=%s",
+	c.logger.Infof("Sending server.sync: robot_id=%s, ip=%s, machine_id=%s, data=%s",
 		serverData.RobotID, serverData.IP, serverData.MachineID, string(data))
 
 	return c.Send(data)
@@ -376,8 +545,8 @@ func (c *Client) SendServerSync(serverData *ServerSyncData) error {
 
 // sendHeartbeat sends a heartbeat message
 func (c *Client) sendHeartbeat() error {
-	msg := NewHeartbeatMessage(c.config.RobotID)
-	data, err := msg.ToJSON()
+	cmd := NewHeartbeatCommand(c.config.RobotID)
+	data, err := cmd.ToJSON()
 	if err != nil {
 		return err
 	}
@@ -400,10 +569,8 @@ func (c *Client) Close() error {
 
 	if c.conn != nil {
 		// Send unregister message
-		msg := NewMessage(ActionUnregister, map[string]interface{}{
-			"robot_id": c.config.RobotID,
-		})
-		if data, err := msg.ToJSON(); err == nil {
+		cmd := NewUnregisterCommand(c.config.RobotID, "client closing")
+		if data, err := cmd.ToJSON(); err == nil {
 			c.conn.WriteMessage(websocket.TextMessage, data)
 		}
 

@@ -134,7 +134,7 @@ func main() {
 
 			// Send server info after connection
 			serverData := backend.CollectServerSyncData(robotID)
-			if err := backendClient.SendServerSync(serverData); err != nil {
+			if err = backendClient.SendServerSync(serverData); err != nil {
 				logger.Errorf("Failed to send server sync: %v", err)
 			} else {
 				logger.Infof("Server sync sent: ip=%s, inner_ip=%s, machine_id=%s",

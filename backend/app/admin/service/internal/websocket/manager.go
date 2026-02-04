@@ -3,6 +3,7 @@ package websocket
 import (
 	"errors"
 	"sync"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 
@@ -10,55 +11,55 @@ import (
 )
 
 var (
-	// ErrClientSlow is returned when a client is too slow to receive messages
+	// ErrClientSlow 客户端接收消息太慢
 	ErrClientSlow = errors.New("client is too slow")
 
-	// ErrClientNotFound is returned when a client is not found
+	// ErrClientNotFound 客户端未找到
 	ErrClientNotFound = errors.New("client not found")
 
-	// ErrMaxConnectionsReached is returned when max connections limit is reached
+	// ErrMaxConnectionsReached 达到最大连接数
 	ErrMaxConnectionsReached = errors.New("max connections reached")
 
-	// ErrMaxConnectionsPerUserReached is returned when max connections per user limit is reached
+	// ErrMaxConnectionsPerUserReached 达到每用户最大连接数
 	ErrMaxConnectionsPerUserReached = errors.New("max connections per user reached")
 )
 
-// Manager manages all WebSocket client connections
+// CommandHandler 命令处理器接口
+type CommandHandler interface {
+	HandleCommand(client *Client, cmd *protocol.Command) error
+}
+
+// Manager 管理所有 WebSocket 客户端连接
 type Manager struct {
-	// All connected clients (clientID -> Client)
+	// 所有连接的客户端 (clientID -> Client)
 	clients sync.Map
 
-	// User to clients mapping (userID -> map[clientID]bool)
+	// 用户到客户端的映射 (userID -> map[clientID]bool)
 	userClients sync.Map
 
-	// Message handler
-	messageHandler MessageHandler
+	// 命令处理器
+	commandHandler CommandHandler
 
-	// Protocol adapter
-	adapter *protocol.Adapter
+	// 编解码器
+	codec *protocol.AutoCodec
 
-	// Configuration
+	// 配置
 	maxConnections        int
 	maxConnectionsPerUser int
 
-	// Logger
+	// 日志
 	log *log.Helper
 
-	// Metrics
-	mu              sync.RWMutex
-	totalClients    int
+	// 统计
+	mu               sync.RWMutex
+	totalClients     int
 	totalUserClients map[uint32]int
 }
 
-// MessageHandler handles incoming messages
-type MessageHandler interface {
-	HandleMessage(client *Client, msg *protocol.UnifiedMessage) error
-}
-
-// NewManager creates a new connection manager
+// NewManager 创建新的连接管理器
 func NewManager(logger log.Logger, maxConnections, maxConnectionsPerUser int) *Manager {
 	return &Manager{
-		adapter:               protocol.NewAdapter(),
+		codec:                 protocol.NewAutoCodec(),
 		maxConnections:        maxConnections,
 		maxConnectionsPerUser: maxConnectionsPerUser,
 		log:                   log.NewHelper(log.With(logger, "module", "websocket/manager")),
@@ -66,22 +67,22 @@ func NewManager(logger log.Logger, maxConnections, maxConnectionsPerUser int) *M
 	}
 }
 
-// SetMessageHandler sets the message handler
-func (m *Manager) SetMessageHandler(handler MessageHandler) {
-	m.messageHandler = handler
+// SetCommandHandler 设置命令处理器
+func (m *Manager) SetCommandHandler(handler CommandHandler) {
+	m.commandHandler = handler
 }
 
-// Register registers a new client connection
+// Register 注册新的客户端连接
 func (m *Manager) Register(client *Client) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	// Check max connections
+	// 检查最大连接数
 	if m.maxConnections > 0 && m.totalClients >= m.maxConnections {
 		return ErrMaxConnectionsReached
 	}
 
-	// Check max connections per user
+	// 检查每用户最大连接数
 	if m.maxConnectionsPerUser > 0 && client.UserID > 0 {
 		userCount := m.totalUserClients[client.UserID]
 		if userCount >= m.maxConnectionsPerUser {
@@ -89,11 +90,11 @@ func (m *Manager) Register(client *Client) error {
 		}
 	}
 
-	// Register client
+	// 注册客户端
 	m.clients.Store(client.ID, client)
 	m.totalClients++
 
-	// Register user mapping
+	// 注册用户映射
 	if client.UserID > 0 {
 		userClientsMap, _ := m.userClients.LoadOrStore(client.UserID, &sync.Map{})
 		userClientsMap.(*sync.Map).Store(client.ID, true)
@@ -106,23 +107,23 @@ func (m *Manager) Register(client *Client) error {
 	return nil
 }
 
-// Unregister unregisters a client connection
+// Unregister 注销客户端连接
 func (m *Manager) Unregister(client *Client) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	// Unregister client
+	// 注销客户端
 	if _, ok := m.clients.LoadAndDelete(client.ID); ok {
 		m.totalClients--
 	}
 
-	// Unregister user mapping
+	// 注销用户映射
 	if client.UserID > 0 {
 		if userClientsMap, ok := m.userClients.Load(client.UserID); ok {
 			userClientsMap.(*sync.Map).Delete(client.ID)
 			m.totalUserClients[client.UserID]--
 
-			// Clean up empty user mapping
+			// 清理空的用户映射
 			if m.totalUserClients[client.UserID] == 0 {
 				m.userClients.Delete(client.UserID)
 				delete(m.totalUserClients, client.UserID)
@@ -134,7 +135,7 @@ func (m *Manager) Unregister(client *Client) {
 		client.ID, client.UserID, client.TenantID, m.totalClients)
 }
 
-// GetClient returns a client by ID
+// GetClient 根据 ID 获取客户端
 func (m *Manager) GetClient(clientID string) (*Client, error) {
 	if client, ok := m.clients.Load(clientID); ok {
 		return client.(*Client), nil
@@ -142,7 +143,7 @@ func (m *Manager) GetClient(clientID string) (*Client, error) {
 	return nil, ErrClientNotFound
 }
 
-// GetUserClients returns all clients for a user
+// GetUserClients 获取用户的所有客户端
 func (m *Manager) GetUserClients(userID uint32) []*Client {
 	var clients []*Client
 
@@ -158,7 +159,7 @@ func (m *Manager) GetUserClients(userID uint32) []*Client {
 	return clients
 }
 
-// Broadcast sends a message to all connected clients
+// Broadcast 向所有连接的客户端广播消息
 func (m *Manager) Broadcast(data []byte) {
 	m.clients.Range(func(key, value interface{}) bool {
 		client := value.(*Client)
@@ -169,7 +170,18 @@ func (m *Manager) Broadcast(data []byte) {
 	})
 }
 
-// BroadcastToUser sends a message to all connections of a specific user
+// BroadcastCommand 向所有连接的客户端广播命令
+func (m *Manager) BroadcastCommand(cmd *protocol.Command) {
+	m.clients.Range(func(key, value interface{}) bool {
+		client := value.(*Client)
+		if err := client.SendCommand(cmd); err != nil {
+			m.log.Warnf("Failed to send broadcast command to client %s: %v", client.ID, err)
+		}
+		return true
+	})
+}
+
+// BroadcastToUser 向特定用户的所有连接广播消息
 func (m *Manager) BroadcastToUser(userID uint32, data []byte) {
 	clients := m.GetUserClients(userID)
 	for _, client := range clients {
@@ -179,7 +191,17 @@ func (m *Manager) BroadcastToUser(userID uint32, data []byte) {
 	}
 }
 
-// BroadcastToTenant sends a message to all connections of a specific tenant
+// BroadcastCommandToUser 向特定用户的所有连接广播命令
+func (m *Manager) BroadcastCommandToUser(userID uint32, cmd *protocol.Command) {
+	clients := m.GetUserClients(userID)
+	for _, client := range clients {
+		if err := client.SendCommand(cmd); err != nil {
+			m.log.Warnf("Failed to send command to user %d client %s: %v", userID, client.ID, err)
+		}
+	}
+}
+
+// BroadcastToTenant 向特定租户的所有连接广播消息
 func (m *Manager) BroadcastToTenant(tenantID uint32, data []byte) {
 	m.clients.Range(func(key, value interface{}) bool {
 		client := value.(*Client)
@@ -192,59 +214,172 @@ func (m *Manager) BroadcastToTenant(tenantID uint32, data []byte) {
 	})
 }
 
-// HandleMessage handles an incoming message from a client
+// BroadcastCommandToTenant 向特定租户的所有连接广播命令
+func (m *Manager) BroadcastCommandToTenant(tenantID uint32, cmd *protocol.Command) {
+	m.clients.Range(func(key, value interface{}) bool {
+		client := value.(*Client)
+		if client.TenantID == tenantID {
+			if err := client.SendCommand(cmd); err != nil {
+				m.log.Warnf("Failed to send command to tenant %d client %s: %v", tenantID, client.ID, err)
+			}
+		}
+		return true
+	})
+}
+
+// HandleMessage 处理来自客户端的消息
 func (m *Manager) HandleMessage(client *Client, data []byte) {
-	// Detect protocol and convert to unified message
-	msg, protocolType, err := m.adapter.DetectAndConvert(data)
+	// 解码消息
+	cmd, err := m.codec.Decode(data)
 	if err != nil {
-		m.log.Errorf("Failed to detect protocol for client %s: %v", client.ID, err)
-		// Send error response
-		resp := protocol.NewErrorResponse(400, "Invalid message format")
-		client.SendResponse(resp, "")
+		m.log.Errorf("Failed to decode message for client %s: %v", client.ID, err)
+		// 发送错误响应
+		errCmd := protocol.NewErrorCommand(400, "Invalid message format")
+		client.SendCommand(errCmd)
 		return
 	}
 
-	// Set protocol type for client (first message determines protocol)
-	if client.GetProtocolType() == "" {
-		client.SetProtocolType(protocolType)
-	}
-
-	// Handle message through handler
-	if m.messageHandler != nil {
-		if err := m.messageHandler.HandleMessage(client, msg); err != nil {
-			m.log.Errorf("Failed to handle message for client %s: %v", client.ID, err)
-			// Send error response
-			resp := protocol.NewErrorResponse(500, "Internal server error")
-			client.SendResponse(resp, msg.Action)
+	// 通过处理器处理命令
+	if m.commandHandler != nil {
+		if err := m.commandHandler.HandleCommand(client, cmd); err != nil {
+			m.log.Errorf("Failed to handle command for client %s: %v", client.ID, err)
+			// 发送错误响应
+			errCmd := protocol.NewErrorCommand(500, "Internal server error")
+			errCmd.RequestID = cmd.RequestID
+			errCmd.Seq = cmd.Seq
+			client.SendCommand(errCmd)
 		}
 	}
 }
 
-// GetStats returns connection statistics
+// GetStats 获取连接统计信息
 func (m *Manager) GetStats() map[string]interface{} {
 	m.mu.RLock()
 	defer m.mu.RUnlock()
 
 	return map[string]interface{}{
-		"total_clients":      m.totalClients,
-		"total_users":        len(m.totalUserClients),
-		"max_connections":    m.maxConnections,
-		"max_per_user":       m.maxConnectionsPerUser,
+		"total_clients":   m.totalClients,
+		"total_users":     len(m.totalUserClients),
+		"max_connections": m.maxConnections,
+		"max_per_user":    m.maxConnectionsPerUser,
 	}
 }
 
-// KickUser kicks all connections for a specific user
+// KickUser 踢出特定用户的所有连接
 func (m *Manager) KickUser(userID uint32, reason string) {
 	clients := m.GetUserClients(userID)
 	for _, client := range clients {
-		// Send kick message
-		resp := protocol.NewErrorResponse(401, reason)
-		client.SendResponse(resp, "auth.kick")
+		// 发送踢出消息
+		cmd := protocol.NewCommand(protocol.CommandTypeUserKick)
+		cmd.Payload = &protocol.UserKickCmd{
+			Request: &protocol.UserKickRequest{
+				UserID: string(rune(userID)),
+				Reason: reason,
+			},
+		}
+		client.SendCommand(cmd)
 
-		// Close connection
+		// 关闭连接
 		m.Unregister(client)
 		client.Close()
 	}
 
 	m.log.Infof("Kicked user %d: %s (%d connections)", userID, reason, len(clients))
+}
+
+// KickClient 踢出特定客户端
+func (m *Manager) KickClient(clientID string, reason string) error {
+	client, err := m.GetClient(clientID)
+	if err != nil {
+		return err
+	}
+
+	// 发送踢出消息
+	cmd := protocol.NewCommand(protocol.CommandTypeUserKick)
+	cmd.Payload = &protocol.UserKickCmd{
+		Request: &protocol.UserKickRequest{
+			Reason: reason,
+		},
+	}
+	client.SendCommand(cmd)
+
+	// 关闭连接
+	m.Unregister(client)
+	client.Close()
+
+	m.log.Infof("Kicked client %s: %s", clientID, reason)
+	return nil
+}
+
+// GetAllClients 获取所有客户端
+func (m *Manager) GetAllClients() []*Client {
+	var clients []*Client
+	m.clients.Range(func(key, value interface{}) bool {
+		clients = append(clients, value.(*Client))
+		return true
+	})
+	return clients
+}
+
+// GetActorClients 获取所有 Actor 客户端
+func (m *Manager) GetActorClients() []*Client {
+	var clients []*Client
+	m.clients.Range(func(key, value interface{}) bool {
+		client := value.(*Client)
+		if client.IsActor {
+			clients = append(clients, client)
+		}
+		return true
+	})
+	return clients
+}
+
+// SendCommandToClient 向特定客户端发送命令
+func (m *Manager) SendCommandToClient(clientID string, cmd *protocol.Command) error {
+	client, err := m.GetClient(clientID)
+	if err != nil {
+		return err
+	}
+	return client.SendCommand(cmd)
+}
+
+// SendCommandToActor 向特定 Actor 发送命令
+func (m *Manager) SendCommandToActor(robotID string, cmd *protocol.Command) error {
+	var targetClient *Client
+	m.clients.Range(func(key, value interface{}) bool {
+		client := value.(*Client)
+		if client.IsActor && client.RobotID == robotID {
+			targetClient = client
+			return false
+		}
+		return true
+	})
+
+	if targetClient == nil {
+		return ErrClientNotFound
+	}
+
+	return targetClient.SendCommand(cmd)
+}
+
+// CleanupInactiveClients 清理不活跃的客户端
+func (m *Manager) CleanupInactiveClients(timeout time.Duration) int {
+	var toRemove []*Client
+	now := time.Now()
+
+	m.clients.Range(func(key, value interface{}) bool {
+		client := value.(*Client)
+		if now.Sub(client.GetLastActivity()) > timeout {
+			toRemove = append(toRemove, client)
+		}
+		return true
+	})
+
+	for _, client := range toRemove {
+		m.log.Infof("Cleaning up inactive client: %s", client.ID)
+		m.Unregister(client)
+		client.Close()
+	}
+
+	return len(toRemove)
 }

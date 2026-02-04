@@ -2,18 +2,19 @@ package handler
 
 import (
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/google/uuid"
 
 	"go-wind-admin/app/admin/service/internal/websocket"
 	"go-wind-admin/app/admin/service/internal/websocket/protocol"
 )
 
-// AlertHandler handles alert/notification messages
+// AlertHandler 告警处理器
 type AlertHandler struct {
 	manager *websocket.Manager
 	log     *log.Helper
 }
 
-// NewAlertHandler creates a new alert handler
+// NewAlertHandler 创建新的告警处理器
 func NewAlertHandler(manager *websocket.Manager, logger log.Logger) *AlertHandler {
 	return &AlertHandler{
 		manager: manager,
@@ -21,63 +22,45 @@ func NewAlertHandler(manager *websocket.Manager, logger log.Logger) *AlertHandle
 	}
 }
 
-// Handle processes alert messages
-func (h *AlertHandler) Handle(client *websocket.Client, msg *protocol.UnifiedMessage) error {
-	// Extract alert data
-	message, ok := msg.Data["message"].(string)
-	if !ok {
-		h.log.Error("Missing or invalid 'message' field")
-		resp := protocol.NewErrorResponse(400, "Missing or invalid 'message' field")
-		return client.SendResponse(resp, msg.Action)
+// Handle 处理告警消息
+func (h *AlertHandler) Handle(client *websocket.Client, cmd *protocol.Command) error {
+	payload, ok := cmd.Payload.(*protocol.AlertSendCmd)
+	if !ok || payload.Request == nil {
+		h.log.Error("Invalid payload in alert")
+		return client.SendError(cmd.RequestID, cmd.Seq, 400, "Invalid payload")
 	}
 
-	// Optional: target user ID for directed alerts
-	var targetUserID uint32
-	if userID, ok := msg.Data["user_id"].(float64); ok {
-		targetUserID = uint32(userID)
+	req := payload.Request
+	h.log.Infof("Alert received: title=%s, level=%d, from=%s", req.Title, req.Level, client.Username)
+
+	// 生成告警 ID
+	alertID := uuid.New().String()
+
+	// 构建告警通知命令
+	notifyCmd := protocol.NewCommand(protocol.CommandTypeNotify)
+	notifyCmd.Payload = &protocol.NotifyCmd{
+		Request: &protocol.NotifyRequest{
+			Topic:   "alert",
+			Content: req.Content,
+			Metadata: map[string]string{
+				"alert_id": alertID,
+				"title":    req.Title,
+				"level":    string(rune(req.Level)),
+				"robot_id": req.RobotID,
+				"from":     client.Username,
+			},
+		},
 	}
 
-	// Optional: alert level
-	level := "info"
-	if l, ok := msg.Data["level"].(string); ok {
-		level = l
+	// 广播给租户内所有客户端
+	h.manager.BroadcastCommandToTenant(client.TenantID, notifyCmd)
+
+	// 发送成功响应
+	respPayload := &protocol.AlertSendCmd{
+		Response: &protocol.AlertSendResponse{
+			AlertID: alertID,
+			Success: true,
+		},
 	}
-
-	alertData := map[string]interface{}{
-		"message": message,
-		"level":   level,
-		"from":    client.Username,
-	}
-
-	h.log.Infof("Alert received: message=%s, level=%s, from=%s, target=%d", message, level, client.Username, targetUserID)
-
-	// Send alert to target user or broadcast to tenant
-	adapter := protocol.NewAdapter()
-	resp := protocol.NewSuccessResponse(alertData)
-
-	if targetUserID > 0 {
-		// Send to specific user
-		for _, protocolType := range []protocol.ProtocolType{protocol.ProtocolTypeActor, protocol.ProtocolTypeLegacy} {
-			data, err := adapter.ConvertResponse(resp, protocolType, msg.Action)
-			if err != nil {
-				h.log.Errorf("Failed to convert alert message: %v", err)
-				continue
-			}
-			h.manager.BroadcastToUser(targetUserID, data)
-		}
-	} else {
-		// Broadcast to entire tenant
-		for _, protocolType := range []protocol.ProtocolType{protocol.ProtocolTypeActor, protocol.ProtocolTypeLegacy} {
-			data, err := adapter.ConvertResponse(resp, protocolType, msg.Action)
-			if err != nil {
-				h.log.Errorf("Failed to convert alert message: %v", err)
-				continue
-			}
-			h.manager.BroadcastToTenant(client.TenantID, data)
-		}
-	}
-
-	// Send success response to sender
-	successResp := protocol.NewSuccessResponse(nil)
-	return client.SendResponse(successResp, msg.Action)
+	return client.SendResponse(protocol.CommandTypeAlertSend, cmd.RequestID, cmd.Seq, respPayload)
 }

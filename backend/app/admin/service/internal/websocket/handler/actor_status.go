@@ -1,19 +1,21 @@
 package handler
 
 import (
+	"time"
+
 	"github.com/go-kratos/kratos/v2/log"
 
 	"go-wind-admin/app/admin/service/internal/websocket"
 	"go-wind-admin/app/admin/service/internal/websocket/protocol"
 )
 
-// ActorStatusHandler handles actor status update messages
+// ActorStatusHandler Actor 状态处理器
 type ActorStatusHandler struct {
 	registry *ActorRegistry
 	log      *log.Helper
 }
 
-// NewActorStatusHandler creates a new actor status handler
+// NewActorStatusHandler 创建新的 Actor 状态处理器
 func NewActorStatusHandler(registry *ActorRegistry, logger log.Logger) *ActorStatusHandler {
 	return &ActorStatusHandler{
 		registry: registry,
@@ -21,40 +23,53 @@ func NewActorStatusHandler(registry *ActorRegistry, logger log.Logger) *ActorSta
 	}
 }
 
-// Handle processes actor status update messages
-func (h *ActorStatusHandler) Handle(client *websocket.Client, msg *protocol.UnifiedMessage) error {
-	robotID, _ := msg.Data["robot_id"].(string)
-	if robotID == "" {
+// Handle 处理 Actor 状态更新命令
+func (h *ActorStatusHandler) Handle(client *websocket.Client, cmd *protocol.Command) error {
+	payload, ok := cmd.Payload.(*protocol.ActorStatusCmd)
+	if !ok || payload.Request == nil {
+		h.log.Error("Invalid payload in status update")
+		return client.SendError(cmd.RequestID, cmd.Seq, 400, "Invalid payload")
+	}
+
+	req := payload.Request
+	if req.RobotID == "" {
 		h.log.Error("Missing robot_id in status update")
-		resp := protocol.NewErrorResponse(400, "Missing robot_id")
-		return client.SendResponse(resp, msg.Action)
+		return client.SendError(cmd.RequestID, cmd.Seq, 400, "Missing robot_id")
 	}
 
-	status, _ := msg.Data["status"].(string)
-	balance := 0.0
-	if b, ok := msg.Data["balance"].(float64); ok {
-		balance = b
+	// 更新 Actor 状态
+	if !h.registry.UpdateStatus(req.RobotID, req.Status, req.Balance) {
+		h.log.Warnf("Actor not found for status update: robot_id=%s", req.RobotID)
+		return client.SendError(cmd.RequestID, cmd.Seq, 404, "Actor not found")
 	}
 
-	// Update actor status in registry
-	if !h.registry.UpdateStatus(robotID, status, balance) {
-		h.log.Warnf("Actor not found for status update: robot_id=%s", robotID)
-		resp := protocol.NewErrorResponse(404, "Actor not found")
-		return client.SendResponse(resp, msg.Action)
+	// 如果有服务器信息，也更新
+	if req.ServerInfo != nil {
+		h.registry.UpdateServerInfo(req.RobotID, req.ServerInfo, "", "", "", "", "")
 	}
 
-	h.log.Infof("Actor status updated: robot_id=%s, status=%s, balance=%.2f", robotID, status, balance)
+	h.log.Infof("Actor status updated: robot_id=%s, status=%s, balance=%.2f", req.RobotID, req.Status, req.Balance)
 
-	// Send success response
-	resp := protocol.NewSuccessResponse(nil)
-	return client.SendResponse(resp, msg.Action)
+	// 发送成功响应
+	respPayload := &protocol.ActorStatusCmd{
+		Response: &protocol.ActorStatusResponse{
+			Acknowledged: true,
+		},
+	}
+	return client.SendResponse(protocol.CommandTypeActorStatus, cmd.RequestID, cmd.Seq, respPayload)
 }
 
-// HandleHeartbeat processes actor heartbeat messages
-func (h *ActorStatusHandler) HandleHeartbeat(client *websocket.Client, msg *protocol.UnifiedMessage) error {
-	robotID, _ := msg.Data["robot_id"].(string)
+// HandleHeartbeat 处理 Actor 心跳命令
+func (h *ActorStatusHandler) HandleHeartbeat(client *websocket.Client, cmd *protocol.Command) error {
+	payload, ok := cmd.Payload.(*protocol.ActorHeartbeatCmd)
+
+	var robotID string
+	if ok && payload.Request != nil {
+		robotID = payload.Request.RobotID
+	}
+
 	if robotID == "" {
-		// Try to get robot ID from registry by client ID
+		// 尝试从注册表中通过客户端 ID 获取机器人 ID
 		info := h.registry.GetByClientID(client.ID)
 		if info != nil {
 			robotID = info.RobotID
@@ -66,12 +81,14 @@ func (h *ActorStatusHandler) HandleHeartbeat(client *websocket.Client, msg *prot
 		h.log.Debugf("Actor heartbeat: robot_id=%s", robotID)
 	}
 
-	// Update client activity
+	// 更新客户端活动时间
 	client.UpdateActivity()
 
-	// Send pong response
-	resp := protocol.NewSuccessResponse(map[string]interface{}{
-		"type": "pong",
-	})
-	return client.SendResponse(resp, msg.Action)
+	// 发送心跳响应
+	respPayload := &protocol.ActorHeartbeatCmd{
+		Response: &protocol.ActorHeartbeatResponse{
+			ServerTime: time.Now().UnixMilli(),
+		},
+	}
+	return client.SendResponse(protocol.CommandTypeActorHeartbeat, cmd.RequestID, cmd.Seq, respPayload)
 }

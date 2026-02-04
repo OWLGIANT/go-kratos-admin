@@ -1,36 +1,40 @@
 package handler
 
 import (
+	"time"
+
 	"github.com/go-kratos/kratos/v2/log"
 
 	"go-wind-admin/app/admin/service/internal/websocket"
 	"go-wind-admin/app/admin/service/internal/websocket/protocol"
 )
 
-// HeartbeatHandler handles heartbeat/ping messages
+// HeartbeatHandler 心跳处理器
 type HeartbeatHandler struct {
 	log *log.Helper
 }
 
-// NewHeartbeatHandler creates a new heartbeat handler
+// NewHeartbeatHandler 创建新的心跳处理器
 func NewHeartbeatHandler(logger log.Logger) *HeartbeatHandler {
 	return &HeartbeatHandler{
 		log: log.NewHelper(log.With(logger, "module", "websocket/handler/heartbeat")),
 	}
 }
 
-// Handle processes heartbeat messages
-func (h *HeartbeatHandler) Handle(client *websocket.Client, msg *protocol.UnifiedMessage) error {
-	// Update client activity
+// Handle 处理心跳消息
+func (h *HeartbeatHandler) Handle(client *websocket.Client, cmd *protocol.Command) error {
+	// 更新客户端活动时间
 	client.UpdateActivity()
 
-	// Send pong response
-	resp := protocol.NewSuccessResponse(map[string]interface{}{
-		"type": "pong",
-		"time": msg.Timestamp,
-	})
+	// 发送心跳响应
+	respPayload := &protocol.EchoCmd{
+		Response: &protocol.EchoResponse{
+			Message:    "pong",
+			ServerTime: time.Now().UnixMilli(),
+		},
+	}
 
-	if err := client.SendResponse(resp, msg.Action); err != nil {
+	if err := client.SendResponse(protocol.CommandTypeEcho, cmd.RequestID, cmd.Seq, respPayload); err != nil {
 		h.log.Errorf("Failed to send heartbeat response to client %s: %v", client.ID, err)
 		return err
 	}

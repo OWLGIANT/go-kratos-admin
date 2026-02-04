@@ -2,163 +2,136 @@ package backend
 
 import (
 	"encoding/json"
+	"sync/atomic"
 	"time"
 )
 
-// Message types
-const (
-	// Actor -> Backend
-	ActionRegister      = "actor.register"
-	ActionUnregister    = "actor.unregister"
-	ActionStatusUpdate  = "actor.status_update"
-	ActionHeartbeat     = "actor.heartbeat"
-	ActionCommandResult = "actor.command_result"
-	ActionServerSync    = "actor.server_sync"
+// CommandType 命令类型枚举 (不同组路由步距 600)
+type CommandType int32
 
-	// Backend -> Actor
-	ActionStart  = "actor.start"
-	ActionStop   = "actor.stop"
-	ActionStatus = "actor.status"
-	ActionConfig = "actor.config"
-	ActionCreate = "actor.create"
-	ActionDelete = "actor.delete"
+const (
+	CommandTypeUnknown CommandType = 0
+
+	// 基础命令 (1-599)
+	CommandTypeInit   CommandType = 1
+	CommandTypeEcho   CommandType = 2
+	CommandTypeNotify CommandType = 3
+	CommandTypeResync CommandType = 4
+	CommandTypeError  CommandType = 5
+
+	// Actor 生命周期命令 (600-1199) - Actor 相当于服务器
+	CommandTypeActorRegister   CommandType = 600
+	CommandTypeActorUnregister CommandType = 601
+	CommandTypeActorHeartbeat  CommandType = 602
+	CommandTypeActorStatus     CommandType = 603
+	CommandTypeActorList       CommandType = 604
+
+	// Robot 控制命令 (1200-1799) - Robot 是机器人
+	CommandTypeRobotStart   CommandType = 1200
+	CommandTypeRobotStop    CommandType = 1201
+	CommandTypeRobotConfig  CommandType = 1202
+	CommandTypeRobotCommand CommandType = 1203
+	CommandTypeRobotResult  CommandType = 1204
+
+	// 服务器信息命令 (1800-2399)
+	CommandTypeServerSync   CommandType = 1800
+	CommandTypeServerStatus CommandType = 1801
+
+	// 告警命令 (2400-2999)
+	CommandTypeAlertSend CommandType = 2400
+	CommandTypeAlertAck  CommandType = 2401
+
+	// 用户命令 (3000-3599)
+	CommandTypeUserKick      CommandType = 3000
+	CommandTypeUserBroadcast CommandType = 3001
+
+	// 机器人同步命令 (3600-4199)
+	CommandTypeRobotSync CommandType = 3600
 )
 
-// Message represents a message sent to/from backend
-type Message struct {
-	Action    string                 `json:"action"`
-	Data      map[string]interface{} `json:"data,omitempty"`
-	RequestID string                 `json:"request_id,omitempty"`
-	Timestamp int64                  `json:"timestamp,omitempty"`
+// CommandTypeToString 命令类型转字符串
+var CommandTypeToString = map[CommandType]string{
+	CommandTypeUnknown:         "unknown",
+	CommandTypeInit:            "init",
+	CommandTypeEcho:            "echo",
+	CommandTypeNotify:          "notify",
+	CommandTypeResync:          "resync",
+	CommandTypeError:           "error",
+	CommandTypeActorRegister:   "actor.register",
+	CommandTypeActorUnregister: "actor.unregister",
+	CommandTypeActorHeartbeat:  "actor.heartbeat",
+	CommandTypeActorStatus:     "actor.status",
+	CommandTypeActorList:       "actor.list",
+	CommandTypeRobotStart:      "robot.start",
+	CommandTypeRobotStop:       "robot.stop",
+	CommandTypeRobotConfig:     "robot.config",
+	CommandTypeRobotCommand:    "robot.command",
+	CommandTypeRobotResult:     "robot.result",
+	CommandTypeServerSync:      "server.sync",
+	CommandTypeServerStatus:    "server.status",
+	CommandTypeAlertSend:       "alert.send",
+	CommandTypeAlertAck:        "alert.ack",
+	CommandTypeUserKick:        "user.kick",
+	CommandTypeUserBroadcast:   "user.broadcast",
+	CommandTypeRobotSync:       "robot.sync",
 }
 
-// Response represents a response from backend
-type Response struct {
-	Success   bool                   `json:"success"`
-	Code      int                    `json:"code"`
-	Message   string                 `json:"message"`
-	Data      map[string]interface{} `json:"data,omitempty"`
-	RequestID string                 `json:"request_id,omitempty"`
-	Timestamp int64                  `json:"timestamp,omitempty"`
+// ErrorMessage 错误信息
+type ErrorMessage struct {
+	Code    int32  `json:"code"`
+	Message string `json:"message"`
+	Details string `json:"details,omitempty"`
 }
 
-// Command represents a command from backend to actor
+// Command 主命令消息
 type Command struct {
-	Action    string                 `json:"action"`
-	Data      map[string]interface{} `json:"data,omitempty"`
-	RequestID string                 `json:"request_id,omitempty"`
+	Type      CommandType   `json:"type"`
+	Seq       uint64        `json:"seq"`
+	RequestID string        `json:"request_id,omitempty"`
+	Error     *ErrorMessage `json:"error,omitempty"`
+	Timestamp time.Time     `json:"timestamp"`
+	Payload   interface{}   `json:"payload,omitempty"`
 }
 
-// CommandResult represents the result of a command execution
-type CommandResult struct {
-	RequestID string      `json:"request_id"`
-	Success   bool        `json:"success"`
-	Error     string      `json:"error,omitempty"`
-	Result    interface{} `json:"result,omitempty"`
+// GetTypeString 获取命令类型字符串
+func (c *Command) GetTypeString() string {
+	if s, ok := CommandTypeToString[c.Type]; ok {
+		return s
+	}
+	return "unknown"
 }
 
-// RegisterData contains actor registration information
-type RegisterData struct {
-	RobotID   string `json:"robot_id"`
-	Exchange  string `json:"exchange"`
-	Version   string `json:"version"`
-	TenantID  uint32 `json:"tenant_id,omitempty"`
-}
+// 全局序列号生成器
+var globalSeq uint64
 
-// StatusData contains actor status information
-type StatusData struct {
-	RobotID   string   `json:"robot_id"`
-	Status    string   `json:"status"` // running, stopped, error
-	Balance   float64  `json:"balance,omitempty"`
-	Positions []string `json:"positions,omitempty"`
-	Error     string   `json:"error,omitempty"`
-}
-
-// NewMessage creates a new message
-func NewMessage(action string, data map[string]interface{}) *Message {
-	return &Message{
-		Action:    action,
-		Data:      data,
-		Timestamp: time.Now().Unix(),
+// NewCommand 创建新命令
+func NewCommand(cmdType CommandType) *Command {
+	return &Command{
+		Type:      cmdType,
+		Seq:       atomic.AddUint64(&globalSeq, 1),
+		Timestamp: time.Now(),
 	}
 }
 
-// NewMessageWithRequestID creates a new message with request ID
-func NewMessageWithRequestID(action string, data map[string]interface{}, requestID string) *Message {
-	return &Message{
-		Action:    action,
-		Data:      data,
+// NewCommandWithRequestID 创建带请求ID的命令
+func NewCommandWithRequestID(cmdType CommandType, requestID string) *Command {
+	return &Command{
+		Type:      cmdType,
+		Seq:       atomic.AddUint64(&globalSeq, 1),
 		RequestID: requestID,
-		Timestamp: time.Now().Unix(),
+		Timestamp: time.Now(),
 	}
 }
 
-// ToJSON converts message to JSON bytes
-func (m *Message) ToJSON() ([]byte, error) {
-	return json.Marshal(m)
+// ToJSON 转换为 JSON
+func (c *Command) ToJSON() ([]byte, error) {
+	return json.Marshal(c)
 }
 
-// ParseMessage parses JSON bytes to message
-func ParseMessage(data []byte) (*Message, error) {
-	var msg Message
-	if err := json.Unmarshal(data, &msg); err != nil {
-		return nil, err
-	}
-	return &msg, nil
-}
+// ==================== 命令载荷定义 ====================
 
-// ParseResponse parses JSON bytes to response
-func ParseResponse(data []byte) (*Response, error) {
-	var resp Response
-	if err := json.Unmarshal(data, &resp); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// NewRegisterMessage creates a registration message
-func NewRegisterMessage(robotID, exchange, version string, tenantID uint32) *Message {
-	return NewMessage(ActionRegister, map[string]interface{}{
-		"robot_id":  robotID,
-		"exchange":  exchange,
-		"version":   version,
-		"tenant_id": tenantID,
-	})
-}
-
-// NewStatusUpdateMessage creates a status update message
-func NewStatusUpdateMessage(robotID, status string, balance float64) *Message {
-	return NewMessage(ActionStatusUpdate, map[string]interface{}{
-		"robot_id": robotID,
-		"status":   status,
-		"balance":  balance,
-	})
-}
-
-// NewHeartbeatMessage creates a heartbeat message
-func NewHeartbeatMessage(robotID string) *Message {
-	return NewMessage(ActionHeartbeat, map[string]interface{}{
-		"robot_id": robotID,
-	})
-}
-
-// NewCommandResultMessage creates a command result message
-func NewCommandResultMessage(requestID string, success bool, result interface{}, errMsg string) *Message {
-	data := map[string]interface{}{
-		"request_id": requestID,
-		"success":    success,
-	}
-	if result != nil {
-		data["result"] = result
-	}
-	if errMsg != "" {
-		data["error"] = errMsg
-	}
-	return NewMessage(ActionCommandResult, data)
-}
-
-// ServerInfo 服务器状态信息
-type ServerInfo struct {
+// ServerStatusInfo 服务器状态信息
+type ServerStatusInfo struct {
 	CPU               string            `json:"cpu,omitempty"`
 	IPPool            float64           `json:"ip_pool,omitempty"`
 	Mem               float64           `json:"mem,omitempty"`
@@ -171,7 +144,302 @@ type ServerInfo struct {
 	AwsZone           string            `json:"aws_zone,omitempty"`
 }
 
-// ServerSyncData 服务器同步数据
+// ActorRegisterRequest Actor 注册请求
+type ActorRegisterRequest struct {
+	RobotID   string `json:"robot_id"`
+	Exchange  string `json:"exchange"`
+	Version   string `json:"version"`
+	TenantID  uint32 `json:"tenant_id"`
+	IP        string `json:"ip,omitempty"`
+	InnerIP   string `json:"inner_ip,omitempty"`
+	Port      string `json:"port,omitempty"`
+	MachineID string `json:"machine_id,omitempty"`
+	Nickname  string `json:"nickname,omitempty"`
+}
+
+// ActorRegisterResponse Actor 注册响应
+type ActorRegisterResponse struct {
+	Registered bool   `json:"registered"`
+	ClientID   string `json:"client_id"`
+}
+
+// ActorRegisterCmd Actor 注册命令
+type ActorRegisterCmd struct {
+	Request  *ActorRegisterRequest  `json:"request,omitempty"`
+	Response *ActorRegisterResponse `json:"response,omitempty"`
+}
+
+// ActorUnregisterRequest Actor 注销请求
+type ActorUnregisterRequest struct {
+	RobotID string `json:"robot_id"`
+	Reason  string `json:"reason,omitempty"`
+}
+
+// ActorUnregisterResponse Actor 注销响应
+type ActorUnregisterResponse struct {
+	Success bool `json:"success"`
+}
+
+// ActorUnregisterCmd Actor 注销命令
+type ActorUnregisterCmd struct {
+	Request  *ActorUnregisterRequest  `json:"request,omitempty"`
+	Response *ActorUnregisterResponse `json:"response,omitempty"`
+}
+
+// ActorHeartbeatRequest Actor 心跳请求
+type ActorHeartbeatRequest struct {
+	RobotID    string `json:"robot_id"`
+	ClientTime int64  `json:"client_time"`
+}
+
+// ActorHeartbeatResponse Actor 心跳响应
+type ActorHeartbeatResponse struct {
+	ServerTime int64 `json:"server_time"`
+}
+
+// ActorHeartbeatCmd Actor 心跳命令
+type ActorHeartbeatCmd struct {
+	Request  *ActorHeartbeatRequest  `json:"request,omitempty"`
+	Response *ActorHeartbeatResponse `json:"response,omitempty"`
+}
+
+// ActorStatusRequest Actor 状态请求
+type ActorStatusRequest struct {
+	RobotID    string            `json:"robot_id"`
+	Status     string            `json:"status"`
+	Balance    float64           `json:"balance"`
+	ServerInfo *ServerStatusInfo `json:"server_info,omitempty"`
+}
+
+// ActorStatusResponse Actor 状态响应
+type ActorStatusResponse struct {
+	Acknowledged bool `json:"acknowledged"`
+}
+
+// ActorStatusCmd Actor 状态命令
+type ActorStatusCmd struct {
+	Request  *ActorStatusRequest  `json:"request,omitempty"`
+	Response *ActorStatusResponse `json:"response,omitempty"`
+}
+
+// RobotStartRequest Robot 启动请求
+type RobotStartRequest struct {
+	RobotID string            `json:"robot_id"`
+	Config  map[string]string `json:"config,omitempty"`
+}
+
+// RobotStartResponse Robot 启动响应
+type RobotStartResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message,omitempty"`
+}
+
+// RobotStartCmd Robot 启动命令
+type RobotStartCmd struct {
+	Request  *RobotStartRequest  `json:"request,omitempty"`
+	Response *RobotStartResponse `json:"response,omitempty"`
+}
+
+// RobotStopRequest Robot 停止请求
+type RobotStopRequest struct {
+	RobotID  string `json:"robot_id"`
+	Graceful bool   `json:"graceful"`
+	Reason   string `json:"reason,omitempty"`
+}
+
+// RobotStopResponse Robot 停止响应
+type RobotStopResponse struct {
+	Success bool   `json:"success"`
+	Message string `json:"message,omitempty"`
+}
+
+// RobotStopCmd Robot 停止命令
+type RobotStopCmd struct {
+	Request  *RobotStopRequest  `json:"request,omitempty"`
+	Response *RobotStopResponse `json:"response,omitempty"`
+}
+
+// RobotConfigRequest Robot 配置请求
+type RobotConfigRequest struct {
+	RobotID string            `json:"robot_id"`
+	Config  map[string]string `json:"config"`
+}
+
+// RobotConfigResponse Robot 配置响应
+type RobotConfigResponse struct {
+	Success       bool              `json:"success"`
+	CurrentConfig map[string]string `json:"current_config,omitempty"`
+}
+
+// RobotConfigCmd Robot 配置命令
+type RobotConfigCmd struct {
+	Request  *RobotConfigRequest  `json:"request,omitempty"`
+	Response *RobotConfigResponse `json:"response,omitempty"`
+}
+
+// RobotCommandRequest Robot 通用命令请求
+type RobotCommandRequest struct {
+	RobotID   string `json:"robot_id"`
+	Action    string `json:"action"`
+	Payload   []byte `json:"payload,omitempty"`
+	TimeoutMs int32  `json:"timeout_ms,omitempty"`
+}
+
+// RobotCommandResponse Robot 通用命令响应
+type RobotCommandResponse struct {
+	Success bool   `json:"success"`
+	Error   string `json:"error,omitempty"`
+	Result  []byte `json:"result,omitempty"`
+}
+
+// RobotCommandCmd Robot 通用命令
+type RobotCommandCmd struct {
+	Request  *RobotCommandRequest  `json:"request,omitempty"`
+	Response *RobotCommandResponse `json:"response,omitempty"`
+}
+
+// RobotResultRequest Robot 命令结果请求
+type RobotResultRequest struct {
+	RequestID string `json:"request_id"`
+	Success   bool   `json:"success"`
+	Error     string `json:"error,omitempty"`
+	Result    []byte `json:"result,omitempty"`
+}
+
+// RobotResultCmd Robot 命令结果
+type RobotResultCmd struct {
+	Request *RobotResultRequest `json:"request,omitempty"`
+}
+
+// ServerSyncRequest 服务器同步请求
+type ServerSyncRequest struct {
+	RobotID    string            `json:"robot_id"`
+	ServerInfo *ServerStatusInfo `json:"server_info"`
+	IP         string            `json:"ip,omitempty"`
+	InnerIP    string            `json:"inner_ip,omitempty"`
+	Port       string            `json:"port,omitempty"`
+	MachineID  string            `json:"machine_id,omitempty"`
+	Nickname   string            `json:"nickname,omitempty"`
+}
+
+// ServerSyncResponse 服务器同步响应
+type ServerSyncResponse struct {
+	Success bool `json:"success"`
+}
+
+// ServerSyncCmd 服务器同步命令
+type ServerSyncCmd struct {
+	Request  *ServerSyncRequest  `json:"request,omitempty"`
+	Response *ServerSyncResponse `json:"response,omitempty"`
+}
+
+// ==================== 辅助函数 ====================
+
+// NewRegisterCommand 创建注册命令
+func NewRegisterCommand(robotID, exchange, version string, tenantID uint32) *Command {
+	cmd := NewCommand(CommandTypeActorRegister)
+	cmd.Payload = &ActorRegisterCmd{
+		Request: &ActorRegisterRequest{
+			RobotID:  robotID,
+			Exchange: exchange,
+			Version:  version,
+			TenantID: tenantID,
+		},
+	}
+	return cmd
+}
+
+// NewUnregisterCommand 创建注销命令
+func NewUnregisterCommand(robotID, reason string) *Command {
+	cmd := NewCommand(CommandTypeActorUnregister)
+	cmd.Payload = &ActorUnregisterCmd{
+		Request: &ActorUnregisterRequest{
+			RobotID: robotID,
+			Reason:  reason,
+		},
+	}
+	return cmd
+}
+
+// NewHeartbeatCommand 创建心跳命令
+func NewHeartbeatCommand(robotID string) *Command {
+	cmd := NewCommand(CommandTypeActorHeartbeat)
+	cmd.Payload = &ActorHeartbeatCmd{
+		Request: &ActorHeartbeatRequest{
+			RobotID:    robotID,
+			ClientTime: time.Now().UnixMilli(),
+		},
+	}
+	return cmd
+}
+
+// NewStatusCommand 创建状态更新命令
+func NewStatusCommand(robotID, status string, balance float64) *Command {
+	cmd := NewCommand(CommandTypeActorStatus)
+	cmd.Payload = &ActorStatusCmd{
+		Request: &ActorStatusRequest{
+			RobotID: robotID,
+			Status:  status,
+			Balance: balance,
+		},
+	}
+	return cmd
+}
+
+// NewServerSyncCommand 创建服务器同步命令
+func NewServerSyncCommand(data *ServerSyncData) *Command {
+	cmd := NewCommand(CommandTypeServerSync)
+
+	var serverInfo *ServerStatusInfo
+	if data.ServerInfo != nil {
+		serverInfo = &ServerStatusInfo{
+			CPU:               data.ServerInfo.CPU,
+			IPPool:            data.ServerInfo.IPPool,
+			Mem:               data.ServerInfo.Mem,
+			MemPct:            data.ServerInfo.MemPct,
+			DiskPct:           data.ServerInfo.DiskPct,
+			TaskNum:           data.ServerInfo.TaskNum,
+			StraVersion:       data.ServerInfo.StraVersion,
+			StraVersionDetail: data.ServerInfo.StraVersionDetail,
+			AwsAcct:           data.ServerInfo.AwsAcct,
+			AwsZone:           data.ServerInfo.AwsZone,
+		}
+	}
+
+	cmd.Payload = &ServerSyncCmd{
+		Request: &ServerSyncRequest{
+			RobotID:    data.RobotID,
+			ServerInfo: serverInfo,
+			IP:         data.IP,
+			InnerIP:    data.InnerIP,
+			Port:       data.Port,
+			MachineID:  data.MachineID,
+			Nickname:   data.Nickname,
+		},
+	}
+	return cmd
+}
+
+// NewRobotResultCommand 创建命令结果命令
+func NewRobotResultCommand(requestID string, success bool, result []byte, errMsg string) *Command {
+	cmd := NewCommandWithRequestID(CommandTypeRobotResult, requestID)
+	cmd.Payload = &RobotResultCmd{
+		Request: &RobotResultRequest{
+			RequestID: requestID,
+			Success:   success,
+			Error:     errMsg,
+			Result:    result,
+		},
+	}
+	return cmd
+}
+
+// ==================== 兼容旧协议的类型定义 ====================
+
+// ServerInfo 服务器状态信息 (兼容旧协议)
+type ServerInfo = ServerStatusInfo
+
+// ServerSyncData 服务器同步数据 (兼容旧协议)
 type ServerSyncData struct {
 	RobotID    string      `json:"robot_id"`
 	ServerInfo *ServerInfo `json:"server_info,omitempty"`
@@ -182,62 +450,27 @@ type ServerSyncData struct {
 	Nickname   string      `json:"nickname,omitempty"`
 }
 
-// NewServerSyncMessage creates a server sync message
-func NewServerSyncMessage(data *ServerSyncData) *Message {
-	msgData := map[string]interface{}{
-		"robot_id": data.RobotID,
-	}
+// CommandHandler handles commands from backend
+type CommandHandler interface {
+	// HandleCommand processes a command and returns a result
+	HandleCommand(cmd *IncomingCommand) *CommandResult
+}
 
-	if data.ServerInfo != nil {
-		serverInfo := map[string]interface{}{}
-		if data.ServerInfo.CPU != "" {
-			serverInfo["cpu"] = data.ServerInfo.CPU
-		}
-		if data.ServerInfo.IPPool != 0 {
-			serverInfo["ip_pool"] = data.ServerInfo.IPPool
-		}
-		if data.ServerInfo.Mem != 0 {
-			serverInfo["mem"] = data.ServerInfo.Mem
-		}
-		if data.ServerInfo.MemPct != "" {
-			serverInfo["mem_pct"] = data.ServerInfo.MemPct
-		}
-		if data.ServerInfo.DiskPct != "" {
-			serverInfo["disk_pct"] = data.ServerInfo.DiskPct
-		}
-		if data.ServerInfo.TaskNum != 0 {
-			serverInfo["task_num"] = data.ServerInfo.TaskNum
-		}
-		serverInfo["stra_version"] = data.ServerInfo.StraVersion
-		if data.ServerInfo.StraVersionDetail != nil {
-			serverInfo["stra_version_detail"] = data.ServerInfo.StraVersionDetail
-		}
-		if data.ServerInfo.AwsAcct != "" {
-			serverInfo["aws_acct"] = data.ServerInfo.AwsAcct
-		}
-		if data.ServerInfo.AwsZone != "" {
-			serverInfo["aws_zone"] = data.ServerInfo.AwsZone
-		}
-		if len(serverInfo) > 0 {
-			msgData["server_info"] = serverInfo
-		}
-	}
+// IncomingCommand 来自后端的命令
+type IncomingCommand struct {
+	Type      CommandType
+	RequestID string
+	RobotID   string
+	Action    string
+	Data      map[string]interface{}
+	Payload   []byte
+	TimeoutMs int32
+}
 
-	if data.IP != "" {
-		msgData["ip"] = data.IP
-	}
-	if data.InnerIP != "" {
-		msgData["inner_ip"] = data.InnerIP
-	}
-	if data.Port != "" {
-		msgData["port"] = data.Port
-	}
-	if data.MachineID != "" {
-		msgData["machine_id"] = data.MachineID
-	}
-	if data.Nickname != "" {
-		msgData["nickname"] = data.Nickname
-	}
-
-	return NewMessage(ActionServerSync, msgData)
+// CommandResult represents the result of a command execution
+type CommandResult struct {
+	RequestID string
+	Success   bool
+	Error     string
+	Result    interface{}
 }

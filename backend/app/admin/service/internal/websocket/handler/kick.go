@@ -1,19 +1,21 @@
 package handler
 
 import (
+	"strconv"
+
 	"github.com/go-kratos/kratos/v2/log"
 
 	"go-wind-admin/app/admin/service/internal/websocket"
 	"go-wind-admin/app/admin/service/internal/websocket/protocol"
 )
 
-// KickHandler handles kicking/disconnecting users
+// KickHandler 踢出用户处理器
 type KickHandler struct {
 	manager *websocket.Manager
 	log     *log.Helper
 }
 
-// NewKickHandler creates a new kick handler
+// NewKickHandler 创建新的踢出用户处理器
 func NewKickHandler(manager *websocket.Manager, logger log.Logger) *KickHandler {
 	return &KickHandler{
 		manager: manager,
@@ -21,31 +23,38 @@ func NewKickHandler(manager *websocket.Manager, logger log.Logger) *KickHandler 
 	}
 }
 
-// Handle processes kick messages
-func (h *KickHandler) Handle(client *websocket.Client, msg *protocol.UnifiedMessage) error {
-	// Extract target user ID
-	targetUserID, ok := msg.Data["user_id"].(float64)
-	if !ok {
-		h.log.Error("Missing or invalid 'user_id' field")
-		resp := protocol.NewErrorResponse(400, "Missing or invalid 'user_id' field")
-		return client.SendResponse(resp, msg.Action)
+// Handle 处理踢出用户消息
+func (h *KickHandler) Handle(client *websocket.Client, cmd *protocol.Command) error {
+	payload, ok := cmd.Payload.(*protocol.UserKickCmd)
+	if !ok || payload.Request == nil {
+		h.log.Error("Invalid payload in kick")
+		return client.SendError(cmd.RequestID, cmd.Seq, 400, "Invalid payload")
 	}
 
-	// Optional: reason for kicking
-	reason := "You have been logged out"
-	if r, ok := msg.Data["reason"].(string); ok {
-		reason = r
+	req := payload.Request
+
+	// 解析用户 ID
+	targetUserID, err := strconv.ParseUint(req.UserID, 10, 32)
+	if err != nil {
+		h.log.Errorf("Invalid user_id: %s", req.UserID)
+		return client.SendError(cmd.RequestID, cmd.Seq, 400, "Invalid user_id")
 	}
 
-	h.log.Infof("Kicking user %d: %s (requested by %s)", uint32(targetUserID), reason, client.Username)
+	reason := req.Reason
+	if reason == "" {
+		reason = "You have been logged out"
+	}
 
-	// Kick the user (close all their connections)
+	h.log.Infof("Kicking user %d: %s (requested by %s)", targetUserID, reason, client.Username)
+
+	// 踢出用户（关闭所有连接）
 	h.manager.KickUser(uint32(targetUserID), reason)
 
-	// Send success response to sender
-	resp := protocol.NewSuccessResponse(map[string]interface{}{
-		"user_id": uint32(targetUserID),
-		"kicked":  true,
-	})
-	return client.SendResponse(resp, msg.Action)
+	// 发送成功响应
+	respPayload := &protocol.UserKickCmd{
+		Response: &protocol.UserKickResponse{
+			Success: true,
+		},
+	}
+	return client.SendResponse(protocol.CommandTypeUserKick, cmd.RequestID, cmd.Seq, respPayload)
 }

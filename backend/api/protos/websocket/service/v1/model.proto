@@ -1,0 +1,347 @@
+syntax = "proto3";
+
+package websocket.service.v1;
+
+option go_package = "go-wind-admin/api/gen/go/websocket/service/v1;websocketV1";
+
+import "google/protobuf/timestamp.proto";
+
+// ==================== 基础模型 ====================
+
+// 错误信息
+message ErrorMessage {
+  int32 code = 1;           // 错误码
+  string message = 2;       // 错误信息
+  string details = 3;       // 详细信息
+}
+
+// 事件
+message Event {
+  EventType type = 1;
+  google.protobuf.Timestamp timestamp = 2;
+  map<string, string> data = 3;
+}
+
+// 事件类型
+enum EventType {
+  EVENT_TYPE_UNKNOWN = 0;
+  EVENT_TYPE_ACTOR_CONNECTED = 1;      // Actor 连接
+  EVENT_TYPE_ACTOR_DISCONNECTED = 2;   // Actor 断开
+  EVENT_TYPE_ACTOR_STATUS_CHANGED = 3; // Actor 状态变化
+  EVENT_TYPE_SERVER_STATUS_CHANGED = 4;// 服务器状态变化
+  EVENT_TYPE_ALERT = 5;                // 告警事件
+}
+
+// 告警级别
+enum AlertLevel {
+  ALERT_LEVEL_UNKNOWN = 0;
+  ALERT_LEVEL_INFO = 1;
+  ALERT_LEVEL_WARNING = 2;
+  ALERT_LEVEL_ERROR = 3;
+  ALERT_LEVEL_CRITICAL = 4;
+}
+
+// ==================== 服务器相关模型 ====================
+
+// 服务器状态信息
+message ServerStatusInfo {
+  string cpu = 1;                                // CPU 使用率
+  double ip_pool = 2;                            // IP 池
+  double mem = 3;                                // 内存使用
+  string mem_pct = 4;                            // 内存使用百分比
+  string disk_pct = 5;                           // 磁盘使用百分比
+  int32 task_num = 6;                            // 任务数量
+  bool stra_version = 7;                         // 策略版本
+  map<string, string> stra_version_detail = 8;   // 策略版本详情
+  string aws_acct = 9;                           // AWS 账户
+  string aws_zone = 10;                          // AWS 区域
+}
+
+// ==================== Actor 相关模型 ====================
+
+// Actor 信息
+message ActorInfo {
+  string client_id = 1;                          // 客户端ID
+  string robot_id = 2;                           // 机器人ID
+  string exchange = 3;                           // 交易所
+  string version = 4;                            // 版本
+  uint32 tenant_id = 5;                          // 租户ID
+  string status = 6;                             // 状态
+  double balance = 7;                            // 余额
+  google.protobuf.Timestamp registered_at = 8;   // 注册时间
+  google.protobuf.Timestamp last_heartbeat = 9;  // 最后心跳时间
+  ServerStatusInfo server_info = 10;             // 服务器信息
+  string ip = 11;                                // 外网IP
+  string inner_ip = 12;                          // 内网IP
+  string port = 13;                              // 端口
+  string machine_id = 14;                        // 机器ID
+  string nickname = 15;                          // 昵称
+}
+
+// ==================== 机器人相关模型 ====================
+
+// 机器人信息
+message RobotInfo {
+  string robot_id = 1;                           // 机器人ID
+  string name = 2;                               // 名称
+  string exchange = 3;                           // 交易所
+  string status = 4;                             // 状态
+  map<string, string> config = 5;                // 配置
+}
+
+// ==================== 请求/响应模型 ====================
+
+// 初始化请求
+message InitRequest {
+  string client_type = 1;   // 客户端类型: "actor", "admin", "user"
+  string version = 2;       // 客户端版本
+  uint32 tenant_id = 3;     // 租户ID
+  string token = 4;         // 认证令牌
+}
+
+// 初始化响应
+message InitResponse {
+  string client_id = 1;      // 分配的客户端ID
+  string server_version = 2; // 服务器版本
+  int64 server_time = 3;     // 服务器时间
+}
+
+// 心跳请求
+message EchoRequest {
+  string message = 1;        // 消息
+  int64 client_time = 2;     // 客户端时间
+}
+
+// 心跳响应
+message EchoResponse {
+  string message = 1;        // 消息
+  int64 server_time = 2;     // 服务器时间
+}
+
+// 通知请求
+message NotifyRequest {
+  string topic = 1;                    // 通知主题
+  string content = 2;                  // 通知内容
+  map<string, string> metadata = 3;    // 元数据
+}
+
+// 重新同步请求
+message ResyncRequest {
+  uint64 last_seq = 1;       // 最后收到的序列号
+}
+
+// Actor 注册请求
+message ActorRegisterRequest {
+  string robot_id = 1;       // 机器人ID
+  string exchange = 2;       // 交易所
+  string version = 3;        // 版本
+  uint32 tenant_id = 4;      // 租户ID
+  string ip = 5;             // 外网IP
+  string inner_ip = 6;       // 内网IP
+  string port = 7;           // 端口
+  string machine_id = 8;     // 机器ID
+  string nickname = 9;       // 昵称
+}
+
+// Actor 注册响应
+message ActorRegisterResponse {
+  bool registered = 1;       // 是否注册成功
+  string client_id = 2;      // 分配的客户端ID
+}
+
+// Actor 注销请求
+message ActorUnregisterRequest {
+  string robot_id = 1;       // 机器人ID
+  string reason = 2;         // 注销原因
+}
+
+// Actor 注销响应
+message ActorUnregisterResponse {
+  bool success = 1;          // 是否成功
+}
+
+// Actor 心跳请求
+message ActorHeartbeatRequest {
+  string robot_id = 1;       // 机器人ID
+  int64 client_time = 2;     // 客户端时间
+}
+
+// Actor 心跳响应
+message ActorHeartbeatResponse {
+  int64 server_time = 1;     // 服务器时间
+}
+
+// Actor 状态请求
+message ActorStatusRequest {
+  string robot_id = 1;                 // 机器人ID
+  string status = 2;                   // 状态: "idle", "running", "error", "stopped"
+  double balance = 3;                  // 余额
+  ServerStatusInfo server_info = 4;    // 服务器信息
+}
+
+// Actor 状态响应
+message ActorStatusResponse {
+  bool acknowledged = 1;     // 是否确认
+}
+
+// Actor 列表请求
+message ActorListRequest {
+  uint32 tenant_id = 1;      // 租户ID筛选
+  string status = 2;         // 状态筛选
+  int32 page = 3;            // 页码
+  int32 page_size = 4;       // 每页数量
+}
+
+// Actor 列表响应
+message ActorListResponse {
+  repeated ActorInfo actors = 1;  // Actor 列表
+  int32 total = 2;                // 总数
+}
+
+// Robot 启动请求
+message RobotStartRequest {
+  string robot_id = 1;                 // 机器人ID
+  map<string, string> config = 2;      // 启动配置
+}
+
+// Robot 启动响应
+message RobotStartResponse {
+  bool success = 1;          // 是否成功
+  string message = 2;        // 消息
+}
+
+// Robot 停止请求
+message RobotStopRequest {
+  string robot_id = 1;       // 机器人ID
+  bool graceful = 2;         // 是否优雅停止
+  string reason = 3;         // 停止原因
+}
+
+// Robot 停止响应
+message RobotStopResponse {
+  bool success = 1;          // 是否成功
+  string message = 2;        // 消息
+}
+
+// Robot 配置请求
+message RobotConfigRequest {
+  string robot_id = 1;                 // 机器人ID
+  map<string, string> config = 2;      // 配置
+}
+
+// Robot 配置响应
+message RobotConfigResponse {
+  bool success = 1;                         // 是否成功
+  map<string, string> current_config = 2;   // 当前配置
+}
+
+// Robot 通用命令请求
+message RobotCommandRequest {
+  string robot_id = 1;       // 机器人ID
+  string action = 2;         // 命令动作
+  bytes payload = 3;         // 命令载荷（JSON 或其他格式）
+  int32 timeout_ms = 4;      // 超时时间（毫秒）
+}
+
+// Robot 通用命令响应
+message RobotCommandResponse {
+  bool success = 1;          // 是否成功
+  string error = 2;          // 错误信息
+  bytes result = 3;          // 结果载荷
+}
+
+// Robot 命令结果请求
+message RobotResultRequest {
+  string request_id = 1;     // 对应的请求ID
+  bool success = 2;          // 是否成功
+  string error = 3;          // 错误信息
+  bytes result = 4;          // 结果载荷
+}
+
+// 服务器同步请求
+message ServerSyncRequest {
+  string robot_id = 1;                 // 机器人ID
+  ServerStatusInfo server_info = 2;    // 服务器信息
+  string ip = 3;                       // 外网IP
+  string inner_ip = 4;                 // 内网IP
+  string port = 5;                     // 端口
+  string machine_id = 6;               // 机器ID
+  string nickname = 7;                 // 昵称
+}
+
+// 服务器同步响应
+message ServerSyncResponse {
+  bool success = 1;          // 是否成功
+}
+
+// 服务器状态请求
+message ServerStatusRequest {
+  string robot_id = 1;       // 机器人ID
+}
+
+// 服务器状态响应
+message ServerStatusResponse {
+  ServerStatusInfo server_info = 1;    // 服务器信息
+}
+
+// 发送告警请求
+message AlertSendRequest {
+  string robot_id = 1;                 // 机器人ID
+  AlertLevel level = 2;                // 告警级别
+  string title = 3;                    // 标题
+  string content = 4;                  // 内容
+  map<string, string> metadata = 5;    // 元数据
+}
+
+// 发送告警响应
+message AlertSendResponse {
+  string alert_id = 1;       // 告警ID
+  bool success = 2;          // 是否成功
+}
+
+// 确认告警请求
+message AlertAckRequest {
+  string alert_id = 1;       // 告警ID
+  string ack_by = 2;         // 确认人
+  string comment = 3;        // 备注
+}
+
+// 确认告警响应
+message AlertAckResponse {
+  bool success = 1;          // 是否成功
+}
+
+// 踢出用户请求
+message UserKickRequest {
+  string user_id = 1;        // 用户ID
+  string reason = 2;         // 原因
+}
+
+// 踢出用户响应
+message UserKickResponse {
+  bool success = 1;          // 是否成功
+}
+
+// 广播消息请求
+message UserBroadcastRequest {
+  repeated string user_ids = 1;        // 用户ID列表（空表示广播给所有人）
+  string topic = 2;                    // 主题
+  string content = 3;                  // 内容
+  map<string, string> metadata = 4;    // 元数据
+}
+
+// 广播消息响应
+message UserBroadcastResponse {
+  int32 sent_count = 1;      // 发送数量
+}
+
+// 机器人同步请求
+message RobotSyncRequest {
+  repeated RobotInfo robots = 1;       // 机器人列表
+}
+
+// 机器人同步响应
+message RobotSyncResponse {
+  bool success = 1;          // 是否成功
+  int32 synced_count = 2;    // 同步数量
+}

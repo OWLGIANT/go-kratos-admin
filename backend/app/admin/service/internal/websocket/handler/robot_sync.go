@@ -9,19 +9,19 @@ import (
 	"go-wind-admin/app/admin/service/internal/websocket/protocol"
 )
 
-// RobotSyncService defines the interface for robot sync operations
+// RobotSyncService 机器人同步服务接口
 type RobotSyncService interface {
 	SyncRobot(ctx context.Context, tenantID uint32, rid string, status uint, balance float64) error
 }
 
-// RobotSyncHandler handles robot synchronization messages
+// RobotSyncHandler 机器人同步处理器
 type RobotSyncHandler struct {
 	service RobotSyncService
 	manager *websocket.Manager
 	log     *log.Helper
 }
 
-// NewRobotSyncHandler creates a new robot sync handler
+// NewRobotSyncHandler 创建新的机器人同步处理器
 func NewRobotSyncHandler(service RobotSyncService, manager *websocket.Manager, logger log.Logger) *RobotSyncHandler {
 	return &RobotSyncHandler{
 		service: service,
@@ -30,65 +30,51 @@ func NewRobotSyncHandler(service RobotSyncService, manager *websocket.Manager, l
 	}
 }
 
-// Handle processes robot sync messages
-func (h *RobotSyncHandler) Handle(client *websocket.Client, msg *protocol.UnifiedMessage) error {
-	// Extract robot sync data
-	rid, ok := msg.Data["rid"].(string)
-	if !ok {
-		h.log.Error("Missing or invalid 'rid' field")
-		resp := protocol.NewErrorResponse(400, "Missing or invalid 'rid' field")
-		return client.SendResponse(resp, msg.Action)
+// Handle 处理机器人同步消息
+func (h *RobotSyncHandler) Handle(client *websocket.Client, cmd *protocol.Command) error {
+	payload, ok := cmd.Payload.(*protocol.RobotSyncCmd)
+	if !ok || payload.Request == nil {
+		h.log.Error("Invalid payload in robot sync")
+		return client.SendError(cmd.RequestID, cmd.Seq, 400, "Invalid payload")
 	}
 
-	status, ok := msg.Data["status"].(float64)
-	if !ok {
-		h.log.Error("Missing or invalid 'status' field")
-		resp := protocol.NewErrorResponse(400, "Missing or invalid 'status' field")
-		return client.SendResponse(resp, msg.Action)
-	}
+	req := payload.Request
+	syncedCount := int32(0)
 
-	balance, ok := msg.Data["balance"].(float64)
-	if !ok {
-		h.log.Error("Missing or invalid 'balance' field")
-		resp := protocol.NewErrorResponse(400, "Missing or invalid 'balance' field")
-		return client.SendResponse(resp, msg.Action)
-	}
-
-	// Sync robot data
-	if err := h.service.SyncRobot(client.Context(), client.TenantID, rid, uint(status), balance); err != nil {
-		h.log.Errorf("Failed to sync robot %s: %v", rid, err)
-		resp := protocol.NewErrorResponse(500, "Failed to sync robot")
-		return client.SendResponse(resp, msg.Action)
-	}
-
-	h.log.Infof("Robot synced: rid=%s, status=%d, balance=%.2f, tenant=%d", rid, uint(status), balance, client.TenantID)
-
-	// Broadcast update to other clients in the same tenant
-	broadcastData := map[string]interface{}{
-		"rid":     rid,
-		"status":  uint(status),
-		"balance": balance,
-	}
-
-	adapter := protocol.NewAdapter()
-	for _, protocolType := range []protocol.ProtocolType{protocol.ProtocolTypeActor, protocol.ProtocolTypeLegacy} {
-		resp := protocol.NewSuccessResponse(broadcastData)
-		data, err := adapter.ConvertResponse(resp, protocolType, msg.Action)
-		if err != nil {
-			h.log.Errorf("Failed to convert broadcast message: %v", err)
-			continue
+	// 同步每个机器人
+	for _, robot := range req.Robots {
+		status := uint(0)
+		switch robot.Status {
+		case "running":
+			status = 1
+		case "stopped":
+			status = 2
+		case "error":
+			status = 3
 		}
 
-		// Broadcast to tenant (excluding the sender)
-		h.manager.BroadcastToTenant(client.TenantID, data)
+		if err := h.service.SyncRobot(client.Context(), client.TenantID, robot.RobotID, status, 0); err != nil {
+			h.log.Errorf("Failed to sync robot %s: %v", robot.RobotID, err)
+			continue
+		}
+		syncedCount++
 	}
 
-	// Send success response to sender (no response for legacy protocol as per source)
-	// But for Actor protocol, we should send a response
-	if client.GetProtocolType() == protocol.ProtocolTypeActor {
-		resp := protocol.NewSuccessResponse(nil)
-		return client.SendResponse(resp, msg.Action)
-	}
+	h.log.Infof("Robots synced: count=%d, tenant=%d", syncedCount, client.TenantID)
 
-	return nil
+	// 广播更新给租户内其他客户端
+	broadcastCmd := protocol.NewCommand(protocol.CommandTypeRobotSync)
+	broadcastCmd.Payload = &protocol.RobotSyncCmd{
+		Request: req,
+	}
+	h.manager.BroadcastCommandToTenant(client.TenantID, broadcastCmd)
+
+	// 发送成功响应
+	respPayload := &protocol.RobotSyncCmd{
+		Response: &protocol.RobotSyncResponse{
+			Success:     true,
+			SyncedCount: syncedCount,
+		},
+	}
+	return client.SendResponse(protocol.CommandTypeRobotSync, cmd.RequestID, cmd.Seq, respPayload)
 }

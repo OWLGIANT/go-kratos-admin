@@ -10,50 +10,35 @@ import (
 	"go-wind-admin/app/admin/service/internal/websocket/protocol"
 )
 
-// ActorInfo stores information about a connected actor
+// ActorInfo Actor 信息
 type ActorInfo struct {
-	ClientID      string    `json:"client_id"`
-	RobotID       string    `json:"robot_id"`
-	Exchange      string    `json:"exchange"`
-	Version       string    `json:"version"`
-	TenantID      uint32    `json:"tenant_id"`
-	Status        string    `json:"status"`
-	Balance       float64   `json:"balance"`
-	RegisteredAt  time.Time `json:"registered_at"`
-	LastHeartbeat time.Time `json:"last_heartbeat"`
-	// Server related info
-	ServerInfo *ServerStatusInfo `json:"server_info,omitempty"`
-	IP         string            `json:"ip,omitempty"`
-	InnerIP    string            `json:"inner_ip,omitempty"`
-	Port       string            `json:"port,omitempty"`
-	MachineID  string            `json:"machine_id,omitempty"`
-	Nickname   string            `json:"nickname,omitempty"`
+	ClientID      string                    `json:"client_id"`
+	RobotID       string                    `json:"robot_id"`
+	Exchange      string                    `json:"exchange"`
+	Version       string                    `json:"version"`
+	TenantID      uint32                    `json:"tenant_id"`
+	Status        string                    `json:"status"`
+	Balance       float64                   `json:"balance"`
+	RegisteredAt  time.Time                 `json:"registered_at"`
+	LastHeartbeat time.Time                 `json:"last_heartbeat"`
+	ServerInfo    *protocol.ServerStatusInfo `json:"server_info,omitempty"`
+	IP            string                    `json:"ip,omitempty"`
+	InnerIP       string                    `json:"inner_ip,omitempty"`
+	Port          string                    `json:"port,omitempty"`
+	MachineID     string                    `json:"machine_id,omitempty"`
+	Nickname      string                    `json:"nickname,omitempty"`
 }
 
-// ServerStatusInfo stores server status information
-type ServerStatusInfo struct {
-	CPU              string            `json:"cpu,omitempty"`
-	IPPool           float64           `json:"ip_pool,omitempty"`
-	Mem              float64           `json:"mem,omitempty"`
-	MemPct           string            `json:"mem_pct,omitempty"`
-	DiskPct          string            `json:"disk_pct,omitempty"`
-	TaskNum          int32             `json:"task_num,omitempty"`
-	StraVersion      bool              `json:"stra_version,omitempty"`
-	StraVersionDetail map[string]string `json:"stra_version_detail,omitempty"`
-	AwsAcct          string            `json:"aws_acct,omitempty"`
-	AwsZone          string            `json:"aws_zone,omitempty"`
-}
-
-// ActorRegistry manages registered actors
+// ActorRegistry Actor 注册表
 type ActorRegistry struct {
-	// actors maps robot_id to ActorInfo
+	// actors 映射 robot_id 到 ActorInfo
 	actors map[string]*ActorInfo
-	// clientToRobot maps client_id to robot_id
+	// clientToRobot 映射 client_id 到 robot_id
 	clientToRobot map[string]string
 	mu            sync.RWMutex
 }
 
-// NewActorRegistry creates a new actor registry
+// NewActorRegistry 创建新的 Actor 注册表
 func NewActorRegistry() *ActorRegistry {
 	return &ActorRegistry{
 		actors:        make(map[string]*ActorInfo),
@@ -61,7 +46,7 @@ func NewActorRegistry() *ActorRegistry {
 	}
 }
 
-// Register registers an actor
+// Register 注册 Actor
 func (r *ActorRegistry) Register(info *ActorInfo) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -70,7 +55,7 @@ func (r *ActorRegistry) Register(info *ActorInfo) {
 	r.clientToRobot[info.ClientID] = info.RobotID
 }
 
-// Unregister removes an actor by client ID
+// UnregisterByClientID 通过客户端 ID 注销 Actor
 func (r *ActorRegistry) UnregisterByClientID(clientID string) *ActorInfo {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -86,7 +71,7 @@ func (r *ActorRegistry) UnregisterByClientID(clientID string) *ActorInfo {
 	return info
 }
 
-// UnregisterByRobotID removes an actor by robot ID
+// UnregisterByRobotID 通过机器人 ID 注销 Actor
 func (r *ActorRegistry) UnregisterByRobotID(robotID string) *ActorInfo {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -101,14 +86,14 @@ func (r *ActorRegistry) UnregisterByRobotID(robotID string) *ActorInfo {
 	return info
 }
 
-// Get returns actor info by robot ID
+// Get 通过机器人 ID 获取 Actor 信息
 func (r *ActorRegistry) Get(robotID string) *ActorInfo {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 	return r.actors[robotID]
 }
 
-// GetByClientID returns actor info by client ID
+// GetByClientID 通过客户端 ID 获取 Actor 信息
 func (r *ActorRegistry) GetByClientID(clientID string) *ActorInfo {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -120,7 +105,7 @@ func (r *ActorRegistry) GetByClientID(clientID string) *ActorInfo {
 	return r.actors[robotID]
 }
 
-// GetAll returns all registered actors
+// GetAll 获取所有注册的 Actor
 func (r *ActorRegistry) GetAll() []*ActorInfo {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -132,7 +117,7 @@ func (r *ActorRegistry) GetAll() []*ActorInfo {
 	return result
 }
 
-// GetByTenant returns all actors for a tenant
+// GetByTenant 获取租户的所有 Actor
 func (r *ActorRegistry) GetByTenant(tenantID uint32) []*ActorInfo {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -146,7 +131,7 @@ func (r *ActorRegistry) GetByTenant(tenantID uint32) []*ActorInfo {
 	return result
 }
 
-// UpdateStatus updates actor status
+// UpdateStatus 更新 Actor 状态
 func (r *ActorRegistry) UpdateStatus(robotID, status string, balance float64) bool {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -161,7 +146,7 @@ func (r *ActorRegistry) UpdateStatus(robotID, status string, balance float64) bo
 	return true
 }
 
-// UpdateHeartbeat updates actor heartbeat time
+// UpdateHeartbeat 更新 Actor 心跳时间
 func (r *ActorRegistry) UpdateHeartbeat(robotID string) bool {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -175,8 +160,8 @@ func (r *ActorRegistry) UpdateHeartbeat(robotID string) bool {
 	return true
 }
 
-// UpdateServerInfo updates actor server information
-func (r *ActorRegistry) UpdateServerInfo(robotID string, serverInfo *ServerStatusInfo, ip, innerIP, port, machineID, nickname string) bool {
+// UpdateServerInfo 更新 Actor 服务器信息
+func (r *ActorRegistry) UpdateServerInfo(robotID string, serverInfo *protocol.ServerStatusInfo, ip, innerIP, port, machineID, nickname string) bool {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -204,14 +189,14 @@ func (r *ActorRegistry) UpdateServerInfo(robotID string, serverInfo *ServerStatu
 	return true
 }
 
-// ActorRegisterHandler handles actor registration messages
+// ActorRegisterHandler Actor 注册处理器
 type ActorRegisterHandler struct {
 	registry *ActorRegistry
 	manager  *websocket.Manager
 	log      *log.Helper
 }
 
-// NewActorRegisterHandler creates a new actor register handler
+// NewActorRegisterHandler 创建新的 Actor 注册处理器
 func NewActorRegisterHandler(registry *ActorRegistry, manager *websocket.Manager, logger log.Logger) *ActorRegisterHandler {
 	return &ActorRegisterHandler{
 		registry: registry,
@@ -220,58 +205,73 @@ func NewActorRegisterHandler(registry *ActorRegistry, manager *websocket.Manager
 	}
 }
 
-// Handle processes actor registration messages
-func (h *ActorRegisterHandler) Handle(client *websocket.Client, msg *protocol.UnifiedMessage) error {
-	h.log.Infof("Received actor.register: client=%s, isActor=%v, data=%v", client.ID, client.IsActor, msg.Data)
+// Handle 处理 Actor 注册命令
+func (h *ActorRegisterHandler) Handle(client *websocket.Client, cmd *protocol.Command) error {
+	h.log.Infof("Received actor.register: client=%s, isActor=%v", client.ID, client.IsActor)
 
-	robotID, _ := msg.Data["robot_id"].(string)
-	if robotID == "" {
+	// 获取 payload
+	payload, ok := cmd.Payload.(*protocol.ActorRegisterCmd)
+	if !ok || payload.Request == nil {
+		h.log.Error("Invalid payload in registration")
+		return client.SendError(cmd.RequestID, cmd.Seq, 400, "Invalid payload")
+	}
+
+	req := payload.Request
+	if req.RobotID == "" {
 		h.log.Error("Missing robot_id in registration")
-		resp := protocol.NewErrorResponse(400, "Missing robot_id")
-		return client.SendResponse(resp, msg.Action)
+		return client.SendError(cmd.RequestID, cmd.Seq, 400, "Missing robot_id")
 	}
 
-	exchange, _ := msg.Data["exchange"].(string)
-	version, _ := msg.Data["version"].(string)
-	tenantID := uint32(0)
-	if tid, ok := msg.Data["tenant_id"].(float64); ok {
-		tenantID = uint32(tid)
-	}
-
-	// Use client's tenant ID if not provided in message
+	// 使用客户端的租户 ID（如果消息中未提供）
+	tenantID := req.TenantID
 	if tenantID == 0 {
 		tenantID = client.TenantID
 	}
 
-	// Create actor info
+	// 创建 Actor 信息
 	info := &ActorInfo{
 		ClientID:      client.ID,
-		RobotID:       robotID,
-		Exchange:      exchange,
-		Version:       version,
+		RobotID:       req.RobotID,
+		Exchange:      req.Exchange,
+		Version:       req.Version,
 		TenantID:      tenantID,
 		Status:        "connected",
 		RegisteredAt:  time.Now(),
 		LastHeartbeat: time.Now(),
+		IP:            req.IP,
+		InnerIP:       req.InnerIP,
+		Port:          req.Port,
+		MachineID:     req.MachineID,
+		Nickname:      req.Nickname,
 	}
 
-	// Register actor
+	// 注册 Actor
 	h.registry.Register(info)
 
-	h.log.Infof("Actor registered: robot_id=%s, exchange=%s, version=%s, tenant_id=%d, client_id=%s",
-		robotID, exchange, version, tenantID, client.ID)
+	// 设置客户端为 Actor
+	client.SetActorInfo(req.RobotID)
 
-	// Send success response
-	resp := protocol.NewSuccessResponse(map[string]interface{}{
-		"robot_id":   robotID,
-		"registered": true,
-	})
-	return client.SendResponse(resp, msg.Action)
+	h.log.Infof("Actor registered: robot_id=%s, exchange=%s, version=%s, tenant_id=%d, client_id=%s",
+		req.RobotID, req.Exchange, req.Version, tenantID, client.ID)
+
+	// 发送成功响应
+	respPayload := &protocol.ActorRegisterCmd{
+		Response: &protocol.ActorRegisterResponse{
+			Registered: true,
+			ClientID:   client.ID,
+		},
+	}
+	return client.SendResponse(protocol.CommandTypeActorRegister, cmd.RequestID, cmd.Seq, respPayload)
 }
 
-// HandleUnregister processes actor unregistration
-func (h *ActorRegisterHandler) HandleUnregister(client *websocket.Client, msg *protocol.UnifiedMessage) error {
-	robotID, _ := msg.Data["robot_id"].(string)
+// HandleUnregister 处理 Actor 注销
+func (h *ActorRegisterHandler) HandleUnregister(client *websocket.Client, cmd *protocol.Command) error {
+	payload, ok := cmd.Payload.(*protocol.ActorUnregisterCmd)
+
+	var robotID string
+	if ok && payload.Request != nil {
+		robotID = payload.Request.RobotID
+	}
 
 	var info *ActorInfo
 	if robotID != "" {
@@ -284,11 +284,15 @@ func (h *ActorRegisterHandler) HandleUnregister(client *websocket.Client, msg *p
 		h.log.Infof("Actor unregistered: robot_id=%s, client_id=%s", info.RobotID, info.ClientID)
 	}
 
-	resp := protocol.NewSuccessResponse(nil)
-	return client.SendResponse(resp, msg.Action)
+	respPayload := &protocol.ActorUnregisterCmd{
+		Response: &protocol.ActorUnregisterResponse{
+			Success: true,
+		},
+	}
+	return client.SendResponse(protocol.CommandTypeActorUnregister, cmd.RequestID, cmd.Seq, respPayload)
 }
 
-// OnClientDisconnect should be called when a client disconnects
+// OnClientDisconnect 客户端断开连接时调用
 func (h *ActorRegisterHandler) OnClientDisconnect(clientID string) {
 	info := h.registry.UnregisterByClientID(clientID)
 	if info != nil {

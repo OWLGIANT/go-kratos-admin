@@ -9,33 +9,35 @@ import (
 	"go-wind-admin/app/admin/service/internal/websocket/protocol"
 )
 
-// RecoveryMiddleware handles panic recovery for WebSocket handlers
+// RecoveryMiddleware 处理 WebSocket 处理器的 panic 恢复
 type RecoveryMiddleware struct {
 	log *log.Helper
 }
 
-// NewRecoveryMiddleware creates a new recovery middleware
+// NewRecoveryMiddleware 创建新的恢复中间件
 func NewRecoveryMiddleware(logger log.Logger) *RecoveryMiddleware {
 	return &RecoveryMiddleware{
 		log: log.NewHelper(log.With(logger, "module", "websocket/recovery")),
 	}
 }
 
-// Recover wraps a handler function with panic recovery
-func (m *RecoveryMiddleware) Recover(handler func(*websocket.Client, *protocol.UnifiedMessage) error) func(*websocket.Client, *protocol.UnifiedMessage) error {
-	return func(client *websocket.Client, msg *protocol.UnifiedMessage) (err error) {
+// Recover 包装处理器函数以进行 panic 恢复
+func (m *RecoveryMiddleware) Recover(handler func(*websocket.Client, *protocol.Command) error) func(*websocket.Client, *protocol.Command) error {
+	return func(client *websocket.Client, cmd *protocol.Command) (err error) {
 		defer func() {
 			if r := recover(); r != nil {
 				m.log.Errorf("WebSocket handler panic: %v\n%s", r, debug.Stack())
 
-				// Send error response to client
-				resp := protocol.NewErrorResponse(500, "Internal server error")
-				client.SendResponse(resp, msg.Action)
+				// 发送错误响应给客户端
+				errCmd := protocol.NewErrorCommand(500, "Internal server error")
+				errCmd.RequestID = cmd.RequestID
+				errCmd.Seq = cmd.Seq
+				client.SendCommand(errCmd)
 
-				err = nil // Don't propagate panic as error
+				err = nil // 不将 panic 作为错误传播
 			}
 		}()
 
-		return handler(client, msg)
+		return handler(client, cmd)
 	}
 }
