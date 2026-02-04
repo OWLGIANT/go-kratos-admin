@@ -1,0 +1,8 @@
+# proxy_url = "socks5://127.0.0.1:7890"
+
+# 逗号分割
+cfgTestPairs = "btc_usdt"
+cfgSpotEquityFromWsDiffStepSize = 0.000001
+cfgQuoteFrozenAllowAmount = 5
+cfgNotionalOrder = 30
+cfgExceedLimitOrderPriceRatio = 0.008

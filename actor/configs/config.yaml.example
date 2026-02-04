@@ -1,0 +1,39 @@
+# Actor 服务配置文件示例
+# 复制此文件为 config.yaml 并修改配置
+
+# 服务器配置
+server:
+  http_port: 8080
+  grpc_port: 9090
+  ws_path: /ws
+
+# 日志配置
+log:
+  level: info          # debug, info, warn, error
+  file: logs/actor.log
+  max_backups: 7
+
+# IP 池配置
+ippool:
+  auto_generate: false
+  interval: 300        # 秒
+
+# 交易所配置列表
+exchanges:
+  - name: binance_usdt_swap
+    robot_id: "robot-001"
+    api_key: ""
+    secret_key: ""
+    passphrase: ""
+    proxy_url: ""
+    local_addr: ""
+    symbols:
+      - BTC_USDT
+      - ETH_USDT
+    symbol_all: false
+    need_auth: true
+    depth_level: 20
+
+# 以下配置通过环境变量设置（推荐）:
+# BACKEND_WS_URL=ws://backend:7790/ws
+# BACKEND_WS_TOKEN=your_jwt_token

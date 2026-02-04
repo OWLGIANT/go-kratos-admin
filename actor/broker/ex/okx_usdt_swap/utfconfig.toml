@@ -1,0 +1,10 @@
+
+# proxy_url = "socks5://127.0.0.1:7890"
+
+cfgExceedLimitOrderPriceRatio = 0.003
+cfgUseHighDecimal = true
+
+# 要配对
+cfgTestPairs = "btc_usdt"
+cfgNotionalOrder = 200
+cfgNotionalDistOrder = 150

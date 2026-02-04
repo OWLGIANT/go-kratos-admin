@@ -1,0 +1,8 @@
+
+# proxy_url = "socks5://127.0.0.1:7890"
+
+cfgTestPairs = "btc_usdt"
+# cfgTestPairs = "btc_usdt,xec_usdt,eth_usdt,eos_usdt"
+
+# 非常窄
+cfgExceedLimitOrderPriceRatio = 0.006

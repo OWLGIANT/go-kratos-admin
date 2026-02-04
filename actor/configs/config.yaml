@@ -1,0 +1,26 @@
+# Actor 服务配置文件
+
+# 服务器配置
+server:
+  http_port: 8080
+  grpc_port: 9090
+  ws_path: /ws
+
+# 日志配置
+log:
+  level: info          # debug, info, warn, error
+  file: logs/actor.log
+  max_backups: 7
+
+# IP 池配置
+ippool:
+  auto_generate: false
+  interval: 300        # 秒
+
+# 交易所配置列表
+exchanges: []
+
+# Backend WebSocket 配置
+# 也可以通过环境变量设置:
+# BACKEND_WS_URL=ws://43.134.189.161:7790/ws
+# BACKEND_WS_TOKEN=your_jwt_token

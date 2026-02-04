@@ -1,0 +1,20 @@
+# 大部分交易所不需要更换url 默认走公网
+# 少量交易所 通过hosts解析走colo 如 kucoin okx
+# 已知有colo且需要更换url的交易 如下
+# binance_spot
+binance_spot__proxy=""
+# binance_usdt_swap
+binance_usdt_swap__ws_url=""
+binance_usdt_swap__rest_url=""
+# huobi_spot
+huobi_spot__ws_url=""
+huobi_spot__rest_url=""
+# huobi_usdt_swap
+huobi_usdt_swap__ws_url=""
+huobi_usdt_swap__rest_url=""
+# gate_spot
+gate_spot__ws_url="wss://spotws-private.gateapi.io/ws/v4/"
+gate_spot__rest_url="https://apiv4-private.gateapi.io"
+# gate_usdt_swap
+gate_usdt_swap__ws_url="wss://fxws-private.gateapi.io/v4/ws/usdt"
+gate_usdt_swap__rest_url="https://apiv4-private.gateapi.io"

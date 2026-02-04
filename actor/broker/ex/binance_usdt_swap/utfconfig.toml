@@ -1,0 +1,6 @@
+proxy_url = ""
+
+# 逗号分割
+# cfgTestPairs = "btc_usdt,shib_usdt"
+cfgTestPairs = "eth_usdt"
+cfgNotionalOrder = 200.0
