@@ -245,3 +245,24 @@ message GetCanRestartServerListRequest {
   // 操作员
   optional string operator = 1;
 }
+
+// 根据IP插入或更新托管者请求
+message UpsertServerByIPRequest {
+  // 外网IP（用于查找和唯一标识）
+  string ip = 1;
+
+  // 内网IP
+  string inner_ip = 2;
+
+  // 端口
+  string port = 3;
+
+  // 托管者昵称
+  string nickname = 4;
+
+  // 机器ID
+  string machine_id = 5;
+
+  // 服务器状态信息
+  ServerStatusInfo server_info = 6;
+}

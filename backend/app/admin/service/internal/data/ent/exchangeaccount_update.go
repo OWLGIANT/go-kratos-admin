@@ -12,6 +12,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -403,23 +404,21 @@ func (_u *ExchangeAccountUpdate) SetNillableIsMulti(v *bool) *ExchangeAccountUpd
 	return _u
 }
 
-// SetCombinedID sets the "combined_id" field.
-func (_u *ExchangeAccountUpdate) SetCombinedID(v string) *ExchangeAccountUpdate {
-	_u.mutation.SetCombinedID(v)
+// SetAccountIds sets the "account_ids" field.
+func (_u *ExchangeAccountUpdate) SetAccountIds(v []string) *ExchangeAccountUpdate {
+	_u.mutation.SetAccountIds(v)
 	return _u
 }
 
-// SetNillableCombinedID sets the "combined_id" field if the given value is not nil.
-func (_u *ExchangeAccountUpdate) SetNillableCombinedID(v *string) *ExchangeAccountUpdate {
-	if v != nil {
-		_u.SetCombinedID(*v)
-	}
+// AppendAccountIds appends value to the "account_ids" field.
+func (_u *ExchangeAccountUpdate) AppendAccountIds(v []string) *ExchangeAccountUpdate {
+	_u.mutation.AppendAccountIds(v)
 	return _u
 }
 
-// ClearCombinedID clears the value of the "combined_id" field.
-func (_u *ExchangeAccountUpdate) ClearCombinedID() *ExchangeAccountUpdate {
-	_u.mutation.ClearCombinedID()
+// ClearAccountIds clears the value of the "account_ids" field.
+func (_u *ExchangeAccountUpdate) ClearAccountIds() *ExchangeAccountUpdate {
+	_u.mutation.ClearAccountIds()
 	return _u
 }
 
@@ -656,11 +655,16 @@ func (_u *ExchangeAccountUpdate) sqlSave(ctx context.Context) (_node int, err er
 	if value, ok := _u.mutation.IsMulti(); ok {
 		_spec.SetField(exchangeaccount.FieldIsMulti, field.TypeBool, value)
 	}
-	if value, ok := _u.mutation.CombinedID(); ok {
-		_spec.SetField(exchangeaccount.FieldCombinedID, field.TypeString, value)
+	if value, ok := _u.mutation.AccountIds(); ok {
+		_spec.SetField(exchangeaccount.FieldAccountIds, field.TypeJSON, value)
 	}
-	if _u.mutation.CombinedIDCleared() {
-		_spec.ClearField(exchangeaccount.FieldCombinedID, field.TypeString)
+	if value, ok := _u.mutation.AppendedAccountIds(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, exchangeaccount.FieldAccountIds, value)
+		})
+	}
+	if _u.mutation.AccountIdsCleared() {
+		_spec.ClearField(exchangeaccount.FieldAccountIds, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.MotherID(); ok {
 		_spec.SetField(exchangeaccount.FieldMotherID, field.TypeUint32, value)
@@ -1067,23 +1071,21 @@ func (_u *ExchangeAccountUpdateOne) SetNillableIsMulti(v *bool) *ExchangeAccount
 	return _u
 }
 
-// SetCombinedID sets the "combined_id" field.
-func (_u *ExchangeAccountUpdateOne) SetCombinedID(v string) *ExchangeAccountUpdateOne {
-	_u.mutation.SetCombinedID(v)
+// SetAccountIds sets the "account_ids" field.
+func (_u *ExchangeAccountUpdateOne) SetAccountIds(v []string) *ExchangeAccountUpdateOne {
+	_u.mutation.SetAccountIds(v)
 	return _u
 }
 
-// SetNillableCombinedID sets the "combined_id" field if the given value is not nil.
-func (_u *ExchangeAccountUpdateOne) SetNillableCombinedID(v *string) *ExchangeAccountUpdateOne {
-	if v != nil {
-		_u.SetCombinedID(*v)
-	}
+// AppendAccountIds appends value to the "account_ids" field.
+func (_u *ExchangeAccountUpdateOne) AppendAccountIds(v []string) *ExchangeAccountUpdateOne {
+	_u.mutation.AppendAccountIds(v)
 	return _u
 }
 
-// ClearCombinedID clears the value of the "combined_id" field.
-func (_u *ExchangeAccountUpdateOne) ClearCombinedID() *ExchangeAccountUpdateOne {
-	_u.mutation.ClearCombinedID()
+// ClearAccountIds clears the value of the "account_ids" field.
+func (_u *ExchangeAccountUpdateOne) ClearAccountIds() *ExchangeAccountUpdateOne {
+	_u.mutation.ClearAccountIds()
 	return _u
 }
 
@@ -1350,11 +1352,16 @@ func (_u *ExchangeAccountUpdateOne) sqlSave(ctx context.Context) (_node *Exchang
 	if value, ok := _u.mutation.IsMulti(); ok {
 		_spec.SetField(exchangeaccount.FieldIsMulti, field.TypeBool, value)
 	}
-	if value, ok := _u.mutation.CombinedID(); ok {
-		_spec.SetField(exchangeaccount.FieldCombinedID, field.TypeString, value)
+	if value, ok := _u.mutation.AccountIds(); ok {
+		_spec.SetField(exchangeaccount.FieldAccountIds, field.TypeJSON, value)
 	}
-	if _u.mutation.CombinedIDCleared() {
-		_spec.ClearField(exchangeaccount.FieldCombinedID, field.TypeString)
+	if value, ok := _u.mutation.AppendedAccountIds(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, exchangeaccount.FieldAccountIds, value)
+		})
+	}
+	if _u.mutation.AccountIdsCleared() {
+		_spec.ClearField(exchangeaccount.FieldAccountIds, field.TypeJSON)
 	}
 	if value, ok := _u.mutation.MotherID(); ok {
 		_spec.SetField(exchangeaccount.FieldMotherID, field.TypeUint32, value)

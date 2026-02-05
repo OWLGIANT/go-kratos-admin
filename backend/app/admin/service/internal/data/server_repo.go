@@ -42,6 +42,8 @@ type ServerRepo interface {
 
 	GetCanRestartList(ctx context.Context, req *tradingV1.GetCanRestartServerListRequest) (*tradingV1.ListServerResponse, error)
 
+	UpsertByIP(ctx context.Context, req *tradingV1.UpsertServerByIPRequest) (*tradingV1.Server, error)
+
 	Count(ctx context.Context) (int, error)
 }
 
@@ -188,23 +190,6 @@ func (r *serverRepo) entityToProto(entity *ent.Server) *tradingV1.Server {
 		}
 		if taskNum, ok := entity.ServerInfo["task_num"].(float64); ok {
 			serverInfo.TaskNum = int32(taskNum)
-		}
-		if straVersion, ok := entity.ServerInfo["stra_version"].(bool); ok {
-			serverInfo.StraVersion = straVersion
-		}
-		if straVersionDetail, ok := entity.ServerInfo["stra_version_detail"].(map[string]interface{}); ok {
-			serverInfo.StraVersionDetail = make(map[string]string)
-			for k, v := range straVersionDetail {
-				if strVal, ok := v.(string); ok {
-					serverInfo.StraVersionDetail[k] = strVal
-				}
-			}
-		}
-		if awsAcct, ok := entity.ServerInfo["aws_acct"].(string); ok {
-			serverInfo.AwsAcct = awsAcct
-		}
-		if awsZone, ok := entity.ServerInfo["aws_zone"].(string); ok {
-			serverInfo.AwsZone = awsZone
 		}
 
 		item.ServerInfo = serverInfo
@@ -408,4 +393,82 @@ func (r *serverRepo) GetCanRestartList(ctx context.Context, req *tradingV1.GetCa
 		Total: int32(len(items)),
 		Items: items,
 	}, nil
+}
+
+// UpsertByIP 根据IP插入或更新服务器信息
+func (r *serverRepo) UpsertByIP(ctx context.Context, req *tradingV1.UpsertServerByIPRequest) (*tradingV1.Server, error) {
+	// 先查询是否存在该IP的服务器
+	existingServer, err := r.entClient.Client().Server.Query().
+		Where(server.IPEQ(req.Ip)).
+		Only(ctx)
+
+	if err != nil && !ent.IsNotFound(err) {
+		r.log.Errorf("query server by ip failed: %s", err.Error())
+		return nil, err
+	}
+
+	// 准备服务器信息JSON
+	var serverInfo map[string]interface{}
+	if req.ServerInfo != nil {
+		serverInfo = make(map[string]interface{})
+		serverInfo["cpu"] = req.ServerInfo.Cpu
+		serverInfo["ip_pool"] = req.ServerInfo.IpPool
+		serverInfo["mem"] = req.ServerInfo.Mem
+		serverInfo["mem_pct"] = req.ServerInfo.MemPct
+		serverInfo["disk_pct"] = req.ServerInfo.DiskPct
+		serverInfo["task_num"] = req.ServerInfo.TaskNum
+	}
+
+	if existingServer != nil {
+		// 更新现有服务器
+		builder := r.entClient.Client().Server.UpdateOneID(existingServer.ID)
+
+		if req.Nickname != "" {
+			builder.SetNickname(req.Nickname)
+		}
+		if req.InnerIp != "" {
+			builder.SetInnerIP(req.InnerIp)
+		}
+		if req.Port != "" {
+			builder.SetPort(req.Port)
+		}
+		if req.MachineId != "" {
+			builder.SetMachineID(req.MachineId)
+		}
+		if serverInfo != nil {
+			builder.SetServerInfo(serverInfo)
+		}
+
+		if err := builder.Exec(ctx); err != nil {
+			r.log.Errorf("update server by ip failed: %s", err.Error())
+			return nil, err
+		}
+
+		// 重新查询更新后的数据
+		updatedServer, err := r.entClient.Client().Server.Get(ctx, existingServer.ID)
+		if err != nil {
+			return nil, err
+		}
+		return r.entityToProto(updatedServer), nil
+	}
+
+	// 创建新服务器
+	builder := r.entClient.Client().Server.Create().
+		SetIP(req.Ip).
+		SetInnerIP(req.InnerIp).
+		SetPort(req.Port).
+		SetNickname(req.Nickname).
+		SetMachineID(req.MachineId)
+
+	if serverInfo != nil {
+		builder.SetServerInfo(serverInfo)
+	}
+
+	entity, err := builder.Save(ctx)
+	if err != nil {
+		r.log.Errorf("create server failed: %s", err.Error())
+		return nil, err
+	}
+
+	return r.entityToProto(entity), nil
 }

@@ -28,35 +28,23 @@ func (x *Robot) Redact() string {
 		return ""
 	}
 
-	// Safe field: ClientId
-
 	// Safe field: RobotId
+
+	// Safe field: Nickname
 
 	// Safe field: Exchange
 
 	// Safe field: Version
 
-	// Safe field: TenantId
-
 	// Safe field: Status
+
+	// Safe field: InitBalance
 
 	// Safe field: Balance
 
 	// Safe field: RegisteredAt
 
 	// Safe field: LastHeartbeat
-
-	// Safe field: ServerInfo
-
-	// Safe field: Ip
-
-	// Safe field: InnerIp
-
-	// Safe field: Port
-
-	// Safe field: MachineId
-
-	// Safe field: Nickname
 	return x.String()
 }
 
@@ -74,6 +62,60 @@ func (x *ListRobotResponse) Redact() string {
 
 // Redact method implementation for GetRobotRequest
 func (x *GetRobotRequest) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: RobotId
+	return x.String()
+}
+
+// Redact method implementation for CreateRobotRequest
+func (x *CreateRobotRequest) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: RobotId
+
+	// Safe field: Nickname
+
+	// Safe field: Exchange
+
+	// Safe field: Version
+
+	// Safe field: Status
+
+	// Safe field: InitBalance
+
+	// Safe field: Balance
+	return x.String()
+}
+
+// Redact method implementation for UpdateRobotRequest
+func (x *UpdateRobotRequest) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: RobotId
+
+	// Safe field: Nickname
+
+	// Safe field: Exchange
+
+	// Safe field: Version
+
+	// Safe field: Status
+
+	// Safe field: InitBalance
+
+	// Safe field: Balance
+	return x.String()
+}
+
+// Redact method implementation for DeleteRobotRequest
+func (x *DeleteRobotRequest) Redact() string {
 	if x == nil {
 		return ""
 	}

@@ -4,6 +4,7 @@ package admin.service.v1;
 
 import "gnostic/openapi/v3/annotations.proto";
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 
 import "pagination/v1/pagination.proto";
 import "trading/service/v1/robot.proto";
@@ -13,14 +14,37 @@ service RobotService {
   // 获取 Robot 列表
   rpc ListRobot (pagination.PagingRequest) returns (trading.service.v1.ListRobotResponse) {
     option (google.api.http) = {
-      get: "/admin/v1/trading/actors"
+      get: "/admin/v1/trading/robots"
     };
   }
 
-  // 获取 Actor
+  // 获取 Robot
   rpc GetRobot (trading.service.v1.GetRobotRequest) returns (trading.service.v1.Robot) {
     option (google.api.http) = {
       get: "/admin/v1/trading/robots/{robot_id}"
+    };
+  }
+
+  // 创建 Robot
+  rpc CreateRobot (trading.service.v1.CreateRobotRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/trading/robots"
+      body: "*"
+    };
+  }
+
+  // 更新 Robot
+  rpc UpdateRobot (trading.service.v1.UpdateRobotRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/admin/v1/trading/robots/{robot_id}"
+      body: "*"
+    };
+  }
+
+  // 删除 Robot
+  rpc DeleteRobot (trading.service.v1.DeleteRobotRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/trading/robots/{robot_id}"
     };
   }
 }

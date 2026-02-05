@@ -11568,7 +11568,8 @@ type ExchangeAccountMutation struct {
 	addapply_time        *int64
 	is_combined          *bool
 	is_multi             *bool
-	combined_id          *string
+	account_ids          *[]string
+	appendaccount_ids    []string
 	mother_id            *uint32
 	addmother_id         *int32
 	clearedFields        map[string]struct{}
@@ -12682,53 +12683,69 @@ func (m *ExchangeAccountMutation) ResetIsMulti() {
 	m.is_multi = nil
 }
 
-// SetCombinedID sets the "combined_id" field.
-func (m *ExchangeAccountMutation) SetCombinedID(s string) {
-	m.combined_id = &s
+// SetAccountIds sets the "account_ids" field.
+func (m *ExchangeAccountMutation) SetAccountIds(s []string) {
+	m.account_ids = &s
+	m.appendaccount_ids = nil
 }
 
-// CombinedID returns the value of the "combined_id" field in the mutation.
-func (m *ExchangeAccountMutation) CombinedID() (r string, exists bool) {
-	v := m.combined_id
+// AccountIds returns the value of the "account_ids" field in the mutation.
+func (m *ExchangeAccountMutation) AccountIds() (r []string, exists bool) {
+	v := m.account_ids
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldCombinedID returns the old "combined_id" field's value of the ExchangeAccount entity.
+// OldAccountIds returns the old "account_ids" field's value of the ExchangeAccount entity.
 // If the ExchangeAccount object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ExchangeAccountMutation) OldCombinedID(ctx context.Context) (v *string, err error) {
+func (m *ExchangeAccountMutation) OldAccountIds(ctx context.Context) (v []string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCombinedID is only allowed on UpdateOne operations")
+		return v, errors.New("OldAccountIds is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCombinedID requires an ID field in the mutation")
+		return v, errors.New("OldAccountIds requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCombinedID: %w", err)
+		return v, fmt.Errorf("querying old value for OldAccountIds: %w", err)
 	}
-	return oldValue.CombinedID, nil
+	return oldValue.AccountIds, nil
 }
 
-// ClearCombinedID clears the value of the "combined_id" field.
-func (m *ExchangeAccountMutation) ClearCombinedID() {
-	m.combined_id = nil
-	m.clearedFields[exchangeaccount.FieldCombinedID] = struct{}{}
+// AppendAccountIds adds s to the "account_ids" field.
+func (m *ExchangeAccountMutation) AppendAccountIds(s []string) {
+	m.appendaccount_ids = append(m.appendaccount_ids, s...)
 }
 
-// CombinedIDCleared returns if the "combined_id" field was cleared in this mutation.
-func (m *ExchangeAccountMutation) CombinedIDCleared() bool {
-	_, ok := m.clearedFields[exchangeaccount.FieldCombinedID]
+// AppendedAccountIds returns the list of values that were appended to the "account_ids" field in this mutation.
+func (m *ExchangeAccountMutation) AppendedAccountIds() ([]string, bool) {
+	if len(m.appendaccount_ids) == 0 {
+		return nil, false
+	}
+	return m.appendaccount_ids, true
+}
+
+// ClearAccountIds clears the value of the "account_ids" field.
+func (m *ExchangeAccountMutation) ClearAccountIds() {
+	m.account_ids = nil
+	m.appendaccount_ids = nil
+	m.clearedFields[exchangeaccount.FieldAccountIds] = struct{}{}
+}
+
+// AccountIdsCleared returns if the "account_ids" field was cleared in this mutation.
+func (m *ExchangeAccountMutation) AccountIdsCleared() bool {
+	_, ok := m.clearedFields[exchangeaccount.FieldAccountIds]
 	return ok
 }
 
-// ResetCombinedID resets all changes to the "combined_id" field.
-func (m *ExchangeAccountMutation) ResetCombinedID() {
-	m.combined_id = nil
-	delete(m.clearedFields, exchangeaccount.FieldCombinedID)
+// ResetAccountIds resets all changes to the "account_ids" field.
+func (m *ExchangeAccountMutation) ResetAccountIds() {
+	m.account_ids = nil
+	m.appendaccount_ids = nil
+	delete(m.clearedFields, exchangeaccount.FieldAccountIds)
 }
 
 // SetMotherID sets the "mother_id" field.
@@ -12896,8 +12913,8 @@ func (m *ExchangeAccountMutation) Fields() []string {
 	if m.is_multi != nil {
 		fields = append(fields, exchangeaccount.FieldIsMulti)
 	}
-	if m.combined_id != nil {
-		fields = append(fields, exchangeaccount.FieldCombinedID)
+	if m.account_ids != nil {
+		fields = append(fields, exchangeaccount.FieldAccountIds)
 	}
 	if m.mother_id != nil {
 		fields = append(fields, exchangeaccount.FieldMotherID)
@@ -12950,8 +12967,8 @@ func (m *ExchangeAccountMutation) Field(name string) (ent.Value, bool) {
 		return m.IsCombined()
 	case exchangeaccount.FieldIsMulti:
 		return m.IsMulti()
-	case exchangeaccount.FieldCombinedID:
-		return m.CombinedID()
+	case exchangeaccount.FieldAccountIds:
+		return m.AccountIds()
 	case exchangeaccount.FieldMotherID:
 		return m.MotherID()
 	}
@@ -13003,8 +13020,8 @@ func (m *ExchangeAccountMutation) OldField(ctx context.Context, name string) (en
 		return m.OldIsCombined(ctx)
 	case exchangeaccount.FieldIsMulti:
 		return m.OldIsMulti(ctx)
-	case exchangeaccount.FieldCombinedID:
-		return m.OldCombinedID(ctx)
+	case exchangeaccount.FieldAccountIds:
+		return m.OldAccountIds(ctx)
 	case exchangeaccount.FieldMotherID:
 		return m.OldMotherID(ctx)
 	}
@@ -13156,12 +13173,12 @@ func (m *ExchangeAccountMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIsMulti(v)
 		return nil
-	case exchangeaccount.FieldCombinedID:
-		v, ok := value.(string)
+	case exchangeaccount.FieldAccountIds:
+		v, ok := value.([]string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetCombinedID(v)
+		m.SetAccountIds(v)
 		return nil
 	case exchangeaccount.FieldMotherID:
 		v, ok := value.(uint32)
@@ -13323,8 +13340,8 @@ func (m *ExchangeAccountMutation) ClearedFields() []string {
 	if m.FieldCleared(exchangeaccount.FieldApplyTime) {
 		fields = append(fields, exchangeaccount.FieldApplyTime)
 	}
-	if m.FieldCleared(exchangeaccount.FieldCombinedID) {
-		fields = append(fields, exchangeaccount.FieldCombinedID)
+	if m.FieldCleared(exchangeaccount.FieldAccountIds) {
+		fields = append(fields, exchangeaccount.FieldAccountIds)
 	}
 	if m.FieldCleared(exchangeaccount.FieldMotherID) {
 		fields = append(fields, exchangeaccount.FieldMotherID)
@@ -13379,8 +13396,8 @@ func (m *ExchangeAccountMutation) ClearField(name string) error {
 	case exchangeaccount.FieldApplyTime:
 		m.ClearApplyTime()
 		return nil
-	case exchangeaccount.FieldCombinedID:
-		m.ClearCombinedID()
+	case exchangeaccount.FieldAccountIds:
+		m.ClearAccountIds()
 		return nil
 	case exchangeaccount.FieldMotherID:
 		m.ClearMotherID()
@@ -13453,8 +13470,8 @@ func (m *ExchangeAccountMutation) ResetField(name string) error {
 	case exchangeaccount.FieldIsMulti:
 		m.ResetIsMulti()
 		return nil
-	case exchangeaccount.FieldCombinedID:
-		m.ResetCombinedID()
+	case exchangeaccount.FieldAccountIds:
+		m.ResetAccountIds()
 		return nil
 	case exchangeaccount.FieldMotherID:
 		m.ResetMotherID()
@@ -48201,30 +48218,36 @@ func (m *PositionMutation) ResetEdge(name string) error {
 // RobotMutation represents an operation that mutates the Robot nodes in the graph.
 type RobotMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint32
-	created_by    *uint32
-	addcreated_by *int32
-	updated_by    *uint32
-	addupdated_by *int32
-	deleted_by    *uint32
-	adddeleted_by *int32
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	remark        *string
-	tenant_id     *uint32
-	addtenant_id  *int32
-	rid           *string
-	status        *uint
-	addstatus     *int
-	balance       *float64
-	addbalance    *float64
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Robot, error)
-	predicates    []predicate.Robot
+	op              Op
+	typ             string
+	id              *uint32
+	created_by      *uint32
+	addcreated_by   *int32
+	updated_by      *uint32
+	addupdated_by   *int32
+	deleted_by      *uint32
+	adddeleted_by   *int32
+	created_at      *time.Time
+	updated_at      *time.Time
+	deleted_at      *time.Time
+	remark          *string
+	tenant_id       *uint32
+	addtenant_id    *int32
+	rid             *string
+	nickname        *string
+	exchange        *string
+	version         *string
+	status          *string
+	balance         *float64
+	addbalance      *float64
+	init_balance    *float64
+	addinit_balance *float64
+	registered_at   *time.Time
+	last_heartbeat  *time.Time
+	clearedFields   map[string]struct{}
+	done            bool
+	oldValue        func(context.Context) (*Robot, error)
+	predicates      []predicate.Robot
 }
 
 var _ ent.Mutation = (*RobotMutation)(nil)
@@ -48843,14 +48866,160 @@ func (m *RobotMutation) ResetRid() {
 	m.rid = nil
 }
 
+// SetNickname sets the "nickname" field.
+func (m *RobotMutation) SetNickname(s string) {
+	m.nickname = &s
+}
+
+// Nickname returns the value of the "nickname" field in the mutation.
+func (m *RobotMutation) Nickname() (r string, exists bool) {
+	v := m.nickname
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNickname returns the old "nickname" field's value of the Robot entity.
+// If the Robot object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RobotMutation) OldNickname(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNickname is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNickname requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNickname: %w", err)
+	}
+	return oldValue.Nickname, nil
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (m *RobotMutation) ClearNickname() {
+	m.nickname = nil
+	m.clearedFields[robot.FieldNickname] = struct{}{}
+}
+
+// NicknameCleared returns if the "nickname" field was cleared in this mutation.
+func (m *RobotMutation) NicknameCleared() bool {
+	_, ok := m.clearedFields[robot.FieldNickname]
+	return ok
+}
+
+// ResetNickname resets all changes to the "nickname" field.
+func (m *RobotMutation) ResetNickname() {
+	m.nickname = nil
+	delete(m.clearedFields, robot.FieldNickname)
+}
+
+// SetExchange sets the "exchange" field.
+func (m *RobotMutation) SetExchange(s string) {
+	m.exchange = &s
+}
+
+// Exchange returns the value of the "exchange" field in the mutation.
+func (m *RobotMutation) Exchange() (r string, exists bool) {
+	v := m.exchange
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExchange returns the old "exchange" field's value of the Robot entity.
+// If the Robot object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RobotMutation) OldExchange(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExchange is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExchange requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExchange: %w", err)
+	}
+	return oldValue.Exchange, nil
+}
+
+// ClearExchange clears the value of the "exchange" field.
+func (m *RobotMutation) ClearExchange() {
+	m.exchange = nil
+	m.clearedFields[robot.FieldExchange] = struct{}{}
+}
+
+// ExchangeCleared returns if the "exchange" field was cleared in this mutation.
+func (m *RobotMutation) ExchangeCleared() bool {
+	_, ok := m.clearedFields[robot.FieldExchange]
+	return ok
+}
+
+// ResetExchange resets all changes to the "exchange" field.
+func (m *RobotMutation) ResetExchange() {
+	m.exchange = nil
+	delete(m.clearedFields, robot.FieldExchange)
+}
+
+// SetVersion sets the "version" field.
+func (m *RobotMutation) SetVersion(s string) {
+	m.version = &s
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *RobotMutation) Version() (r string, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the Robot entity.
+// If the Robot object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RobotMutation) OldVersion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// ClearVersion clears the value of the "version" field.
+func (m *RobotMutation) ClearVersion() {
+	m.version = nil
+	m.clearedFields[robot.FieldVersion] = struct{}{}
+}
+
+// VersionCleared returns if the "version" field was cleared in this mutation.
+func (m *RobotMutation) VersionCleared() bool {
+	_, ok := m.clearedFields[robot.FieldVersion]
+	return ok
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *RobotMutation) ResetVersion() {
+	m.version = nil
+	delete(m.clearedFields, robot.FieldVersion)
+}
+
 // SetStatus sets the "status" field.
-func (m *RobotMutation) SetStatus(u uint) {
-	m.status = &u
-	m.addstatus = nil
+func (m *RobotMutation) SetStatus(s string) {
+	m.status = &s
 }
 
 // Status returns the value of the "status" field in the mutation.
-func (m *RobotMutation) Status() (r uint, exists bool) {
+func (m *RobotMutation) Status() (r string, exists bool) {
 	v := m.status
 	if v == nil {
 		return
@@ -48861,7 +49030,7 @@ func (m *RobotMutation) Status() (r uint, exists bool) {
 // OldStatus returns the old "status" field's value of the Robot entity.
 // If the Robot object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RobotMutation) OldStatus(ctx context.Context) (v uint, err error) {
+func (m *RobotMutation) OldStatus(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
 	}
@@ -48875,28 +49044,22 @@ func (m *RobotMutation) OldStatus(ctx context.Context) (v uint, err error) {
 	return oldValue.Status, nil
 }
 
-// AddStatus adds u to the "status" field.
-func (m *RobotMutation) AddStatus(u int) {
-	if m.addstatus != nil {
-		*m.addstatus += u
-	} else {
-		m.addstatus = &u
-	}
+// ClearStatus clears the value of the "status" field.
+func (m *RobotMutation) ClearStatus() {
+	m.status = nil
+	m.clearedFields[robot.FieldStatus] = struct{}{}
 }
 
-// AddedStatus returns the value that was added to the "status" field in this mutation.
-func (m *RobotMutation) AddedStatus() (r int, exists bool) {
-	v := m.addstatus
-	if v == nil {
-		return
-	}
-	return *v, true
+// StatusCleared returns if the "status" field was cleared in this mutation.
+func (m *RobotMutation) StatusCleared() bool {
+	_, ok := m.clearedFields[robot.FieldStatus]
+	return ok
 }
 
 // ResetStatus resets all changes to the "status" field.
 func (m *RobotMutation) ResetStatus() {
 	m.status = nil
-	m.addstatus = nil
+	delete(m.clearedFields, robot.FieldStatus)
 }
 
 // SetBalance sets the "balance" field.
@@ -48955,6 +49118,160 @@ func (m *RobotMutation) ResetBalance() {
 	m.addbalance = nil
 }
 
+// SetInitBalance sets the "init_balance" field.
+func (m *RobotMutation) SetInitBalance(f float64) {
+	m.init_balance = &f
+	m.addinit_balance = nil
+}
+
+// InitBalance returns the value of the "init_balance" field in the mutation.
+func (m *RobotMutation) InitBalance() (r float64, exists bool) {
+	v := m.init_balance
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInitBalance returns the old "init_balance" field's value of the Robot entity.
+// If the Robot object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RobotMutation) OldInitBalance(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInitBalance is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInitBalance requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInitBalance: %w", err)
+	}
+	return oldValue.InitBalance, nil
+}
+
+// AddInitBalance adds f to the "init_balance" field.
+func (m *RobotMutation) AddInitBalance(f float64) {
+	if m.addinit_balance != nil {
+		*m.addinit_balance += f
+	} else {
+		m.addinit_balance = &f
+	}
+}
+
+// AddedInitBalance returns the value that was added to the "init_balance" field in this mutation.
+func (m *RobotMutation) AddedInitBalance() (r float64, exists bool) {
+	v := m.addinit_balance
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetInitBalance resets all changes to the "init_balance" field.
+func (m *RobotMutation) ResetInitBalance() {
+	m.init_balance = nil
+	m.addinit_balance = nil
+}
+
+// SetRegisteredAt sets the "registered_at" field.
+func (m *RobotMutation) SetRegisteredAt(t time.Time) {
+	m.registered_at = &t
+}
+
+// RegisteredAt returns the value of the "registered_at" field in the mutation.
+func (m *RobotMutation) RegisteredAt() (r time.Time, exists bool) {
+	v := m.registered_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRegisteredAt returns the old "registered_at" field's value of the Robot entity.
+// If the Robot object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RobotMutation) OldRegisteredAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRegisteredAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRegisteredAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRegisteredAt: %w", err)
+	}
+	return oldValue.RegisteredAt, nil
+}
+
+// ClearRegisteredAt clears the value of the "registered_at" field.
+func (m *RobotMutation) ClearRegisteredAt() {
+	m.registered_at = nil
+	m.clearedFields[robot.FieldRegisteredAt] = struct{}{}
+}
+
+// RegisteredAtCleared returns if the "registered_at" field was cleared in this mutation.
+func (m *RobotMutation) RegisteredAtCleared() bool {
+	_, ok := m.clearedFields[robot.FieldRegisteredAt]
+	return ok
+}
+
+// ResetRegisteredAt resets all changes to the "registered_at" field.
+func (m *RobotMutation) ResetRegisteredAt() {
+	m.registered_at = nil
+	delete(m.clearedFields, robot.FieldRegisteredAt)
+}
+
+// SetLastHeartbeat sets the "last_heartbeat" field.
+func (m *RobotMutation) SetLastHeartbeat(t time.Time) {
+	m.last_heartbeat = &t
+}
+
+// LastHeartbeat returns the value of the "last_heartbeat" field in the mutation.
+func (m *RobotMutation) LastHeartbeat() (r time.Time, exists bool) {
+	v := m.last_heartbeat
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastHeartbeat returns the old "last_heartbeat" field's value of the Robot entity.
+// If the Robot object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RobotMutation) OldLastHeartbeat(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastHeartbeat is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastHeartbeat requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastHeartbeat: %w", err)
+	}
+	return oldValue.LastHeartbeat, nil
+}
+
+// ClearLastHeartbeat clears the value of the "last_heartbeat" field.
+func (m *RobotMutation) ClearLastHeartbeat() {
+	m.last_heartbeat = nil
+	m.clearedFields[robot.FieldLastHeartbeat] = struct{}{}
+}
+
+// LastHeartbeatCleared returns if the "last_heartbeat" field was cleared in this mutation.
+func (m *RobotMutation) LastHeartbeatCleared() bool {
+	_, ok := m.clearedFields[robot.FieldLastHeartbeat]
+	return ok
+}
+
+// ResetLastHeartbeat resets all changes to the "last_heartbeat" field.
+func (m *RobotMutation) ResetLastHeartbeat() {
+	m.last_heartbeat = nil
+	delete(m.clearedFields, robot.FieldLastHeartbeat)
+}
+
 // Where appends a list predicates to the RobotMutation builder.
 func (m *RobotMutation) Where(ps ...predicate.Robot) {
 	m.predicates = append(m.predicates, ps...)
@@ -48989,7 +49306,7 @@ func (m *RobotMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RobotMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 17)
 	if m.created_by != nil {
 		fields = append(fields, robot.FieldCreatedBy)
 	}
@@ -49017,11 +49334,29 @@ func (m *RobotMutation) Fields() []string {
 	if m.rid != nil {
 		fields = append(fields, robot.FieldRid)
 	}
+	if m.nickname != nil {
+		fields = append(fields, robot.FieldNickname)
+	}
+	if m.exchange != nil {
+		fields = append(fields, robot.FieldExchange)
+	}
+	if m.version != nil {
+		fields = append(fields, robot.FieldVersion)
+	}
 	if m.status != nil {
 		fields = append(fields, robot.FieldStatus)
 	}
 	if m.balance != nil {
 		fields = append(fields, robot.FieldBalance)
+	}
+	if m.init_balance != nil {
+		fields = append(fields, robot.FieldInitBalance)
+	}
+	if m.registered_at != nil {
+		fields = append(fields, robot.FieldRegisteredAt)
+	}
+	if m.last_heartbeat != nil {
+		fields = append(fields, robot.FieldLastHeartbeat)
 	}
 	return fields
 }
@@ -49049,10 +49384,22 @@ func (m *RobotMutation) Field(name string) (ent.Value, bool) {
 		return m.TenantID()
 	case robot.FieldRid:
 		return m.Rid()
+	case robot.FieldNickname:
+		return m.Nickname()
+	case robot.FieldExchange:
+		return m.Exchange()
+	case robot.FieldVersion:
+		return m.Version()
 	case robot.FieldStatus:
 		return m.Status()
 	case robot.FieldBalance:
 		return m.Balance()
+	case robot.FieldInitBalance:
+		return m.InitBalance()
+	case robot.FieldRegisteredAt:
+		return m.RegisteredAt()
+	case robot.FieldLastHeartbeat:
+		return m.LastHeartbeat()
 	}
 	return nil, false
 }
@@ -49080,10 +49427,22 @@ func (m *RobotMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldTenantID(ctx)
 	case robot.FieldRid:
 		return m.OldRid(ctx)
+	case robot.FieldNickname:
+		return m.OldNickname(ctx)
+	case robot.FieldExchange:
+		return m.OldExchange(ctx)
+	case robot.FieldVersion:
+		return m.OldVersion(ctx)
 	case robot.FieldStatus:
 		return m.OldStatus(ctx)
 	case robot.FieldBalance:
 		return m.OldBalance(ctx)
+	case robot.FieldInitBalance:
+		return m.OldInitBalance(ctx)
+	case robot.FieldRegisteredAt:
+		return m.OldRegisteredAt(ctx)
+	case robot.FieldLastHeartbeat:
+		return m.OldLastHeartbeat(ctx)
 	}
 	return nil, fmt.Errorf("unknown Robot field %s", name)
 }
@@ -49156,8 +49515,29 @@ func (m *RobotMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRid(v)
 		return nil
+	case robot.FieldNickname:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNickname(v)
+		return nil
+	case robot.FieldExchange:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExchange(v)
+		return nil
+	case robot.FieldVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
 	case robot.FieldStatus:
-		v, ok := value.(uint)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -49169,6 +49549,27 @@ func (m *RobotMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBalance(v)
+		return nil
+	case robot.FieldInitBalance:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInitBalance(v)
+		return nil
+	case robot.FieldRegisteredAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRegisteredAt(v)
+		return nil
+	case robot.FieldLastHeartbeat:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastHeartbeat(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Robot field %s", name)
@@ -49190,11 +49591,11 @@ func (m *RobotMutation) AddedFields() []string {
 	if m.addtenant_id != nil {
 		fields = append(fields, robot.FieldTenantID)
 	}
-	if m.addstatus != nil {
-		fields = append(fields, robot.FieldStatus)
-	}
 	if m.addbalance != nil {
 		fields = append(fields, robot.FieldBalance)
+	}
+	if m.addinit_balance != nil {
+		fields = append(fields, robot.FieldInitBalance)
 	}
 	return fields
 }
@@ -49212,10 +49613,10 @@ func (m *RobotMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedDeletedBy()
 	case robot.FieldTenantID:
 		return m.AddedTenantID()
-	case robot.FieldStatus:
-		return m.AddedStatus()
 	case robot.FieldBalance:
 		return m.AddedBalance()
+	case robot.FieldInitBalance:
+		return m.AddedInitBalance()
 	}
 	return nil, false
 }
@@ -49253,19 +49654,19 @@ func (m *RobotMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddTenantID(v)
 		return nil
-	case robot.FieldStatus:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddStatus(v)
-		return nil
 	case robot.FieldBalance:
 		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddBalance(v)
+		return nil
+	case robot.FieldInitBalance:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddInitBalance(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Robot numeric field %s", name)
@@ -49298,6 +49699,24 @@ func (m *RobotMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(robot.FieldTenantID) {
 		fields = append(fields, robot.FieldTenantID)
+	}
+	if m.FieldCleared(robot.FieldNickname) {
+		fields = append(fields, robot.FieldNickname)
+	}
+	if m.FieldCleared(robot.FieldExchange) {
+		fields = append(fields, robot.FieldExchange)
+	}
+	if m.FieldCleared(robot.FieldVersion) {
+		fields = append(fields, robot.FieldVersion)
+	}
+	if m.FieldCleared(robot.FieldStatus) {
+		fields = append(fields, robot.FieldStatus)
+	}
+	if m.FieldCleared(robot.FieldRegisteredAt) {
+		fields = append(fields, robot.FieldRegisteredAt)
+	}
+	if m.FieldCleared(robot.FieldLastHeartbeat) {
+		fields = append(fields, robot.FieldLastHeartbeat)
 	}
 	return fields
 }
@@ -49337,6 +49756,24 @@ func (m *RobotMutation) ClearField(name string) error {
 	case robot.FieldTenantID:
 		m.ClearTenantID()
 		return nil
+	case robot.FieldNickname:
+		m.ClearNickname()
+		return nil
+	case robot.FieldExchange:
+		m.ClearExchange()
+		return nil
+	case robot.FieldVersion:
+		m.ClearVersion()
+		return nil
+	case robot.FieldStatus:
+		m.ClearStatus()
+		return nil
+	case robot.FieldRegisteredAt:
+		m.ClearRegisteredAt()
+		return nil
+	case robot.FieldLastHeartbeat:
+		m.ClearLastHeartbeat()
+		return nil
 	}
 	return fmt.Errorf("unknown Robot nullable field %s", name)
 }
@@ -49372,11 +49809,29 @@ func (m *RobotMutation) ResetField(name string) error {
 	case robot.FieldRid:
 		m.ResetRid()
 		return nil
+	case robot.FieldNickname:
+		m.ResetNickname()
+		return nil
+	case robot.FieldExchange:
+		m.ResetExchange()
+		return nil
+	case robot.FieldVersion:
+		m.ResetVersion()
+		return nil
 	case robot.FieldStatus:
 		m.ResetStatus()
 		return nil
 	case robot.FieldBalance:
 		m.ResetBalance()
+		return nil
+	case robot.FieldInitBalance:
+		m.ResetInitBalance()
+		return nil
+	case robot.FieldRegisteredAt:
+		m.ResetRegisteredAt()
+		return nil
+	case robot.FieldLastHeartbeat:
+		m.ResetLastHeartbeat()
 		return nil
 	}
 	return fmt.Errorf("unknown Robot field %s", name)

@@ -117,11 +117,9 @@ func (ExchangeAccount) Fields() []ent.Field {
 			Comment("是否是组合账号").
 			Default(false),
 
-		field.String("combined_id").
-			Comment("参与组合的账号ID（用|分隔）").
-			Default("").
-			Optional().
-			Nillable(),
+		field.JSON("account_ids", []string{}).
+			Comment("组合账号ID列表").
+			Optional(),
 
 		field.Uint32("mother_id").
 			Comment("母账号ID").

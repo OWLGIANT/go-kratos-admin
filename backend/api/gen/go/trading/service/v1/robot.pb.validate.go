@@ -56,17 +56,17 @@ func (m *Robot) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for ClientId
-
 	// no validation rules for RobotId
+
+	// no validation rules for Nickname
 
 	// no validation rules for Exchange
 
 	// no validation rules for Version
 
-	// no validation rules for TenantId
-
 	// no validation rules for Status
+
+	// no validation rules for InitBalance
 
 	// no validation rules for Balance
 
@@ -127,45 +127,6 @@ func (m *Robot) validate(all bool) error {
 			}
 		}
 	}
-
-	if all {
-		switch v := interface{}(m.GetServerInfo()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, RobotValidationError{
-					field:  "ServerInfo",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, RobotValidationError{
-					field:  "ServerInfo",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetServerInfo()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return RobotValidationError{
-				field:  "ServerInfo",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	// no validation rules for Ip
-
-	// no validation rules for InnerIp
-
-	// no validation rules for Port
-
-	// no validation rules for MachineId
-
-	// no validation rules for Nickname
 
 	if len(errors) > 0 {
 		return RobotMultiError(errors)
@@ -483,3 +444,351 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetRobotRequestValidationError{}
+
+// Validate checks the field values on CreateRobotRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *CreateRobotRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on CreateRobotRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// CreateRobotRequestMultiError, or nil if none found.
+func (m *CreateRobotRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *CreateRobotRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for RobotId
+
+	// no validation rules for Nickname
+
+	// no validation rules for Exchange
+
+	// no validation rules for Version
+
+	// no validation rules for Status
+
+	// no validation rules for InitBalance
+
+	// no validation rules for Balance
+
+	if len(errors) > 0 {
+		return CreateRobotRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// CreateRobotRequestMultiError is an error wrapping multiple validation errors
+// returned by CreateRobotRequest.ValidateAll() if the designated constraints
+// aren't met.
+type CreateRobotRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CreateRobotRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CreateRobotRequestMultiError) AllErrors() []error { return m }
+
+// CreateRobotRequestValidationError is the validation error returned by
+// CreateRobotRequest.Validate if the designated constraints aren't met.
+type CreateRobotRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CreateRobotRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CreateRobotRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CreateRobotRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CreateRobotRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CreateRobotRequestValidationError) ErrorName() string {
+	return "CreateRobotRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e CreateRobotRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCreateRobotRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CreateRobotRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CreateRobotRequestValidationError{}
+
+// Validate checks the field values on UpdateRobotRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *UpdateRobotRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on UpdateRobotRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// UpdateRobotRequestMultiError, or nil if none found.
+func (m *UpdateRobotRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *UpdateRobotRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for RobotId
+
+	if m.Nickname != nil {
+		// no validation rules for Nickname
+	}
+
+	if m.Exchange != nil {
+		// no validation rules for Exchange
+	}
+
+	if m.Version != nil {
+		// no validation rules for Version
+	}
+
+	if m.Status != nil {
+		// no validation rules for Status
+	}
+
+	if m.InitBalance != nil {
+		// no validation rules for InitBalance
+	}
+
+	if m.Balance != nil {
+		// no validation rules for Balance
+	}
+
+	if len(errors) > 0 {
+		return UpdateRobotRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// UpdateRobotRequestMultiError is an error wrapping multiple validation errors
+// returned by UpdateRobotRequest.ValidateAll() if the designated constraints
+// aren't met.
+type UpdateRobotRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m UpdateRobotRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m UpdateRobotRequestMultiError) AllErrors() []error { return m }
+
+// UpdateRobotRequestValidationError is the validation error returned by
+// UpdateRobotRequest.Validate if the designated constraints aren't met.
+type UpdateRobotRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e UpdateRobotRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e UpdateRobotRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e UpdateRobotRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e UpdateRobotRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e UpdateRobotRequestValidationError) ErrorName() string {
+	return "UpdateRobotRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e UpdateRobotRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sUpdateRobotRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = UpdateRobotRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = UpdateRobotRequestValidationError{}
+
+// Validate checks the field values on DeleteRobotRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteRobotRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteRobotRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteRobotRequestMultiError, or nil if none found.
+func (m *DeleteRobotRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteRobotRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for RobotId
+
+	if len(errors) > 0 {
+		return DeleteRobotRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteRobotRequestMultiError is an error wrapping multiple validation errors
+// returned by DeleteRobotRequest.ValidateAll() if the designated constraints
+// aren't met.
+type DeleteRobotRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteRobotRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteRobotRequestMultiError) AllErrors() []error { return m }
+
+// DeleteRobotRequestValidationError is the validation error returned by
+// DeleteRobotRequest.Validate if the designated constraints aren't met.
+type DeleteRobotRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteRobotRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteRobotRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteRobotRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteRobotRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteRobotRequestValidationError) ErrorName() string {
+	return "DeleteRobotRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteRobotRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteRobotRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteRobotRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteRobotRequestValidationError{}

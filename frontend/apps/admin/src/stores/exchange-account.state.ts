@@ -1,182 +1,194 @@
+import { computed, ref } from 'vue';
+
 import { defineStore } from 'pinia';
 
 import {
   createExchangeAccountServiceClient,
+  type tradingservicev1_ExchangeAccount,
 } from '#/generated/api/admin/service/v1';
-import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
-export const useExchangeAccountStore = defineStore('exchange-account', () => {
+// 账号类型
+export type AccountType = 'ACCOUNT_TYPE_UNSPECIFIED' | 'ACCOUNT_TYPE_SELF_BUILT' | 'ACCOUNT_TYPE_PLATFORM';
+
+// 交易账号信息接口
+export interface ExchangeAccountInfo {
+  id: number;
+  nickname?: string;
+  exchangeName?: string;
+  originAccount?: string;
+  apiKey?: string;
+  secretKey?: string;
+  passKey?: string;
+  brokerId?: string;
+  operator?: string;
+  remark?: string;
+  serverIps?: string;
+  specialReqLimit?: number;
+  accountType?: AccountType;
+  applyTime?: number;
+  isCombined?: boolean;
+  isMulti?: boolean;
+  accountIds?: string[];
+  motherId?: number;
+  createTime?: string;
+  updateTime?: string;
+}
+
+export const useExchangeAccountStore = defineStore('exchangeAccount', () => {
   const service = createExchangeAccountServiceClient(requestClientRequestHandler);
 
+  // 账号列表
+  const accounts = ref<ExchangeAccountInfo[]>([]);
+
+  // 是否正在加载
+  const loading = ref(false);
+
   /**
-   * 查询交易账号列表
+   * 从 API 响应转换为 ExchangeAccountInfo
    */
-  async function listExchangeAccount(
-    paging?: Paging,
-    formValues?: null | object,
-    fieldMask?: null | string,
-    orderBy?: null | string[],
-  ) {
-    const noPaging =
-      paging?.page === undefined && paging?.pageSize === undefined;
-    return await service.ListExchangeAccount({
-      // @ts-ignore proto generated code is error.
-      fieldMask,
-      orderBy: makeOrderBy(orderBy),
-      query: makeQueryString(formValues),
-      page: paging?.page,
-      pageSize: paging?.pageSize,
-      noPaging,
-    });
+  function convertToAccountInfo(account: tradingservicev1_ExchangeAccount): ExchangeAccountInfo {
+    return {
+      id: account.id || 0,
+      nickname: account.nickname,
+      exchangeName: account.exchangeName,
+      originAccount: account.originAccount,
+      apiKey: account.apiKey,
+      secretKey: account.secretKey,
+      passKey: account.passKey,
+      brokerId: account.brokerId,
+      operator: account.operator,
+      remark: account.remark,
+      serverIps: account.serverIps,
+      specialReqLimit: account.specialReqLimit,
+      accountType: account.accountType as AccountType,
+      applyTime: account.applyTime,
+      isCombined: account.isCombined,
+      isMulti: account.isMulti,
+      accountIds: account.accountIds,
+      motherId: account.motherId,
+      createTime: account.createTime,
+      updateTime: account.updateTime,
+    };
   }
 
   /**
-   * 获取交易账号
+   * 获取账号列表
    */
-  async function getExchangeAccount(id: number) {
-    return await service.GetExchangeAccount({ id });
+  async function listAccounts(paging?: Paging) {
+    loading.value = true;
+    try {
+      const noPaging =
+        paging?.page === undefined && paging?.pageSize === undefined;
+      const response = await service.ListExchangeAccount({
+        page: paging?.page,
+        pageSize: paging?.pageSize,
+        noPaging,
+      });
+
+      const items = (response.items || []).map(convertToAccountInfo);
+      accounts.value = items;
+
+      return {
+        total: response.total || 0,
+        items,
+      };
+    } finally {
+      loading.value = false;
+    }
   }
 
   /**
-   * 创建交易账号
+   * 获取单个账号
    */
-  async function createExchangeAccount(values: object) {
-    return await service.CreateExchangeAccount({
-      // @ts-ignore proto generated code is error.
-      data: {
-        ...values,
-      },
-    });
+  async function getAccount(id: number) {
+    const response = await service.GetExchangeAccount({ id });
+    return response ? convertToAccountInfo(response) : null;
   }
 
   /**
-   * 更新交易账号
+   * 创建账号
    */
-  async function updateExchangeAccount(id: number, values: object) {
-    const updateMask = makeUpdateMask(Object.keys(values ?? []));
-    return await service.UpdateExchangeAccount({
-      id,
-      // @ts-ignore proto generated code is error.
-      data: {
-        ...values,
-      },
-      // @ts-ignore proto generated code is error.
-      updateMask,
-    });
+  async function createAccount(data: {
+    nickname: string;
+    exchangeName: string;
+    originAccount: string;
+    apiKey: string;
+    secretKey: string;
+    passKey?: string;
+    brokerId?: string;
+    remark?: string;
+    serverIps?: string;
+    specialReqLimit?: number;
+    accountType?: string;
+  }) {
+    await service.CreateExchangeAccount(data);
   }
 
   /**
-   * 删除交易账号
+   * 更新账号
    */
-  async function deleteExchangeAccount(id: number) {
-    return await service.DeleteExchangeAccount({ id });
+  async function updateAccount(id: number, data: {
+    nickname?: string;
+    remark?: string;
+    serverIps?: string;
+    specialReqLimit?: number;
+    apiKey?: string;
+    secretKey?: string;
+    passKey?: string;
+    brokerId?: string;
+  }) {
+    await service.UpdateExchangeAccount({ id, ...data });
   }
 
   /**
-   * 批量删除交易账号
+   * 删除账号
    */
-  async function batchDeleteExchangeAccount(ids: number[]) {
-    return await service.BatchDeleteExchangeAccount({ ids });
+  async function deleteAccount(id: number) {
+    await service.DeleteExchangeAccount({ id });
   }
 
   /**
-   * 转移交易账号
+   * 获取账号数量
    */
-  async function transferExchangeAccount(ids: number[], targetOperatorId: number) {
-    return await service.TransferExchangeAccount({
-      ids,
-      targetOperatorId
-    });
-  }
+  const accountCount = computed(() => accounts.value.length);
 
-  /**
-   * 搜索交易账号
-   */
-  async function searchExchangeAccount(
-    keyword: string,
-    paging?: Paging,
-  ) {
-    return await service.SearchExchangeAccount({
-      keyword,
-      page: paging?.page,
-      pageSize: paging?.pageSize,
-    });
-  }
-
-  /**
-   * 获取账号资金曲线
-   */
-  async function getAccountEquity(
-    accountId: number,
-    startTime?: number,
-    endTime?: number,
-  ) {
-    return await service.GetAccountEquity({
-      accountId,
-      startTime,
-      endTime,
-    });
-  }
-
-  /**
-   * 创建组合账号
-   */
-  async function createCombinedAccount(values: object) {
-    return await service.CreateCombinedAccount({
-      // @ts-ignore proto generated code is error.
-      data: {
-        ...values,
-      },
-    });
-  }
-
-  /**
-   * 更新组合账号
-   */
-  async function updateCombinedAccount(id: number, values: object) {
-    return await service.UpdateCombinedAccount({
-      id,
-      // @ts-ignore proto generated code is error.
-      data: {
-        ...values,
-      },
-    });
-  }
-
-  /**
-   * 更新账号备注
-   */
-  async function updateAccountRemark(id: number, remark: string) {
-    return await service.UpdateAccountRemark({
-      id,
-      remark,
-    });
-  }
-
-  /**
-   * 更新账号经纪商ID
-   */
-  async function updateAccountBrokerId(id: number, brokerId: string) {
-    return await service.UpdateAccountBrokerId({
-      id,
-      brokerId,
-    });
+  function $reset() {
+    accounts.value = [];
+    loading.value = false;
   }
 
   return {
-    listExchangeAccount,
-    getExchangeAccount,
-    createExchangeAccount,
-    updateExchangeAccount,
-    deleteExchangeAccount,
-    batchDeleteExchangeAccount,
-    transferExchangeAccount,
-    searchExchangeAccount,
-    getAccountEquity,
-    createCombinedAccount,
-    updateCombinedAccount,
-    updateAccountRemark,
-    updateAccountBrokerId,
+    accounts,
+    loading,
+    accountCount,
+    listAccounts,
+    getAccount,
+    createAccount,
+    updateAccount,
+    deleteAccount,
+    $reset,
   };
 });
+
+// 账号类型列表
+export const accountTypeList = computed(() => [
+  {
+    value: 'ACCOUNT_TYPE_SELF_BUILT',
+    label: '自建账号',
+  },
+  {
+    value: 'ACCOUNT_TYPE_PLATFORM',
+    label: '平台账号',
+  },
+]);
+
+/**
+ * 账号类型转名称
+ */
+export function accountTypeToName(type?: AccountType) {
+  if (!type || type === 'ACCOUNT_TYPE_UNSPECIFIED') return '未知';
+  const values = accountTypeList.value;
+  const matchedItem = values.find((item) => item.value === type);
+  return matchedItem ? matchedItem.label : '未知';
+}

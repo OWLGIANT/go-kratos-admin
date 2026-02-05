@@ -3811,6 +3811,832 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/trading/exchange-accounts:
+        get:
+            tags:
+                - ExchangeAccountService
+            description: 获取交易账号列表
+            operationId: ExchangeAccountService_ListExchangeAccount
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListExchangeAccountResponse'
+        post:
+            tags:
+                - ExchangeAccountService
+            description: 创建交易账号
+            operationId: ExchangeAccountService_CreateExchangeAccount
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateExchangeAccountRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/exchange-accounts/{id}:
+        get:
+            tags:
+                - ExchangeAccountService
+            description: 获取交易账号
+            operationId: ExchangeAccountService_GetExchangeAccount
+            parameters:
+                - name: id
+                  in: path
+                  description: 账号ID
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ExchangeAccount'
+        put:
+            tags:
+                - ExchangeAccountService
+            description: 更新交易账号
+            operationId: ExchangeAccountService_UpdateExchangeAccount
+            parameters:
+                - name: id
+                  in: path
+                  description: 账号ID
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateExchangeAccountRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+        delete:
+            tags:
+                - ExchangeAccountService
+            description: 删除交易账号
+            operationId: ExchangeAccountService_DeleteExchangeAccount
+            parameters:
+                - name: id
+                  in: path
+                  description: 账号ID
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/exchange-accounts/{id}/equity:
+        get:
+            tags:
+                - ExchangeAccountService
+            description: 获取账号资金曲线
+            operationId: ExchangeAccountService_GetAccountEquity
+            parameters:
+                - name: id
+                  in: path
+                  description: 账号ID
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: startTime
+                  in: query
+                  description: 开始时间
+                  schema:
+                    type: string
+                - name: endTime
+                  in: query
+                  description: 结束时间
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetAccountEquityResponse'
+    /admin/v1/trading/exchange-accounts/{id}/remark:
+        post:
+            tags:
+                - ExchangeAccountService
+            description: 更新账号备注
+            operationId: ExchangeAccountService_UpdateAccountRemark
+            parameters:
+                - name: id
+                  in: path
+                  description: 账号ID
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateAccountRemarkRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/exchange-accounts:batchDelete:
+        post:
+            tags:
+                - ExchangeAccountService
+            description: 批量删除交易账号
+            operationId: ExchangeAccountService_BatchDeleteExchangeAccount
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/BatchDeleteExchangeAccountRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/exchange-accounts:createCombined:
+        post:
+            tags:
+                - ExchangeAccountService
+            description: 创建组合账号
+            operationId: ExchangeAccountService_CreateCombinedAccount
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateCombinedAccountRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/exchange-accounts:search:
+        post:
+            tags:
+                - ExchangeAccountService
+            description: 搜索交易账号
+            operationId: ExchangeAccountService_SearchExchangeAccount
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SearchExchangeAccountRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListExchangeAccountResponse'
+    /admin/v1/trading/exchange-accounts:transfer:
+        post:
+            tags:
+                - ExchangeAccountService
+            description: 转移交易账号
+            operationId: ExchangeAccountService_TransferExchangeAccount
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TransferExchangeAccountRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/exchange-accounts:updateBrokerId:
+        post:
+            tags:
+                - ExchangeAccountService
+            description: 更新账号经纪商ID
+            operationId: ExchangeAccountService_UpdateAccountBrokerId
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateAccountBrokerIdRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/exchange-accounts:updateCombined:
+        put:
+            tags:
+                - ExchangeAccountService
+            description: 更新组合账号
+            operationId: ExchangeAccountService_UpdateCombinedAccount
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateCombinedAccountRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/robots:
+        get:
+            tags:
+                - RobotService
+            description: 获取 Robot 列表
+            operationId: RobotService_ListRobot
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListRobotResponse'
+        post:
+            tags:
+                - RobotService
+            description: 创建 Robot
+            operationId: RobotService_CreateRobot
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateRobotRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/robots/{robotId}:
+        get:
+            tags:
+                - RobotService
+            description: 获取 Robot
+            operationId: RobotService_GetRobot
+            parameters:
+                - name: robotId
+                  in: path
+                  description: 机器人ID
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Robot'
+        put:
+            tags:
+                - RobotService
+            description: 更新 Robot
+            operationId: RobotService_UpdateRobot
+            parameters:
+                - name: robotId
+                  in: path
+                  description: 机器人ID
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateRobotRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+        delete:
+            tags:
+                - RobotService
+            description: 删除 Robot
+            operationId: RobotService_DeleteRobot
+            parameters:
+                - name: robotId
+                  in: path
+                  description: 机器人ID
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/servers:
+        get:
+            tags:
+                - ServerService
+            description: 获取托管者列表
+            operationId: ServerService_ListServer
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListServerResponse'
+        post:
+            tags:
+                - ServerService
+            description: 创建托管者
+            operationId: ServerService_CreateServer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateServerRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/servers/{id}:
+        get:
+            tags:
+                - ServerService
+            description: 获取托管者
+            operationId: ServerService_GetServer
+            parameters:
+                - name: id
+                  in: path
+                  description: 服务器ID
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Server'
+        put:
+            tags:
+                - ServerService
+            description: 更新托管者
+            operationId: ServerService_UpdateServer
+            parameters:
+                - name: id
+                  in: path
+                  description: 服务器ID
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateServerRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+        delete:
+            tags:
+                - ServerService
+            description: 删除托管者
+            operationId: ServerService_DeleteServer
+            parameters:
+                - name: id
+                  in: path
+                  description: 服务器ID
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/servers/{id}/log:
+        get:
+            tags:
+                - ServerService
+            description: 获取托管者日志
+            operationId: ServerService_GetServerLog
+            parameters:
+                - name: id
+                  in: path
+                  description: 服务器ID
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: lines
+                  in: query
+                  description: 日志行数
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetServerLogResponse'
+        delete:
+            tags:
+                - ServerService
+            description: 删除托管者日志
+            operationId: ServerService_DeleteServerLog
+            parameters:
+                - name: id
+                  in: path
+                  description: 服务器ID
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/servers/{id}/remark:
+        post:
+            tags:
+                - ServerService
+            description: 更新托管者备注
+            operationId: ServerService_UpdateServerRemark
+            parameters:
+                - name: id
+                  in: path
+                  description: 服务器ID
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateServerRemarkRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/servers/{id}/robots/{robotId}:stop:
+        post:
+            tags:
+                - ServerService
+            description: 停止托管者上的机器人
+            operationId: ServerService_StopServerRobot
+            parameters:
+                - name: id
+                  in: path
+                  description: 服务器ID
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: robotId
+                  in: path
+                  description: 机器人ID
+                  required: true
+                  schema:
+                    type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/StopServerRobotRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/servers/{id}/strategy:
+        post:
+            tags:
+                - ServerService
+            description: 更新托管者策略
+            operationId: ServerService_UpdateServerStrategy
+            parameters:
+                - name: id
+                  in: path
+                  description: 服务器ID
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateServerStrategyRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/servers/{id}:reboot:
+        post:
+            tags:
+                - ServerService
+            description: 重启托管者
+            operationId: ServerService_RebootServer
+            parameters:
+                - name: id
+                  in: path
+                  description: 服务器ID
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RebootServerRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/servers:batchCreate:
+        post:
+            tags:
+                - ServerService
+            description: 批量创建托管者
+            operationId: ServerService_BatchCreateServer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/BatchCreateServerRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/servers:canRestart:
+        get:
+            tags:
+                - ServerService
+            description: 获取可重启的托管者列表
+            operationId: ServerService_GetCanRestartServerList
+            parameters:
+                - name: operator
+                  in: query
+                  description: 操作员
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListServerResponse'
+    /admin/v1/trading/servers:deleteByIps:
+        post:
+            tags:
+                - ServerService
+            description: 按IP删除托管者
+            operationId: ServerService_DeleteServerByIps
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeleteServerByIpsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/trading/servers:transfer:
+        post:
+            tags:
+                - ServerService
+            description: 转移托管者
+            operationId: ServerService_TransferServer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TransferServerRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /admin/v1/ueditor:
         get:
             tags:
@@ -4140,6 +4966,13 @@ paths:
                                 $ref: '#/components/schemas/UserExistsResponse'
 components:
     schemas:
+        Any:
+            type: object
+            properties:
+                value:
+                    $ref: '#/components/schemas/GoogleProtobufAny'
+                yaml:
+                    type: string
         Api:
             type: object
             properties:
@@ -4308,6 +5141,24 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Language'
+        BatchCreateServerRequest:
+            type: object
+            properties:
+                servers:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/CreateServerRequest'
+                    description: 托管者列表
+            description: 批量创建托管者请求
+        BatchDeleteExchangeAccountRequest:
+            type: object
+            properties:
+                apiKeys:
+                    type: array
+                    items:
+                        type: string
+                    description: API密钥列表
+            description: 批量删除交易账号请求
         BindContactRequest:
             type: object
             properties:
@@ -4364,6 +5215,22 @@ components:
                 data:
                     $ref: '#/components/schemas/Api'
             description: 创建 - 请求
+        CreateCombinedAccountRequest:
+            type: object
+            properties:
+                nickname:
+                    type: string
+                    description: 组合账号昵称
+                accountIds:
+                    type: array
+                    items:
+                        type: integer
+                        format: uint32
+                    description: 子账号ID列表
+                remark:
+                    type: string
+                    description: 备注
+            description: 创建组合账号请求
         CreateDictEntryRequest:
             type: object
             properties:
@@ -4376,6 +5243,49 @@ components:
                 data:
                     $ref: '#/components/schemas/DictType'
             description: 创建字典类型 - 请求
+        CreateExchangeAccountRequest:
+            type: object
+            properties:
+                nickname:
+                    type: string
+                    description: 账号昵称
+                exchangeName:
+                    type: string
+                    description: 交易所名称
+                originAccount:
+                    type: string
+                    description: 原始账号
+                apiKey:
+                    type: string
+                    description: API密钥
+                secretKey:
+                    type: string
+                    description: 密钥
+                passKey:
+                    type: string
+                    description: 密码密钥
+                brokerId:
+                    type: string
+                    description: 经纪商ID
+                remark:
+                    type: string
+                    description: 备注
+                serverIps:
+                    type: string
+                    description: 绑定的托管者IP列表
+                specialReqLimit:
+                    type: number
+                    description: 特殊限频
+                    format: double
+                accountType:
+                    enum:
+                        - ACCOUNT_TYPE_UNSPECIFIED
+                        - ACCOUNT_TYPE_SELF_BUILT
+                        - ACCOUNT_TYPE_PLATFORM
+                    type: string
+                    description: 账号类型
+                    format: enum
+            description: 创建交易账号请求
         CreateFileRequest:
             type: object
             properties:
@@ -4430,12 +5340,74 @@ components:
                 data:
                     $ref: '#/components/schemas/Position'
             description: 创建职位 - 请求
+        CreateRobotRequest:
+            type: object
+            properties:
+                robotId:
+                    type: string
+                    description: 机器人ID
+                nickname:
+                    type: string
+                    description: 昵称
+                exchange:
+                    type: string
+                    description: 交易所
+                version:
+                    type: string
+                    description: 版本
+                status:
+                    type: string
+                    description: 状态
+                initBalance:
+                    type: number
+                    description: 初始资金
+                    format: double
+                balance:
+                    type: number
+                    description: 余额
+                    format: double
+            description: 创建 Robot 请求
         CreateRoleRequest:
             type: object
             properties:
                 data:
                     $ref: '#/components/schemas/Role'
             description: 创建角色 - 请求
+        CreateServerRequest:
+            type: object
+            properties:
+                nickname:
+                    type: string
+                    description: 托管者昵称
+                ip:
+                    type: string
+                    description: 外网IP
+                innerIp:
+                    type: string
+                    description: 内网IP
+                port:
+                    type: string
+                    description: 端口
+                machineId:
+                    type: string
+                    description: 机器ID
+                remark:
+                    type: string
+                    description: 备注
+                vpcId:
+                    type: string
+                    description: VPC ID
+                instanceId:
+                    type: string
+                    description: 实例ID
+                type:
+                    enum:
+                        - SERVER_TYPE_UNSPECIFIED
+                        - SERVER_TYPE_SELF_BUILT
+                    type: string
+                    description: 类型
+                    format: enum
+            description: 创建托管者请求
         CreateTaskRequest:
             type: object
             properties:
@@ -4585,6 +5557,15 @@ components:
                         type: integer
                         format: uint32
                     description: 收件箱记录ID列表
+        DeleteServerByIpsRequest:
+            type: object
+            properties:
+                ips:
+                    type: array
+                    items:
+                        type: string
+                    description: IP列表
+            description: 按IP删除托管者请求
         DeviceInfo:
             type: object
             properties:
@@ -4880,6 +5861,93 @@ components:
                     type: string
                     description: 邮箱验证码
             description: 邮箱验证
+        EquityDataPoint:
+            type: object
+            properties:
+                timestamp:
+                    type: string
+                    description: 时间戳
+                equity:
+                    type: number
+                    description: 资金
+                    format: double
+            description: 账号资金数据点
+        ExchangeAccount:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 账号ID
+                    format: uint32
+                nickname:
+                    type: string
+                    description: 账号昵称
+                exchangeName:
+                    type: string
+                    description: 交易所名称
+                originAccount:
+                    type: string
+                    description: 原始账号
+                apiKey:
+                    type: string
+                    description: API密钥
+                secretKey:
+                    type: string
+                    description: 密钥（加密存储，不返回给前端）
+                passKey:
+                    type: string
+                    description: 密码密钥
+                brokerId:
+                    type: string
+                    description: 经纪商ID
+                operator:
+                    type: string
+                    description: 操作员
+                remark:
+                    type: string
+                    description: 备注
+                serverIps:
+                    type: string
+                    description: 绑定的托管者IP列表（逗号分隔）
+                specialReqLimit:
+                    type: number
+                    description: 特殊限频
+                    format: double
+                accountType:
+                    enum:
+                        - ACCOUNT_TYPE_UNSPECIFIED
+                        - ACCOUNT_TYPE_SELF_BUILT
+                        - ACCOUNT_TYPE_PLATFORM
+                    type: string
+                    description: 账号类型
+                    format: enum
+                applyTime:
+                    type: string
+                    description: 申请时间
+                isCombined:
+                    type: boolean
+                    description: 是否参与组合账号
+                isMulti:
+                    type: boolean
+                    description: 是否是组合账号
+                accountIds:
+                    type: array
+                    items:
+                        type: string
+                    description: 组合账号ID列表
+                motherId:
+                    type: integer
+                    description: 母账号ID
+                    format: uint32
+                createTime:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+                updateTime:
+                    type: string
+                    description: 更新时间
+                    format: date-time
+            description: 交易账号
         File:
             type: object
             properties:
@@ -4994,6 +6062,30 @@ components:
                     type: string
                     description: 经度（微度）
             description: 地理位置
+        GetAccountEquityResponse:
+            type: object
+            properties:
+                dataPoints:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/EquityDataPoint'
+                    description: 资金曲线数据
+            description: 获取账号资金曲线响应
+        GetServerLogResponse:
+            type: object
+            properties:
+                logContent:
+                    type: string
+                    description: 日志内容
+            description: 获取托管者日志响应
+        GoogleProtobufAny:
+            type: object
+            properties:
+                '@type':
+                    type: string
+                    description: The type of the serialized message.
+            additionalProperties: true
+            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
         InitialContextResponse:
             type: object
             properties:
@@ -5327,6 +6419,19 @@ components:
                 total:
                     type: string
             description: 查询字典类型列表 - 回应
+        ListExchangeAccountResponse:
+            type: object
+            properties:
+                total:
+                    type: integer
+                    description: 总数
+                    format: int32
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ExchangeAccount'
+                    description: 账号列表
+            description: 获取交易账号列表响应
         ListFileResponse:
             type: object
             properties:
@@ -5475,6 +6580,19 @@ components:
                 total:
                     type: string
             description: 获取职位列表 - 答复
+        ListRobotResponse:
+            type: object
+            properties:
+                total:
+                    type: integer
+                    description: 总数
+                    format: int32
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Robot'
+                    description: Robot 列表
+            description: 获取 Robot 列表响应
         ListRoleResponse:
             type: object
             properties:
@@ -5493,6 +6611,19 @@ components:
                     items:
                         $ref: '#/components/schemas/MenuRouteItem'
             description: 查询路由列表 - 回应
+        ListServerResponse:
+            type: object
+            properties:
+                total:
+                    type: integer
+                    description: 总数
+                    format: int32
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Server'
+                    description: 托管者列表
+            description: 获取托管者列表响应
         ListTaskResponse:
             type: object
             properties:
@@ -6001,6 +7132,28 @@ components:
                 meta:
                     $ref: '#/components/schemas/MenuMeta'
             description: 路由项
+        NamedAny:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: Map key
+                value:
+                    allOf:
+                        - $ref: '#/components/schemas/Any'
+                    description: Mapped value
+            description: Automatically-generated message used to represent maps of Any as ordered (name,value) pairs.
+        NamedServerVariable:
+            type: object
+            properties:
+                name:
+                    type: string
+                    description: Map key
+                value:
+                    allOf:
+                        - $ref: '#/components/schemas/ServerVariable'
+                    description: Mapped value
+            description: Automatically-generated message used to represent maps of ServerVariable as ordered (name,value) pairs.
         OperationAuditLog:
             type: object
             properties:
@@ -6648,6 +7801,14 @@ components:
                     type: string
                     description: 预签名约束的 Content-Type（可选）
             description: 预签名选项
+        RebootServerRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 服务器ID
+                    format: uint32
+            description: 重启托管者请求
         RestartAllTaskResponse:
             type: object
             properties:
@@ -6666,6 +7827,41 @@ components:
                     type: integer
                     description: 用户ID
                     format: uint32
+        Robot:
+            type: object
+            properties:
+                robotId:
+                    type: string
+                    description: 机器人ID
+                nickname:
+                    type: string
+                    description: 昵称
+                exchange:
+                    type: string
+                    description: 交易所
+                version:
+                    type: string
+                    description: 版本
+                status:
+                    type: string
+                    description: 状态
+                initBalance:
+                    type: number
+                    description: 初始资金
+                    format: double
+                balance:
+                    type: number
+                    description: 余额
+                    format: double
+                registeredAt:
+                    type: string
+                    description: 注册时间
+                    format: date-time
+                lastHeartbeat:
+                    type: string
+                    description: 最后心跳时间
+                    format: date-time
+            description: Robot 信息
         Role:
             type: object
             properties:
@@ -6738,6 +7934,24 @@ components:
                     description: 删除时间
                     format: date-time
             description: 角色
+        SearchExchangeAccountRequest:
+            type: object
+            properties:
+                keyword:
+                    type: string
+                    description: 搜索关键词（昵称、交易所名称、原始账号）
+                operator:
+                    type: string
+                    description: 操作员
+                accountType:
+                    enum:
+                        - ACCOUNT_TYPE_UNSPECIFIED
+                        - ACCOUNT_TYPE_SELF_BUILT
+                        - ACCOUNT_TYPE_PLATFORM
+                    type: string
+                    description: 账号类型
+                    format: enum
+            description: 搜索交易账号请求
         SendMessageRequest:
             type: object
             properties:
@@ -6783,6 +7997,54 @@ components:
                     type: integer
                     description: 消息ID
                     format: uint32
+        Server:
+            type: object
+            properties:
+                url:
+                    type: string
+                description:
+                    type: string
+                variables:
+                    $ref: '#/components/schemas/ServerVariables'
+                specificationExtension:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/NamedAny'
+            description: An object representing a Server.
+        ServerVariable:
+            type: object
+            properties:
+                enum:
+                    type: array
+                    items:
+                        type: string
+                default:
+                    type: string
+                description:
+                    type: string
+                specificationExtension:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/NamedAny'
+            description: An object representing a Server Variable for server URL template substitution.
+        ServerVariables:
+            type: object
+            properties:
+                additionalProperties:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/NamedServerVariable'
+        StopServerRobotRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 服务器ID
+                    format: uint32
+                robotId:
+                    type: string
+                    description: 机器人ID
+            description: 停止托管者上的机器人请求
         StorageObject:
             type: object
             properties:
@@ -7008,6 +8270,32 @@ components:
                 exist:
                     type: boolean
             description: 租户是否存在 - 答复
+        TransferExchangeAccountRequest:
+            type: object
+            properties:
+                ids:
+                    type: array
+                    items:
+                        type: integer
+                        format: uint32
+                    description: 账号ID列表
+                targetOperator:
+                    type: string
+                    description: 目标操作员
+            description: 转移交易账号请求
+        TransferServerRequest:
+            type: object
+            properties:
+                ids:
+                    type: array
+                    items:
+                        type: integer
+                        format: uint32
+                    description: 服务器ID列表
+                targetOperator:
+                    type: string
+                    description: 目标操作员
+            description: 转移托管者请求
         UEditorResponse:
             type: object
             properties:
@@ -7201,6 +8489,35 @@ components:
                 size:
                     type: integer
                     format: int32
+        UpdateAccountBrokerIdRequest:
+            type: object
+            properties:
+                apiKeys:
+                    type: array
+                    items:
+                        type: string
+                    description: API密钥列表
+                exchangeName:
+                    type: string
+                    description: 交易所名称
+                originAccount:
+                    type: string
+                    description: 原始账号
+                brokerId:
+                    type: string
+                    description: 经纪商ID
+            description: 更新账号经纪商ID请求
+        UpdateAccountRemarkRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 账号ID
+                    format: uint32
+                remark:
+                    type: string
+                    description: 备注
+            description: 更新账号备注请求
         UpdateApiRequest:
             type: object
             properties:
@@ -7218,6 +8535,26 @@ components:
                     type: boolean
                     description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
             description: 更新 - 请求
+        UpdateCombinedAccountRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 组合账号ID
+                    format: uint32
+                nickname:
+                    type: string
+                    description: 组合账号昵称
+                accountIds:
+                    type: array
+                    items:
+                        type: integer
+                        format: uint32
+                    description: 子账号ID列表
+                remark:
+                    type: string
+                    description: 备注
+            description: 更新组合账号请求
         UpdateDictEntryRequest:
             type: object
             properties:
@@ -7252,6 +8589,39 @@ components:
                     type: boolean
                     description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
             description: 更新字典类型 - 请求
+        UpdateExchangeAccountRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 账号ID
+                    format: uint32
+                nickname:
+                    type: string
+                    description: 账号昵称
+                remark:
+                    type: string
+                    description: 备注
+                serverIps:
+                    type: string
+                    description: 绑定的托管者IP列表
+                specialReqLimit:
+                    type: number
+                    description: 特殊限频
+                    format: double
+                apiKey:
+                    type: string
+                    description: API密钥
+                secretKey:
+                    type: string
+                    description: 密钥
+                passKey:
+                    type: string
+                    description: 密码密钥
+                brokerId:
+                    type: string
+                    description: 经纪商ID
+            description: 更新交易账号请求
         UpdateFileRequest:
             type: object
             properties:
@@ -7422,6 +8792,33 @@ components:
                     type: boolean
                     description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
             description: 更新职位 - 请求
+        UpdateRobotRequest:
+            type: object
+            properties:
+                robotId:
+                    type: string
+                    description: 机器人ID
+                nickname:
+                    type: string
+                    description: 昵称
+                exchange:
+                    type: string
+                    description: 交易所
+                version:
+                    type: string
+                    description: 版本
+                status:
+                    type: string
+                    description: 状态
+                initBalance:
+                    type: number
+                    description: 初始资金
+                    format: double
+                balance:
+                    type: number
+                    description: 余额
+                    format: double
+            description: 更新 Robot 请求
         UpdateRoleRequest:
             type: object
             properties:
@@ -7439,6 +8836,70 @@ components:
                     type: boolean
                     description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
             description: 更新角色 - 请求
+        UpdateServerRemarkRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 服务器ID
+                    format: uint32
+                remark:
+                    type: string
+                    description: 备注
+            description: 更新托管者备注请求
+        UpdateServerRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 服务器ID
+                    format: uint32
+                nickname:
+                    type: string
+                    description: 托管者昵称
+                ip:
+                    type: string
+                    description: 外网IP
+                innerIp:
+                    type: string
+                    description: 内网IP
+                port:
+                    type: string
+                    description: 端口
+                machineId:
+                    type: string
+                    description: 机器ID
+                remark:
+                    type: string
+                    description: 备注
+                vpcId:
+                    type: string
+                    description: VPC ID
+                instanceId:
+                    type: string
+                    description: 实例ID
+                type:
+                    enum:
+                        - SERVER_TYPE_UNSPECIFIED
+                        - SERVER_TYPE_SELF_BUILT
+                    type: string
+                    description: 类型
+                    format: enum
+            description: 更新托管者请求
+        UpdateServerStrategyRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 服务器ID
+                    format: uint32
+                strategyName:
+                    type: string
+                    description: 策略名称
+                strategyVersion:
+                    type: string
+                    description: 策略版本
+            description: 更新托管者策略请求
         UpdateTaskRequest:
             type: object
             properties:
@@ -7743,6 +9204,8 @@ tags:
       description: 数据字典条目管理服务
     - name: DictTypeService
       description: 数据字典分类管理服务
+    - name: ExchangeAccountService
+      description: 交易账号管理服务
     - name: FileService
       description: 文件管理服务
     - name: FileTransferService
@@ -7775,8 +9238,12 @@ tags:
       description: 策略评估日志服务
     - name: PositionService
       description: 职位管理服务
+    - name: RobotService
+      description: Robot 管理服务
     - name: RoleService
       description: 角色管理服务
+    - name: ServerService
+      description: 托管者管理服务
     - name: TaskService
       description: 调度任务管理服务
     - name: TenantService

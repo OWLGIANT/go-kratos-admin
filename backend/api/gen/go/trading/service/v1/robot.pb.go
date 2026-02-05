@@ -81,36 +81,24 @@ func (RobotStatus) EnumDescriptor() ([]byte, []int) {
 // Robot 信息
 type Robot struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// 客户端ID
-	ClientId string `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
 	// 机器人ID
-	RobotId string `protobuf:"bytes,2,opt,name=robot_id,json=robotId,proto3" json:"robot_id,omitempty"`
+	RobotId string `protobuf:"bytes,1,opt,name=robot_id,json=robotId,proto3" json:"robot_id,omitempty"`
+	// 昵称
+	Nickname string `protobuf:"bytes,2,opt,name=nickname,proto3" json:"nickname,omitempty"`
 	// 交易所
 	Exchange string `protobuf:"bytes,3,opt,name=exchange,proto3" json:"exchange,omitempty"`
 	// 版本
 	Version string `protobuf:"bytes,4,opt,name=version,proto3" json:"version,omitempty"`
-	// 租户ID
-	TenantId uint32 `protobuf:"varint,5,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
 	// 状态
-	Status string `protobuf:"bytes,6,opt,name=status,proto3" json:"status,omitempty"`
+	Status string `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
+	// 初始资金
+	InitBalance float64 `protobuf:"fixed64,6,opt,name=init_balance,json=initBalance,proto3" json:"init_balance,omitempty"`
 	// 余额
 	Balance float64 `protobuf:"fixed64,7,opt,name=balance,proto3" json:"balance,omitempty"`
 	// 注册时间
 	RegisteredAt *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=registered_at,json=registeredAt,proto3" json:"registered_at,omitempty"`
 	// 最后心跳时间
 	LastHeartbeat *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=last_heartbeat,json=lastHeartbeat,proto3" json:"last_heartbeat,omitempty"`
-	// 服务器状态信息
-	ServerInfo *ServerStatusInfo `protobuf:"bytes,10,opt,name=server_info,json=serverInfo,proto3" json:"server_info,omitempty"`
-	// 外网IP
-	Ip string `protobuf:"bytes,11,opt,name=ip,proto3" json:"ip,omitempty"`
-	// 内网IP
-	InnerIp string `protobuf:"bytes,12,opt,name=inner_ip,json=innerIp,proto3" json:"inner_ip,omitempty"`
-	// 端口
-	Port string `protobuf:"bytes,13,opt,name=port,proto3" json:"port,omitempty"`
-	// 机器ID
-	MachineId string `protobuf:"bytes,14,opt,name=machine_id,json=machineId,proto3" json:"machine_id,omitempty"`
-	// 昵称
-	Nickname      string `protobuf:"bytes,15,opt,name=nickname,proto3" json:"nickname,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -145,16 +133,16 @@ func (*Robot) Descriptor() ([]byte, []int) {
 	return file_trading_service_v1_robot_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Robot) GetClientId() string {
+func (x *Robot) GetRobotId() string {
 	if x != nil {
-		return x.ClientId
+		return x.RobotId
 	}
 	return ""
 }
 
-func (x *Robot) GetRobotId() string {
+func (x *Robot) GetNickname() string {
 	if x != nil {
-		return x.RobotId
+		return x.Nickname
 	}
 	return ""
 }
@@ -173,18 +161,18 @@ func (x *Robot) GetVersion() string {
 	return ""
 }
 
-func (x *Robot) GetTenantId() uint32 {
-	if x != nil {
-		return x.TenantId
-	}
-	return 0
-}
-
 func (x *Robot) GetStatus() string {
 	if x != nil {
 		return x.Status
 	}
 	return ""
+}
+
+func (x *Robot) GetInitBalance() float64 {
+	if x != nil {
+		return x.InitBalance
+	}
+	return 0
 }
 
 func (x *Robot) GetBalance() float64 {
@@ -206,48 +194,6 @@ func (x *Robot) GetLastHeartbeat() *timestamppb.Timestamp {
 		return x.LastHeartbeat
 	}
 	return nil
-}
-
-func (x *Robot) GetServerInfo() *ServerStatusInfo {
-	if x != nil {
-		return x.ServerInfo
-	}
-	return nil
-}
-
-func (x *Robot) GetIp() string {
-	if x != nil {
-		return x.Ip
-	}
-	return ""
-}
-
-func (x *Robot) GetInnerIp() string {
-	if x != nil {
-		return x.InnerIp
-	}
-	return ""
-}
-
-func (x *Robot) GetPort() string {
-	if x != nil {
-		return x.Port
-	}
-	return ""
-}
-
-func (x *Robot) GetMachineId() string {
-	if x != nil {
-		return x.MachineId
-	}
-	return ""
-}
-
-func (x *Robot) GetNickname() string {
-	if x != nil {
-		return x.Nickname
-	}
-	return ""
 }
 
 // 获取 Robot 列表响应
@@ -351,34 +297,297 @@ func (x *GetRobotRequest) GetRobotId() string {
 	return ""
 }
 
+// 创建 Robot 请求
+type CreateRobotRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 机器人ID
+	RobotId string `protobuf:"bytes,1,opt,name=robot_id,json=robotId,proto3" json:"robot_id,omitempty"`
+	// 昵称
+	Nickname string `protobuf:"bytes,2,opt,name=nickname,proto3" json:"nickname,omitempty"`
+	// 交易所
+	Exchange string `protobuf:"bytes,3,opt,name=exchange,proto3" json:"exchange,omitempty"`
+	// 版本
+	Version string `protobuf:"bytes,4,opt,name=version,proto3" json:"version,omitempty"`
+	// 状态
+	Status string `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
+	// 初始资金
+	InitBalance float64 `protobuf:"fixed64,6,opt,name=init_balance,json=initBalance,proto3" json:"init_balance,omitempty"`
+	// 余额
+	Balance       float64 `protobuf:"fixed64,7,opt,name=balance,proto3" json:"balance,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateRobotRequest) Reset() {
+	*x = CreateRobotRequest{}
+	mi := &file_trading_service_v1_robot_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateRobotRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateRobotRequest) ProtoMessage() {}
+
+func (x *CreateRobotRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_trading_service_v1_robot_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateRobotRequest.ProtoReflect.Descriptor instead.
+func (*CreateRobotRequest) Descriptor() ([]byte, []int) {
+	return file_trading_service_v1_robot_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *CreateRobotRequest) GetRobotId() string {
+	if x != nil {
+		return x.RobotId
+	}
+	return ""
+}
+
+func (x *CreateRobotRequest) GetNickname() string {
+	if x != nil {
+		return x.Nickname
+	}
+	return ""
+}
+
+func (x *CreateRobotRequest) GetExchange() string {
+	if x != nil {
+		return x.Exchange
+	}
+	return ""
+}
+
+func (x *CreateRobotRequest) GetVersion() string {
+	if x != nil {
+		return x.Version
+	}
+	return ""
+}
+
+func (x *CreateRobotRequest) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *CreateRobotRequest) GetInitBalance() float64 {
+	if x != nil {
+		return x.InitBalance
+	}
+	return 0
+}
+
+func (x *CreateRobotRequest) GetBalance() float64 {
+	if x != nil {
+		return x.Balance
+	}
+	return 0
+}
+
+// 更新 Robot 请求
+type UpdateRobotRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 机器人ID
+	RobotId string `protobuf:"bytes,1,opt,name=robot_id,json=robotId,proto3" json:"robot_id,omitempty"`
+	// 昵称
+	Nickname *string `protobuf:"bytes,2,opt,name=nickname,proto3,oneof" json:"nickname,omitempty"`
+	// 交易所
+	Exchange *string `protobuf:"bytes,3,opt,name=exchange,proto3,oneof" json:"exchange,omitempty"`
+	// 版本
+	Version *string `protobuf:"bytes,4,opt,name=version,proto3,oneof" json:"version,omitempty"`
+	// 状态
+	Status *string `protobuf:"bytes,5,opt,name=status,proto3,oneof" json:"status,omitempty"`
+	// 初始资金
+	InitBalance *float64 `protobuf:"fixed64,6,opt,name=init_balance,json=initBalance,proto3,oneof" json:"init_balance,omitempty"`
+	// 余额
+	Balance       *float64 `protobuf:"fixed64,7,opt,name=balance,proto3,oneof" json:"balance,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateRobotRequest) Reset() {
+	*x = UpdateRobotRequest{}
+	mi := &file_trading_service_v1_robot_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateRobotRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateRobotRequest) ProtoMessage() {}
+
+func (x *UpdateRobotRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_trading_service_v1_robot_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateRobotRequest.ProtoReflect.Descriptor instead.
+func (*UpdateRobotRequest) Descriptor() ([]byte, []int) {
+	return file_trading_service_v1_robot_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UpdateRobotRequest) GetRobotId() string {
+	if x != nil {
+		return x.RobotId
+	}
+	return ""
+}
+
+func (x *UpdateRobotRequest) GetNickname() string {
+	if x != nil && x.Nickname != nil {
+		return *x.Nickname
+	}
+	return ""
+}
+
+func (x *UpdateRobotRequest) GetExchange() string {
+	if x != nil && x.Exchange != nil {
+		return *x.Exchange
+	}
+	return ""
+}
+
+func (x *UpdateRobotRequest) GetVersion() string {
+	if x != nil && x.Version != nil {
+		return *x.Version
+	}
+	return ""
+}
+
+func (x *UpdateRobotRequest) GetStatus() string {
+	if x != nil && x.Status != nil {
+		return *x.Status
+	}
+	return ""
+}
+
+func (x *UpdateRobotRequest) GetInitBalance() float64 {
+	if x != nil && x.InitBalance != nil {
+		return *x.InitBalance
+	}
+	return 0
+}
+
+func (x *UpdateRobotRequest) GetBalance() float64 {
+	if x != nil && x.Balance != nil {
+		return *x.Balance
+	}
+	return 0
+}
+
+// 删除 Robot 请求
+type DeleteRobotRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 机器人ID
+	RobotId       string `protobuf:"bytes,1,opt,name=robot_id,json=robotId,proto3" json:"robot_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteRobotRequest) Reset() {
+	*x = DeleteRobotRequest{}
+	mi := &file_trading_service_v1_robot_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteRobotRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteRobotRequest) ProtoMessage() {}
+
+func (x *DeleteRobotRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_trading_service_v1_robot_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteRobotRequest.ProtoReflect.Descriptor instead.
+func (*DeleteRobotRequest) Descriptor() ([]byte, []int) {
+	return file_trading_service_v1_robot_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *DeleteRobotRequest) GetRobotId() string {
+	if x != nil {
+		return x.RobotId
+	}
+	return ""
+}
+
 var File_trading_service_v1_robot_proto protoreflect.FileDescriptor
 
 const file_trading_service_v1_robot_proto_rawDesc = "" +
 	"\n" +
-	"\x1etrading/service/v1/robot.proto\x12\x12trading.service.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1ftrading/service/v1/server.proto\"\x89\x04\n" +
-	"\x05Robot\x12\x1b\n" +
-	"\tclient_id\x18\x01 \x01(\tR\bclientId\x12\x19\n" +
-	"\brobot_id\x18\x02 \x01(\tR\arobotId\x12\x1a\n" +
+	"\x1etrading/service/v1/robot.proto\x12\x12trading.service.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1ftrading/service/v1/server.proto\"\xcd\x02\n" +
+	"\x05Robot\x12\x19\n" +
+	"\brobot_id\x18\x01 \x01(\tR\arobotId\x12\x1a\n" +
+	"\bnickname\x18\x02 \x01(\tR\bnickname\x12\x1a\n" +
 	"\bexchange\x18\x03 \x01(\tR\bexchange\x12\x18\n" +
-	"\aversion\x18\x04 \x01(\tR\aversion\x12\x1b\n" +
-	"\ttenant_id\x18\x05 \x01(\rR\btenantId\x12\x16\n" +
-	"\x06status\x18\x06 \x01(\tR\x06status\x12\x18\n" +
+	"\aversion\x18\x04 \x01(\tR\aversion\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\x12!\n" +
+	"\finit_balance\x18\x06 \x01(\x01R\vinitBalance\x12\x18\n" +
 	"\abalance\x18\a \x01(\x01R\abalance\x12?\n" +
 	"\rregistered_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\fregisteredAt\x12A\n" +
-	"\x0elast_heartbeat\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\rlastHeartbeat\x12E\n" +
-	"\vserver_info\x18\n" +
-	" \x01(\v2$.trading.service.v1.ServerStatusInfoR\n" +
-	"serverInfo\x12\x0e\n" +
-	"\x02ip\x18\v \x01(\tR\x02ip\x12\x19\n" +
-	"\binner_ip\x18\f \x01(\tR\ainnerIp\x12\x12\n" +
-	"\x04port\x18\r \x01(\tR\x04port\x12\x1d\n" +
-	"\n" +
-	"machine_id\x18\x0e \x01(\tR\tmachineId\x12\x1a\n" +
-	"\bnickname\x18\x0f \x01(\tR\bnickname\"Z\n" +
+	"\x0elast_heartbeat\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\rlastHeartbeat\"Z\n" +
 	"\x11ListRobotResponse\x12\x14\n" +
 	"\x05total\x18\x01 \x01(\x05R\x05total\x12/\n" +
 	"\x05items\x18\x02 \x03(\v2\x19.trading.service.v1.RobotR\x05items\",\n" +
 	"\x0fGetRobotRequest\x12\x19\n" +
+	"\brobot_id\x18\x01 \x01(\tR\arobotId\"\xd6\x01\n" +
+	"\x12CreateRobotRequest\x12\x19\n" +
+	"\brobot_id\x18\x01 \x01(\tR\arobotId\x12\x1a\n" +
+	"\bnickname\x18\x02 \x01(\tR\bnickname\x12\x1a\n" +
+	"\bexchange\x18\x03 \x01(\tR\bexchange\x12\x18\n" +
+	"\aversion\x18\x04 \x01(\tR\aversion\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\x12!\n" +
+	"\finit_balance\x18\x06 \x01(\x01R\vinitBalance\x12\x18\n" +
+	"\abalance\x18\a \x01(\x01R\abalance\"\xc2\x02\n" +
+	"\x12UpdateRobotRequest\x12\x19\n" +
+	"\brobot_id\x18\x01 \x01(\tR\arobotId\x12\x1f\n" +
+	"\bnickname\x18\x02 \x01(\tH\x00R\bnickname\x88\x01\x01\x12\x1f\n" +
+	"\bexchange\x18\x03 \x01(\tH\x01R\bexchange\x88\x01\x01\x12\x1d\n" +
+	"\aversion\x18\x04 \x01(\tH\x02R\aversion\x88\x01\x01\x12\x1b\n" +
+	"\x06status\x18\x05 \x01(\tH\x03R\x06status\x88\x01\x01\x12&\n" +
+	"\finit_balance\x18\x06 \x01(\x01H\x04R\vinitBalance\x88\x01\x01\x12\x1d\n" +
+	"\abalance\x18\a \x01(\x01H\x05R\abalance\x88\x01\x01B\v\n" +
+	"\t_nicknameB\v\n" +
+	"\t_exchangeB\n" +
+	"\n" +
+	"\b_versionB\t\n" +
+	"\a_statusB\x0f\n" +
+	"\r_init_balanceB\n" +
+	"\n" +
+	"\b_balance\"/\n" +
+	"\x12DeleteRobotRequest\x12\x19\n" +
 	"\brobot_id\x18\x01 \x01(\tR\arobotId*\x95\x01\n" +
 	"\vRobotStatus\x12\x1c\n" +
 	"\x18Robot_STATUS_UNSPECIFIED\x10\x00\x12\x1a\n" +
@@ -402,25 +611,26 @@ func file_trading_service_v1_robot_proto_rawDescGZIP() []byte {
 }
 
 var file_trading_service_v1_robot_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_trading_service_v1_robot_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_trading_service_v1_robot_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_trading_service_v1_robot_proto_goTypes = []any{
 	(RobotStatus)(0),              // 0: trading.service.v1.RobotStatus
 	(*Robot)(nil),                 // 1: trading.service.v1.Robot
 	(*ListRobotResponse)(nil),     // 2: trading.service.v1.ListRobotResponse
 	(*GetRobotRequest)(nil),       // 3: trading.service.v1.GetRobotRequest
-	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
-	(*ServerStatusInfo)(nil),      // 5: trading.service.v1.ServerStatusInfo
+	(*CreateRobotRequest)(nil),    // 4: trading.service.v1.CreateRobotRequest
+	(*UpdateRobotRequest)(nil),    // 5: trading.service.v1.UpdateRobotRequest
+	(*DeleteRobotRequest)(nil),    // 6: trading.service.v1.DeleteRobotRequest
+	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
 }
 var file_trading_service_v1_robot_proto_depIdxs = []int32{
-	4, // 0: trading.service.v1.Robot.registered_at:type_name -> google.protobuf.Timestamp
-	4, // 1: trading.service.v1.Robot.last_heartbeat:type_name -> google.protobuf.Timestamp
-	5, // 2: trading.service.v1.Robot.server_info:type_name -> trading.service.v1.ServerStatusInfo
-	1, // 3: trading.service.v1.ListRobotResponse.items:type_name -> trading.service.v1.Robot
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	7, // 0: trading.service.v1.Robot.registered_at:type_name -> google.protobuf.Timestamp
+	7, // 1: trading.service.v1.Robot.last_heartbeat:type_name -> google.protobuf.Timestamp
+	1, // 2: trading.service.v1.ListRobotResponse.items:type_name -> trading.service.v1.Robot
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_trading_service_v1_robot_proto_init() }
@@ -429,13 +639,14 @@ func file_trading_service_v1_robot_proto_init() {
 		return
 	}
 	file_trading_service_v1_server_proto_init()
+	file_trading_service_v1_robot_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_trading_service_v1_robot_proto_rawDesc), len(file_trading_service_v1_robot_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   3,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

@@ -13,6 +13,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,8 +22,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	RobotService_ListRobot_FullMethodName = "/admin.service.v1.RobotService/ListRobot"
-	RobotService_GetRobot_FullMethodName  = "/admin.service.v1.RobotService/GetRobot"
+	RobotService_ListRobot_FullMethodName   = "/admin.service.v1.RobotService/ListRobot"
+	RobotService_GetRobot_FullMethodName    = "/admin.service.v1.RobotService/GetRobot"
+	RobotService_CreateRobot_FullMethodName = "/admin.service.v1.RobotService/CreateRobot"
+	RobotService_UpdateRobot_FullMethodName = "/admin.service.v1.RobotService/UpdateRobot"
+	RobotService_DeleteRobot_FullMethodName = "/admin.service.v1.RobotService/DeleteRobot"
 )
 
 // RobotServiceClient is the client API for RobotService service.
@@ -33,8 +37,14 @@ const (
 type RobotServiceClient interface {
 	// 获取 Robot 列表
 	ListRobot(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*v11.ListRobotResponse, error)
-	// 获取 Actor
+	// 获取 Robot
 	GetRobot(ctx context.Context, in *v11.GetRobotRequest, opts ...grpc.CallOption) (*v11.Robot, error)
+	// 创建 Robot
+	CreateRobot(ctx context.Context, in *v11.CreateRobotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 更新 Robot
+	UpdateRobot(ctx context.Context, in *v11.UpdateRobotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 删除 Robot
+	DeleteRobot(ctx context.Context, in *v11.DeleteRobotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type robotServiceClient struct {
@@ -65,6 +75,36 @@ func (c *robotServiceClient) GetRobot(ctx context.Context, in *v11.GetRobotReque
 	return out, nil
 }
 
+func (c *robotServiceClient) CreateRobot(ctx context.Context, in *v11.CreateRobotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, RobotService_CreateRobot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *robotServiceClient) UpdateRobot(ctx context.Context, in *v11.UpdateRobotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, RobotService_UpdateRobot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *robotServiceClient) DeleteRobot(ctx context.Context, in *v11.DeleteRobotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, RobotService_DeleteRobot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RobotServiceServer is the server API for RobotService service.
 // All implementations must embed UnimplementedRobotServiceServer
 // for forward compatibility.
@@ -73,8 +113,14 @@ func (c *robotServiceClient) GetRobot(ctx context.Context, in *v11.GetRobotReque
 type RobotServiceServer interface {
 	// 获取 Robot 列表
 	ListRobot(context.Context, *v1.PagingRequest) (*v11.ListRobotResponse, error)
-	// 获取 Actor
+	// 获取 Robot
 	GetRobot(context.Context, *v11.GetRobotRequest) (*v11.Robot, error)
+	// 创建 Robot
+	CreateRobot(context.Context, *v11.CreateRobotRequest) (*emptypb.Empty, error)
+	// 更新 Robot
+	UpdateRobot(context.Context, *v11.UpdateRobotRequest) (*emptypb.Empty, error)
+	// 删除 Robot
+	DeleteRobot(context.Context, *v11.DeleteRobotRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedRobotServiceServer()
 }
 
@@ -90,6 +136,15 @@ func (UnimplementedRobotServiceServer) ListRobot(context.Context, *v1.PagingRequ
 }
 func (UnimplementedRobotServiceServer) GetRobot(context.Context, *v11.GetRobotRequest) (*v11.Robot, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetRobot not implemented")
+}
+func (UnimplementedRobotServiceServer) CreateRobot(context.Context, *v11.CreateRobotRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method CreateRobot not implemented")
+}
+func (UnimplementedRobotServiceServer) UpdateRobot(context.Context, *v11.UpdateRobotRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method UpdateRobot not implemented")
+}
+func (UnimplementedRobotServiceServer) DeleteRobot(context.Context, *v11.DeleteRobotRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteRobot not implemented")
 }
 func (UnimplementedRobotServiceServer) mustEmbedUnimplementedRobotServiceServer() {}
 func (UnimplementedRobotServiceServer) testEmbeddedByValue()                      {}
@@ -148,6 +203,60 @@ func _RobotService_GetRobot_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RobotService_CreateRobot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v11.CreateRobotRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RobotServiceServer).CreateRobot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RobotService_CreateRobot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RobotServiceServer).CreateRobot(ctx, req.(*v11.CreateRobotRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RobotService_UpdateRobot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v11.UpdateRobotRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RobotServiceServer).UpdateRobot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RobotService_UpdateRobot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RobotServiceServer).UpdateRobot(ctx, req.(*v11.UpdateRobotRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RobotService_DeleteRobot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v11.DeleteRobotRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RobotServiceServer).DeleteRobot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RobotService_DeleteRobot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RobotServiceServer).DeleteRobot(ctx, req.(*v11.DeleteRobotRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RobotService_ServiceDesc is the grpc.ServiceDesc for RobotService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -162,6 +271,18 @@ var RobotService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetRobot",
 			Handler:    _RobotService_GetRobot_Handler,
+		},
+		{
+			MethodName: "CreateRobot",
+			Handler:    _RobotService_CreateRobot_Handler,
+		},
+		{
+			MethodName: "UpdateRobot",
+			Handler:    _RobotService_UpdateRobot_Handler,
+		},
+		{
+			MethodName: "DeleteRobot",
+			Handler:    _RobotService_DeleteRobot_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

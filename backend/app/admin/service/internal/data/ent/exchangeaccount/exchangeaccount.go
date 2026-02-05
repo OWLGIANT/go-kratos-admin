@@ -51,8 +51,8 @@ const (
 	FieldIsCombined = "is_combined"
 	// FieldIsMulti holds the string denoting the is_multi field in the database.
 	FieldIsMulti = "is_multi"
-	// FieldCombinedID holds the string denoting the combined_id field in the database.
-	FieldCombinedID = "combined_id"
+	// FieldAccountIds holds the string denoting the account_ids field in the database.
+	FieldAccountIds = "account_ids"
 	// FieldMotherID holds the string denoting the mother_id field in the database.
 	FieldMotherID = "mother_id"
 	// Table holds the table name of the exchangeaccount in the database.
@@ -82,7 +82,7 @@ var Columns = []string{
 	FieldApplyTime,
 	FieldIsCombined,
 	FieldIsMulti,
-	FieldCombinedID,
+	FieldAccountIds,
 	FieldMotherID,
 }
 
@@ -131,8 +131,6 @@ var (
 	DefaultIsCombined bool
 	// DefaultIsMulti holds the default value on creation for the "is_multi" field.
 	DefaultIsMulti bool
-	// DefaultCombinedID holds the default value on creation for the "combined_id" field.
-	DefaultCombinedID string
 	// DefaultMotherID holds the default value on creation for the "mother_id" field.
 	DefaultMotherID uint32
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -245,11 +243,6 @@ func ByIsCombined(opts ...sql.OrderTermOption) OrderOption {
 // ByIsMulti orders the results by the is_multi field.
 func ByIsMulti(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsMulti, opts...).ToFunc()
-}
-
-// ByCombinedID orders the results by the combined_id field.
-func ByCombinedID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCombinedID, opts...).ToFunc()
 }
 
 // ByMotherID orders the results by the mother_id field.

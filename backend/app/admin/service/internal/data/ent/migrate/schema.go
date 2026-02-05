@@ -479,7 +479,7 @@ var (
 		{Name: "apply_time", Type: field.TypeInt64, Nullable: true, Comment: "申请时间", Default: 0},
 		{Name: "is_combined", Type: field.TypeBool, Comment: "是否参与组合账号", Default: false},
 		{Name: "is_multi", Type: field.TypeBool, Comment: "是否是组合账号", Default: false},
-		{Name: "combined_id", Type: field.TypeString, Nullable: true, Comment: "参与组合的账号ID（用|分隔）", Default: ""},
+		{Name: "account_ids", Type: field.TypeJSON, Nullable: true, Comment: "组合账号ID列表"},
 		{Name: "mother_id", Type: field.TypeUint32, Nullable: true, Comment: "母账号ID", Default: 0},
 	}
 	// TradingExchangeAccountsTable holds the schema information for the "trading_exchange_accounts" table.
@@ -2148,8 +2148,14 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
 		{Name: "rid", Type: field.TypeString, Comment: "机器人ID"},
-		{Name: "status", Type: field.TypeUint, Comment: "机器人状态", Default: 0},
+		{Name: "nickname", Type: field.TypeString, Nullable: true, Comment: "昵称", Default: ""},
+		{Name: "exchange", Type: field.TypeString, Nullable: true, Comment: "交易所", Default: ""},
+		{Name: "version", Type: field.TypeString, Nullable: true, Comment: "版本", Default: ""},
+		{Name: "status", Type: field.TypeString, Nullable: true, Comment: "机器人状态", Default: ""},
 		{Name: "balance", Type: field.TypeFloat64, Comment: "当前资金", Default: 0},
+		{Name: "init_balance", Type: field.TypeFloat64, Comment: "初始资金", Default: 0},
+		{Name: "registered_at", Type: field.TypeTime, Nullable: true, Comment: "注册时间"},
+		{Name: "last_heartbeat", Type: field.TypeTime, Nullable: true, Comment: "最后心跳时间"},
 	}
 	// AppRobotsTable holds the schema information for the "app_robots" table.
 	AppRobotsTable = &schema.Table{
@@ -2166,7 +2172,7 @@ var (
 			{
 				Name:    "idx_app_robot_tenant_status",
 				Unique:  false,
-				Columns: []*schema.Column{AppRobotsColumns[8], AppRobotsColumns[10]},
+				Columns: []*schema.Column{AppRobotsColumns[8], AppRobotsColumns[13]},
 			},
 			{
 				Name:    "idx_app_robot_tenant_created_at",

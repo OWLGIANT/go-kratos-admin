@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -20,6 +21,7 @@ var (
 	_ redact.Redactor
 	_ codes.Code
 	_ status.Status
+	_ emptypb.Empty
 	_ pagination.Sorting
 	_ servicev1.Robot
 )
@@ -57,6 +59,39 @@ func (s *redactedRobotServiceServer) ListRobot(ctx context.Context, in *paginati
 // Unary RPC
 func (s *redactedRobotServiceServer) GetRobot(ctx context.Context, in *servicev1.GetRobotRequest) (*servicev1.Robot, error) {
 	res, err := s.srv.GetRobot(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
+}
+
+// CreateRobot is the redacted wrapper for the actual RobotServiceServer.CreateRobot method
+// Unary RPC
+func (s *redactedRobotServiceServer) CreateRobot(ctx context.Context, in *servicev1.CreateRobotRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.CreateRobot(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
+}
+
+// UpdateRobot is the redacted wrapper for the actual RobotServiceServer.UpdateRobot method
+// Unary RPC
+func (s *redactedRobotServiceServer) UpdateRobot(ctx context.Context, in *servicev1.UpdateRobotRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.UpdateRobot(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
+}
+
+// DeleteRobot is the redacted wrapper for the actual RobotServiceServer.DeleteRobot method
+// Unary RPC
+func (s *redactedRobotServiceServer) DeleteRobot(ctx context.Context, in *servicev1.DeleteRobotRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.DeleteRobot(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)

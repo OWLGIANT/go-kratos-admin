@@ -18,11 +18,12 @@ enum RobotStatus {
 
 // Robot 信息
 message Robot {
-  // 客户端ID
-  string client_id = 1;
 
   // 机器人ID
-  string robot_id = 2;
+  string robot_id = 1;
+
+  // 昵称
+  string nickname = 2;
 
   // 交易所
   string exchange = 3;
@@ -30,12 +31,10 @@ message Robot {
   // 版本
   string version = 4;
 
-  // 租户ID
-  uint32 tenant_id = 5;
-
   // 状态
-  string status = 6;
-
+  string status = 5;
+  // 初始资金
+  double init_balance = 6;
   // 余额
   double balance = 7;
 
@@ -45,23 +44,7 @@ message Robot {
   // 最后心跳时间
   google.protobuf.Timestamp last_heartbeat = 9;
 
-  // 服务器状态信息
-  ServerStatusInfo server_info = 10;
 
-  // 外网IP
-  string ip = 11;
-
-  // 内网IP
-  string inner_ip = 12;
-
-  // 端口
-  string port = 13;
-
-  // 机器ID
-  string machine_id = 14;
-
-  // 昵称
-  string nickname = 15;
 }
 
 // 获取 Robot 列表响应
@@ -75,6 +58,60 @@ message ListRobotResponse {
 
 // 获取 Robot 请求
 message GetRobotRequest {
+  // 机器人ID
+  string robot_id = 1;
+}
+
+// 创建 Robot 请求
+message CreateRobotRequest {
+  // 机器人ID
+  string robot_id = 1;
+
+  // 昵称
+  string nickname = 2;
+
+  // 交易所
+  string exchange = 3;
+
+  // 版本
+  string version = 4;
+
+  // 状态
+  string status = 5;
+
+  // 初始资金
+  double init_balance = 6;
+
+  // 余额
+  double balance = 7;
+}
+
+// 更新 Robot 请求
+message UpdateRobotRequest {
+  // 机器人ID
+  string robot_id = 1;
+
+  // 昵称
+  optional string nickname = 2;
+
+  // 交易所
+  optional string exchange = 3;
+
+  // 版本
+  optional string version = 4;
+
+  // 状态
+  optional string status = 5;
+
+  // 初始资金
+  optional double init_balance = 6;
+
+  // 余额
+  optional double balance = 7;
+}
+
+// 删除 Robot 请求
+message DeleteRobotRequest {
   // 机器人ID
   string robot_id = 1;
 }

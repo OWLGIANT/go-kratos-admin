@@ -30,10 +30,22 @@ const (
 	FieldTenantID = "tenant_id"
 	// FieldRid holds the string denoting the rid field in the database.
 	FieldRid = "rid"
+	// FieldNickname holds the string denoting the nickname field in the database.
+	FieldNickname = "nickname"
+	// FieldExchange holds the string denoting the exchange field in the database.
+	FieldExchange = "exchange"
+	// FieldVersion holds the string denoting the version field in the database.
+	FieldVersion = "version"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldBalance holds the string denoting the balance field in the database.
 	FieldBalance = "balance"
+	// FieldInitBalance holds the string denoting the init_balance field in the database.
+	FieldInitBalance = "init_balance"
+	// FieldRegisteredAt holds the string denoting the registered_at field in the database.
+	FieldRegisteredAt = "registered_at"
+	// FieldLastHeartbeat holds the string denoting the last_heartbeat field in the database.
+	FieldLastHeartbeat = "last_heartbeat"
 	// Table holds the table name of the robot in the database.
 	Table = "app_robots"
 )
@@ -50,8 +62,14 @@ var Columns = []string{
 	FieldRemark,
 	FieldTenantID,
 	FieldRid,
+	FieldNickname,
+	FieldExchange,
+	FieldVersion,
 	FieldStatus,
 	FieldBalance,
+	FieldInitBalance,
+	FieldRegisteredAt,
+	FieldLastHeartbeat,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -76,10 +94,18 @@ var (
 	DefaultTenantID uint32
 	// RidValidator is a validator for the "rid" field. It is called by the builders before save.
 	RidValidator func(string) error
+	// DefaultNickname holds the default value on creation for the "nickname" field.
+	DefaultNickname string
+	// DefaultExchange holds the default value on creation for the "exchange" field.
+	DefaultExchange string
+	// DefaultVersion holds the default value on creation for the "version" field.
+	DefaultVersion string
 	// DefaultStatus holds the default value on creation for the "status" field.
-	DefaultStatus uint
+	DefaultStatus string
 	// DefaultBalance holds the default value on creation for the "balance" field.
 	DefaultBalance float64
+	// DefaultInitBalance holds the default value on creation for the "init_balance" field.
+	DefaultInitBalance float64
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
@@ -137,6 +163,21 @@ func ByRid(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRid, opts...).ToFunc()
 }
 
+// ByNickname orders the results by the nickname field.
+func ByNickname(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNickname, opts...).ToFunc()
+}
+
+// ByExchange orders the results by the exchange field.
+func ByExchange(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldExchange, opts...).ToFunc()
+}
+
+// ByVersion orders the results by the version field.
+func ByVersion(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldVersion, opts...).ToFunc()
+}
+
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
@@ -145,4 +186,19 @@ func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 // ByBalance orders the results by the balance field.
 func ByBalance(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBalance, opts...).ToFunc()
+}
+
+// ByInitBalance orders the results by the init_balance field.
+func ByInitBalance(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInitBalance, opts...).ToFunc()
+}
+
+// ByRegisteredAt orders the results by the registered_at field.
+func ByRegisteredAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRegisteredAt, opts...).ToFunc()
+}
+
+// ByLastHeartbeat orders the results by the last_heartbeat field.
+func ByLastHeartbeat(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastHeartbeat, opts...).ToFunc()
 }

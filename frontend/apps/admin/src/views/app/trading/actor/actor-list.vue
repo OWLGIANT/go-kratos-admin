@@ -160,14 +160,14 @@ const gridOptions: VxeGridProps<ActorInfo> = {
       slots: { default: 'taskNum' },
     },
     {
-      title: '注册时间',
-      field: 'registeredAt',
+      title: '创建时间',
+      field: 'createTime',
       width: 160,
       formatter: 'formatDateTime',
     },
     {
-      title: '最后心跳',
-      field: 'lastHeartbeat',
+      title: '更新时间',
+      field: 'updateTime',
       width: 160,
       formatter: 'formatDateTime',
     },

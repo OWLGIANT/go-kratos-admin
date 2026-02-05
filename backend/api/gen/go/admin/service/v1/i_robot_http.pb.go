@@ -12,6 +12,7 @@ import (
 	binding "github.com/go-kratos/kratos/v2/transport/http/binding"
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	v11 "go-wind-admin/api/gen/go/trading/service/v1"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -21,20 +22,32 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationRobotServiceCreateRobot = "/admin.service.v1.RobotService/CreateRobot"
+const OperationRobotServiceDeleteRobot = "/admin.service.v1.RobotService/DeleteRobot"
 const OperationRobotServiceGetRobot = "/admin.service.v1.RobotService/GetRobot"
 const OperationRobotServiceListRobot = "/admin.service.v1.RobotService/ListRobot"
+const OperationRobotServiceUpdateRobot = "/admin.service.v1.RobotService/UpdateRobot"
 
 type RobotServiceHTTPServer interface {
-	// GetRobot 获取 Actor
+	// CreateRobot 创建 Robot
+	CreateRobot(context.Context, *v11.CreateRobotRequest) (*emptypb.Empty, error)
+	// DeleteRobot 删除 Robot
+	DeleteRobot(context.Context, *v11.DeleteRobotRequest) (*emptypb.Empty, error)
+	// GetRobot 获取 Robot
 	GetRobot(context.Context, *v11.GetRobotRequest) (*v11.Robot, error)
 	// ListRobot 获取 Robot 列表
 	ListRobot(context.Context, *v1.PagingRequest) (*v11.ListRobotResponse, error)
+	// UpdateRobot 更新 Robot
+	UpdateRobot(context.Context, *v11.UpdateRobotRequest) (*emptypb.Empty, error)
 }
 
 func RegisterRobotServiceHTTPServer(s *http.Server, srv RobotServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/trading/actors", _RobotService_ListRobot0_HTTP_Handler(srv))
+	r.GET("/admin/v1/trading/robots", _RobotService_ListRobot0_HTTP_Handler(srv))
 	r.GET("/admin/v1/trading/robots/{robot_id}", _RobotService_GetRobot0_HTTP_Handler(srv))
+	r.POST("/admin/v1/trading/robots", _RobotService_CreateRobot0_HTTP_Handler(srv))
+	r.PUT("/admin/v1/trading/robots/{robot_id}", _RobotService_UpdateRobot0_HTTP_Handler(srv))
+	r.DELETE("/admin/v1/trading/robots/{robot_id}", _RobotService_DeleteRobot0_HTTP_Handler(srv))
 }
 
 func _RobotService_ListRobot0_HTTP_Handler(srv RobotServiceHTTPServer) func(ctx http.Context) error {
@@ -78,11 +91,86 @@ func _RobotService_GetRobot0_HTTP_Handler(srv RobotServiceHTTPServer) func(ctx h
 	}
 }
 
+func _RobotService_CreateRobot0_HTTP_Handler(srv RobotServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.CreateRobotRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationRobotServiceCreateRobot)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.CreateRobot(ctx, req.(*v11.CreateRobotRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _RobotService_UpdateRobot0_HTTP_Handler(srv RobotServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.UpdateRobotRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationRobotServiceUpdateRobot)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.UpdateRobot(ctx, req.(*v11.UpdateRobotRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _RobotService_DeleteRobot0_HTTP_Handler(srv RobotServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.DeleteRobotRequest
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationRobotServiceDeleteRobot)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeleteRobot(ctx, req.(*v11.DeleteRobotRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 type RobotServiceHTTPClient interface {
-	// GetRobot 获取 Actor
+	// CreateRobot 创建 Robot
+	CreateRobot(ctx context.Context, req *v11.CreateRobotRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// DeleteRobot 删除 Robot
+	DeleteRobot(ctx context.Context, req *v11.DeleteRobotRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// GetRobot 获取 Robot
 	GetRobot(ctx context.Context, req *v11.GetRobotRequest, opts ...http.CallOption) (rsp *v11.Robot, err error)
 	// ListRobot 获取 Robot 列表
 	ListRobot(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListRobotResponse, err error)
+	// UpdateRobot 更新 Robot
+	UpdateRobot(ctx context.Context, req *v11.UpdateRobotRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
 
 type RobotServiceHTTPClientImpl struct {
@@ -93,7 +181,35 @@ func NewRobotServiceHTTPClient(client *http.Client) RobotServiceHTTPClient {
 	return &RobotServiceHTTPClientImpl{client}
 }
 
-// GetRobot 获取 Actor
+// CreateRobot 创建 Robot
+func (c *RobotServiceHTTPClientImpl) CreateRobot(ctx context.Context, in *v11.CreateRobotRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/trading/robots"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationRobotServiceCreateRobot))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// DeleteRobot 删除 Robot
+func (c *RobotServiceHTTPClientImpl) DeleteRobot(ctx context.Context, in *v11.DeleteRobotRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/trading/robots/{robot_id}"
+	path := binding.EncodeURL(pattern, in, true)
+	opts = append(opts, http.Operation(OperationRobotServiceDeleteRobot))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GetRobot 获取 Robot
 func (c *RobotServiceHTTPClientImpl) GetRobot(ctx context.Context, in *v11.GetRobotRequest, opts ...http.CallOption) (*v11.Robot, error) {
 	var out v11.Robot
 	pattern := "/admin/v1/trading/robots/{robot_id}"
@@ -110,11 +226,25 @@ func (c *RobotServiceHTTPClientImpl) GetRobot(ctx context.Context, in *v11.GetRo
 // ListRobot 获取 Robot 列表
 func (c *RobotServiceHTTPClientImpl) ListRobot(ctx context.Context, in *v1.PagingRequest, opts ...http.CallOption) (*v11.ListRobotResponse, error) {
 	var out v11.ListRobotResponse
-	pattern := "/admin/v1/trading/actors"
+	pattern := "/admin/v1/trading/robots"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationRobotServiceListRobot))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// UpdateRobot 更新 Robot
+func (c *RobotServiceHTTPClientImpl) UpdateRobot(ctx context.Context, in *v11.UpdateRobotRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/trading/robots/{robot_id}"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationRobotServiceUpdateRobot))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "PUT", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

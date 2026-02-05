@@ -3,8 +3,8 @@ import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
 
 import {
-  createActorServiceClient,
-  type tradingservicev1_Actor,
+  createServerServiceClient,
+  type tradingservicev1_Server,
 } from '#/generated/api/admin/service/v1';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
@@ -13,11 +13,17 @@ export type ActorStatus = 'connected' | 'disconnected' | 'error' | 'idle';
 
 // Actor 信息接口（服务器信息）
 export interface ActorInfo {
-  clientId: string;
+  id: number;
+  nickname?: string;
+  ip?: string;
+  innerIp?: string;
+  port?: string;
+  operator?: string;
+  machineId?: string;
+  remark?: string;
+  vpcId?: string;
+  instanceId?: string;
   status: ActorStatus;
-  registeredAt: string;
-  lastHeartbeat: string;
-  // Server 相关信息
   serverInfo?: {
     cpu?: string;
     ipPool?: number;
@@ -25,20 +31,13 @@ export interface ActorInfo {
     memPct?: string;
     diskPct?: string;
     taskNum?: number;
-    straVersion?: boolean;
-    straVersionDetail?: Record<string, string>;
-    awsAcct?: string;
-    awsZone?: string;
   };
-  ip?: string;
-  innerIp?: string;
-  port?: string;
-  machineId?: string;
-  nickname?: string;
+  createTime?: string;
+  updateTime?: string;
 }
 
 export const useActorStore = defineStore('actor', () => {
-  const service = createActorServiceClient(requestClientRequestHandler);
+  const service = createServerServiceClient(requestClientRequestHandler);
 
   // Actor 列表
   const actors = ref<ActorInfo[]>([]);
@@ -49,31 +48,31 @@ export const useActorStore = defineStore('actor', () => {
   /**
    * 从 API 响应转换为 ActorInfo
    */
-  function convertToActorInfo(actor: tradingservicev1_Actor): ActorInfo {
+  function convertToActorInfo(server: tradingservicev1_Server): ActorInfo {
     return {
-      clientId: actor.clientId || '',
-      status: (actor.status as ActorStatus) || 'disconnected',
-      registeredAt: actor.registeredAt || '',
-      lastHeartbeat: actor.lastHeartbeat || '',
-      serverInfo: actor.serverInfo
+      id: server.id || 0,
+      nickname: server.nickname,
+      ip: server.ip,
+      innerIp: server.innerIp,
+      port: server.port,
+      operator: server.operator,
+      machineId: server.machineId,
+      remark: server.remark,
+      vpcId: server.vpcId,
+      instanceId: server.instanceId,
+      status: 'connected' as ActorStatus, // 默认状态，可根据实际情况调整
+      serverInfo: server.serverInfo
         ? {
-            cpu: actor.serverInfo.cpu,
-            ipPool: actor.serverInfo.ipPool,
-            mem: actor.serverInfo.mem,
-            memPct: actor.serverInfo.memPct,
-            diskPct: actor.serverInfo.diskPct,
-            taskNum: actor.serverInfo.taskNum,
-            straVersion: actor.serverInfo.straVersion,
-            straVersionDetail: actor.serverInfo.straVersionDetail,
-            awsAcct: actor.serverInfo.awsAcct,
-            awsZone: actor.serverInfo.awsZone,
+            cpu: server.serverInfo.cpu,
+            ipPool: server.serverInfo.ipPool,
+            mem: server.serverInfo.mem,
+            memPct: server.serverInfo.memPct,
+            diskPct: server.serverInfo.diskPct,
+            taskNum: server.serverInfo.taskNum,
           }
         : undefined,
-      ip: actor.ip,
-      innerIp: actor.innerIp,
-      port: actor.port,
-      machineId: actor.machineId,
-      nickname: actor.nickname,
+      createTime: server.createTime,
+      updateTime: server.updateTime,
     };
   }
 
@@ -86,7 +85,7 @@ export const useActorStore = defineStore('actor', () => {
     try {
       const noPaging =
         paging?.page === undefined && paging?.pageSize === undefined;
-      const response = await service.ListActor({
+      const response = await service.ListServer({
         page: paging?.page,
         pageSize: paging?.pageSize,
         noPaging,
@@ -108,8 +107,8 @@ export const useActorStore = defineStore('actor', () => {
   /**
    * 获取单个 Actor
    */
-  async function getActor(robotId: string) {
-    const response = await service.GetActor({ robotId });
+  async function getActor(id: number) {
+    const response = await service.GetServer({ id });
     return response ? convertToActorInfo(response) : null;
   }
 
@@ -125,7 +124,7 @@ export const useActorStore = defineStore('actor', () => {
    * 添加或更新单个 Actor
    */
   function upsertActor(actor: ActorInfo) {
-    const index = actors.value.findIndex((a) => a.clientId === actor.clientId);
+    const index = actors.value.findIndex((a) => a.id === actor.id);
     if (index >= 0) {
       actors.value[index] = actor;
     } else {
@@ -136,8 +135,8 @@ export const useActorStore = defineStore('actor', () => {
   /**
    * 移除 Actor
    */
-  function removeActor(clientId: string) {
-    const index = actors.value.findIndex((a) => a.clientId === clientId);
+  function removeActor(id: number) {
+    const index = actors.value.findIndex((a) => a.id === id);
     if (index >= 0) {
       actors.value.splice(index, 1);
     }

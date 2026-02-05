@@ -35,13 +35,43 @@ func (Robot) Fields() []ent.Field {
 			NotEmpty().
 			Immutable(),
 
-		field.Uint("status").
+		field.String("nickname").
+			Comment("昵称").
+			Optional().
+			Default(""),
+
+		field.String("exchange").
+			Comment("交易所").
+			Optional().
+			Default(""),
+
+		field.String("version").
+			Comment("版本").
+			Optional().
+			Default(""),
+
+		field.String("status").
 			Comment("机器人状态").
-			Default(0),
+			Optional().
+			Default(""),
 
 		field.Float("balance").
 			Comment("当前资金").
 			Default(0.0),
+
+		field.Float("init_balance").
+			Comment("初始资金").
+			Default(0.0),
+
+		field.Time("registered_at").
+			Comment("注册时间").
+			Optional().
+			Nillable(),
+
+		field.Time("last_heartbeat").
+			Comment("最后心跳时间").
+			Optional().
+			Nillable(),
 	}
 }
 

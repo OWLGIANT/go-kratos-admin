@@ -287,7 +287,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			exchangeaccount.FieldApplyTime:       {Type: field.TypeInt64, Column: exchangeaccount.FieldApplyTime},
 			exchangeaccount.FieldIsCombined:      {Type: field.TypeBool, Column: exchangeaccount.FieldIsCombined},
 			exchangeaccount.FieldIsMulti:         {Type: field.TypeBool, Column: exchangeaccount.FieldIsMulti},
-			exchangeaccount.FieldCombinedID:      {Type: field.TypeString, Column: exchangeaccount.FieldCombinedID},
+			exchangeaccount.FieldAccountIds:      {Type: field.TypeJSON, Column: exchangeaccount.FieldAccountIds},
 			exchangeaccount.FieldMotherID:        {Type: field.TypeUint32, Column: exchangeaccount.FieldMotherID},
 		},
 	}
@@ -928,17 +928,23 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Robot",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			robot.FieldCreatedBy: {Type: field.TypeUint32, Column: robot.FieldCreatedBy},
-			robot.FieldUpdatedBy: {Type: field.TypeUint32, Column: robot.FieldUpdatedBy},
-			robot.FieldDeletedBy: {Type: field.TypeUint32, Column: robot.FieldDeletedBy},
-			robot.FieldCreatedAt: {Type: field.TypeTime, Column: robot.FieldCreatedAt},
-			robot.FieldUpdatedAt: {Type: field.TypeTime, Column: robot.FieldUpdatedAt},
-			robot.FieldDeletedAt: {Type: field.TypeTime, Column: robot.FieldDeletedAt},
-			robot.FieldRemark:    {Type: field.TypeString, Column: robot.FieldRemark},
-			robot.FieldTenantID:  {Type: field.TypeUint32, Column: robot.FieldTenantID},
-			robot.FieldRid:       {Type: field.TypeString, Column: robot.FieldRid},
-			robot.FieldStatus:    {Type: field.TypeUint, Column: robot.FieldStatus},
-			robot.FieldBalance:   {Type: field.TypeFloat64, Column: robot.FieldBalance},
+			robot.FieldCreatedBy:     {Type: field.TypeUint32, Column: robot.FieldCreatedBy},
+			robot.FieldUpdatedBy:     {Type: field.TypeUint32, Column: robot.FieldUpdatedBy},
+			robot.FieldDeletedBy:     {Type: field.TypeUint32, Column: robot.FieldDeletedBy},
+			robot.FieldCreatedAt:     {Type: field.TypeTime, Column: robot.FieldCreatedAt},
+			robot.FieldUpdatedAt:     {Type: field.TypeTime, Column: robot.FieldUpdatedAt},
+			robot.FieldDeletedAt:     {Type: field.TypeTime, Column: robot.FieldDeletedAt},
+			robot.FieldRemark:        {Type: field.TypeString, Column: robot.FieldRemark},
+			robot.FieldTenantID:      {Type: field.TypeUint32, Column: robot.FieldTenantID},
+			robot.FieldRid:           {Type: field.TypeString, Column: robot.FieldRid},
+			robot.FieldNickname:      {Type: field.TypeString, Column: robot.FieldNickname},
+			robot.FieldExchange:      {Type: field.TypeString, Column: robot.FieldExchange},
+			robot.FieldVersion:       {Type: field.TypeString, Column: robot.FieldVersion},
+			robot.FieldStatus:        {Type: field.TypeString, Column: robot.FieldStatus},
+			robot.FieldBalance:       {Type: field.TypeFloat64, Column: robot.FieldBalance},
+			robot.FieldInitBalance:   {Type: field.TypeFloat64, Column: robot.FieldInitBalance},
+			robot.FieldRegisteredAt:  {Type: field.TypeTime, Column: robot.FieldRegisteredAt},
+			robot.FieldLastHeartbeat: {Type: field.TypeTime, Column: robot.FieldLastHeartbeat},
 		},
 	}
 	graph.Nodes[31] = &sqlgraph.Node{
@@ -2470,9 +2476,9 @@ func (f *ExchangeAccountFilter) WhereIsMulti(p entql.BoolP) {
 	f.Where(p.Field(exchangeaccount.FieldIsMulti))
 }
 
-// WhereCombinedID applies the entql string predicate on the combined_id field.
-func (f *ExchangeAccountFilter) WhereCombinedID(p entql.StringP) {
-	f.Where(p.Field(exchangeaccount.FieldCombinedID))
+// WhereAccountIds applies the entql json.RawMessage predicate on the account_ids field.
+func (f *ExchangeAccountFilter) WhereAccountIds(p entql.BytesP) {
+	f.Where(p.Field(exchangeaccount.FieldAccountIds))
 }
 
 // WhereMotherID applies the entql uint32 predicate on the mother_id field.
@@ -5229,14 +5235,44 @@ func (f *RobotFilter) WhereRid(p entql.StringP) {
 	f.Where(p.Field(robot.FieldRid))
 }
 
-// WhereStatus applies the entql uint predicate on the status field.
-func (f *RobotFilter) WhereStatus(p entql.UintP) {
+// WhereNickname applies the entql string predicate on the nickname field.
+func (f *RobotFilter) WhereNickname(p entql.StringP) {
+	f.Where(p.Field(robot.FieldNickname))
+}
+
+// WhereExchange applies the entql string predicate on the exchange field.
+func (f *RobotFilter) WhereExchange(p entql.StringP) {
+	f.Where(p.Field(robot.FieldExchange))
+}
+
+// WhereVersion applies the entql string predicate on the version field.
+func (f *RobotFilter) WhereVersion(p entql.StringP) {
+	f.Where(p.Field(robot.FieldVersion))
+}
+
+// WhereStatus applies the entql string predicate on the status field.
+func (f *RobotFilter) WhereStatus(p entql.StringP) {
 	f.Where(p.Field(robot.FieldStatus))
 }
 
 // WhereBalance applies the entql float64 predicate on the balance field.
 func (f *RobotFilter) WhereBalance(p entql.Float64P) {
 	f.Where(p.Field(robot.FieldBalance))
+}
+
+// WhereInitBalance applies the entql float64 predicate on the init_balance field.
+func (f *RobotFilter) WhereInitBalance(p entql.Float64P) {
+	f.Where(p.Field(robot.FieldInitBalance))
+}
+
+// WhereRegisteredAt applies the entql time.Time predicate on the registered_at field.
+func (f *RobotFilter) WhereRegisteredAt(p entql.TimeP) {
+	f.Where(p.Field(robot.FieldRegisteredAt))
+}
+
+// WhereLastHeartbeat applies the entql time.Time predicate on the last_heartbeat field.
+func (f *RobotFilter) WhereLastHeartbeat(p entql.TimeP) {
+	f.Where(p.Field(robot.FieldLastHeartbeat))
 }
 
 // addPredicate implements the predicateAdder interface.

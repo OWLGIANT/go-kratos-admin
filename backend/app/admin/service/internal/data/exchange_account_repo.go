@@ -174,9 +174,8 @@ func (r *exchangeAccountRepo) entityToProto(entity *ent.ExchangeAccount) *tradin
 	}
 
 	// 解析组合账号ID
-	if entity.CombinedID != nil && *entity.CombinedID != "" {
-		accountIDs := strings.Split(*entity.CombinedID, "|")
-		item.AccountIds = accountIDs
+	if entity.AccountIds != nil {
+		item.AccountIds = entity.AccountIds
 	}
 
 	return item
@@ -386,7 +385,7 @@ func (r *exchangeAccountRepo) CreateCombined(ctx context.Context, req *tradingV1
 		SetAPIKey("COMBINED_" + combinedID).
 		SetSecretKey("").
 		SetIsMulti(true).
-		SetCombinedID(combinedID).
+		SetAccountIds(convertUint32ToStringSlice(req.AccountIds)).
 		SetRemark(req.Remark)
 
 	entity, err := builder.Save(ctx)
@@ -420,8 +419,7 @@ func (r *exchangeAccountRepo) UpdateCombined(ctx context.Context, req *tradingV1
 		builder.SetRemark(*req.Remark)
 	}
 	if len(req.AccountIds) > 0 {
-		combinedID := strings.Join(convertUint32ToStringSlice(req.AccountIds), "|")
-		builder.SetCombinedID(combinedID)
+		builder.SetAccountIds(convertUint32ToStringSlice(req.AccountIds))
 	}
 
 	return builder.Exec(ctx)

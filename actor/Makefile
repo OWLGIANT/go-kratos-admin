@@ -15,7 +15,9 @@ IMAGE_TAG := $(VERSION)
 # 构建配置
 GOOS ?= linux
 GOARCH ?= amd64
-export GOROOT := /usr/local/go
+# 使用系统的 GOROOT，如果未设置则使用默认值
+GOROOT ?= $(shell go env GOROOT)
+export GOROOT
 export PATH := $(GOROOT)/bin:$(PATH)
 
 # 旧变量 (兼容)

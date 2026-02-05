@@ -154,11 +154,6 @@ func IsMulti(v bool) predicate.ExchangeAccount {
 	return predicate.ExchangeAccount(sql.FieldEQ(FieldIsMulti, v))
 }
 
-// CombinedID applies equality check predicate on the "combined_id" field. It's identical to CombinedIDEQ.
-func CombinedID(v string) predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldEQ(FieldCombinedID, v))
-}
-
 // MotherID applies equality check predicate on the "mother_id" field. It's identical to MotherIDEQ.
 func MotherID(v uint32) predicate.ExchangeAccount {
 	return predicate.ExchangeAccount(sql.FieldEQ(FieldMotherID, v))
@@ -1249,79 +1244,14 @@ func IsMultiNEQ(v bool) predicate.ExchangeAccount {
 	return predicate.ExchangeAccount(sql.FieldNEQ(FieldIsMulti, v))
 }
 
-// CombinedIDEQ applies the EQ predicate on the "combined_id" field.
-func CombinedIDEQ(v string) predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldEQ(FieldCombinedID, v))
+// AccountIdsIsNil applies the IsNil predicate on the "account_ids" field.
+func AccountIdsIsNil() predicate.ExchangeAccount {
+	return predicate.ExchangeAccount(sql.FieldIsNull(FieldAccountIds))
 }
 
-// CombinedIDNEQ applies the NEQ predicate on the "combined_id" field.
-func CombinedIDNEQ(v string) predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldNEQ(FieldCombinedID, v))
-}
-
-// CombinedIDIn applies the In predicate on the "combined_id" field.
-func CombinedIDIn(vs ...string) predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldIn(FieldCombinedID, vs...))
-}
-
-// CombinedIDNotIn applies the NotIn predicate on the "combined_id" field.
-func CombinedIDNotIn(vs ...string) predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldNotIn(FieldCombinedID, vs...))
-}
-
-// CombinedIDGT applies the GT predicate on the "combined_id" field.
-func CombinedIDGT(v string) predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldGT(FieldCombinedID, v))
-}
-
-// CombinedIDGTE applies the GTE predicate on the "combined_id" field.
-func CombinedIDGTE(v string) predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldGTE(FieldCombinedID, v))
-}
-
-// CombinedIDLT applies the LT predicate on the "combined_id" field.
-func CombinedIDLT(v string) predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldLT(FieldCombinedID, v))
-}
-
-// CombinedIDLTE applies the LTE predicate on the "combined_id" field.
-func CombinedIDLTE(v string) predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldLTE(FieldCombinedID, v))
-}
-
-// CombinedIDContains applies the Contains predicate on the "combined_id" field.
-func CombinedIDContains(v string) predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldContains(FieldCombinedID, v))
-}
-
-// CombinedIDHasPrefix applies the HasPrefix predicate on the "combined_id" field.
-func CombinedIDHasPrefix(v string) predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldHasPrefix(FieldCombinedID, v))
-}
-
-// CombinedIDHasSuffix applies the HasSuffix predicate on the "combined_id" field.
-func CombinedIDHasSuffix(v string) predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldHasSuffix(FieldCombinedID, v))
-}
-
-// CombinedIDIsNil applies the IsNil predicate on the "combined_id" field.
-func CombinedIDIsNil() predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldIsNull(FieldCombinedID))
-}
-
-// CombinedIDNotNil applies the NotNil predicate on the "combined_id" field.
-func CombinedIDNotNil() predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldNotNull(FieldCombinedID))
-}
-
-// CombinedIDEqualFold applies the EqualFold predicate on the "combined_id" field.
-func CombinedIDEqualFold(v string) predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldEqualFold(FieldCombinedID, v))
-}
-
-// CombinedIDContainsFold applies the ContainsFold predicate on the "combined_id" field.
-func CombinedIDContainsFold(v string) predicate.ExchangeAccount {
-	return predicate.ExchangeAccount(sql.FieldContainsFold(FieldCombinedID, v))
+// AccountIdsNotNil applies the NotNil predicate on the "account_ids" field.
+func AccountIdsNotNil() predicate.ExchangeAccount {
+	return predicate.ExchangeAccount(sql.FieldNotNull(FieldAccountIds))
 }
 
 // MotherIDEQ applies the EQ predicate on the "mother_id" field.

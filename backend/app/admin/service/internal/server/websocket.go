@@ -9,6 +9,7 @@ import (
 	authnEngine "github.com/tx7do/kratos-authn/engine"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
+	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/service"
 	ws "go-wind-admin/app/admin/service/internal/websocket"
 	"go-wind-admin/app/admin/service/internal/websocket/handler"
@@ -51,6 +52,7 @@ func NewWebSocketServer(
 	ctx *bootstrap.Context,
 	authenticator authnEngine.Authenticator,
 	robotSyncService *service.RobotSyncService,
+	serverRepo data.ServerRepo,
 ) *WebSocketServer {
 	cfg := ctx.GetConfig()
 
@@ -114,7 +116,7 @@ func NewWebSocketServer(
 	router.Register(protocol.CommandTypeActorList, recoveryMw.Recover(actorListHandler.Handle))
 
 	// Actor 服务器同步处理器
-	actorServerSyncHandler := handler.NewActorServerSyncHandler(actorRegistry, manager, actorListHandler, logger)
+	actorServerSyncHandler := handler.NewActorServerSyncHandler(actorRegistry, manager, actorListHandler, serverRepo, logger)
 	router.Register(protocol.CommandTypeServerSync, recoveryMw.Recover(actorServerSyncHandler.Handle))
 
 	// 设置命令处理器

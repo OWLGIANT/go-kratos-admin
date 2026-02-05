@@ -13,6 +13,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
 	unsafe "unsafe"
 )
@@ -28,25 +29,38 @@ var File_admin_service_v1_i_robot_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_robot_proto_rawDesc = "" +
 	"\n" +
-	"\x1eadmin/service/v1/i_robot.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1etrading/service/v1/robot.proto2\xf8\x01\n" +
+	"\x1eadmin/service/v1/i_robot.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1etrading/service/v1/robot.proto2\xe7\x04\n" +
 	"\fRobotService\x12o\n" +
-	"\tListRobot\x12\x19.pagination.PagingRequest\x1a%.trading.service.v1.ListRobotResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/admin/v1/trading/actors\x12w\n" +
-	"\bGetRobot\x12#.trading.service.v1.GetRobotRequest\x1a\x19.trading.service.v1.Robot\"+\x82\xd3\xe4\x93\x02%\x12#/admin/v1/trading/robots/{robot_id}B\xb8\x01\n" +
+	"\tListRobot\x12\x19.pagination.PagingRequest\x1a%.trading.service.v1.ListRobotResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/admin/v1/trading/robots\x12w\n" +
+	"\bGetRobot\x12#.trading.service.v1.GetRobotRequest\x1a\x19.trading.service.v1.Robot\"+\x82\xd3\xe4\x93\x02%\x12#/admin/v1/trading/robots/{robot_id}\x12r\n" +
+	"\vCreateRobot\x12&.trading.service.v1.CreateRobotRequest\x1a\x16.google.protobuf.Empty\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\"\x18/admin/v1/trading/robots\x12}\n" +
+	"\vUpdateRobot\x12&.trading.service.v1.UpdateRobotRequest\x1a\x16.google.protobuf.Empty\".\x82\xd3\xe4\x93\x02(:\x01*\x1a#/admin/v1/trading/robots/{robot_id}\x12z\n" +
+	"\vDeleteRobot\x12&.trading.service.v1.DeleteRobotRequest\x1a\x16.google.protobuf.Empty\"+\x82\xd3\xe4\x93\x02%*#/admin/v1/trading/robots/{robot_id}B\xb8\x01\n" +
 	"\x14com.admin.service.v1B\vIRobotProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_robot_proto_goTypes = []any{
-	(*v1.PagingRequest)(nil),      // 0: pagination.PagingRequest
-	(*v11.GetRobotRequest)(nil),   // 1: trading.service.v1.GetRobotRequest
-	(*v11.ListRobotResponse)(nil), // 2: trading.service.v1.ListRobotResponse
-	(*v11.Robot)(nil),             // 3: trading.service.v1.Robot
+	(*v1.PagingRequest)(nil),       // 0: pagination.PagingRequest
+	(*v11.GetRobotRequest)(nil),    // 1: trading.service.v1.GetRobotRequest
+	(*v11.CreateRobotRequest)(nil), // 2: trading.service.v1.CreateRobotRequest
+	(*v11.UpdateRobotRequest)(nil), // 3: trading.service.v1.UpdateRobotRequest
+	(*v11.DeleteRobotRequest)(nil), // 4: trading.service.v1.DeleteRobotRequest
+	(*v11.ListRobotResponse)(nil),  // 5: trading.service.v1.ListRobotResponse
+	(*v11.Robot)(nil),              // 6: trading.service.v1.Robot
+	(*emptypb.Empty)(nil),          // 7: google.protobuf.Empty
 }
 var file_admin_service_v1_i_robot_proto_depIdxs = []int32{
 	0, // 0: admin.service.v1.RobotService.ListRobot:input_type -> pagination.PagingRequest
 	1, // 1: admin.service.v1.RobotService.GetRobot:input_type -> trading.service.v1.GetRobotRequest
-	2, // 2: admin.service.v1.RobotService.ListRobot:output_type -> trading.service.v1.ListRobotResponse
-	3, // 3: admin.service.v1.RobotService.GetRobot:output_type -> trading.service.v1.Robot
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
+	2, // 2: admin.service.v1.RobotService.CreateRobot:input_type -> trading.service.v1.CreateRobotRequest
+	3, // 3: admin.service.v1.RobotService.UpdateRobot:input_type -> trading.service.v1.UpdateRobotRequest
+	4, // 4: admin.service.v1.RobotService.DeleteRobot:input_type -> trading.service.v1.DeleteRobotRequest
+	5, // 5: admin.service.v1.RobotService.ListRobot:output_type -> trading.service.v1.ListRobotResponse
+	6, // 6: admin.service.v1.RobotService.GetRobot:output_type -> trading.service.v1.Robot
+	7, // 7: admin.service.v1.RobotService.CreateRobot:output_type -> google.protobuf.Empty
+	7, // 8: admin.service.v1.RobotService.UpdateRobot:output_type -> google.protobuf.Empty
+	7, // 9: admin.service.v1.RobotService.DeleteRobot:output_type -> google.protobuf.Empty
+	5, // [5:10] is the sub-list for method output_type
+	0, // [0:5] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name

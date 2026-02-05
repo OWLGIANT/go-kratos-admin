@@ -6,6 +6,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
@@ -20,11 +21,12 @@ type ActorRegistry interface {
 }
 
 type ActorService struct {
-	adminV1.RobotServiceHTTPClient
-
 	log      *log.Helper
 	registry ActorRegistry
 }
+
+// 确保 ActorService 实现了 RobotServiceHTTPServer 接口
+var _ adminV1.RobotServiceHTTPServer = (*ActorService)(nil)
 
 func NewActorService(
 	ctx *bootstrap.Context,
@@ -80,35 +82,36 @@ func (s *ActorService) GetRobot(ctx context.Context, req *tradingV1.GetRobotRequ
 	return s.convertActorInfo(actor), nil
 }
 
-// convertActorInfo 将内部 ActorInfo 转换为 proto Actor
+// convertActorInfo 将内部 ActorInfo 转换为 proto Robot
 func (s *ActorService) convertActorInfo(info *handler.ActorInfo) *tradingV1.Robot {
 	actor := &tradingV1.Robot{
-		ClientId:      info.ClientID,
 		RobotId:       info.RobotID,
+		Nickname:      info.Nickname,
 		Exchange:      info.Exchange,
 		Version:       info.Version,
-		TenantId:      info.TenantID,
 		Status:        info.Status,
 		Balance:       info.Balance,
 		RegisteredAt:  timestamppb.New(info.RegisteredAt),
 		LastHeartbeat: timestamppb.New(info.LastHeartbeat),
-		Ip:            info.IP,
-		InnerIp:       info.InnerIP,
-		Port:          info.Port,
-		MachineId:     info.MachineID,
-		Nickname:      info.Nickname,
-	}
-
-	if info.ServerInfo != nil {
-		actor.ServerInfo = &tradingV1.ServerStatusInfo{
-			Cpu:     info.ServerInfo.CPU,
-			IpPool:  info.ServerInfo.IPPool,
-			Mem:     info.ServerInfo.Mem,
-			MemPct:  info.ServerInfo.MemPct,
-			DiskPct: info.ServerInfo.DiskPct,
-			TaskNum: info.ServerInfo.TaskNum,
-		}
 	}
 
 	return actor
+}
+
+// CreateRobot 创建 Robot（Actor 是动态注册的，不支持手动创建）
+func (s *ActorService) CreateRobot(ctx context.Context, req *tradingV1.CreateRobotRequest) (*emptypb.Empty, error) {
+	s.log.Warn("CreateRobot not supported for actors")
+	return &emptypb.Empty{}, nil
+}
+
+// UpdateRobot 更新 Robot（Actor 信息由 Actor 自己更新，不支持手动更新）
+func (s *ActorService) UpdateRobot(ctx context.Context, req *tradingV1.UpdateRobotRequest) (*emptypb.Empty, error) {
+	s.log.Warn("UpdateRobot not supported for actors")
+	return &emptypb.Empty{}, nil
+}
+
+// DeleteRobot 删除 Robot（Actor 断开连接时自动删除，不支持手动删除）
+func (s *ActorService) DeleteRobot(ctx context.Context, req *tradingV1.DeleteRobotRequest) (*emptypb.Empty, error) {
+	s.log.Warn("DeleteRobot not supported for actors")
+	return &emptypb.Empty{}, nil
 }

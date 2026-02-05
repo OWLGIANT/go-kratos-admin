@@ -1275,6 +1275,97 @@ func (x *GetCanRestartServerListRequest) GetOperator() string {
 	return ""
 }
 
+// 根据IP插入或更新托管者请求
+type UpsertServerByIPRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// 外网IP（用于查找和唯一标识）
+	Ip string `protobuf:"bytes,1,opt,name=ip,proto3" json:"ip,omitempty"`
+	// 内网IP
+	InnerIp string `protobuf:"bytes,2,opt,name=inner_ip,json=innerIp,proto3" json:"inner_ip,omitempty"`
+	// 端口
+	Port string `protobuf:"bytes,3,opt,name=port,proto3" json:"port,omitempty"`
+	// 托管者昵称
+	Nickname string `protobuf:"bytes,4,opt,name=nickname,proto3" json:"nickname,omitempty"`
+	// 机器ID
+	MachineId string `protobuf:"bytes,5,opt,name=machine_id,json=machineId,proto3" json:"machine_id,omitempty"`
+	// 服务器状态信息
+	ServerInfo    *ServerStatusInfo `protobuf:"bytes,6,opt,name=server_info,json=serverInfo,proto3" json:"server_info,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpsertServerByIPRequest) Reset() {
+	*x = UpsertServerByIPRequest{}
+	mi := &file_trading_service_v1_server_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpsertServerByIPRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpsertServerByIPRequest) ProtoMessage() {}
+
+func (x *UpsertServerByIPRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_trading_service_v1_server_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpsertServerByIPRequest.ProtoReflect.Descriptor instead.
+func (*UpsertServerByIPRequest) Descriptor() ([]byte, []int) {
+	return file_trading_service_v1_server_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *UpsertServerByIPRequest) GetIp() string {
+	if x != nil {
+		return x.Ip
+	}
+	return ""
+}
+
+func (x *UpsertServerByIPRequest) GetInnerIp() string {
+	if x != nil {
+		return x.InnerIp
+	}
+	return ""
+}
+
+func (x *UpsertServerByIPRequest) GetPort() string {
+	if x != nil {
+		return x.Port
+	}
+	return ""
+}
+
+func (x *UpsertServerByIPRequest) GetNickname() string {
+	if x != nil {
+		return x.Nickname
+	}
+	return ""
+}
+
+func (x *UpsertServerByIPRequest) GetMachineId() string {
+	if x != nil {
+		return x.MachineId
+	}
+	return ""
+}
+
+func (x *UpsertServerByIPRequest) GetServerInfo() *ServerStatusInfo {
+	if x != nil {
+		return x.ServerInfo
+	}
+	return nil
+}
+
 var File_trading_service_v1_server_proto protoreflect.FileDescriptor
 
 const file_trading_service_v1_server_proto_rawDesc = "" +
@@ -1379,7 +1470,16 @@ const file_trading_service_v1_server_proto_rawDesc = "" +
 	"\x06remark\x18\x02 \x01(\tR\x06remark\"N\n" +
 	"\x1eGetCanRestartServerListRequest\x12\x1f\n" +
 	"\boperator\x18\x01 \x01(\tH\x00R\boperator\x88\x01\x01B\v\n" +
-	"\t_operator*E\n" +
+	"\t_operator\"\xda\x01\n" +
+	"\x17UpsertServerByIPRequest\x12\x0e\n" +
+	"\x02ip\x18\x01 \x01(\tR\x02ip\x12\x19\n" +
+	"\binner_ip\x18\x02 \x01(\tR\ainnerIp\x12\x12\n" +
+	"\x04port\x18\x03 \x01(\tR\x04port\x12\x1a\n" +
+	"\bnickname\x18\x04 \x01(\tR\bnickname\x12\x1d\n" +
+	"\n" +
+	"machine_id\x18\x05 \x01(\tR\tmachineId\x12E\n" +
+	"\vserver_info\x18\x06 \x01(\v2$.trading.service.v1.ServerStatusInfoR\n" +
+	"serverInfo*E\n" +
 	"\n" +
 	"ServerType\x12\x1b\n" +
 	"\x17SERVER_TYPE_UNSPECIFIED\x10\x00\x12\x1a\n" +
@@ -1399,7 +1499,7 @@ func file_trading_service_v1_server_proto_rawDescGZIP() []byte {
 }
 
 var file_trading_service_v1_server_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_trading_service_v1_server_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_trading_service_v1_server_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_trading_service_v1_server_proto_goTypes = []any{
 	(ServerType)(0),                        // 0: trading.service.v1.ServerType
 	(*ServerStatusInfo)(nil),               // 1: trading.service.v1.ServerStatusInfo
@@ -1420,22 +1520,24 @@ var file_trading_service_v1_server_proto_goTypes = []any{
 	(*UpdateServerStrategyRequest)(nil),    // 16: trading.service.v1.UpdateServerStrategyRequest
 	(*UpdateServerRemarkRequest)(nil),      // 17: trading.service.v1.UpdateServerRemarkRequest
 	(*GetCanRestartServerListRequest)(nil), // 18: trading.service.v1.GetCanRestartServerListRequest
-	(*timestamppb.Timestamp)(nil),          // 19: google.protobuf.Timestamp
+	(*UpsertServerByIPRequest)(nil),        // 19: trading.service.v1.UpsertServerByIPRequest
+	(*timestamppb.Timestamp)(nil),          // 20: google.protobuf.Timestamp
 }
 var file_trading_service_v1_server_proto_depIdxs = []int32{
 	1,  // 0: trading.service.v1.Server.server_info:type_name -> trading.service.v1.ServerStatusInfo
 	0,  // 1: trading.service.v1.Server.type:type_name -> trading.service.v1.ServerType
-	19, // 2: trading.service.v1.Server.create_time:type_name -> google.protobuf.Timestamp
-	19, // 3: trading.service.v1.Server.update_time:type_name -> google.protobuf.Timestamp
+	20, // 2: trading.service.v1.Server.create_time:type_name -> google.protobuf.Timestamp
+	20, // 3: trading.service.v1.Server.update_time:type_name -> google.protobuf.Timestamp
 	2,  // 4: trading.service.v1.ListServerResponse.items:type_name -> trading.service.v1.Server
 	0,  // 5: trading.service.v1.CreateServerRequest.type:type_name -> trading.service.v1.ServerType
 	5,  // 6: trading.service.v1.BatchCreateServerRequest.servers:type_name -> trading.service.v1.CreateServerRequest
 	0,  // 7: trading.service.v1.UpdateServerRequest.type:type_name -> trading.service.v1.ServerType
-	8,  // [8:8] is the sub-list for method output_type
-	8,  // [8:8] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	1,  // 8: trading.service.v1.UpsertServerByIPRequest.server_info:type_name -> trading.service.v1.ServerStatusInfo
+	9,  // [9:9] is the sub-list for method output_type
+	9,  // [9:9] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_trading_service_v1_server_proto_init() }
@@ -1451,7 +1553,7 @@ func file_trading_service_v1_server_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_trading_service_v1_server_proto_rawDesc), len(file_trading_service_v1_server_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   18,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

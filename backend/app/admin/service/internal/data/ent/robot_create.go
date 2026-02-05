@@ -140,14 +140,56 @@ func (_c *RobotCreate) SetRid(v string) *RobotCreate {
 	return _c
 }
 
+// SetNickname sets the "nickname" field.
+func (_c *RobotCreate) SetNickname(v string) *RobotCreate {
+	_c.mutation.SetNickname(v)
+	return _c
+}
+
+// SetNillableNickname sets the "nickname" field if the given value is not nil.
+func (_c *RobotCreate) SetNillableNickname(v *string) *RobotCreate {
+	if v != nil {
+		_c.SetNickname(*v)
+	}
+	return _c
+}
+
+// SetExchange sets the "exchange" field.
+func (_c *RobotCreate) SetExchange(v string) *RobotCreate {
+	_c.mutation.SetExchange(v)
+	return _c
+}
+
+// SetNillableExchange sets the "exchange" field if the given value is not nil.
+func (_c *RobotCreate) SetNillableExchange(v *string) *RobotCreate {
+	if v != nil {
+		_c.SetExchange(*v)
+	}
+	return _c
+}
+
+// SetVersion sets the "version" field.
+func (_c *RobotCreate) SetVersion(v string) *RobotCreate {
+	_c.mutation.SetVersion(v)
+	return _c
+}
+
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (_c *RobotCreate) SetNillableVersion(v *string) *RobotCreate {
+	if v != nil {
+		_c.SetVersion(*v)
+	}
+	return _c
+}
+
 // SetStatus sets the "status" field.
-func (_c *RobotCreate) SetStatus(v uint) *RobotCreate {
+func (_c *RobotCreate) SetStatus(v string) *RobotCreate {
 	_c.mutation.SetStatus(v)
 	return _c
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (_c *RobotCreate) SetNillableStatus(v *uint) *RobotCreate {
+func (_c *RobotCreate) SetNillableStatus(v *string) *RobotCreate {
 	if v != nil {
 		_c.SetStatus(*v)
 	}
@@ -164,6 +206,48 @@ func (_c *RobotCreate) SetBalance(v float64) *RobotCreate {
 func (_c *RobotCreate) SetNillableBalance(v *float64) *RobotCreate {
 	if v != nil {
 		_c.SetBalance(*v)
+	}
+	return _c
+}
+
+// SetInitBalance sets the "init_balance" field.
+func (_c *RobotCreate) SetInitBalance(v float64) *RobotCreate {
+	_c.mutation.SetInitBalance(v)
+	return _c
+}
+
+// SetNillableInitBalance sets the "init_balance" field if the given value is not nil.
+func (_c *RobotCreate) SetNillableInitBalance(v *float64) *RobotCreate {
+	if v != nil {
+		_c.SetInitBalance(*v)
+	}
+	return _c
+}
+
+// SetRegisteredAt sets the "registered_at" field.
+func (_c *RobotCreate) SetRegisteredAt(v time.Time) *RobotCreate {
+	_c.mutation.SetRegisteredAt(v)
+	return _c
+}
+
+// SetNillableRegisteredAt sets the "registered_at" field if the given value is not nil.
+func (_c *RobotCreate) SetNillableRegisteredAt(v *time.Time) *RobotCreate {
+	if v != nil {
+		_c.SetRegisteredAt(*v)
+	}
+	return _c
+}
+
+// SetLastHeartbeat sets the "last_heartbeat" field.
+func (_c *RobotCreate) SetLastHeartbeat(v time.Time) *RobotCreate {
+	_c.mutation.SetLastHeartbeat(v)
+	return _c
+}
+
+// SetNillableLastHeartbeat sets the "last_heartbeat" field if the given value is not nil.
+func (_c *RobotCreate) SetNillableLastHeartbeat(v *time.Time) *RobotCreate {
+	if v != nil {
+		_c.SetLastHeartbeat(*v)
 	}
 	return _c
 }
@@ -215,6 +299,18 @@ func (_c *RobotCreate) defaults() error {
 		v := robot.DefaultTenantID
 		_c.mutation.SetTenantID(v)
 	}
+	if _, ok := _c.mutation.Nickname(); !ok {
+		v := robot.DefaultNickname
+		_c.mutation.SetNickname(v)
+	}
+	if _, ok := _c.mutation.Exchange(); !ok {
+		v := robot.DefaultExchange
+		_c.mutation.SetExchange(v)
+	}
+	if _, ok := _c.mutation.Version(); !ok {
+		v := robot.DefaultVersion
+		_c.mutation.SetVersion(v)
+	}
 	if _, ok := _c.mutation.Status(); !ok {
 		v := robot.DefaultStatus
 		_c.mutation.SetStatus(v)
@@ -222,6 +318,10 @@ func (_c *RobotCreate) defaults() error {
 	if _, ok := _c.mutation.Balance(); !ok {
 		v := robot.DefaultBalance
 		_c.mutation.SetBalance(v)
+	}
+	if _, ok := _c.mutation.InitBalance(); !ok {
+		v := robot.DefaultInitBalance
+		_c.mutation.SetInitBalance(v)
 	}
 	return nil
 }
@@ -236,11 +336,11 @@ func (_c *RobotCreate) check() error {
 			return &ValidationError{Name: "rid", err: fmt.Errorf(`ent: validator failed for field "Robot.rid": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Robot.status"`)}
-	}
 	if _, ok := _c.mutation.Balance(); !ok {
 		return &ValidationError{Name: "balance", err: errors.New(`ent: missing required field "Robot.balance"`)}
+	}
+	if _, ok := _c.mutation.InitBalance(); !ok {
+		return &ValidationError{Name: "init_balance", err: errors.New(`ent: missing required field "Robot.init_balance"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := robot.IDValidator(v); err != nil {
@@ -316,13 +416,37 @@ func (_c *RobotCreate) createSpec() (*Robot, *sqlgraph.CreateSpec) {
 		_spec.SetField(robot.FieldRid, field.TypeString, value)
 		_node.Rid = value
 	}
+	if value, ok := _c.mutation.Nickname(); ok {
+		_spec.SetField(robot.FieldNickname, field.TypeString, value)
+		_node.Nickname = value
+	}
+	if value, ok := _c.mutation.Exchange(); ok {
+		_spec.SetField(robot.FieldExchange, field.TypeString, value)
+		_node.Exchange = value
+	}
+	if value, ok := _c.mutation.Version(); ok {
+		_spec.SetField(robot.FieldVersion, field.TypeString, value)
+		_node.Version = value
+	}
 	if value, ok := _c.mutation.Status(); ok {
-		_spec.SetField(robot.FieldStatus, field.TypeUint, value)
+		_spec.SetField(robot.FieldStatus, field.TypeString, value)
 		_node.Status = value
 	}
 	if value, ok := _c.mutation.Balance(); ok {
 		_spec.SetField(robot.FieldBalance, field.TypeFloat64, value)
 		_node.Balance = value
+	}
+	if value, ok := _c.mutation.InitBalance(); ok {
+		_spec.SetField(robot.FieldInitBalance, field.TypeFloat64, value)
+		_node.InitBalance = value
+	}
+	if value, ok := _c.mutation.RegisteredAt(); ok {
+		_spec.SetField(robot.FieldRegisteredAt, field.TypeTime, value)
+		_node.RegisteredAt = &value
+	}
+	if value, ok := _c.mutation.LastHeartbeat(); ok {
+		_spec.SetField(robot.FieldLastHeartbeat, field.TypeTime, value)
+		_node.LastHeartbeat = &value
 	}
 	return _node, _spec
 }
@@ -502,8 +626,62 @@ func (u *RobotUpsert) ClearRemark() *RobotUpsert {
 	return u
 }
 
+// SetNickname sets the "nickname" field.
+func (u *RobotUpsert) SetNickname(v string) *RobotUpsert {
+	u.Set(robot.FieldNickname, v)
+	return u
+}
+
+// UpdateNickname sets the "nickname" field to the value that was provided on create.
+func (u *RobotUpsert) UpdateNickname() *RobotUpsert {
+	u.SetExcluded(robot.FieldNickname)
+	return u
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (u *RobotUpsert) ClearNickname() *RobotUpsert {
+	u.SetNull(robot.FieldNickname)
+	return u
+}
+
+// SetExchange sets the "exchange" field.
+func (u *RobotUpsert) SetExchange(v string) *RobotUpsert {
+	u.Set(robot.FieldExchange, v)
+	return u
+}
+
+// UpdateExchange sets the "exchange" field to the value that was provided on create.
+func (u *RobotUpsert) UpdateExchange() *RobotUpsert {
+	u.SetExcluded(robot.FieldExchange)
+	return u
+}
+
+// ClearExchange clears the value of the "exchange" field.
+func (u *RobotUpsert) ClearExchange() *RobotUpsert {
+	u.SetNull(robot.FieldExchange)
+	return u
+}
+
+// SetVersion sets the "version" field.
+func (u *RobotUpsert) SetVersion(v string) *RobotUpsert {
+	u.Set(robot.FieldVersion, v)
+	return u
+}
+
+// UpdateVersion sets the "version" field to the value that was provided on create.
+func (u *RobotUpsert) UpdateVersion() *RobotUpsert {
+	u.SetExcluded(robot.FieldVersion)
+	return u
+}
+
+// ClearVersion clears the value of the "version" field.
+func (u *RobotUpsert) ClearVersion() *RobotUpsert {
+	u.SetNull(robot.FieldVersion)
+	return u
+}
+
 // SetStatus sets the "status" field.
-func (u *RobotUpsert) SetStatus(v uint) *RobotUpsert {
+func (u *RobotUpsert) SetStatus(v string) *RobotUpsert {
 	u.Set(robot.FieldStatus, v)
 	return u
 }
@@ -514,9 +692,9 @@ func (u *RobotUpsert) UpdateStatus() *RobotUpsert {
 	return u
 }
 
-// AddStatus adds v to the "status" field.
-func (u *RobotUpsert) AddStatus(v uint) *RobotUpsert {
-	u.Add(robot.FieldStatus, v)
+// ClearStatus clears the value of the "status" field.
+func (u *RobotUpsert) ClearStatus() *RobotUpsert {
+	u.SetNull(robot.FieldStatus)
 	return u
 }
 
@@ -535,6 +713,60 @@ func (u *RobotUpsert) UpdateBalance() *RobotUpsert {
 // AddBalance adds v to the "balance" field.
 func (u *RobotUpsert) AddBalance(v float64) *RobotUpsert {
 	u.Add(robot.FieldBalance, v)
+	return u
+}
+
+// SetInitBalance sets the "init_balance" field.
+func (u *RobotUpsert) SetInitBalance(v float64) *RobotUpsert {
+	u.Set(robot.FieldInitBalance, v)
+	return u
+}
+
+// UpdateInitBalance sets the "init_balance" field to the value that was provided on create.
+func (u *RobotUpsert) UpdateInitBalance() *RobotUpsert {
+	u.SetExcluded(robot.FieldInitBalance)
+	return u
+}
+
+// AddInitBalance adds v to the "init_balance" field.
+func (u *RobotUpsert) AddInitBalance(v float64) *RobotUpsert {
+	u.Add(robot.FieldInitBalance, v)
+	return u
+}
+
+// SetRegisteredAt sets the "registered_at" field.
+func (u *RobotUpsert) SetRegisteredAt(v time.Time) *RobotUpsert {
+	u.Set(robot.FieldRegisteredAt, v)
+	return u
+}
+
+// UpdateRegisteredAt sets the "registered_at" field to the value that was provided on create.
+func (u *RobotUpsert) UpdateRegisteredAt() *RobotUpsert {
+	u.SetExcluded(robot.FieldRegisteredAt)
+	return u
+}
+
+// ClearRegisteredAt clears the value of the "registered_at" field.
+func (u *RobotUpsert) ClearRegisteredAt() *RobotUpsert {
+	u.SetNull(robot.FieldRegisteredAt)
+	return u
+}
+
+// SetLastHeartbeat sets the "last_heartbeat" field.
+func (u *RobotUpsert) SetLastHeartbeat(v time.Time) *RobotUpsert {
+	u.Set(robot.FieldLastHeartbeat, v)
+	return u
+}
+
+// UpdateLastHeartbeat sets the "last_heartbeat" field to the value that was provided on create.
+func (u *RobotUpsert) UpdateLastHeartbeat() *RobotUpsert {
+	u.SetExcluded(robot.FieldLastHeartbeat)
+	return u
+}
+
+// ClearLastHeartbeat clears the value of the "last_heartbeat" field.
+func (u *RobotUpsert) ClearLastHeartbeat() *RobotUpsert {
+	u.SetNull(robot.FieldLastHeartbeat)
 	return u
 }
 
@@ -742,17 +974,73 @@ func (u *RobotUpsertOne) ClearRemark() *RobotUpsertOne {
 	})
 }
 
-// SetStatus sets the "status" field.
-func (u *RobotUpsertOne) SetStatus(v uint) *RobotUpsertOne {
+// SetNickname sets the "nickname" field.
+func (u *RobotUpsertOne) SetNickname(v string) *RobotUpsertOne {
 	return u.Update(func(s *RobotUpsert) {
-		s.SetStatus(v)
+		s.SetNickname(v)
 	})
 }
 
-// AddStatus adds v to the "status" field.
-func (u *RobotUpsertOne) AddStatus(v uint) *RobotUpsertOne {
+// UpdateNickname sets the "nickname" field to the value that was provided on create.
+func (u *RobotUpsertOne) UpdateNickname() *RobotUpsertOne {
 	return u.Update(func(s *RobotUpsert) {
-		s.AddStatus(v)
+		s.UpdateNickname()
+	})
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (u *RobotUpsertOne) ClearNickname() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearNickname()
+	})
+}
+
+// SetExchange sets the "exchange" field.
+func (u *RobotUpsertOne) SetExchange(v string) *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetExchange(v)
+	})
+}
+
+// UpdateExchange sets the "exchange" field to the value that was provided on create.
+func (u *RobotUpsertOne) UpdateExchange() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.UpdateExchange()
+	})
+}
+
+// ClearExchange clears the value of the "exchange" field.
+func (u *RobotUpsertOne) ClearExchange() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearExchange()
+	})
+}
+
+// SetVersion sets the "version" field.
+func (u *RobotUpsertOne) SetVersion(v string) *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetVersion(v)
+	})
+}
+
+// UpdateVersion sets the "version" field to the value that was provided on create.
+func (u *RobotUpsertOne) UpdateVersion() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.UpdateVersion()
+	})
+}
+
+// ClearVersion clears the value of the "version" field.
+func (u *RobotUpsertOne) ClearVersion() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearVersion()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *RobotUpsertOne) SetStatus(v string) *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetStatus(v)
 	})
 }
 
@@ -760,6 +1048,13 @@ func (u *RobotUpsertOne) AddStatus(v uint) *RobotUpsertOne {
 func (u *RobotUpsertOne) UpdateStatus() *RobotUpsertOne {
 	return u.Update(func(s *RobotUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *RobotUpsertOne) ClearStatus() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearStatus()
 	})
 }
 
@@ -781,6 +1076,69 @@ func (u *RobotUpsertOne) AddBalance(v float64) *RobotUpsertOne {
 func (u *RobotUpsertOne) UpdateBalance() *RobotUpsertOne {
 	return u.Update(func(s *RobotUpsert) {
 		s.UpdateBalance()
+	})
+}
+
+// SetInitBalance sets the "init_balance" field.
+func (u *RobotUpsertOne) SetInitBalance(v float64) *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetInitBalance(v)
+	})
+}
+
+// AddInitBalance adds v to the "init_balance" field.
+func (u *RobotUpsertOne) AddInitBalance(v float64) *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.AddInitBalance(v)
+	})
+}
+
+// UpdateInitBalance sets the "init_balance" field to the value that was provided on create.
+func (u *RobotUpsertOne) UpdateInitBalance() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.UpdateInitBalance()
+	})
+}
+
+// SetRegisteredAt sets the "registered_at" field.
+func (u *RobotUpsertOne) SetRegisteredAt(v time.Time) *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetRegisteredAt(v)
+	})
+}
+
+// UpdateRegisteredAt sets the "registered_at" field to the value that was provided on create.
+func (u *RobotUpsertOne) UpdateRegisteredAt() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.UpdateRegisteredAt()
+	})
+}
+
+// ClearRegisteredAt clears the value of the "registered_at" field.
+func (u *RobotUpsertOne) ClearRegisteredAt() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearRegisteredAt()
+	})
+}
+
+// SetLastHeartbeat sets the "last_heartbeat" field.
+func (u *RobotUpsertOne) SetLastHeartbeat(v time.Time) *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetLastHeartbeat(v)
+	})
+}
+
+// UpdateLastHeartbeat sets the "last_heartbeat" field to the value that was provided on create.
+func (u *RobotUpsertOne) UpdateLastHeartbeat() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.UpdateLastHeartbeat()
+	})
+}
+
+// ClearLastHeartbeat clears the value of the "last_heartbeat" field.
+func (u *RobotUpsertOne) ClearLastHeartbeat() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearLastHeartbeat()
 	})
 }
 
@@ -1154,17 +1512,73 @@ func (u *RobotUpsertBulk) ClearRemark() *RobotUpsertBulk {
 	})
 }
 
-// SetStatus sets the "status" field.
-func (u *RobotUpsertBulk) SetStatus(v uint) *RobotUpsertBulk {
+// SetNickname sets the "nickname" field.
+func (u *RobotUpsertBulk) SetNickname(v string) *RobotUpsertBulk {
 	return u.Update(func(s *RobotUpsert) {
-		s.SetStatus(v)
+		s.SetNickname(v)
 	})
 }
 
-// AddStatus adds v to the "status" field.
-func (u *RobotUpsertBulk) AddStatus(v uint) *RobotUpsertBulk {
+// UpdateNickname sets the "nickname" field to the value that was provided on create.
+func (u *RobotUpsertBulk) UpdateNickname() *RobotUpsertBulk {
 	return u.Update(func(s *RobotUpsert) {
-		s.AddStatus(v)
+		s.UpdateNickname()
+	})
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (u *RobotUpsertBulk) ClearNickname() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearNickname()
+	})
+}
+
+// SetExchange sets the "exchange" field.
+func (u *RobotUpsertBulk) SetExchange(v string) *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetExchange(v)
+	})
+}
+
+// UpdateExchange sets the "exchange" field to the value that was provided on create.
+func (u *RobotUpsertBulk) UpdateExchange() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.UpdateExchange()
+	})
+}
+
+// ClearExchange clears the value of the "exchange" field.
+func (u *RobotUpsertBulk) ClearExchange() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearExchange()
+	})
+}
+
+// SetVersion sets the "version" field.
+func (u *RobotUpsertBulk) SetVersion(v string) *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetVersion(v)
+	})
+}
+
+// UpdateVersion sets the "version" field to the value that was provided on create.
+func (u *RobotUpsertBulk) UpdateVersion() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.UpdateVersion()
+	})
+}
+
+// ClearVersion clears the value of the "version" field.
+func (u *RobotUpsertBulk) ClearVersion() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearVersion()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *RobotUpsertBulk) SetStatus(v string) *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetStatus(v)
 	})
 }
 
@@ -1172,6 +1586,13 @@ func (u *RobotUpsertBulk) AddStatus(v uint) *RobotUpsertBulk {
 func (u *RobotUpsertBulk) UpdateStatus() *RobotUpsertBulk {
 	return u.Update(func(s *RobotUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *RobotUpsertBulk) ClearStatus() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearStatus()
 	})
 }
 
@@ -1193,6 +1614,69 @@ func (u *RobotUpsertBulk) AddBalance(v float64) *RobotUpsertBulk {
 func (u *RobotUpsertBulk) UpdateBalance() *RobotUpsertBulk {
 	return u.Update(func(s *RobotUpsert) {
 		s.UpdateBalance()
+	})
+}
+
+// SetInitBalance sets the "init_balance" field.
+func (u *RobotUpsertBulk) SetInitBalance(v float64) *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetInitBalance(v)
+	})
+}
+
+// AddInitBalance adds v to the "init_balance" field.
+func (u *RobotUpsertBulk) AddInitBalance(v float64) *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.AddInitBalance(v)
+	})
+}
+
+// UpdateInitBalance sets the "init_balance" field to the value that was provided on create.
+func (u *RobotUpsertBulk) UpdateInitBalance() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.UpdateInitBalance()
+	})
+}
+
+// SetRegisteredAt sets the "registered_at" field.
+func (u *RobotUpsertBulk) SetRegisteredAt(v time.Time) *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetRegisteredAt(v)
+	})
+}
+
+// UpdateRegisteredAt sets the "registered_at" field to the value that was provided on create.
+func (u *RobotUpsertBulk) UpdateRegisteredAt() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.UpdateRegisteredAt()
+	})
+}
+
+// ClearRegisteredAt clears the value of the "registered_at" field.
+func (u *RobotUpsertBulk) ClearRegisteredAt() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearRegisteredAt()
+	})
+}
+
+// SetLastHeartbeat sets the "last_heartbeat" field.
+func (u *RobotUpsertBulk) SetLastHeartbeat(v time.Time) *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetLastHeartbeat(v)
+	})
+}
+
+// UpdateLastHeartbeat sets the "last_heartbeat" field to the value that was provided on create.
+func (u *RobotUpsertBulk) UpdateLastHeartbeat() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.UpdateLastHeartbeat()
+	})
+}
+
+// ClearLastHeartbeat clears the value of the "last_heartbeat" field.
+func (u *RobotUpsertBulk) ClearLastHeartbeat() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearLastHeartbeat()
 	})
 }
 

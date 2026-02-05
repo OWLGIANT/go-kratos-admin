@@ -53,6 +53,5 @@ var ProviderSet = wire.NewSet(
 	// Trading services
 	service.NewExchangeAccountService,
 	service.NewServerService,
-	service.NewHftMarketMakingService,
 	service.NewActorService,
 )

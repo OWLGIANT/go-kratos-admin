@@ -403,10 +403,6 @@ func init() {
 	exchangeaccountDescIsMulti := exchangeaccountFields[13].Descriptor()
 	// exchangeaccount.DefaultIsMulti holds the default value on creation for the is_multi field.
 	exchangeaccount.DefaultIsMulti = exchangeaccountDescIsMulti.Default.(bool)
-	// exchangeaccountDescCombinedID is the schema descriptor for combined_id field.
-	exchangeaccountDescCombinedID := exchangeaccountFields[14].Descriptor()
-	// exchangeaccount.DefaultCombinedID holds the default value on creation for the combined_id field.
-	exchangeaccount.DefaultCombinedID = exchangeaccountDescCombinedID.Default.(string)
 	// exchangeaccountDescMotherID is the schema descriptor for mother_id field.
 	exchangeaccountDescMotherID := exchangeaccountFields[15].Descriptor()
 	// exchangeaccount.DefaultMotherID holds the default value on creation for the mother_id field.
@@ -1024,14 +1020,30 @@ func init() {
 	robotDescRid := robotFields[0].Descriptor()
 	// robot.RidValidator is a validator for the "rid" field. It is called by the builders before save.
 	robot.RidValidator = robotDescRid.Validators[0].(func(string) error)
+	// robotDescNickname is the schema descriptor for nickname field.
+	robotDescNickname := robotFields[1].Descriptor()
+	// robot.DefaultNickname holds the default value on creation for the nickname field.
+	robot.DefaultNickname = robotDescNickname.Default.(string)
+	// robotDescExchange is the schema descriptor for exchange field.
+	robotDescExchange := robotFields[2].Descriptor()
+	// robot.DefaultExchange holds the default value on creation for the exchange field.
+	robot.DefaultExchange = robotDescExchange.Default.(string)
+	// robotDescVersion is the schema descriptor for version field.
+	robotDescVersion := robotFields[3].Descriptor()
+	// robot.DefaultVersion holds the default value on creation for the version field.
+	robot.DefaultVersion = robotDescVersion.Default.(string)
 	// robotDescStatus is the schema descriptor for status field.
-	robotDescStatus := robotFields[1].Descriptor()
+	robotDescStatus := robotFields[4].Descriptor()
 	// robot.DefaultStatus holds the default value on creation for the status field.
-	robot.DefaultStatus = robotDescStatus.Default.(uint)
+	robot.DefaultStatus = robotDescStatus.Default.(string)
 	// robotDescBalance is the schema descriptor for balance field.
-	robotDescBalance := robotFields[2].Descriptor()
+	robotDescBalance := robotFields[5].Descriptor()
 	// robot.DefaultBalance holds the default value on creation for the balance field.
 	robot.DefaultBalance = robotDescBalance.Default.(float64)
+	// robotDescInitBalance is the schema descriptor for init_balance field.
+	robotDescInitBalance := robotFields[6].Descriptor()
+	// robot.DefaultInitBalance holds the default value on creation for the init_balance field.
+	robot.DefaultInitBalance = robotDescInitBalance.Default.(float64)
 	// robotDescID is the schema descriptor for id field.
 	robotDescID := robotMixinFields0[0].Descriptor()
 	// robot.IDValidator is a validator for the "id" field. It is called by the builders before save.

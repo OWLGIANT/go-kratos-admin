@@ -170,24 +170,83 @@ func (_u *RobotUpdate) ClearRemark() *RobotUpdate {
 	return _u
 }
 
+// SetNickname sets the "nickname" field.
+func (_u *RobotUpdate) SetNickname(v string) *RobotUpdate {
+	_u.mutation.SetNickname(v)
+	return _u
+}
+
+// SetNillableNickname sets the "nickname" field if the given value is not nil.
+func (_u *RobotUpdate) SetNillableNickname(v *string) *RobotUpdate {
+	if v != nil {
+		_u.SetNickname(*v)
+	}
+	return _u
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (_u *RobotUpdate) ClearNickname() *RobotUpdate {
+	_u.mutation.ClearNickname()
+	return _u
+}
+
+// SetExchange sets the "exchange" field.
+func (_u *RobotUpdate) SetExchange(v string) *RobotUpdate {
+	_u.mutation.SetExchange(v)
+	return _u
+}
+
+// SetNillableExchange sets the "exchange" field if the given value is not nil.
+func (_u *RobotUpdate) SetNillableExchange(v *string) *RobotUpdate {
+	if v != nil {
+		_u.SetExchange(*v)
+	}
+	return _u
+}
+
+// ClearExchange clears the value of the "exchange" field.
+func (_u *RobotUpdate) ClearExchange() *RobotUpdate {
+	_u.mutation.ClearExchange()
+	return _u
+}
+
+// SetVersion sets the "version" field.
+func (_u *RobotUpdate) SetVersion(v string) *RobotUpdate {
+	_u.mutation.SetVersion(v)
+	return _u
+}
+
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (_u *RobotUpdate) SetNillableVersion(v *string) *RobotUpdate {
+	if v != nil {
+		_u.SetVersion(*v)
+	}
+	return _u
+}
+
+// ClearVersion clears the value of the "version" field.
+func (_u *RobotUpdate) ClearVersion() *RobotUpdate {
+	_u.mutation.ClearVersion()
+	return _u
+}
+
 // SetStatus sets the "status" field.
-func (_u *RobotUpdate) SetStatus(v uint) *RobotUpdate {
-	_u.mutation.ResetStatus()
+func (_u *RobotUpdate) SetStatus(v string) *RobotUpdate {
 	_u.mutation.SetStatus(v)
 	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *RobotUpdate) SetNillableStatus(v *uint) *RobotUpdate {
+func (_u *RobotUpdate) SetNillableStatus(v *string) *RobotUpdate {
 	if v != nil {
 		_u.SetStatus(*v)
 	}
 	return _u
 }
 
-// AddStatus adds value to the "status" field.
-func (_u *RobotUpdate) AddStatus(v int) *RobotUpdate {
-	_u.mutation.AddStatus(v)
+// ClearStatus clears the value of the "status" field.
+func (_u *RobotUpdate) ClearStatus() *RobotUpdate {
+	_u.mutation.ClearStatus()
 	return _u
 }
 
@@ -209,6 +268,67 @@ func (_u *RobotUpdate) SetNillableBalance(v *float64) *RobotUpdate {
 // AddBalance adds value to the "balance" field.
 func (_u *RobotUpdate) AddBalance(v float64) *RobotUpdate {
 	_u.mutation.AddBalance(v)
+	return _u
+}
+
+// SetInitBalance sets the "init_balance" field.
+func (_u *RobotUpdate) SetInitBalance(v float64) *RobotUpdate {
+	_u.mutation.ResetInitBalance()
+	_u.mutation.SetInitBalance(v)
+	return _u
+}
+
+// SetNillableInitBalance sets the "init_balance" field if the given value is not nil.
+func (_u *RobotUpdate) SetNillableInitBalance(v *float64) *RobotUpdate {
+	if v != nil {
+		_u.SetInitBalance(*v)
+	}
+	return _u
+}
+
+// AddInitBalance adds value to the "init_balance" field.
+func (_u *RobotUpdate) AddInitBalance(v float64) *RobotUpdate {
+	_u.mutation.AddInitBalance(v)
+	return _u
+}
+
+// SetRegisteredAt sets the "registered_at" field.
+func (_u *RobotUpdate) SetRegisteredAt(v time.Time) *RobotUpdate {
+	_u.mutation.SetRegisteredAt(v)
+	return _u
+}
+
+// SetNillableRegisteredAt sets the "registered_at" field if the given value is not nil.
+func (_u *RobotUpdate) SetNillableRegisteredAt(v *time.Time) *RobotUpdate {
+	if v != nil {
+		_u.SetRegisteredAt(*v)
+	}
+	return _u
+}
+
+// ClearRegisteredAt clears the value of the "registered_at" field.
+func (_u *RobotUpdate) ClearRegisteredAt() *RobotUpdate {
+	_u.mutation.ClearRegisteredAt()
+	return _u
+}
+
+// SetLastHeartbeat sets the "last_heartbeat" field.
+func (_u *RobotUpdate) SetLastHeartbeat(v time.Time) *RobotUpdate {
+	_u.mutation.SetLastHeartbeat(v)
+	return _u
+}
+
+// SetNillableLastHeartbeat sets the "last_heartbeat" field if the given value is not nil.
+func (_u *RobotUpdate) SetNillableLastHeartbeat(v *time.Time) *RobotUpdate {
+	if v != nil {
+		_u.SetLastHeartbeat(*v)
+	}
+	return _u
+}
+
+// ClearLastHeartbeat clears the value of the "last_heartbeat" field.
+func (_u *RobotUpdate) ClearLastHeartbeat() *RobotUpdate {
+	_u.mutation.ClearLastHeartbeat()
 	return _u
 }
 
@@ -310,17 +430,53 @@ func (_u *RobotUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(robot.FieldTenantID, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.Status(); ok {
-		_spec.SetField(robot.FieldStatus, field.TypeUint, value)
+	if value, ok := _u.mutation.Nickname(); ok {
+		_spec.SetField(robot.FieldNickname, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.AddedStatus(); ok {
-		_spec.AddField(robot.FieldStatus, field.TypeUint, value)
+	if _u.mutation.NicknameCleared() {
+		_spec.ClearField(robot.FieldNickname, field.TypeString)
+	}
+	if value, ok := _u.mutation.Exchange(); ok {
+		_spec.SetField(robot.FieldExchange, field.TypeString, value)
+	}
+	if _u.mutation.ExchangeCleared() {
+		_spec.ClearField(robot.FieldExchange, field.TypeString)
+	}
+	if value, ok := _u.mutation.Version(); ok {
+		_spec.SetField(robot.FieldVersion, field.TypeString, value)
+	}
+	if _u.mutation.VersionCleared() {
+		_spec.ClearField(robot.FieldVersion, field.TypeString)
+	}
+	if value, ok := _u.mutation.Status(); ok {
+		_spec.SetField(robot.FieldStatus, field.TypeString, value)
+	}
+	if _u.mutation.StatusCleared() {
+		_spec.ClearField(robot.FieldStatus, field.TypeString)
 	}
 	if value, ok := _u.mutation.Balance(); ok {
 		_spec.SetField(robot.FieldBalance, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.AddedBalance(); ok {
 		_spec.AddField(robot.FieldBalance, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.InitBalance(); ok {
+		_spec.SetField(robot.FieldInitBalance, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedInitBalance(); ok {
+		_spec.AddField(robot.FieldInitBalance, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.RegisteredAt(); ok {
+		_spec.SetField(robot.FieldRegisteredAt, field.TypeTime, value)
+	}
+	if _u.mutation.RegisteredAtCleared() {
+		_spec.ClearField(robot.FieldRegisteredAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.LastHeartbeat(); ok {
+		_spec.SetField(robot.FieldLastHeartbeat, field.TypeTime, value)
+	}
+	if _u.mutation.LastHeartbeatCleared() {
+		_spec.ClearField(robot.FieldLastHeartbeat, field.TypeTime)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -485,24 +641,83 @@ func (_u *RobotUpdateOne) ClearRemark() *RobotUpdateOne {
 	return _u
 }
 
+// SetNickname sets the "nickname" field.
+func (_u *RobotUpdateOne) SetNickname(v string) *RobotUpdateOne {
+	_u.mutation.SetNickname(v)
+	return _u
+}
+
+// SetNillableNickname sets the "nickname" field if the given value is not nil.
+func (_u *RobotUpdateOne) SetNillableNickname(v *string) *RobotUpdateOne {
+	if v != nil {
+		_u.SetNickname(*v)
+	}
+	return _u
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (_u *RobotUpdateOne) ClearNickname() *RobotUpdateOne {
+	_u.mutation.ClearNickname()
+	return _u
+}
+
+// SetExchange sets the "exchange" field.
+func (_u *RobotUpdateOne) SetExchange(v string) *RobotUpdateOne {
+	_u.mutation.SetExchange(v)
+	return _u
+}
+
+// SetNillableExchange sets the "exchange" field if the given value is not nil.
+func (_u *RobotUpdateOne) SetNillableExchange(v *string) *RobotUpdateOne {
+	if v != nil {
+		_u.SetExchange(*v)
+	}
+	return _u
+}
+
+// ClearExchange clears the value of the "exchange" field.
+func (_u *RobotUpdateOne) ClearExchange() *RobotUpdateOne {
+	_u.mutation.ClearExchange()
+	return _u
+}
+
+// SetVersion sets the "version" field.
+func (_u *RobotUpdateOne) SetVersion(v string) *RobotUpdateOne {
+	_u.mutation.SetVersion(v)
+	return _u
+}
+
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (_u *RobotUpdateOne) SetNillableVersion(v *string) *RobotUpdateOne {
+	if v != nil {
+		_u.SetVersion(*v)
+	}
+	return _u
+}
+
+// ClearVersion clears the value of the "version" field.
+func (_u *RobotUpdateOne) ClearVersion() *RobotUpdateOne {
+	_u.mutation.ClearVersion()
+	return _u
+}
+
 // SetStatus sets the "status" field.
-func (_u *RobotUpdateOne) SetStatus(v uint) *RobotUpdateOne {
-	_u.mutation.ResetStatus()
+func (_u *RobotUpdateOne) SetStatus(v string) *RobotUpdateOne {
 	_u.mutation.SetStatus(v)
 	return _u
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *RobotUpdateOne) SetNillableStatus(v *uint) *RobotUpdateOne {
+func (_u *RobotUpdateOne) SetNillableStatus(v *string) *RobotUpdateOne {
 	if v != nil {
 		_u.SetStatus(*v)
 	}
 	return _u
 }
 
-// AddStatus adds value to the "status" field.
-func (_u *RobotUpdateOne) AddStatus(v int) *RobotUpdateOne {
-	_u.mutation.AddStatus(v)
+// ClearStatus clears the value of the "status" field.
+func (_u *RobotUpdateOne) ClearStatus() *RobotUpdateOne {
+	_u.mutation.ClearStatus()
 	return _u
 }
 
@@ -524,6 +739,67 @@ func (_u *RobotUpdateOne) SetNillableBalance(v *float64) *RobotUpdateOne {
 // AddBalance adds value to the "balance" field.
 func (_u *RobotUpdateOne) AddBalance(v float64) *RobotUpdateOne {
 	_u.mutation.AddBalance(v)
+	return _u
+}
+
+// SetInitBalance sets the "init_balance" field.
+func (_u *RobotUpdateOne) SetInitBalance(v float64) *RobotUpdateOne {
+	_u.mutation.ResetInitBalance()
+	_u.mutation.SetInitBalance(v)
+	return _u
+}
+
+// SetNillableInitBalance sets the "init_balance" field if the given value is not nil.
+func (_u *RobotUpdateOne) SetNillableInitBalance(v *float64) *RobotUpdateOne {
+	if v != nil {
+		_u.SetInitBalance(*v)
+	}
+	return _u
+}
+
+// AddInitBalance adds value to the "init_balance" field.
+func (_u *RobotUpdateOne) AddInitBalance(v float64) *RobotUpdateOne {
+	_u.mutation.AddInitBalance(v)
+	return _u
+}
+
+// SetRegisteredAt sets the "registered_at" field.
+func (_u *RobotUpdateOne) SetRegisteredAt(v time.Time) *RobotUpdateOne {
+	_u.mutation.SetRegisteredAt(v)
+	return _u
+}
+
+// SetNillableRegisteredAt sets the "registered_at" field if the given value is not nil.
+func (_u *RobotUpdateOne) SetNillableRegisteredAt(v *time.Time) *RobotUpdateOne {
+	if v != nil {
+		_u.SetRegisteredAt(*v)
+	}
+	return _u
+}
+
+// ClearRegisteredAt clears the value of the "registered_at" field.
+func (_u *RobotUpdateOne) ClearRegisteredAt() *RobotUpdateOne {
+	_u.mutation.ClearRegisteredAt()
+	return _u
+}
+
+// SetLastHeartbeat sets the "last_heartbeat" field.
+func (_u *RobotUpdateOne) SetLastHeartbeat(v time.Time) *RobotUpdateOne {
+	_u.mutation.SetLastHeartbeat(v)
+	return _u
+}
+
+// SetNillableLastHeartbeat sets the "last_heartbeat" field if the given value is not nil.
+func (_u *RobotUpdateOne) SetNillableLastHeartbeat(v *time.Time) *RobotUpdateOne {
+	if v != nil {
+		_u.SetLastHeartbeat(*v)
+	}
+	return _u
+}
+
+// ClearLastHeartbeat clears the value of the "last_heartbeat" field.
+func (_u *RobotUpdateOne) ClearLastHeartbeat() *RobotUpdateOne {
+	_u.mutation.ClearLastHeartbeat()
 	return _u
 }
 
@@ -655,17 +931,53 @@ func (_u *RobotUpdateOne) sqlSave(ctx context.Context) (_node *Robot, err error)
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(robot.FieldTenantID, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.Status(); ok {
-		_spec.SetField(robot.FieldStatus, field.TypeUint, value)
+	if value, ok := _u.mutation.Nickname(); ok {
+		_spec.SetField(robot.FieldNickname, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.AddedStatus(); ok {
-		_spec.AddField(robot.FieldStatus, field.TypeUint, value)
+	if _u.mutation.NicknameCleared() {
+		_spec.ClearField(robot.FieldNickname, field.TypeString)
+	}
+	if value, ok := _u.mutation.Exchange(); ok {
+		_spec.SetField(robot.FieldExchange, field.TypeString, value)
+	}
+	if _u.mutation.ExchangeCleared() {
+		_spec.ClearField(robot.FieldExchange, field.TypeString)
+	}
+	if value, ok := _u.mutation.Version(); ok {
+		_spec.SetField(robot.FieldVersion, field.TypeString, value)
+	}
+	if _u.mutation.VersionCleared() {
+		_spec.ClearField(robot.FieldVersion, field.TypeString)
+	}
+	if value, ok := _u.mutation.Status(); ok {
+		_spec.SetField(robot.FieldStatus, field.TypeString, value)
+	}
+	if _u.mutation.StatusCleared() {
+		_spec.ClearField(robot.FieldStatus, field.TypeString)
 	}
 	if value, ok := _u.mutation.Balance(); ok {
 		_spec.SetField(robot.FieldBalance, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.AddedBalance(); ok {
 		_spec.AddField(robot.FieldBalance, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.InitBalance(); ok {
+		_spec.SetField(robot.FieldInitBalance, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedInitBalance(); ok {
+		_spec.AddField(robot.FieldInitBalance, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.RegisteredAt(); ok {
+		_spec.SetField(robot.FieldRegisteredAt, field.TypeTime, value)
+	}
+	if _u.mutation.RegisteredAtCleared() {
+		_spec.ClearField(robot.FieldRegisteredAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.LastHeartbeat(); ok {
+		_spec.SetField(robot.FieldLastHeartbeat, field.TypeTime, value)
+	}
+	if _u.mutation.LastHeartbeatCleared() {
+		_spec.ClearField(robot.FieldLastHeartbeat, field.TypeTime)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &Robot{config: _u.config}

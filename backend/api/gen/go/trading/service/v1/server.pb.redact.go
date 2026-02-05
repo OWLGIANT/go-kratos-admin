@@ -285,3 +285,23 @@ func (x *GetCanRestartServerListRequest) Redact() string {
 	// Safe field: Operator
 	return x.String()
 }
+
+// Redact method implementation for UpsertServerByIPRequest
+func (x *UpsertServerByIPRequest) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: Ip
+
+	// Safe field: InnerIp
+
+	// Safe field: Port
+
+	// Safe field: Nickname
+
+	// Safe field: MachineId
+
+	// Safe field: ServerInfo
+	return x.String()
+}

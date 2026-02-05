@@ -115,9 +115,8 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	exchangeAccountService := service.NewExchangeAccountService(context, exchangeAccountRepo)
 	serverRepo := data.NewServerRepo(context, entClient)
 	serverService := service.NewServerService(context, serverRepo)
-	hftMarketMakingService := service.NewHftMarketMakingService(context)
 	actorService := service.NewActorService(context)
-	httpServer, err := server.NewRestServer(context, v, authorizer, authenticationService, loginPolicyService, adminPortalService, taskService, uEditorService, fileService, fileTransferService, dictTypeService, dictEntryService, languageService, tenantService, userService, userProfileService, roleService, positionService, orgUnitService, menuService, apiService, permissionService, permissionGroupService, permissionAuditLogService, policyEvaluationLogService, loginAuditLogService, apiAuditLogService, operationAuditLogService, dataAccessAuditLogService, internalMessageService, internalMessageCategoryService, internalMessageRecipientService, exchangeAccountService, serverService, hftMarketMakingService, actorService)
+	httpServer, err := server.NewRestServer(context, v, authorizer, authenticationService, loginPolicyService, adminPortalService, taskService, uEditorService, fileService, fileTransferService, dictTypeService, dictEntryService, languageService, tenantService, userService, userProfileService, roleService, positionService, orgUnitService, menuService, apiService, permissionService, permissionGroupService, permissionAuditLogService, policyEvaluationLogService, loginAuditLogService, apiAuditLogService, operationAuditLogService, dataAccessAuditLogService, internalMessageService, internalMessageCategoryService, internalMessageRecipientService, exchangeAccountService, serverService, actorService)
 	if err != nil {
 		cleanup2()
 		cleanup()
@@ -131,7 +130,7 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	}
 	robotRepo := data.NewRobotRepo(context)
 	robotSyncService := service.NewRobotSyncService(context, robotRepo)
-	webSocketServer := server.NewWebSocketServer(context, authenticator, robotSyncService)
+	webSocketServer := server.NewWebSocketServer(context, authenticator, robotSyncService, serverRepo)
 	app := newApp(context, httpServer, asynqServer, sseServer, webSocketServer, actorService)
 	return app, func() {
 		cleanup2()

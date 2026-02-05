@@ -262,17 +262,9 @@ func (_c *ExchangeAccountCreate) SetNillableIsMulti(v *bool) *ExchangeAccountCre
 	return _c
 }
 
-// SetCombinedID sets the "combined_id" field.
-func (_c *ExchangeAccountCreate) SetCombinedID(v string) *ExchangeAccountCreate {
-	_c.mutation.SetCombinedID(v)
-	return _c
-}
-
-// SetNillableCombinedID sets the "combined_id" field if the given value is not nil.
-func (_c *ExchangeAccountCreate) SetNillableCombinedID(v *string) *ExchangeAccountCreate {
-	if v != nil {
-		_c.SetCombinedID(*v)
-	}
+// SetAccountIds sets the "account_ids" field.
+func (_c *ExchangeAccountCreate) SetAccountIds(v []string) *ExchangeAccountCreate {
+	_c.mutation.SetAccountIds(v)
 	return _c
 }
 
@@ -366,10 +358,6 @@ func (_c *ExchangeAccountCreate) defaults() {
 	if _, ok := _c.mutation.IsMulti(); !ok {
 		v := exchangeaccount.DefaultIsMulti
 		_c.mutation.SetIsMulti(v)
-	}
-	if _, ok := _c.mutation.CombinedID(); !ok {
-		v := exchangeaccount.DefaultCombinedID
-		_c.mutation.SetCombinedID(v)
 	}
 	if _, ok := _c.mutation.MotherID(); !ok {
 		v := exchangeaccount.DefaultMotherID
@@ -561,9 +549,9 @@ func (_c *ExchangeAccountCreate) createSpec() (*ExchangeAccount, *sqlgraph.Creat
 		_spec.SetField(exchangeaccount.FieldIsMulti, field.TypeBool, value)
 		_node.IsMulti = value
 	}
-	if value, ok := _c.mutation.CombinedID(); ok {
-		_spec.SetField(exchangeaccount.FieldCombinedID, field.TypeString, value)
-		_node.CombinedID = &value
+	if value, ok := _c.mutation.AccountIds(); ok {
+		_spec.SetField(exchangeaccount.FieldAccountIds, field.TypeJSON, value)
+		_node.AccountIds = value
 	}
 	if value, ok := _c.mutation.MotherID(); ok {
 		_spec.SetField(exchangeaccount.FieldMotherID, field.TypeUint32, value)
@@ -951,21 +939,21 @@ func (u *ExchangeAccountUpsert) UpdateIsMulti() *ExchangeAccountUpsert {
 	return u
 }
 
-// SetCombinedID sets the "combined_id" field.
-func (u *ExchangeAccountUpsert) SetCombinedID(v string) *ExchangeAccountUpsert {
-	u.Set(exchangeaccount.FieldCombinedID, v)
+// SetAccountIds sets the "account_ids" field.
+func (u *ExchangeAccountUpsert) SetAccountIds(v []string) *ExchangeAccountUpsert {
+	u.Set(exchangeaccount.FieldAccountIds, v)
 	return u
 }
 
-// UpdateCombinedID sets the "combined_id" field to the value that was provided on create.
-func (u *ExchangeAccountUpsert) UpdateCombinedID() *ExchangeAccountUpsert {
-	u.SetExcluded(exchangeaccount.FieldCombinedID)
+// UpdateAccountIds sets the "account_ids" field to the value that was provided on create.
+func (u *ExchangeAccountUpsert) UpdateAccountIds() *ExchangeAccountUpsert {
+	u.SetExcluded(exchangeaccount.FieldAccountIds)
 	return u
 }
 
-// ClearCombinedID clears the value of the "combined_id" field.
-func (u *ExchangeAccountUpsert) ClearCombinedID() *ExchangeAccountUpsert {
-	u.SetNull(exchangeaccount.FieldCombinedID)
+// ClearAccountIds clears the value of the "account_ids" field.
+func (u *ExchangeAccountUpsert) ClearAccountIds() *ExchangeAccountUpsert {
+	u.SetNull(exchangeaccount.FieldAccountIds)
 	return u
 }
 
@@ -1429,24 +1417,24 @@ func (u *ExchangeAccountUpsertOne) UpdateIsMulti() *ExchangeAccountUpsertOne {
 	})
 }
 
-// SetCombinedID sets the "combined_id" field.
-func (u *ExchangeAccountUpsertOne) SetCombinedID(v string) *ExchangeAccountUpsertOne {
+// SetAccountIds sets the "account_ids" field.
+func (u *ExchangeAccountUpsertOne) SetAccountIds(v []string) *ExchangeAccountUpsertOne {
 	return u.Update(func(s *ExchangeAccountUpsert) {
-		s.SetCombinedID(v)
+		s.SetAccountIds(v)
 	})
 }
 
-// UpdateCombinedID sets the "combined_id" field to the value that was provided on create.
-func (u *ExchangeAccountUpsertOne) UpdateCombinedID() *ExchangeAccountUpsertOne {
+// UpdateAccountIds sets the "account_ids" field to the value that was provided on create.
+func (u *ExchangeAccountUpsertOne) UpdateAccountIds() *ExchangeAccountUpsertOne {
 	return u.Update(func(s *ExchangeAccountUpsert) {
-		s.UpdateCombinedID()
+		s.UpdateAccountIds()
 	})
 }
 
-// ClearCombinedID clears the value of the "combined_id" field.
-func (u *ExchangeAccountUpsertOne) ClearCombinedID() *ExchangeAccountUpsertOne {
+// ClearAccountIds clears the value of the "account_ids" field.
+func (u *ExchangeAccountUpsertOne) ClearAccountIds() *ExchangeAccountUpsertOne {
 	return u.Update(func(s *ExchangeAccountUpsert) {
-		s.ClearCombinedID()
+		s.ClearAccountIds()
 	})
 }
 
@@ -2080,24 +2068,24 @@ func (u *ExchangeAccountUpsertBulk) UpdateIsMulti() *ExchangeAccountUpsertBulk {
 	})
 }
 
-// SetCombinedID sets the "combined_id" field.
-func (u *ExchangeAccountUpsertBulk) SetCombinedID(v string) *ExchangeAccountUpsertBulk {
+// SetAccountIds sets the "account_ids" field.
+func (u *ExchangeAccountUpsertBulk) SetAccountIds(v []string) *ExchangeAccountUpsertBulk {
 	return u.Update(func(s *ExchangeAccountUpsert) {
-		s.SetCombinedID(v)
+		s.SetAccountIds(v)
 	})
 }
 
-// UpdateCombinedID sets the "combined_id" field to the value that was provided on create.
-func (u *ExchangeAccountUpsertBulk) UpdateCombinedID() *ExchangeAccountUpsertBulk {
+// UpdateAccountIds sets the "account_ids" field to the value that was provided on create.
+func (u *ExchangeAccountUpsertBulk) UpdateAccountIds() *ExchangeAccountUpsertBulk {
 	return u.Update(func(s *ExchangeAccountUpsert) {
-		s.UpdateCombinedID()
+		s.UpdateAccountIds()
 	})
 }
 
-// ClearCombinedID clears the value of the "combined_id" field.
-func (u *ExchangeAccountUpsertBulk) ClearCombinedID() *ExchangeAccountUpsertBulk {
+// ClearAccountIds clears the value of the "account_ids" field.
+func (u *ExchangeAccountUpsertBulk) ClearAccountIds() *ExchangeAccountUpsertBulk {
 	return u.Update(func(s *ExchangeAccountUpsert) {
-		s.ClearCombinedID()
+		s.ClearAccountIds()
 	})
 }
 

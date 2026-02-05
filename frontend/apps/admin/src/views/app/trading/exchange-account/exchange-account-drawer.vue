@@ -2,14 +2,13 @@
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
-import { $t } from '@vben/locales';
 
 import { notification } from 'ant-design-vue';
 
 import { useVbenForm, z } from '#/adapter/form';
-import { useExchangeAccountStore } from '#/stores/exchange-account.state';
+import { useExchangeAccountStore, accountTypeList } from '#/stores/exchange-account.state';
 
-const exchangeAccountStore = useExchangeAccountStore();
+const accountStore = useExchangeAccountStore();
 
 const data = ref();
 
@@ -28,7 +27,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'nickname',
-      label: '账号昵称',
+      label: '昵称',
       componentProps: {
         placeholder: '请输入账号昵称',
         allowClear: true,
@@ -38,7 +37,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'exchangeName',
-      label: '交易所名称',
+      label: '交易所',
       componentProps: {
         placeholder: '请输入交易所名称',
         allowClear: true,
@@ -66,22 +65,24 @@ const [BaseForm, baseFormApi] = useVbenForm({
       rules: z.string().min(1, { message: '请输入API Key' }),
     },
     {
-      component: 'InputPassword',
+      component: 'Input',
       fieldName: 'secretKey',
       label: 'Secret Key',
       componentProps: {
         placeholder: '请输入Secret Key',
         allowClear: true,
+        type: 'password',
       },
       rules: z.string().min(1, { message: '请输入Secret Key' }),
     },
     {
-      component: 'InputPassword',
+      component: 'Input',
       fieldName: 'passKey',
       label: 'Pass Key',
       componentProps: {
         placeholder: '请输入Pass Key（可选）',
         allowClear: true,
+        type: 'password',
       },
     },
     {
@@ -97,33 +98,29 @@ const [BaseForm, baseFormApi] = useVbenForm({
       component: 'Select',
       fieldName: 'accountType',
       label: '账号类型',
-      defaultValue: 1,
+      defaultValue: 'ACCOUNT_TYPE_SELF_BUILT',
       componentProps: {
         placeholder: '请选择账号类型',
-        options: [
-          { label: '自建', value: 1 },
-          { label: '平台', value: 2 },
-        ],
-      },
-      rules: 'selectRequired',
-    },
-    {
-      component: 'InputNumber',
-      fieldName: 'specialReqLimit',
-      label: '特殊限频',
-      defaultValue: 0,
-      componentProps: {
-        placeholder: '请输入特殊限频',
-        min: 0,
+        options: accountTypeList.value,
       },
     },
     {
       component: 'Input',
       fieldName: 'serverIps',
-      label: '绑定托管者IP',
+      label: '绑定IP',
       componentProps: {
-        placeholder: '多个IP用逗号分隔',
+        placeholder: '请输入绑定的托管者IP（逗号分隔）',
         allowClear: true,
+      },
+    },
+    {
+      component: 'InputNumber',
+      fieldName: 'specialReqLimit',
+      label: '特殊限频',
+      componentProps: {
+        placeholder: '请输入特殊限频',
+        min: 0,
+        style: { width: '100%' },
       },
     },
     {
@@ -131,7 +128,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       fieldName: 'remark',
       label: '备注',
       componentProps: {
-        placeholder: '请输入备注',
+        placeholder: '请输入备注（可选）',
         rows: 3,
       },
     },
@@ -155,8 +152,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     try {
       await (data.value?.create
-        ? exchangeAccountStore.createExchangeAccount(values)
-        : exchangeAccountStore.updateExchangeAccount(data.value.row.id, values));
+        ? accountStore.createAccount(values)
+        : accountStore.updateAccount(data.value.row.id, values));
 
       notification.success({
         message: data.value?.create ? '创建成功' : '更新成功',

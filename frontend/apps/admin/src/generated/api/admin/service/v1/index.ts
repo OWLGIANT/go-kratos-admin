@@ -99,367 +99,6 @@ export type AdminErrorReason =
   | "NETWORK_READ_TIMEOUT_ERROR"
   // 599
   | "NETWORK_CONNECT_TIMEOUT_ERROR";
-// Actor 管理服务
-export interface ActorService {
-  // 获取 Actor 列表
-  ListActor(request: pagination_PagingRequest): Promise<tradingservicev1_ListActorResponse>;
-  // 获取 Actor
-  GetActor(request: tradingservicev1_GetActorRequest): Promise<tradingservicev1_Actor>;
-}
-
-type RequestType = {
-  path: string;
-  method: string;
-  body: string | null;
-};
-
-type RequestHandler = (request: RequestType, meta: { service: string, method: string }) => Promise<unknown>;
-
-export function createActorServiceClient(
-  handler: RequestHandler
-): ActorService {
-  return {
-    ListActor(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/trading/actors`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.offset) {
-        queryParams.push(`offset=${encodeURIComponent(request.offset.toString())}`)
-      }
-      if (request.limit) {
-        queryParams.push(`limit=${encodeURIComponent(request.limit.toString())}`)
-      }
-      if (request.token) {
-        queryParams.push(`token=${encodeURIComponent(request.token.toString())}`)
-      }
-      if (request.noPaging) {
-        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
-      }
-      if (request.query) {
-        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
-      }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
-      }
-      if (request.filterExpr?.type) {
-        queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
-      }
-      if (request.filterExpr?.conditions?.field) {
-        queryParams.push(`filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`)
-      }
-      if (request.filterExpr?.conditions?.op) {
-        queryParams.push(`filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`)
-      }
-      if (request.filterExpr?.conditions?.value) {
-        queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
-      }
-      if (request.filterExpr?.conditions?.jsonValue) {
-        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
-      }
-      if (request.filterExpr?.conditions?.values) {
-        request.filterExpr.conditions.values.forEach((x) => {
-          queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.filterExpr?.conditions?.datePart) {
-        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
-      }
-      if (request.filterExpr?.conditions?.jsonPath) {
-        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
-      }
-      if (request.orderBy) {
-        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.direction) {
-        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
-      }
-      if (request.fieldMask) {
-        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "ActorService",
-        method: "ListActor",
-      }) as Promise<tradingservicev1_ListActorResponse>;
-    },
-    GetActor(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.robotId) {
-        throw new Error("missing required field request.robot_id");
-      }
-      const path = `admin/v1/trading/actors/${request.robotId}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "ActorService",
-        method: "GetActor",
-      }) as Promise<tradingservicev1_Actor>;
-    },
-  };
-}
-// ------------------------------
-// 分页通用请求
-// ------------------------------
-export type pagination_PagingRequest = {
-  // 当前页码（从1开始，默认1）
-  page?: number;
-  // 每页条数（默认10，建议设置上限如100）
-  pageSize?: number;
-  // 跳过的记录数（从0开始，默认0）
-  offset?: number;
-  // 最多返回的记录数（默认10，建议设置上限如100）
-  limit?: number;
-  // 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
-  token?: string;
-  // 是否不分页，如果为true，则page和pageSize参数无效。
-  noPaging?: boolean;
-  // JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
-  query?: string;
-  // Google AIP规范字符串过滤条件
-  filter?: string;
-  // 复杂过滤表达式（优先使用）
-  filterExpr?: pagination_FilterExpr;
-  // 排序条件
-  orderBy?: string;
-  // 排序规则
-  sorting: pagination_Sorting[] | undefined;
-  // 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
-  fieldMask?: wellKnownFieldMask;
-};
-
-// 过滤表达式
-export type pagination_FilterExpr = {
-  // 过滤表达式类型
-  type: pagination_ExprType | undefined;
-  // 条件列表
-  conditions: pagination_FilterCondition[] | undefined;
-  // 子表达式列表
-  groups: pagination_FilterExpr[] | undefined;
-};
-
-// 过滤表达式类型
-export type pagination_ExprType =
-  | "EXPR_TYPE_UNSPECIFIED"
-  | "AND"
-  | "OR";
-// 过滤条件
-export type pagination_FilterCondition = {
-  // 过滤字段名
-  field: string | undefined;
-  // 过滤操作符
-  op: pagination_Operator | undefined;
-  // 过滤值（单值）
-  value?: string;
-  // 当需要使用非字符串类型的比较值（对象/数组/数字/布尔）时使用此字段，
-  // 使用 google.protobuf.Value 能表达任意 JSON 值。
-  jsonValue?: wellKnownValue;
-  // 过滤值（多值，如IN操作符）
-  values: string[] | undefined;
-  // 日期时间部分（可选，仅在字段为日期时间类型时使用）
-  datePart?: pagination_DatePart;
-  // 当字段为 JSON/JSONB 类型时，可指定要抽取的子路径（例如: "meta.user.name" 或 JSONPath）
-  // 服务端应把此路径用于 JSON_EXTRACT / -> 操作，再对抽取结果应用 op。
-  jsonPath?: string;
-};
-
-// 操作符枚举
-export type pagination_Operator =
-  // 未指定
-  | "OPERATOR_UNSPECIFIED"
-  // 基本比较
-  | "EQ"
-  | "NEQ"
-  | "GT"
-  | "GTE"
-  | "LT"
-  | "LTE"
-  // 模糊 / 大小写不敏感模糊 / 非模糊
-  | "LIKE"
-  | "ILIKE"
-  | "NOT_LIKE"
-  // 集合操作
-  | "IN"
-  | "NIN"
-  // 空值判断
-  | "IS_NULL"
-  | "IS_NOT_NULL"
-  // 范围与正则
-  | "BETWEEN"
-  | "REGEXP"
-  | "IREGEXP"
-  // 语义化的字符串操作
-  | "CONTAINS"
-  | "STARTS_WITH"
-  | "ENDS_WITH"
-  | "ICONTAINS"
-  | "ISTARTS_WITH"
-  | "IENDS_WITH"
-  // JSON / 数组 / 集合相关（按需在服务端映射为具体 DB 运算）
-  | "JSON_CONTAINS"
-  | "ARRAY_CONTAINS"
-  | "EXISTS"
-  | "SEARCH"
-  | "EXACT"
-  | "IEXACT";
-type wellKnownValue = unknown;
-
-// 日期时间部分枚举
-export type pagination_DatePart =
-  | "DATE_PART_UNSPECIFIED"
-  | "DATE"
-  | "YEAR"
-  | "ISO_YEAR"
-  | "QUARTER"
-  | "MONTH"
-  | "WEEK"
-  | "WEEK_DAY"
-  | "ISO_WEEK_DAY"
-  | "DAY"
-  | "TIME"
-  | "HOUR"
-  | "MINUTE"
-  | "SECOND"
-  | "MICROSECOND";
-// 排序规则（分页场景通常需配合排序保证结果稳定）
-export type pagination_Sorting = {
-  // 排序字段（如"id"、"create_time"）
-  field: string | undefined;
-  // 排序方向
-  direction: pagination_Sorting_Direction | undefined;
-};
-
-// 排序方向（ASC/DESC，默认ASC）
-export type pagination_Sorting_Direction =
-  | "ASC"
-  | "DESC";
-// In JSON, a field mask is encoded as a single string where paths are
-// separated by a comma. Fields name in each path are converted
-// to/from lower-camel naming conventions.
-// As an example, consider the following message declarations:
-//
-//     message Profile {
-//       User user = 1;
-//       Photo photo = 2;
-//     }
-//     message User {
-//       string display_name = 1;
-//       string address = 2;
-//     }
-//
-// In proto a field mask for `Profile` may look as such:
-//
-//     mask {
-//       paths: "user.display_name"
-//       paths: "photo"
-//     }
-//
-// In JSON, the same mask is represented as below:
-//
-//     {
-//       mask: "user.displayName,photo"
-//     }
-type wellKnownFieldMask = string;
-
-// 获取 Actor 列表响应
-export type tradingservicev1_ListActorResponse = {
-  // 总数
-  total: number | undefined;
-  // Actor 列表
-  items: tradingservicev1_Actor[] | undefined;
-};
-
-// Actor 信息
-export type tradingservicev1_Actor = {
-  // 客户端ID
-  clientId: string | undefined;
-  // 机器人ID
-  robotId: string | undefined;
-  // 交易所
-  exchange: string | undefined;
-  // 版本
-  version: string | undefined;
-  // 租户ID
-  tenantId: number | undefined;
-  // 状态
-  status: string | undefined;
-  // 余额
-  balance: number | undefined;
-  // 注册时间
-  registeredAt: wellKnownTimestamp | undefined;
-  // 最后心跳时间
-  lastHeartbeat: wellKnownTimestamp | undefined;
-  // 服务器状态信息
-  serverInfo: tradingservicev1_ServerStatusInfo | undefined;
-  // 外网IP
-  ip: string | undefined;
-  // 内网IP
-  innerIp: string | undefined;
-  // 端口
-  port: string | undefined;
-  // 机器ID
-  machineId: string | undefined;
-  // 昵称
-  nickname: string | undefined;
-};
-
-// Encoded using RFC 3339, where generated output will always be Z-normalized
-// and uses 0, 3, 6 or 9 fractional digits.
-// Offsets other than "Z" are also accepted.
-type wellKnownTimestamp = string;
-
-// 服务器状态信息
-export type tradingservicev1_ServerStatusInfo = {
-  // CPU信息
-  cpu: string | undefined;
-  // IP池
-  ipPool: number | undefined;
-  // 内存
-  mem: number | undefined;
-  // 内存百分比
-  memPct: string | undefined;
-  // 磁盘百分比
-  diskPct: string | undefined;
-  // 任务数
-  taskNum: number | undefined;
-  // 策略版本
-  straVersion: boolean | undefined;
-  // 策略版本详情
-  straVersionDetail: { [key: string]: string } | undefined;
-  // AWS账户
-  awsAcct: string | undefined;
-  // AWS区域
-  awsZone: string | undefined;
-};
-
-// 获取 Actor 请求
-export type tradingservicev1_GetActorRequest = {
-  // 机器人ID
-  robotId: string | undefined;
-};
-
 // 查询路由列表 - 回应
 export type ListRouteResponse = {
   items: permissionservicev1_MenuRouteItem[] | undefined;
@@ -580,6 +219,14 @@ export interface AdminPortalService {
   // 一次性获取进入后台所需的所有上下文
   GetInitialContext(request: wellKnownEmpty): Promise<InitialContextResponse>;
 }
+
+type RequestType = {
+  path: string;
+  method: string;
+  body: string | null;
+};
+
+type RequestHandler = (request: RequestType, meta: { service: string, method: string }) => Promise<unknown>;
 
 export function createAdminPortalServiceClient(
   handler: RequestHandler
@@ -858,6 +505,169 @@ export function createApiServiceClient(
     },
   };
 }
+// ------------------------------
+// 分页通用请求
+// ------------------------------
+export type pagination_PagingRequest = {
+  // 当前页码（从1开始，默认1）
+  page?: number;
+  // 每页条数（默认10，建议设置上限如100）
+  pageSize?: number;
+  // 跳过的记录数（从0开始，默认0）
+  offset?: number;
+  // 最多返回的记录数（默认10，建议设置上限如100）
+  limit?: number;
+  // 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+  token?: string;
+  // 是否不分页，如果为true，则page和pageSize参数无效。
+  noPaging?: boolean;
+  // JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+  query?: string;
+  // Google AIP规范字符串过滤条件
+  filter?: string;
+  // 复杂过滤表达式（优先使用）
+  filterExpr?: pagination_FilterExpr;
+  // 排序条件
+  orderBy?: string;
+  // 排序规则
+  sorting: pagination_Sorting[] | undefined;
+  // 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+  fieldMask?: wellKnownFieldMask;
+};
+
+// 过滤表达式
+export type pagination_FilterExpr = {
+  // 过滤表达式类型
+  type: pagination_ExprType | undefined;
+  // 条件列表
+  conditions: pagination_FilterCondition[] | undefined;
+  // 子表达式列表
+  groups: pagination_FilterExpr[] | undefined;
+};
+
+// 过滤表达式类型
+export type pagination_ExprType =
+  | "EXPR_TYPE_UNSPECIFIED"
+  | "AND"
+  | "OR";
+// 过滤条件
+export type pagination_FilterCondition = {
+  // 过滤字段名
+  field: string | undefined;
+  // 过滤操作符
+  op: pagination_Operator | undefined;
+  // 过滤值（单值）
+  value?: string;
+  // 当需要使用非字符串类型的比较值（对象/数组/数字/布尔）时使用此字段，
+  // 使用 google.protobuf.Value 能表达任意 JSON 值。
+  jsonValue?: wellKnownValue;
+  // 过滤值（多值，如IN操作符）
+  values: string[] | undefined;
+  // 日期时间部分（可选，仅在字段为日期时间类型时使用）
+  datePart?: pagination_DatePart;
+  // 当字段为 JSON/JSONB 类型时，可指定要抽取的子路径（例如: "meta.user.name" 或 JSONPath）
+  // 服务端应把此路径用于 JSON_EXTRACT / -> 操作，再对抽取结果应用 op。
+  jsonPath?: string;
+};
+
+// 操作符枚举
+export type pagination_Operator =
+  // 未指定
+  | "OPERATOR_UNSPECIFIED"
+  // 基本比较
+  | "EQ"
+  | "NEQ"
+  | "GT"
+  | "GTE"
+  | "LT"
+  | "LTE"
+  // 模糊 / 大小写不敏感模糊 / 非模糊
+  | "LIKE"
+  | "ILIKE"
+  | "NOT_LIKE"
+  // 集合操作
+  | "IN"
+  | "NIN"
+  // 空值判断
+  | "IS_NULL"
+  | "IS_NOT_NULL"
+  // 范围与正则
+  | "BETWEEN"
+  | "REGEXP"
+  | "IREGEXP"
+  // 语义化的字符串操作
+  | "CONTAINS"
+  | "STARTS_WITH"
+  | "ENDS_WITH"
+  | "ICONTAINS"
+  | "ISTARTS_WITH"
+  | "IENDS_WITH"
+  // JSON / 数组 / 集合相关（按需在服务端映射为具体 DB 运算）
+  | "JSON_CONTAINS"
+  | "ARRAY_CONTAINS"
+  | "EXISTS"
+  | "SEARCH"
+  | "EXACT"
+  | "IEXACT";
+type wellKnownValue = unknown;
+
+// 日期时间部分枚举
+export type pagination_DatePart =
+  | "DATE_PART_UNSPECIFIED"
+  | "DATE"
+  | "YEAR"
+  | "ISO_YEAR"
+  | "QUARTER"
+  | "MONTH"
+  | "WEEK"
+  | "WEEK_DAY"
+  | "ISO_WEEK_DAY"
+  | "DAY"
+  | "TIME"
+  | "HOUR"
+  | "MINUTE"
+  | "SECOND"
+  | "MICROSECOND";
+// 排序规则（分页场景通常需配合排序保证结果稳定）
+export type pagination_Sorting = {
+  // 排序字段（如"id"、"create_time"）
+  field: string | undefined;
+  // 排序方向
+  direction: pagination_Sorting_Direction | undefined;
+};
+
+// 排序方向（ASC/DESC，默认ASC）
+export type pagination_Sorting_Direction =
+  | "ASC"
+  | "DESC";
+// In JSON, a field mask is encoded as a single string where paths are
+// separated by a comma. Fields name in each path are converted
+// to/from lower-camel naming conventions.
+// As an example, consider the following message declarations:
+//
+//     message Profile {
+//       User user = 1;
+//       Photo photo = 2;
+//     }
+//     message User {
+//       string display_name = 1;
+//       string address = 2;
+//     }
+//
+// In proto a field mask for `Profile` may look as such:
+//
+//     mask {
+//       paths: "user.display_name"
+//       paths: "photo"
+//     }
+//
+// In JSON, the same mask is represented as below:
+//
+//     {
+//       mask: "user.displayName,photo"
+//     }
+type wellKnownFieldMask = string;
+
 // 查询列表 - 回应
 export type permissionservicev1_ListApiResponse = {
   items: permissionservicev1_Api[] | undefined;
@@ -892,6 +702,11 @@ export type permissionservicev1_Api_Scope =
 export type permissionservicev1_Api_Status =
   | "OFF"
   | "ON";
+// Encoded using RFC 3339, where generated output will always be Z-normalized
+// and uses 0, 3, 6 or 9 fractional digits.
+// Offsets other than "Z" are also accepted.
+type wellKnownTimestamp = string;
+
 // 查询 - 请求
 export type permissionservicev1_GetApiRequest = {
   id?: number;
@@ -2865,391 +2680,6 @@ export type fileservicev1_UEditorUploadResponse_Item = {
   original?: string;
   type?: string;
   size?: number;
-};
-
-// 高频做市管理服务
-export interface HftMarketMakingService {
-  // 获取 MidSigExec 订单列表
-  ListMidSigExecOrders(request: tradingservicev1_ListMidSigExecOrdersRequest): Promise<tradingservicev1_ListMidSigExecOrdersResponse>;
-  // 获取 MidSigExec 信号列表
-  ListMidSigExecSignals(request: tradingservicev1_ListMidSigExecSignalsRequest): Promise<tradingservicev1_ListMidSigExecSignalsResponse>;
-  // 获取 MidSigExec 结果列表
-  ListMidSigExecDetails(request: tradingservicev1_ListMidSigExecDetailsRequest): Promise<tradingservicev1_ListMidSigExecDetailsResponse>;
-  // 获取 HFT 信息
-  GetHftInfo(request: tradingservicev1_GetHftInfoRequest): Promise<tradingservicev1_GetHftInfoResponse>;
-  // 下载 MidSigExec 信息
-  DownloadMidSigExec(request: tradingservicev1_DownloadMidSigExecRequest): Promise<tradingservicev1_DownloadMidSigExecResponse>;
-  // 获取 HFT 通知报告
-  GetHftNotifyReport(request: tradingservicev1_GetHftNotifyReportRequest): Promise<tradingservicev1_HftNotifyReport>;
-}
-
-export function createHftMarketMakingServiceClient(
-  handler: RequestHandler
-): HftMarketMakingService {
-  return {
-    ListMidSigExecOrders(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/trading/hft/midsigexec/orders`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "HftMarketMakingService",
-        method: "ListMidSigExecOrders",
-      }) as Promise<tradingservicev1_ListMidSigExecOrdersResponse>;
-    },
-    ListMidSigExecSignals(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/trading/hft/midsigexec/signals`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "HftMarketMakingService",
-        method: "ListMidSigExecSignals",
-      }) as Promise<tradingservicev1_ListMidSigExecSignalsResponse>;
-    },
-    ListMidSigExecDetails(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/trading/hft/midsigexec/details`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "HftMarketMakingService",
-        method: "ListMidSigExecDetails",
-      }) as Promise<tradingservicev1_ListMidSigExecDetailsResponse>;
-    },
-    GetHftInfo(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/trading/hft/info`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "HftMarketMakingService",
-        method: "GetHftInfo",
-      }) as Promise<tradingservicev1_GetHftInfoResponse>;
-    },
-    DownloadMidSigExec(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/trading/hft/midsigexec/download`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "HftMarketMakingService",
-        method: "DownloadMidSigExec",
-      }) as Promise<tradingservicev1_DownloadMidSigExecResponse>;
-    },
-    GetHftNotifyReport(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/trading/hft/notify-report`; // eslint-disable-line quotes
-      const body = JSON.stringify(request);
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "POST",
-        body,
-      }, {
-        service: "HftMarketMakingService",
-        method: "GetHftNotifyReport",
-      }) as Promise<tradingservicev1_HftNotifyReport>;
-    },
-  };
-}
-// 获取 MidSigExec 订单列表请求
-export type tradingservicev1_ListMidSigExecOrdersRequest = {
-  // 机器人ID
-  robotId: string | undefined;
-  // 开始时间
-  startTime: number | undefined;
-  // 结束时间
-  endTime: number | undefined;
-  // 交易对
-  symbol?: string;
-  // 页码
-  page: number | undefined;
-  // 每页数量
-  pageSize: number | undefined;
-};
-
-// 获取 MidSigExec 订单列表响应
-export type tradingservicev1_ListMidSigExecOrdersResponse = {
-  // 总数
-  total: number | undefined;
-  // 订单列表
-  items: tradingservicev1_MidSigExecOrder[] | undefined;
-};
-
-// MidSigExec 订单
-export type tradingservicev1_MidSigExecOrder = {
-  // 订单ID
-  orderId: string | undefined;
-  // 机器人ID
-  robotId: string | undefined;
-  // 交易对
-  symbol: string | undefined;
-  // 订单方向（buy/sell）
-  side: string | undefined;
-  // 订单类型
-  orderType: string | undefined;
-  // 价格
-  price: number | undefined;
-  // 数量
-  quantity: number | undefined;
-  // 成交数量
-  filledQuantity: number | undefined;
-  // 订单状态
-  status: string | undefined;
-  // 创建时间
-  createTime: wellKnownTimestamp | undefined;
-  // 更新时间
-  updateTime: wellKnownTimestamp | undefined;
-};
-
-// 获取 MidSigExec 信号列表请求
-export type tradingservicev1_ListMidSigExecSignalsRequest = {
-  // 机器人ID
-  robotId: string | undefined;
-  // 开始时间
-  startTime: number | undefined;
-  // 结束时间
-  endTime: number | undefined;
-  // 交易对
-  symbol?: string;
-  // 页码
-  page: number | undefined;
-  // 每页数量
-  pageSize: number | undefined;
-};
-
-// 获取 MidSigExec 信号列表响应
-export type tradingservicev1_ListMidSigExecSignalsResponse = {
-  // 总数
-  total: number | undefined;
-  // 信号列表
-  items: tradingservicev1_MidSigExecSignal[] | undefined;
-};
-
-// MidSigExec 信号
-export type tradingservicev1_MidSigExecSignal = {
-  // 信号ID
-  signalId: string | undefined;
-  // 机器人ID
-  robotId: string | undefined;
-  // 交易对
-  symbol: string | undefined;
-  // 信号类型
-  signalType: string | undefined;
-  // 信号强度
-  signalStrength: number | undefined;
-  // 价格
-  price: number | undefined;
-  // 数量
-  quantity: number | undefined;
-  // 创建时间
-  createTime: wellKnownTimestamp | undefined;
-};
-
-// 获取 MidSigExec 结果列表请求
-export type tradingservicev1_ListMidSigExecDetailsRequest = {
-  // 机器人ID
-  robotId: string | undefined;
-  // 开始时间
-  startTime: number | undefined;
-  // 结束时间
-  endTime: number | undefined;
-  // 页码
-  page: number | undefined;
-  // 每页数量
-  pageSize: number | undefined;
-};
-
-// 获取 MidSigExec 结果列表响应
-export type tradingservicev1_ListMidSigExecDetailsResponse = {
-  // 总数
-  total: number | undefined;
-  // 结果列表
-  items: tradingservicev1_MidSigExecDetail[] | undefined;
-};
-
-// MidSigExec 结果详情
-export type tradingservicev1_MidSigExecDetail = {
-  // 详情ID
-  detailId: string | undefined;
-  // 机器人ID
-  robotId: string | undefined;
-  // 交易对
-  symbol: string | undefined;
-  // 总收益
-  totalProfit: number | undefined;
-  // 总交易次数
-  totalTrades: number | undefined;
-  // 胜率
-  winRate: number | undefined;
-  // 平均收益
-  avgProfit: number | undefined;
-  // 最大回撤
-  maxDrawdown: number | undefined;
-  // 统计时间
-  statTime: wellKnownTimestamp | undefined;
-};
-
-// 获取 HFT 信息请求
-export type tradingservicev1_GetHftInfoRequest = {
-  // 机器人ID
-  robotId?: string;
-  // 策略类型
-  strategyType?: tradingservicev1_HftStrategyType;
-  // 操作员
-  operator?: string;
-};
-
-// HFT策略类型
-export type tradingservicev1_HftStrategyType =
-  | "HFT_STRATEGY_TYPE_UNSPECIFIED"
-  | "HFT_STRATEGY_TYPE_DINO"
-  | "HFT_STRATEGY_TYPE_CAT"
-  | "HFT_STRATEGY_TYPE_TREX"
-  | "HFT_STRATEGY_TYPE_TIGER";
-// 获取 HFT 信息响应
-export type tradingservicev1_GetHftInfoResponse = {
-  // HFT 信息列表
-  items: tradingservicev1_HftInfo[] | undefined;
-  // 总权益
-  totalEquity: number | undefined;
-  // 总收益
-  totalProfit: number | undefined;
-  // 总收益率
-  totalProfitPct: number | undefined;
-};
-
-// HFT 信息
-export type tradingservicev1_HftInfo = {
-  // 机器人ID
-  robotId: string | undefined;
-  // 策略类型
-  strategyType: tradingservicev1_HftStrategyType | undefined;
-  // 账号昵称
-  accountNickname: string | undefined;
-  // 交易对
-  symbol: string | undefined;
-  // 当前权益
-  currentEquity: number | undefined;
-  // 初始权益
-  initialEquity: number | undefined;
-  // 权益变化
-  equityChange: number | undefined;
-  // 权益变化百分比
-  equityChangePct: number | undefined;
-  // 今日收益
-  todayProfit: number | undefined;
-  // 今日收益率
-  todayProfitPct: number | undefined;
-  // 运行状态
-  status: string | undefined;
-  // 最后更新时间
-  lastUpdateTime: wellKnownTimestamp | undefined;
-};
-
-// 下载 MidSigExec 信息请求
-export type tradingservicev1_DownloadMidSigExecRequest = {
-  // 机器人ID
-  robotId: string | undefined;
-  // 开始时间
-  startTime: number | undefined;
-  // 结束时间
-  endTime: number | undefined;
-  // 数据类型（orders/signals/details）
-  dataType: string | undefined;
-};
-
-// 下载 MidSigExec 信息响应
-export type tradingservicev1_DownloadMidSigExecResponse = {
-  // 文件URL
-  fileUrl: string | undefined;
-  // 文件名
-  fileName: string | undefined;
-};
-
-// 获取 HFT 通知报告请求
-export type tradingservicev1_GetHftNotifyReportRequest = {
-  // 开始时间
-  startTime: number | undefined;
-  // 结束时间
-  endTime: number | undefined;
-};
-
-// HFT 通知报告
-export type tradingservicev1_HftNotifyReport = {
-  // 报告ID
-  reportId: string | undefined;
-  // BTC价格
-  btcPrice: number | undefined;
-  // 交易员权益变化列表
-  traderEquityChanges: tradingservicev1_TraderEquityChange[] | undefined;
-  // 交易对盈利统计
-  symbolProfitStats: tradingservicev1_SymbolProfitStat[] | undefined;
-  // 生成时间
-  generateTime: wellKnownTimestamp | undefined;
-};
-
-// 交易员权益变化
-export type tradingservicev1_TraderEquityChange = {
-  // 交易员名称
-  traderName: string | undefined;
-  // 当前权益
-  currentEquity: number | undefined;
-  // 权益变化
-  equityChange: number | undefined;
-  // 权益变化百分比
-  equityChangePct: number | undefined;
-};
-
-// 交易对盈利统计
-export type tradingservicev1_SymbolProfitStat = {
-  // 交易对
-  symbol: string | undefined;
-  // 总收益
-  totalProfit: number | undefined;
-  // 交易次数
-  tradeCount: number | undefined;
-  // 胜率
-  winRate: number | undefined;
 };
 
 // 站内信消息管理服务
@@ -6358,6 +5788,260 @@ export type userservicev1_DeletePositionRequest = {
   id: number | undefined;
 };
 
+// Robot 管理服务
+export interface RobotService {
+  // 获取 Robot 列表
+  ListRobot(request: pagination_PagingRequest): Promise<tradingservicev1_ListRobotResponse>;
+  // 获取 Robot
+  GetRobot(request: tradingservicev1_GetRobotRequest): Promise<tradingservicev1_Robot>;
+  // 创建 Robot
+  CreateRobot(request: tradingservicev1_CreateRobotRequest): Promise<wellKnownEmpty>;
+  // 更新 Robot
+  UpdateRobot(request: tradingservicev1_UpdateRobotRequest): Promise<wellKnownEmpty>;
+  // 删除 Robot
+  DeleteRobot(request: tradingservicev1_DeleteRobotRequest): Promise<wellKnownEmpty>;
+}
+
+export function createRobotServiceClient(
+  handler: RequestHandler
+): RobotService {
+  return {
+    ListRobot(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/robots`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
+      }
+      if (request.pageSize) {
+        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
+      }
+      if (request.offset) {
+        queryParams.push(`offset=${encodeURIComponent(request.offset.toString())}`)
+      }
+      if (request.limit) {
+        queryParams.push(`limit=${encodeURIComponent(request.limit.toString())}`)
+      }
+      if (request.token) {
+        queryParams.push(`token=${encodeURIComponent(request.token.toString())}`)
+      }
+      if (request.noPaging) {
+        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
+      }
+      if (request.query) {
+        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
+      }
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(`filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(`filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(`filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(`filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
+      }
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
+      }
+      if (request.fieldMask) {
+        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "RobotService",
+        method: "ListRobot",
+      }) as Promise<tradingservicev1_ListRobotResponse>;
+    },
+    GetRobot(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.robotId) {
+        throw new Error("missing required field request.robot_id");
+      }
+      const path = `admin/v1/trading/robots/${request.robotId}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "RobotService",
+        method: "GetRobot",
+      }) as Promise<tradingservicev1_Robot>;
+    },
+    CreateRobot(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/trading/robots`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "RobotService",
+        method: "CreateRobot",
+      }) as Promise<wellKnownEmpty>;
+    },
+    UpdateRobot(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.robotId) {
+        throw new Error("missing required field request.robot_id");
+      }
+      const path = `admin/v1/trading/robots/${request.robotId}`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "PUT",
+        body,
+      }, {
+        service: "RobotService",
+        method: "UpdateRobot",
+      }) as Promise<wellKnownEmpty>;
+    },
+    DeleteRobot(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.robotId) {
+        throw new Error("missing required field request.robot_id");
+      }
+      const path = `admin/v1/trading/robots/${request.robotId}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "DELETE",
+        body,
+      }, {
+        service: "RobotService",
+        method: "DeleteRobot",
+      }) as Promise<wellKnownEmpty>;
+    },
+  };
+}
+// 获取 Robot 列表响应
+export type tradingservicev1_ListRobotResponse = {
+  // 总数
+  total: number | undefined;
+  // Robot 列表
+  items: tradingservicev1_Robot[] | undefined;
+};
+
+// Robot 信息
+export type tradingservicev1_Robot = {
+  // 机器人ID
+  robotId: string | undefined;
+  // 昵称
+  nickname: string | undefined;
+  // 交易所
+  exchange: string | undefined;
+  // 版本
+  version: string | undefined;
+  // 状态
+  status: string | undefined;
+  // 初始资金
+  initBalance: number | undefined;
+  // 余额
+  balance: number | undefined;
+  // 注册时间
+  registeredAt: wellKnownTimestamp | undefined;
+  // 最后心跳时间
+  lastHeartbeat: wellKnownTimestamp | undefined;
+};
+
+// 获取 Robot 请求
+export type tradingservicev1_GetRobotRequest = {
+  // 机器人ID
+  robotId: string | undefined;
+};
+
+// 创建 Robot 请求
+export type tradingservicev1_CreateRobotRequest = {
+  // 机器人ID
+  robotId: string | undefined;
+  // 昵称
+  nickname: string | undefined;
+  // 交易所
+  exchange: string | undefined;
+  // 版本
+  version: string | undefined;
+  // 状态
+  status: string | undefined;
+  // 初始资金
+  initBalance: number | undefined;
+  // 余额
+  balance: number | undefined;
+};
+
+// 更新 Robot 请求
+export type tradingservicev1_UpdateRobotRequest = {
+  // 机器人ID
+  robotId: string | undefined;
+  // 昵称
+  nickname?: string;
+  // 交易所
+  exchange?: string;
+  // 版本
+  version?: string;
+  // 状态
+  status?: string;
+  // 初始资金
+  initBalance?: number;
+  // 余额
+  balance?: number;
+};
+
+// 删除 Robot 请求
+export type tradingservicev1_DeleteRobotRequest = {
+  // 机器人ID
+  robotId: string | undefined;
+};
+
 // 角色管理服务
 export interface RoleService {
   // 查询角色列表
@@ -7033,11 +6717,26 @@ export type tradingservicev1_Server = {
   updateTime: wellKnownTimestamp | undefined;
 };
 
+// 服务器状态信息
+export type tradingservicev1_ServerStatusInfo = {
+  // CPU信息
+  cpu: string | undefined;
+  // IP池
+  ipPool: number | undefined;
+  // 内存
+  mem: number | undefined;
+  // 内存百分比
+  memPct: string | undefined;
+  // 磁盘百分比
+  diskPct: string | undefined;
+  // 任务数
+  taskNum: number | undefined;
+};
+
 // 托管者类型
 export type tradingservicev1_ServerType =
   | "SERVER_TYPE_UNSPECIFIED"
-  | "SERVER_TYPE_SELF_BUILT"
-  | "SERVER_TYPE_PLATFORM";
+  | "SERVER_TYPE_SELF_BUILT";
 // 获取托管者请求
 export type tradingservicev1_GetServerRequest = {
   // 服务器ID

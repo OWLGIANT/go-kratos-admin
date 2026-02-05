@@ -99,14 +99,44 @@ func Rid(v string) predicate.Robot {
 	return predicate.Robot(sql.FieldEQ(FieldRid, v))
 }
 
+// Nickname applies equality check predicate on the "nickname" field. It's identical to NicknameEQ.
+func Nickname(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldNickname, v))
+}
+
+// Exchange applies equality check predicate on the "exchange" field. It's identical to ExchangeEQ.
+func Exchange(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldExchange, v))
+}
+
+// Version applies equality check predicate on the "version" field. It's identical to VersionEQ.
+func Version(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldVersion, v))
+}
+
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
-func Status(v uint) predicate.Robot {
+func Status(v string) predicate.Robot {
 	return predicate.Robot(sql.FieldEQ(FieldStatus, v))
 }
 
 // Balance applies equality check predicate on the "balance" field. It's identical to BalanceEQ.
 func Balance(v float64) predicate.Robot {
 	return predicate.Robot(sql.FieldEQ(FieldBalance, v))
+}
+
+// InitBalance applies equality check predicate on the "init_balance" field. It's identical to InitBalanceEQ.
+func InitBalance(v float64) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldInitBalance, v))
+}
+
+// RegisteredAt applies equality check predicate on the "registered_at" field. It's identical to RegisteredAtEQ.
+func RegisteredAt(v time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldRegisteredAt, v))
+}
+
+// LastHeartbeat applies equality check predicate on the "last_heartbeat" field. It's identical to LastHeartbeatEQ.
+func LastHeartbeat(v time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldLastHeartbeat, v))
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
@@ -599,44 +629,304 @@ func RidContainsFold(v string) predicate.Robot {
 	return predicate.Robot(sql.FieldContainsFold(FieldRid, v))
 }
 
+// NicknameEQ applies the EQ predicate on the "nickname" field.
+func NicknameEQ(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldNickname, v))
+}
+
+// NicknameNEQ applies the NEQ predicate on the "nickname" field.
+func NicknameNEQ(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldNEQ(FieldNickname, v))
+}
+
+// NicknameIn applies the In predicate on the "nickname" field.
+func NicknameIn(vs ...string) predicate.Robot {
+	return predicate.Robot(sql.FieldIn(FieldNickname, vs...))
+}
+
+// NicknameNotIn applies the NotIn predicate on the "nickname" field.
+func NicknameNotIn(vs ...string) predicate.Robot {
+	return predicate.Robot(sql.FieldNotIn(FieldNickname, vs...))
+}
+
+// NicknameGT applies the GT predicate on the "nickname" field.
+func NicknameGT(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldGT(FieldNickname, v))
+}
+
+// NicknameGTE applies the GTE predicate on the "nickname" field.
+func NicknameGTE(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldGTE(FieldNickname, v))
+}
+
+// NicknameLT applies the LT predicate on the "nickname" field.
+func NicknameLT(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldLT(FieldNickname, v))
+}
+
+// NicknameLTE applies the LTE predicate on the "nickname" field.
+func NicknameLTE(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldLTE(FieldNickname, v))
+}
+
+// NicknameContains applies the Contains predicate on the "nickname" field.
+func NicknameContains(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldContains(FieldNickname, v))
+}
+
+// NicknameHasPrefix applies the HasPrefix predicate on the "nickname" field.
+func NicknameHasPrefix(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldHasPrefix(FieldNickname, v))
+}
+
+// NicknameHasSuffix applies the HasSuffix predicate on the "nickname" field.
+func NicknameHasSuffix(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldHasSuffix(FieldNickname, v))
+}
+
+// NicknameIsNil applies the IsNil predicate on the "nickname" field.
+func NicknameIsNil() predicate.Robot {
+	return predicate.Robot(sql.FieldIsNull(FieldNickname))
+}
+
+// NicknameNotNil applies the NotNil predicate on the "nickname" field.
+func NicknameNotNil() predicate.Robot {
+	return predicate.Robot(sql.FieldNotNull(FieldNickname))
+}
+
+// NicknameEqualFold applies the EqualFold predicate on the "nickname" field.
+func NicknameEqualFold(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldEqualFold(FieldNickname, v))
+}
+
+// NicknameContainsFold applies the ContainsFold predicate on the "nickname" field.
+func NicknameContainsFold(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldContainsFold(FieldNickname, v))
+}
+
+// ExchangeEQ applies the EQ predicate on the "exchange" field.
+func ExchangeEQ(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldExchange, v))
+}
+
+// ExchangeNEQ applies the NEQ predicate on the "exchange" field.
+func ExchangeNEQ(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldNEQ(FieldExchange, v))
+}
+
+// ExchangeIn applies the In predicate on the "exchange" field.
+func ExchangeIn(vs ...string) predicate.Robot {
+	return predicate.Robot(sql.FieldIn(FieldExchange, vs...))
+}
+
+// ExchangeNotIn applies the NotIn predicate on the "exchange" field.
+func ExchangeNotIn(vs ...string) predicate.Robot {
+	return predicate.Robot(sql.FieldNotIn(FieldExchange, vs...))
+}
+
+// ExchangeGT applies the GT predicate on the "exchange" field.
+func ExchangeGT(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldGT(FieldExchange, v))
+}
+
+// ExchangeGTE applies the GTE predicate on the "exchange" field.
+func ExchangeGTE(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldGTE(FieldExchange, v))
+}
+
+// ExchangeLT applies the LT predicate on the "exchange" field.
+func ExchangeLT(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldLT(FieldExchange, v))
+}
+
+// ExchangeLTE applies the LTE predicate on the "exchange" field.
+func ExchangeLTE(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldLTE(FieldExchange, v))
+}
+
+// ExchangeContains applies the Contains predicate on the "exchange" field.
+func ExchangeContains(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldContains(FieldExchange, v))
+}
+
+// ExchangeHasPrefix applies the HasPrefix predicate on the "exchange" field.
+func ExchangeHasPrefix(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldHasPrefix(FieldExchange, v))
+}
+
+// ExchangeHasSuffix applies the HasSuffix predicate on the "exchange" field.
+func ExchangeHasSuffix(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldHasSuffix(FieldExchange, v))
+}
+
+// ExchangeIsNil applies the IsNil predicate on the "exchange" field.
+func ExchangeIsNil() predicate.Robot {
+	return predicate.Robot(sql.FieldIsNull(FieldExchange))
+}
+
+// ExchangeNotNil applies the NotNil predicate on the "exchange" field.
+func ExchangeNotNil() predicate.Robot {
+	return predicate.Robot(sql.FieldNotNull(FieldExchange))
+}
+
+// ExchangeEqualFold applies the EqualFold predicate on the "exchange" field.
+func ExchangeEqualFold(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldEqualFold(FieldExchange, v))
+}
+
+// ExchangeContainsFold applies the ContainsFold predicate on the "exchange" field.
+func ExchangeContainsFold(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldContainsFold(FieldExchange, v))
+}
+
+// VersionEQ applies the EQ predicate on the "version" field.
+func VersionEQ(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldVersion, v))
+}
+
+// VersionNEQ applies the NEQ predicate on the "version" field.
+func VersionNEQ(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldNEQ(FieldVersion, v))
+}
+
+// VersionIn applies the In predicate on the "version" field.
+func VersionIn(vs ...string) predicate.Robot {
+	return predicate.Robot(sql.FieldIn(FieldVersion, vs...))
+}
+
+// VersionNotIn applies the NotIn predicate on the "version" field.
+func VersionNotIn(vs ...string) predicate.Robot {
+	return predicate.Robot(sql.FieldNotIn(FieldVersion, vs...))
+}
+
+// VersionGT applies the GT predicate on the "version" field.
+func VersionGT(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldGT(FieldVersion, v))
+}
+
+// VersionGTE applies the GTE predicate on the "version" field.
+func VersionGTE(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldGTE(FieldVersion, v))
+}
+
+// VersionLT applies the LT predicate on the "version" field.
+func VersionLT(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldLT(FieldVersion, v))
+}
+
+// VersionLTE applies the LTE predicate on the "version" field.
+func VersionLTE(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldLTE(FieldVersion, v))
+}
+
+// VersionContains applies the Contains predicate on the "version" field.
+func VersionContains(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldContains(FieldVersion, v))
+}
+
+// VersionHasPrefix applies the HasPrefix predicate on the "version" field.
+func VersionHasPrefix(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldHasPrefix(FieldVersion, v))
+}
+
+// VersionHasSuffix applies the HasSuffix predicate on the "version" field.
+func VersionHasSuffix(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldHasSuffix(FieldVersion, v))
+}
+
+// VersionIsNil applies the IsNil predicate on the "version" field.
+func VersionIsNil() predicate.Robot {
+	return predicate.Robot(sql.FieldIsNull(FieldVersion))
+}
+
+// VersionNotNil applies the NotNil predicate on the "version" field.
+func VersionNotNil() predicate.Robot {
+	return predicate.Robot(sql.FieldNotNull(FieldVersion))
+}
+
+// VersionEqualFold applies the EqualFold predicate on the "version" field.
+func VersionEqualFold(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldEqualFold(FieldVersion, v))
+}
+
+// VersionContainsFold applies the ContainsFold predicate on the "version" field.
+func VersionContainsFold(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldContainsFold(FieldVersion, v))
+}
+
 // StatusEQ applies the EQ predicate on the "status" field.
-func StatusEQ(v uint) predicate.Robot {
+func StatusEQ(v string) predicate.Robot {
 	return predicate.Robot(sql.FieldEQ(FieldStatus, v))
 }
 
 // StatusNEQ applies the NEQ predicate on the "status" field.
-func StatusNEQ(v uint) predicate.Robot {
+func StatusNEQ(v string) predicate.Robot {
 	return predicate.Robot(sql.FieldNEQ(FieldStatus, v))
 }
 
 // StatusIn applies the In predicate on the "status" field.
-func StatusIn(vs ...uint) predicate.Robot {
+func StatusIn(vs ...string) predicate.Robot {
 	return predicate.Robot(sql.FieldIn(FieldStatus, vs...))
 }
 
 // StatusNotIn applies the NotIn predicate on the "status" field.
-func StatusNotIn(vs ...uint) predicate.Robot {
+func StatusNotIn(vs ...string) predicate.Robot {
 	return predicate.Robot(sql.FieldNotIn(FieldStatus, vs...))
 }
 
 // StatusGT applies the GT predicate on the "status" field.
-func StatusGT(v uint) predicate.Robot {
+func StatusGT(v string) predicate.Robot {
 	return predicate.Robot(sql.FieldGT(FieldStatus, v))
 }
 
 // StatusGTE applies the GTE predicate on the "status" field.
-func StatusGTE(v uint) predicate.Robot {
+func StatusGTE(v string) predicate.Robot {
 	return predicate.Robot(sql.FieldGTE(FieldStatus, v))
 }
 
 // StatusLT applies the LT predicate on the "status" field.
-func StatusLT(v uint) predicate.Robot {
+func StatusLT(v string) predicate.Robot {
 	return predicate.Robot(sql.FieldLT(FieldStatus, v))
 }
 
 // StatusLTE applies the LTE predicate on the "status" field.
-func StatusLTE(v uint) predicate.Robot {
+func StatusLTE(v string) predicate.Robot {
 	return predicate.Robot(sql.FieldLTE(FieldStatus, v))
+}
+
+// StatusContains applies the Contains predicate on the "status" field.
+func StatusContains(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldContains(FieldStatus, v))
+}
+
+// StatusHasPrefix applies the HasPrefix predicate on the "status" field.
+func StatusHasPrefix(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldHasPrefix(FieldStatus, v))
+}
+
+// StatusHasSuffix applies the HasSuffix predicate on the "status" field.
+func StatusHasSuffix(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldHasSuffix(FieldStatus, v))
+}
+
+// StatusIsNil applies the IsNil predicate on the "status" field.
+func StatusIsNil() predicate.Robot {
+	return predicate.Robot(sql.FieldIsNull(FieldStatus))
+}
+
+// StatusNotNil applies the NotNil predicate on the "status" field.
+func StatusNotNil() predicate.Robot {
+	return predicate.Robot(sql.FieldNotNull(FieldStatus))
+}
+
+// StatusEqualFold applies the EqualFold predicate on the "status" field.
+func StatusEqualFold(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldEqualFold(FieldStatus, v))
+}
+
+// StatusContainsFold applies the ContainsFold predicate on the "status" field.
+func StatusContainsFold(v string) predicate.Robot {
+	return predicate.Robot(sql.FieldContainsFold(FieldStatus, v))
 }
 
 // BalanceEQ applies the EQ predicate on the "balance" field.
@@ -677,6 +967,146 @@ func BalanceLT(v float64) predicate.Robot {
 // BalanceLTE applies the LTE predicate on the "balance" field.
 func BalanceLTE(v float64) predicate.Robot {
 	return predicate.Robot(sql.FieldLTE(FieldBalance, v))
+}
+
+// InitBalanceEQ applies the EQ predicate on the "init_balance" field.
+func InitBalanceEQ(v float64) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldInitBalance, v))
+}
+
+// InitBalanceNEQ applies the NEQ predicate on the "init_balance" field.
+func InitBalanceNEQ(v float64) predicate.Robot {
+	return predicate.Robot(sql.FieldNEQ(FieldInitBalance, v))
+}
+
+// InitBalanceIn applies the In predicate on the "init_balance" field.
+func InitBalanceIn(vs ...float64) predicate.Robot {
+	return predicate.Robot(sql.FieldIn(FieldInitBalance, vs...))
+}
+
+// InitBalanceNotIn applies the NotIn predicate on the "init_balance" field.
+func InitBalanceNotIn(vs ...float64) predicate.Robot {
+	return predicate.Robot(sql.FieldNotIn(FieldInitBalance, vs...))
+}
+
+// InitBalanceGT applies the GT predicate on the "init_balance" field.
+func InitBalanceGT(v float64) predicate.Robot {
+	return predicate.Robot(sql.FieldGT(FieldInitBalance, v))
+}
+
+// InitBalanceGTE applies the GTE predicate on the "init_balance" field.
+func InitBalanceGTE(v float64) predicate.Robot {
+	return predicate.Robot(sql.FieldGTE(FieldInitBalance, v))
+}
+
+// InitBalanceLT applies the LT predicate on the "init_balance" field.
+func InitBalanceLT(v float64) predicate.Robot {
+	return predicate.Robot(sql.FieldLT(FieldInitBalance, v))
+}
+
+// InitBalanceLTE applies the LTE predicate on the "init_balance" field.
+func InitBalanceLTE(v float64) predicate.Robot {
+	return predicate.Robot(sql.FieldLTE(FieldInitBalance, v))
+}
+
+// RegisteredAtEQ applies the EQ predicate on the "registered_at" field.
+func RegisteredAtEQ(v time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldRegisteredAt, v))
+}
+
+// RegisteredAtNEQ applies the NEQ predicate on the "registered_at" field.
+func RegisteredAtNEQ(v time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldNEQ(FieldRegisteredAt, v))
+}
+
+// RegisteredAtIn applies the In predicate on the "registered_at" field.
+func RegisteredAtIn(vs ...time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldIn(FieldRegisteredAt, vs...))
+}
+
+// RegisteredAtNotIn applies the NotIn predicate on the "registered_at" field.
+func RegisteredAtNotIn(vs ...time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldNotIn(FieldRegisteredAt, vs...))
+}
+
+// RegisteredAtGT applies the GT predicate on the "registered_at" field.
+func RegisteredAtGT(v time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldGT(FieldRegisteredAt, v))
+}
+
+// RegisteredAtGTE applies the GTE predicate on the "registered_at" field.
+func RegisteredAtGTE(v time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldGTE(FieldRegisteredAt, v))
+}
+
+// RegisteredAtLT applies the LT predicate on the "registered_at" field.
+func RegisteredAtLT(v time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldLT(FieldRegisteredAt, v))
+}
+
+// RegisteredAtLTE applies the LTE predicate on the "registered_at" field.
+func RegisteredAtLTE(v time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldLTE(FieldRegisteredAt, v))
+}
+
+// RegisteredAtIsNil applies the IsNil predicate on the "registered_at" field.
+func RegisteredAtIsNil() predicate.Robot {
+	return predicate.Robot(sql.FieldIsNull(FieldRegisteredAt))
+}
+
+// RegisteredAtNotNil applies the NotNil predicate on the "registered_at" field.
+func RegisteredAtNotNil() predicate.Robot {
+	return predicate.Robot(sql.FieldNotNull(FieldRegisteredAt))
+}
+
+// LastHeartbeatEQ applies the EQ predicate on the "last_heartbeat" field.
+func LastHeartbeatEQ(v time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldLastHeartbeat, v))
+}
+
+// LastHeartbeatNEQ applies the NEQ predicate on the "last_heartbeat" field.
+func LastHeartbeatNEQ(v time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldNEQ(FieldLastHeartbeat, v))
+}
+
+// LastHeartbeatIn applies the In predicate on the "last_heartbeat" field.
+func LastHeartbeatIn(vs ...time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldIn(FieldLastHeartbeat, vs...))
+}
+
+// LastHeartbeatNotIn applies the NotIn predicate on the "last_heartbeat" field.
+func LastHeartbeatNotIn(vs ...time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldNotIn(FieldLastHeartbeat, vs...))
+}
+
+// LastHeartbeatGT applies the GT predicate on the "last_heartbeat" field.
+func LastHeartbeatGT(v time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldGT(FieldLastHeartbeat, v))
+}
+
+// LastHeartbeatGTE applies the GTE predicate on the "last_heartbeat" field.
+func LastHeartbeatGTE(v time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldGTE(FieldLastHeartbeat, v))
+}
+
+// LastHeartbeatLT applies the LT predicate on the "last_heartbeat" field.
+func LastHeartbeatLT(v time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldLT(FieldLastHeartbeat, v))
+}
+
+// LastHeartbeatLTE applies the LTE predicate on the "last_heartbeat" field.
+func LastHeartbeatLTE(v time.Time) predicate.Robot {
+	return predicate.Robot(sql.FieldLTE(FieldLastHeartbeat, v))
+}
+
+// LastHeartbeatIsNil applies the IsNil predicate on the "last_heartbeat" field.
+func LastHeartbeatIsNil() predicate.Robot {
+	return predicate.Robot(sql.FieldIsNull(FieldLastHeartbeat))
+}
+
+// LastHeartbeatNotNil applies the NotNil predicate on the "last_heartbeat" field.
+func LastHeartbeatNotNil() predicate.Robot {
+	return predicate.Robot(sql.FieldNotNull(FieldLastHeartbeat))
 }
 
 // And groups predicates with the AND operator between them.

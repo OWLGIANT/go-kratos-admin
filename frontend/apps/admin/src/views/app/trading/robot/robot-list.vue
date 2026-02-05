@@ -10,21 +10,31 @@ import { notification } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
-  accountTypeList,
-  accountTypeToName,
-  type ExchangeAccountInfo,
-  useExchangeAccountStore,
-} from '#/stores/exchange-account.state';
+  robotStatusList,
+  robotStatusToColor,
+  robotStatusToName,
+  type RobotInfo,
+  useRobotStore,
+} from '#/stores/robot.state';
 
-import ExchangeAccountDrawer from './exchange-account-drawer.vue';
+import RobotDrawer from './robot-drawer.vue';
 
-const accountStore = useExchangeAccountStore();
+const robotStore = useRobotStore();
 
 const formOptions: VbenFormProps = {
   collapsed: false,
   showCollapseButton: false,
   submitOnEnter: true,
   schema: [
+    {
+      component: 'Input',
+      fieldName: 'robotId',
+      label: '机器人ID',
+      componentProps: {
+        placeholder: '请输入机器人ID',
+        allowClear: true,
+      },
+    },
     {
       component: 'Input',
       fieldName: 'nickname',
@@ -36,7 +46,7 @@ const formOptions: VbenFormProps = {
     },
     {
       component: 'Input',
-      fieldName: 'exchangeName',
+      fieldName: 'exchange',
       label: '交易所',
       componentProps: {
         placeholder: '请输入交易所',
@@ -44,28 +54,19 @@ const formOptions: VbenFormProps = {
       },
     },
     {
-      component: 'Input',
-      fieldName: 'originAccount',
-      label: '原始账号',
-      componentProps: {
-        placeholder: '请输入原始账号',
-        allowClear: true,
-      },
-    },
-    {
       component: 'Select',
-      fieldName: 'accountType',
-      label: '账号类型',
+      fieldName: 'status',
+      label: '状态',
       componentProps: {
-        placeholder: '请选择账号类型',
+        placeholder: '请选择状态',
         allowClear: true,
-        options: accountTypeList.value,
+        options: robotStatusList.value,
       },
     },
   ],
 };
 
-const gridOptions: VxeGridProps<ExchangeAccountInfo> = {
+const gridOptions: VxeGridProps<RobotInfo> = {
   height: 'auto',
   stripe: true,
   toolbarConfig: {
@@ -85,11 +86,18 @@ const gridOptions: VxeGridProps<ExchangeAccountInfo> = {
   proxyConfig: {
     ajax: {
       query: async (_params, formValues) => {
-        const result = await accountStore.listAccounts();
+        const result = await robotStore.listRobots();
         let items = result.items || [];
 
         // 前端过滤
         if (formValues) {
+          if (formValues.robotId) {
+            items = items.filter((item) =>
+              item.robotId
+                ?.toLowerCase()
+                .includes(formValues.robotId.toLowerCase()),
+            );
+          }
           if (formValues.nickname) {
             items = items.filter((item) =>
               item.nickname
@@ -97,22 +105,15 @@ const gridOptions: VxeGridProps<ExchangeAccountInfo> = {
                 .includes(formValues.nickname.toLowerCase()),
             );
           }
-          if (formValues.exchangeName) {
+          if (formValues.exchange) {
             items = items.filter((item) =>
-              item.exchangeName
+              item.exchange
                 ?.toLowerCase()
-                .includes(formValues.exchangeName.toLowerCase()),
+                .includes(formValues.exchange.toLowerCase()),
             );
           }
-          if (formValues.originAccount) {
-            items = items.filter((item) =>
-              item.originAccount
-                ?.toLowerCase()
-                .includes(formValues.originAccount.toLowerCase()),
-            );
-          }
-          if (formValues.accountType) {
-            items = items.filter((item) => item.accountType === formValues.accountType);
+          if (formValues.status) {
+            items = items.filter((item) => item.status === formValues.status);
           }
         }
 
@@ -125,24 +126,37 @@ const gridOptions: VxeGridProps<ExchangeAccountInfo> = {
   },
 
   columns: [
-    { title: 'ID', field: 'id', width: 80 },
+    { title: '机器人ID', field: 'robotId', minWidth: 150 },
     { title: '昵称', field: 'nickname', minWidth: 120 },
-    { title: '交易所', field: 'exchangeName', minWidth: 100 },
-    { title: '原始账号', field: 'originAccount', minWidth: 150 },
-    { title: 'API Key', field: 'apiKey', minWidth: 200 },
-    { title: '经纪商ID', field: 'brokerId', width: 100 },
-    { title: '操作员', field: 'operator', width: 100 },
+    { title: '交易所', field: 'exchange', minWidth: 100 },
+    { title: '版本', field: 'version', width: 100 },
     {
-      title: '账号类型',
-      field: 'accountType',
+      title: '状态',
+      field: 'status',
       width: 100,
-      slots: { default: 'accountType' },
+      slots: { default: 'status' },
     },
-    { title: '绑定IP', field: 'serverIps', minWidth: 150 },
-    { title: '备注', field: 'remark', minWidth: 150 },
     {
-      title: '创建时间',
-      field: 'createTime',
+      title: '初始资金',
+      field: 'initBalance',
+      width: 120,
+      formatter: ({ cellValue }) => cellValue?.toFixed(2) ?? '-',
+    },
+    {
+      title: '余额',
+      field: 'balance',
+      width: 120,
+      formatter: ({ cellValue }) => cellValue?.toFixed(2) ?? '-',
+    },
+    {
+      title: '注册时间',
+      field: 'registeredAt',
+      width: 160,
+      formatter: 'formatDateTime',
+    },
+    {
+      title: '最后心跳',
+      field: 'lastHeartbeat',
       width: 160,
       formatter: 'formatDateTime',
     },
@@ -165,7 +179,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
 });
 
 const [Drawer, drawerApi] = useVbenDrawer({
-  connectedComponent: ExchangeAccountDrawer,
+  connectedComponent: RobotDrawer,
 
   onOpenChange(isOpen: boolean) {
     if (!isOpen) {
@@ -192,16 +206,16 @@ function handleEdit(row: any) {
 
 async function handleDelete(row: any) {
   try {
-    await accountStore.deleteAccount(row.id);
+    await robotStore.deleteRobot(row.robotId);
     notification.success({
       message: '删除成功',
-      description: `账号 ${row.nickname} 已删除`,
+      description: `Robot ${row.robotId} 已删除`,
     });
     gridApi.reload();
   } catch (error: any) {
     notification.error({
       message: '删除失败',
-      description: error.message || '删除账号时发生错误',
+      description: error.message || '删除Robot时发生错误',
     });
   }
 }
@@ -219,14 +233,14 @@ onMounted(() => {
 
 <template>
   <div class="h-full">
-    <Grid table-title="交易账号列表">
+    <Grid table-title="Robot 列表">
       <template #toolbar-tools>
         <a-space>
           <a-tag color="blue">
-            总数: {{ accountStore.accountCount }}
+            在线: {{ robotStore.onlineRobotCount }} / {{ robotStore.robotCount }}
           </a-tag>
           <a-button type="primary" @click="handleCreate">
-            新建账号
+            新建Robot
           </a-button>
           <a-button @click="handleRefresh">
             <template #icon>
@@ -237,9 +251,9 @@ onMounted(() => {
         </a-space>
       </template>
 
-      <template #accountType="{ row }">
-        <a-tag>
-          {{ accountTypeToName(row.accountType) }}
+      <template #status="{ row }">
+        <a-tag :color="robotStatusToColor(row.status)">
+          {{ robotStatusToName(row.status) }}
         </a-tag>
       </template>
 
@@ -258,7 +272,7 @@ onMounted(() => {
           </a-tooltip>
           <a-tooltip title="删除">
             <a-popconfirm
-              title="确定要删除这个账号吗？"
+              title="确定要删除这个Robot吗？"
               @confirm="handleDelete(row)"
             >
               <a-button

@@ -36,11 +36,23 @@ type Robot struct {
 	TenantID *uint32 `json:"tenant_id,omitempty"`
 	// 机器人ID
 	Rid string `json:"rid,omitempty"`
+	// 昵称
+	Nickname string `json:"nickname,omitempty"`
+	// 交易所
+	Exchange string `json:"exchange,omitempty"`
+	// 版本
+	Version string `json:"version,omitempty"`
 	// 机器人状态
-	Status uint `json:"status,omitempty"`
+	Status string `json:"status,omitempty"`
 	// 当前资金
-	Balance      float64 `json:"balance,omitempty"`
-	selectValues sql.SelectValues
+	Balance float64 `json:"balance,omitempty"`
+	// 初始资金
+	InitBalance float64 `json:"init_balance,omitempty"`
+	// 注册时间
+	RegisteredAt *time.Time `json:"registered_at,omitempty"`
+	// 最后心跳时间
+	LastHeartbeat *time.Time `json:"last_heartbeat,omitempty"`
+	selectValues  sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -48,13 +60,13 @@ func (*Robot) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case robot.FieldBalance:
+		case robot.FieldBalance, robot.FieldInitBalance:
 			values[i] = new(sql.NullFloat64)
-		case robot.FieldID, robot.FieldCreatedBy, robot.FieldUpdatedBy, robot.FieldDeletedBy, robot.FieldTenantID, robot.FieldStatus:
+		case robot.FieldID, robot.FieldCreatedBy, robot.FieldUpdatedBy, robot.FieldDeletedBy, robot.FieldTenantID:
 			values[i] = new(sql.NullInt64)
-		case robot.FieldRemark, robot.FieldRid:
+		case robot.FieldRemark, robot.FieldRid, robot.FieldNickname, robot.FieldExchange, robot.FieldVersion, robot.FieldStatus:
 			values[i] = new(sql.NullString)
-		case robot.FieldCreatedAt, robot.FieldUpdatedAt, robot.FieldDeletedAt:
+		case robot.FieldCreatedAt, robot.FieldUpdatedAt, robot.FieldDeletedAt, robot.FieldRegisteredAt, robot.FieldLastHeartbeat:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -139,17 +151,55 @@ func (_m *Robot) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Rid = value.String
 			}
+		case robot.FieldNickname:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field nickname", values[i])
+			} else if value.Valid {
+				_m.Nickname = value.String
+			}
+		case robot.FieldExchange:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field exchange", values[i])
+			} else if value.Valid {
+				_m.Exchange = value.String
+			}
+		case robot.FieldVersion:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field version", values[i])
+			} else if value.Valid {
+				_m.Version = value.String
+			}
 		case robot.FieldStatus:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				_m.Status = uint(value.Int64)
+				_m.Status = value.String
 			}
 		case robot.FieldBalance:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field balance", values[i])
 			} else if value.Valid {
 				_m.Balance = value.Float64
+			}
+		case robot.FieldInitBalance:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field init_balance", values[i])
+			} else if value.Valid {
+				_m.InitBalance = value.Float64
+			}
+		case robot.FieldRegisteredAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field registered_at", values[i])
+			} else if value.Valid {
+				_m.RegisteredAt = new(time.Time)
+				*_m.RegisteredAt = value.Time
+			}
+		case robot.FieldLastHeartbeat:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field last_heartbeat", values[i])
+			} else if value.Valid {
+				_m.LastHeartbeat = new(time.Time)
+				*_m.LastHeartbeat = value.Time
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -230,11 +280,33 @@ func (_m *Robot) String() string {
 	builder.WriteString("rid=")
 	builder.WriteString(_m.Rid)
 	builder.WriteString(", ")
+	builder.WriteString("nickname=")
+	builder.WriteString(_m.Nickname)
+	builder.WriteString(", ")
+	builder.WriteString("exchange=")
+	builder.WriteString(_m.Exchange)
+	builder.WriteString(", ")
+	builder.WriteString("version=")
+	builder.WriteString(_m.Version)
+	builder.WriteString(", ")
 	builder.WriteString("status=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Status))
+	builder.WriteString(_m.Status)
 	builder.WriteString(", ")
 	builder.WriteString("balance=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Balance))
+	builder.WriteString(", ")
+	builder.WriteString("init_balance=")
+	builder.WriteString(fmt.Sprintf("%v", _m.InitBalance))
+	builder.WriteString(", ")
+	if v := _m.RegisteredAt; v != nil {
+		builder.WriteString("registered_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.LastHeartbeat; v != nil {
+		builder.WriteString("last_heartbeat=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

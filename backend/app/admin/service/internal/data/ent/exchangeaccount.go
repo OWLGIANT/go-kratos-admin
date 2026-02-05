@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/exchangeaccount"
 	"strings"
@@ -58,8 +59,8 @@ type ExchangeAccount struct {
 	IsCombined bool `json:"is_combined,omitempty"`
 	// 是否是组合账号
 	IsMulti bool `json:"is_multi,omitempty"`
-	// 参与组合的账号ID（用|分隔）
-	CombinedID *string `json:"combined_id,omitempty"`
+	// 组合账号ID列表
+	AccountIds []string `json:"account_ids,omitempty"`
 	// 母账号ID
 	MotherID     *uint32 `json:"mother_id,omitempty"`
 	selectValues sql.SelectValues
@@ -70,13 +71,15 @@ func (*ExchangeAccount) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case exchangeaccount.FieldAccountIds:
+			values[i] = new([]byte)
 		case exchangeaccount.FieldIsCombined, exchangeaccount.FieldIsMulti:
 			values[i] = new(sql.NullBool)
 		case exchangeaccount.FieldSpecialReqLimit:
 			values[i] = new(sql.NullFloat64)
 		case exchangeaccount.FieldID, exchangeaccount.FieldCreatedBy, exchangeaccount.FieldUpdatedBy, exchangeaccount.FieldDeletedBy, exchangeaccount.FieldAccountType, exchangeaccount.FieldApplyTime, exchangeaccount.FieldMotherID:
 			values[i] = new(sql.NullInt64)
-		case exchangeaccount.FieldNickname, exchangeaccount.FieldExchangeName, exchangeaccount.FieldOriginAccount, exchangeaccount.FieldAPIKey, exchangeaccount.FieldSecretKey, exchangeaccount.FieldPassKey, exchangeaccount.FieldBrokerID, exchangeaccount.FieldRemark, exchangeaccount.FieldServerIps, exchangeaccount.FieldCombinedID:
+		case exchangeaccount.FieldNickname, exchangeaccount.FieldExchangeName, exchangeaccount.FieldOriginAccount, exchangeaccount.FieldAPIKey, exchangeaccount.FieldSecretKey, exchangeaccount.FieldPassKey, exchangeaccount.FieldBrokerID, exchangeaccount.FieldRemark, exchangeaccount.FieldServerIps:
 			values[i] = new(sql.NullString)
 		case exchangeaccount.FieldCreatedAt, exchangeaccount.FieldUpdatedAt, exchangeaccount.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -233,12 +236,13 @@ func (_m *ExchangeAccount) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.IsMulti = value.Bool
 			}
-		case exchangeaccount.FieldCombinedID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field combined_id", values[i])
-			} else if value.Valid {
-				_m.CombinedID = new(string)
-				*_m.CombinedID = value.String
+		case exchangeaccount.FieldAccountIds:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field account_ids", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.AccountIds); err != nil {
+					return fmt.Errorf("unmarshal field account_ids: %w", err)
+				}
 			}
 		case exchangeaccount.FieldMotherID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -363,10 +367,8 @@ func (_m *ExchangeAccount) String() string {
 	builder.WriteString("is_multi=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IsMulti))
 	builder.WriteString(", ")
-	if v := _m.CombinedID; v != nil {
-		builder.WriteString("combined_id=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString("account_ids=")
+	builder.WriteString(fmt.Sprintf("%v", _m.AccountIds))
 	builder.WriteString(", ")
 	if v := _m.MotherID; v != nil {
 		builder.WriteString("mother_id=")
