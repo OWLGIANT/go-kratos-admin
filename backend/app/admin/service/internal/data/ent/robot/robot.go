@@ -46,8 +46,12 @@ const (
 	FieldRegisteredAt = "registered_at"
 	// FieldLastHeartbeat holds the string denoting the last_heartbeat field in the database.
 	FieldLastHeartbeat = "last_heartbeat"
+	// FieldServerID holds the string denoting the server_id field in the database.
+	FieldServerID = "server_id"
+	// FieldExchangeAccountID holds the string denoting the exchange_account_id field in the database.
+	FieldExchangeAccountID = "exchange_account_id"
 	// Table holds the table name of the robot in the database.
-	Table = "app_robots"
+	Table = "trading_robots"
 )
 
 // Columns holds all SQL columns for robot fields.
@@ -70,6 +74,8 @@ var Columns = []string{
 	FieldInitBalance,
 	FieldRegisteredAt,
 	FieldLastHeartbeat,
+	FieldServerID,
+	FieldExchangeAccountID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -106,6 +112,10 @@ var (
 	DefaultBalance float64
 	// DefaultInitBalance holds the default value on creation for the "init_balance" field.
 	DefaultInitBalance float64
+	// DefaultServerID holds the default value on creation for the "server_id" field.
+	DefaultServerID uint32
+	// DefaultExchangeAccountID holds the default value on creation for the "exchange_account_id" field.
+	DefaultExchangeAccountID uint32
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
@@ -201,4 +211,14 @@ func ByRegisteredAt(opts ...sql.OrderTermOption) OrderOption {
 // ByLastHeartbeat orders the results by the last_heartbeat field.
 func ByLastHeartbeat(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastHeartbeat, opts...).ToFunc()
+}
+
+// ByServerID orders the results by the server_id field.
+func ByServerID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldServerID, opts...).ToFunc()
+}
+
+// ByExchangeAccountID orders the results by the exchange_account_id field.
+func ByExchangeAccountID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldExchangeAccountID, opts...).ToFunc()
 }

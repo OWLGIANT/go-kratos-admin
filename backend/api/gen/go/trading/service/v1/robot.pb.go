@@ -99,8 +99,16 @@ type Robot struct {
 	RegisteredAt *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=registered_at,json=registeredAt,proto3" json:"registered_at,omitempty"`
 	// 最后心跳时间
 	LastHeartbeat *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=last_heartbeat,json=lastHeartbeat,proto3" json:"last_heartbeat,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// 关联服务器ID
+	ServerId uint32 `protobuf:"varint,10,opt,name=server_id,json=serverId,proto3" json:"server_id,omitempty"`
+	// 关联交易账号ID
+	ExchangeAccountId uint32 `protobuf:"varint,11,opt,name=exchange_account_id,json=exchangeAccountId,proto3" json:"exchange_account_id,omitempty"`
+	// 关联服务器信息
+	Server *Server `protobuf:"bytes,12,opt,name=server,proto3" json:"server,omitempty"`
+	// 关联交易账号信息
+	ExchangeAccount *ExchangeAccount `protobuf:"bytes,13,opt,name=exchange_account,json=exchangeAccount,proto3" json:"exchange_account,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *Robot) Reset() {
@@ -192,6 +200,34 @@ func (x *Robot) GetRegisteredAt() *timestamppb.Timestamp {
 func (x *Robot) GetLastHeartbeat() *timestamppb.Timestamp {
 	if x != nil {
 		return x.LastHeartbeat
+	}
+	return nil
+}
+
+func (x *Robot) GetServerId() uint32 {
+	if x != nil {
+		return x.ServerId
+	}
+	return 0
+}
+
+func (x *Robot) GetExchangeAccountId() uint32 {
+	if x != nil {
+		return x.ExchangeAccountId
+	}
+	return 0
+}
+
+func (x *Robot) GetServer() *Server {
+	if x != nil {
+		return x.Server
+	}
+	return nil
+}
+
+func (x *Robot) GetExchangeAccount() *ExchangeAccount {
+	if x != nil {
+		return x.ExchangeAccount
 	}
 	return nil
 }
@@ -313,9 +349,13 @@ type CreateRobotRequest struct {
 	// 初始资金
 	InitBalance float64 `protobuf:"fixed64,6,opt,name=init_balance,json=initBalance,proto3" json:"init_balance,omitempty"`
 	// 余额
-	Balance       float64 `protobuf:"fixed64,7,opt,name=balance,proto3" json:"balance,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Balance float64 `protobuf:"fixed64,7,opt,name=balance,proto3" json:"balance,omitempty"`
+	// 关联服务器ID
+	ServerId uint32 `protobuf:"varint,8,opt,name=server_id,json=serverId,proto3" json:"server_id,omitempty"`
+	// 关联交易账号ID
+	ExchangeAccountId uint32 `protobuf:"varint,9,opt,name=exchange_account_id,json=exchangeAccountId,proto3" json:"exchange_account_id,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *CreateRobotRequest) Reset() {
@@ -397,6 +437,20 @@ func (x *CreateRobotRequest) GetBalance() float64 {
 	return 0
 }
 
+func (x *CreateRobotRequest) GetServerId() uint32 {
+	if x != nil {
+		return x.ServerId
+	}
+	return 0
+}
+
+func (x *CreateRobotRequest) GetExchangeAccountId() uint32 {
+	if x != nil {
+		return x.ExchangeAccountId
+	}
+	return 0
+}
+
 // 更新 Robot 请求
 type UpdateRobotRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -413,9 +467,13 @@ type UpdateRobotRequest struct {
 	// 初始资金
 	InitBalance *float64 `protobuf:"fixed64,6,opt,name=init_balance,json=initBalance,proto3,oneof" json:"init_balance,omitempty"`
 	// 余额
-	Balance       *float64 `protobuf:"fixed64,7,opt,name=balance,proto3,oneof" json:"balance,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Balance *float64 `protobuf:"fixed64,7,opt,name=balance,proto3,oneof" json:"balance,omitempty"`
+	// 关联服务器ID
+	ServerId *uint32 `protobuf:"varint,8,opt,name=server_id,json=serverId,proto3,oneof" json:"server_id,omitempty"`
+	// 关联交易账号ID
+	ExchangeAccountId *uint32 `protobuf:"varint,9,opt,name=exchange_account_id,json=exchangeAccountId,proto3,oneof" json:"exchange_account_id,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *UpdateRobotRequest) Reset() {
@@ -497,6 +555,20 @@ func (x *UpdateRobotRequest) GetBalance() float64 {
 	return 0
 }
 
+func (x *UpdateRobotRequest) GetServerId() uint32 {
+	if x != nil && x.ServerId != nil {
+		return *x.ServerId
+	}
+	return 0
+}
+
+func (x *UpdateRobotRequest) GetExchangeAccountId() uint32 {
+	if x != nil && x.ExchangeAccountId != nil {
+		return *x.ExchangeAccountId
+	}
+	return 0
+}
+
 // 删除 Robot 请求
 type DeleteRobotRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -547,7 +619,7 @@ var File_trading_service_v1_robot_proto protoreflect.FileDescriptor
 
 const file_trading_service_v1_robot_proto_rawDesc = "" +
 	"\n" +
-	"\x1etrading/service/v1/robot.proto\x12\x12trading.service.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1ftrading/service/v1/server.proto\"\xcd\x02\n" +
+	"\x1etrading/service/v1/robot.proto\x12\x12trading.service.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1ftrading/service/v1/server.proto\x1a)trading/service/v1/exchange_account.proto\"\x9e\x04\n" +
 	"\x05Robot\x12\x19\n" +
 	"\brobot_id\x18\x01 \x01(\tR\arobotId\x12\x1a\n" +
 	"\bnickname\x18\x02 \x01(\tR\bnickname\x12\x1a\n" +
@@ -557,12 +629,17 @@ const file_trading_service_v1_robot_proto_rawDesc = "" +
 	"\finit_balance\x18\x06 \x01(\x01R\vinitBalance\x12\x18\n" +
 	"\abalance\x18\a \x01(\x01R\abalance\x12?\n" +
 	"\rregistered_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\fregisteredAt\x12A\n" +
-	"\x0elast_heartbeat\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\rlastHeartbeat\"Z\n" +
+	"\x0elast_heartbeat\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\rlastHeartbeat\x12\x1b\n" +
+	"\tserver_id\x18\n" +
+	" \x01(\rR\bserverId\x12.\n" +
+	"\x13exchange_account_id\x18\v \x01(\rR\x11exchangeAccountId\x122\n" +
+	"\x06server\x18\f \x01(\v2\x1a.trading.service.v1.ServerR\x06server\x12N\n" +
+	"\x10exchange_account\x18\r \x01(\v2#.trading.service.v1.ExchangeAccountR\x0fexchangeAccount\"Z\n" +
 	"\x11ListRobotResponse\x12\x14\n" +
 	"\x05total\x18\x01 \x01(\x05R\x05total\x12/\n" +
 	"\x05items\x18\x02 \x03(\v2\x19.trading.service.v1.RobotR\x05items\",\n" +
 	"\x0fGetRobotRequest\x12\x19\n" +
-	"\brobot_id\x18\x01 \x01(\tR\arobotId\"\xd6\x01\n" +
+	"\brobot_id\x18\x01 \x01(\tR\arobotId\"\xa3\x02\n" +
 	"\x12CreateRobotRequest\x12\x19\n" +
 	"\brobot_id\x18\x01 \x01(\tR\arobotId\x12\x1a\n" +
 	"\bnickname\x18\x02 \x01(\tR\bnickname\x12\x1a\n" +
@@ -570,7 +647,9 @@ const file_trading_service_v1_robot_proto_rawDesc = "" +
 	"\aversion\x18\x04 \x01(\tR\aversion\x12\x16\n" +
 	"\x06status\x18\x05 \x01(\tR\x06status\x12!\n" +
 	"\finit_balance\x18\x06 \x01(\x01R\vinitBalance\x12\x18\n" +
-	"\abalance\x18\a \x01(\x01R\abalance\"\xc2\x02\n" +
+	"\abalance\x18\a \x01(\x01R\abalance\x12\x1b\n" +
+	"\tserver_id\x18\b \x01(\rR\bserverId\x12.\n" +
+	"\x13exchange_account_id\x18\t \x01(\rR\x11exchangeAccountId\"\xbf\x03\n" +
 	"\x12UpdateRobotRequest\x12\x19\n" +
 	"\brobot_id\x18\x01 \x01(\tR\arobotId\x12\x1f\n" +
 	"\bnickname\x18\x02 \x01(\tH\x00R\bnickname\x88\x01\x01\x12\x1f\n" +
@@ -578,7 +657,9 @@ const file_trading_service_v1_robot_proto_rawDesc = "" +
 	"\aversion\x18\x04 \x01(\tH\x02R\aversion\x88\x01\x01\x12\x1b\n" +
 	"\x06status\x18\x05 \x01(\tH\x03R\x06status\x88\x01\x01\x12&\n" +
 	"\finit_balance\x18\x06 \x01(\x01H\x04R\vinitBalance\x88\x01\x01\x12\x1d\n" +
-	"\abalance\x18\a \x01(\x01H\x05R\abalance\x88\x01\x01B\v\n" +
+	"\abalance\x18\a \x01(\x01H\x05R\abalance\x88\x01\x01\x12 \n" +
+	"\tserver_id\x18\b \x01(\rH\x06R\bserverId\x88\x01\x01\x123\n" +
+	"\x13exchange_account_id\x18\t \x01(\rH\aR\x11exchangeAccountId\x88\x01\x01B\v\n" +
 	"\t_nicknameB\v\n" +
 	"\t_exchangeB\n" +
 	"\n" +
@@ -586,7 +667,10 @@ const file_trading_service_v1_robot_proto_rawDesc = "" +
 	"\a_statusB\x0f\n" +
 	"\r_init_balanceB\n" +
 	"\n" +
-	"\b_balance\"/\n" +
+	"\b_balanceB\f\n" +
+	"\n" +
+	"_server_idB\x16\n" +
+	"\x14_exchange_account_id\"/\n" +
 	"\x12DeleteRobotRequest\x12\x19\n" +
 	"\brobot_id\x18\x01 \x01(\tR\arobotId*\x95\x01\n" +
 	"\vRobotStatus\x12\x1c\n" +
@@ -621,16 +705,20 @@ var file_trading_service_v1_robot_proto_goTypes = []any{
 	(*UpdateRobotRequest)(nil),    // 5: trading.service.v1.UpdateRobotRequest
 	(*DeleteRobotRequest)(nil),    // 6: trading.service.v1.DeleteRobotRequest
 	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
+	(*Server)(nil),                // 8: trading.service.v1.Server
+	(*ExchangeAccount)(nil),       // 9: trading.service.v1.ExchangeAccount
 }
 var file_trading_service_v1_robot_proto_depIdxs = []int32{
 	7, // 0: trading.service.v1.Robot.registered_at:type_name -> google.protobuf.Timestamp
 	7, // 1: trading.service.v1.Robot.last_heartbeat:type_name -> google.protobuf.Timestamp
-	1, // 2: trading.service.v1.ListRobotResponse.items:type_name -> trading.service.v1.Robot
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	8, // 2: trading.service.v1.Robot.server:type_name -> trading.service.v1.Server
+	9, // 3: trading.service.v1.Robot.exchange_account:type_name -> trading.service.v1.ExchangeAccount
+	1, // 4: trading.service.v1.ListRobotResponse.items:type_name -> trading.service.v1.Robot
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_trading_service_v1_robot_proto_init() }
@@ -639,6 +727,7 @@ func file_trading_service_v1_robot_proto_init() {
 		return
 	}
 	file_trading_service_v1_server_proto_init()
+	file_trading_service_v1_exchange_account_proto_init()
 	file_trading_service_v1_robot_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

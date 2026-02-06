@@ -7,8 +7,12 @@ import { notification } from 'ant-design-vue';
 
 import { useVbenForm, z } from '#/adapter/form';
 import { useRobotStore, robotStatusList } from '#/stores/robot.state';
+import { useServerStore } from '#/stores/server.state';
+import { useExchangeAccountStore } from '#/stores/exchange-account.state';
 
 const robotStore = useRobotStore();
+const serverStore = useServerStore();
+const exchangeAccountStore = useExchangeAccountStore();
 
 const data = ref();
 
@@ -42,6 +46,52 @@ const [BaseForm, baseFormApi] = useVbenForm({
         placeholder: '请输入昵称',
         allowClear: true,
       },
+    },
+    {
+      component: 'ApiSelect',
+      fieldName: 'serverId',
+      label: '服务器',
+      componentProps: {
+        placeholder: '请选择服务器',
+        allowClear: true,
+        showSearch: true,
+        filterOption: (input: string, option: any) =>
+          option.label.toLowerCase().includes(input.toLowerCase()),
+        afterFetch: (data: any[]) => {
+          return data.map((item: any) => ({
+            label: `${item.nickname} (${item.ip})`,
+            value: item.id,
+          }));
+        },
+        api: async () => {
+          const result = await serverStore.listServer();
+          return result.items || [];
+        },
+      },
+      rules: z.number().min(1, { message: '请选择服务器' }),
+    },
+    {
+      component: 'ApiSelect',
+      fieldName: 'exchangeAccountId',
+      label: '交易账号',
+      componentProps: {
+        placeholder: '请选择交易账号',
+        allowClear: true,
+        showSearch: true,
+        filterOption: (input: string, option: any) =>
+          option.label.toLowerCase().includes(input.toLowerCase()),
+        afterFetch: (data: any[]) => {
+          return data.map((item: any) => ({
+            label: `${item.nickname} (${item.exchangeName})`,
+            value: item.id,
+          }));
+        },
+        api: async () => {
+          const result = await exchangeAccountStore.listAccounts();
+          return result.items || [];
+        },
+      },
+      rules: z.number().min(1, { message: '请选择交易账号' }),
     },
     {
       component: 'Input',

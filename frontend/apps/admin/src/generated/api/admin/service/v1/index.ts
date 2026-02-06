@@ -5992,8 +5992,68 @@ export type tradingservicev1_Robot = {
   registeredAt: wellKnownTimestamp | undefined;
   // 最后心跳时间
   lastHeartbeat: wellKnownTimestamp | undefined;
+  // 关联服务器ID
+  serverId: number | undefined;
+  // 关联交易账号ID
+  exchangeAccountId: number | undefined;
+  // 关联服务器信息
+  server: tradingservicev1_Server | undefined;
+  // 关联交易账号信息
+  exchangeAccount: tradingservicev1_ExchangeAccount | undefined;
 };
 
+// 托管者（服务器）
+export type tradingservicev1_Server = {
+  // 服务器ID
+  id: number | undefined;
+  // 托管者昵称
+  nickname: string | undefined;
+  // 外网IP
+  ip: string | undefined;
+  // 内网IP
+  innerIp: string | undefined;
+  // 端口
+  port: string | undefined;
+  // 操作员
+  operator: string | undefined;
+  // 机器ID
+  machineId: string | undefined;
+  // 备注
+  remark: string | undefined;
+  // VPC ID
+  vpcId: string | undefined;
+  // 实例ID
+  instanceId: string | undefined;
+  // 服务器状态信息
+  serverInfo: tradingservicev1_ServerStatusInfo | undefined;
+  // 类型
+  type: tradingservicev1_ServerType | undefined;
+  // 创建时间
+  createTime: wellKnownTimestamp | undefined;
+  // 更新时间
+  updateTime: wellKnownTimestamp | undefined;
+};
+
+// 服务器状态信息
+export type tradingservicev1_ServerStatusInfo = {
+  // CPU信息
+  cpu: string | undefined;
+  // IP池
+  ipPool: number | undefined;
+  // 内存
+  mem: number | undefined;
+  // 内存百分比
+  memPct: string | undefined;
+  // 磁盘百分比
+  diskPct: string | undefined;
+  // 任务数
+  taskNum: number | undefined;
+};
+
+// 托管者类型
+export type tradingservicev1_ServerType =
+  | "SERVER_TYPE_UNSPECIFIED"
+  | "SERVER_TYPE_SELF_BUILT";
 // 获取 Robot 请求
 export type tradingservicev1_GetRobotRequest = {
   // 机器人ID
@@ -6016,6 +6076,10 @@ export type tradingservicev1_CreateRobotRequest = {
   initBalance: number | undefined;
   // 余额
   balance: number | undefined;
+  // 关联服务器ID
+  serverId: number | undefined;
+  // 关联交易账号ID
+  exchangeAccountId: number | undefined;
 };
 
 // 更新 Robot 请求
@@ -6034,6 +6098,10 @@ export type tradingservicev1_UpdateRobotRequest = {
   initBalance?: number;
   // 余额
   balance?: number;
+  // 关联服务器ID
+  serverId?: number;
+  // 关联交易账号ID
+  exchangeAccountId?: number;
 };
 
 // 删除 Robot 请求
@@ -6685,58 +6753,6 @@ export type tradingservicev1_ListServerResponse = {
   items: tradingservicev1_Server[] | undefined;
 };
 
-// 托管者（服务器）
-export type tradingservicev1_Server = {
-  // 服务器ID
-  id: number | undefined;
-  // 托管者昵称
-  nickname: string | undefined;
-  // 外网IP
-  ip: string | undefined;
-  // 内网IP
-  innerIp: string | undefined;
-  // 端口
-  port: string | undefined;
-  // 操作员
-  operator: string | undefined;
-  // 机器ID
-  machineId: string | undefined;
-  // 备注
-  remark: string | undefined;
-  // VPC ID
-  vpcId: string | undefined;
-  // 实例ID
-  instanceId: string | undefined;
-  // 服务器状态信息
-  serverInfo: tradingservicev1_ServerStatusInfo | undefined;
-  // 类型
-  type: tradingservicev1_ServerType | undefined;
-  // 创建时间
-  createTime: wellKnownTimestamp | undefined;
-  // 更新时间
-  updateTime: wellKnownTimestamp | undefined;
-};
-
-// 服务器状态信息
-export type tradingservicev1_ServerStatusInfo = {
-  // CPU信息
-  cpu: string | undefined;
-  // IP池
-  ipPool: number | undefined;
-  // 内存
-  mem: number | undefined;
-  // 内存百分比
-  memPct: string | undefined;
-  // 磁盘百分比
-  diskPct: string | undefined;
-  // 任务数
-  taskNum: number | undefined;
-};
-
-// 托管者类型
-export type tradingservicev1_ServerType =
-  | "SERVER_TYPE_UNSPECIFIED"
-  | "SERVER_TYPE_SELF_BUILT";
 // 获取托管者请求
 export type tradingservicev1_GetServerRequest = {
   // 服务器ID

@@ -52,7 +52,11 @@ type Robot struct {
 	RegisteredAt *time.Time `json:"registered_at,omitempty"`
 	// 最后心跳时间
 	LastHeartbeat *time.Time `json:"last_heartbeat,omitempty"`
-	selectValues  sql.SelectValues
+	// 关联服务器ID
+	ServerID uint32 `json:"server_id,omitempty"`
+	// 关联交易账号ID
+	ExchangeAccountID uint32 `json:"exchange_account_id,omitempty"`
+	selectValues      sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -62,7 +66,7 @@ func (*Robot) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case robot.FieldBalance, robot.FieldInitBalance:
 			values[i] = new(sql.NullFloat64)
-		case robot.FieldID, robot.FieldCreatedBy, robot.FieldUpdatedBy, robot.FieldDeletedBy, robot.FieldTenantID:
+		case robot.FieldID, robot.FieldCreatedBy, robot.FieldUpdatedBy, robot.FieldDeletedBy, robot.FieldTenantID, robot.FieldServerID, robot.FieldExchangeAccountID:
 			values[i] = new(sql.NullInt64)
 		case robot.FieldRemark, robot.FieldRid, robot.FieldNickname, robot.FieldExchange, robot.FieldVersion, robot.FieldStatus:
 			values[i] = new(sql.NullString)
@@ -201,6 +205,18 @@ func (_m *Robot) assignValues(columns []string, values []any) error {
 				_m.LastHeartbeat = new(time.Time)
 				*_m.LastHeartbeat = value.Time
 			}
+		case robot.FieldServerID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field server_id", values[i])
+			} else if value.Valid {
+				_m.ServerID = uint32(value.Int64)
+			}
+		case robot.FieldExchangeAccountID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field exchange_account_id", values[i])
+			} else if value.Valid {
+				_m.ExchangeAccountID = uint32(value.Int64)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -307,6 +323,12 @@ func (_m *Robot) String() string {
 		builder.WriteString("last_heartbeat=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("server_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.ServerID))
+	builder.WriteString(", ")
+	builder.WriteString("exchange_account_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.ExchangeAccountID))
 	builder.WriteByte(')')
 	return builder.String()
 }

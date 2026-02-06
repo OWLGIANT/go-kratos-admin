@@ -45,6 +45,14 @@ func (x *Robot) Redact() string {
 	// Safe field: RegisteredAt
 
 	// Safe field: LastHeartbeat
+
+	// Safe field: ServerId
+
+	// Safe field: ExchangeAccountId
+
+	// Safe field: Server
+
+	// Safe field: ExchangeAccount
 	return x.String()
 }
 
@@ -89,6 +97,10 @@ func (x *CreateRobotRequest) Redact() string {
 	// Safe field: InitBalance
 
 	// Safe field: Balance
+
+	// Safe field: ServerId
+
+	// Safe field: ExchangeAccountId
 	return x.String()
 }
 
@@ -111,6 +123,10 @@ func (x *UpdateRobotRequest) Redact() string {
 	// Safe field: InitBalance
 
 	// Safe field: Balance
+
+	// Safe field: ServerId
+
+	// Safe field: ExchangeAccountId
 	return x.String()
 }
 

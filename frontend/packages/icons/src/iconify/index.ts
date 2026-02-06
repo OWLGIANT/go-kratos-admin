@@ -30,6 +30,7 @@ export const LucidePencilOff = createIconifyIcon('lucide:pencil-off');
 
 export const LucideNotebookPen = createIconifyIcon('lucide:notebook-pen');
 export const LucideFilePenLine = createIconifyIcon('lucide:file-pen-line');
+export const LucideFileText = createIconifyIcon('lucide:file-text');
 
 export const LucideInfo = createIconifyIcon('lucide:info');
 

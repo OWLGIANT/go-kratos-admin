@@ -12,7 +12,6 @@ import (
 	entCrud "github.com/tx7do/go-crud/entgo"
 
 	"github.com/tx7do/go-utils/copierutil"
-	"github.com/tx7do/go-utils/crypto"
 	"github.com/tx7do/go-utils/mapper"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
@@ -214,23 +213,13 @@ func (r *exchangeAccountRepo) Get(ctx context.Context, req *tradingV1.GetExchang
 func (r *exchangeAccountRepo) Create(ctx context.Context, req *tradingV1.CreateExchangeAccountRequest) (*tradingV1.ExchangeAccount, error) {
 	builder := r.entClient.Client().ExchangeAccount.Create()
 
-	// 加密敏感信息
-	encryptedSecretKey, err := r.encryptSensitiveData(req.SecretKey)
-	if err != nil {
-		return nil, err
-	}
-	encryptedPassKey, err := r.encryptSensitiveData(req.PassKey)
-	if err != nil {
-		return nil, err
-	}
-
 	builder.
 		SetNickname(req.Nickname).
 		SetExchangeName(req.ExchangeName).
 		SetOriginAccount(req.OriginAccount).
 		SetAPIKey(req.ApiKey).
-		SetSecretKey(encryptedSecretKey).
-		SetPassKey(encryptedPassKey).
+		SetSecretKey(req.SecretKey).
+		SetPassKey(req.PassKey).
 		SetBrokerID(req.BrokerId).
 		SetRemark(req.Remark).
 		SetServerIps(req.ServerIps).
@@ -266,20 +255,10 @@ func (r *exchangeAccountRepo) Update(ctx context.Context, req *tradingV1.UpdateE
 		builder.SetAPIKey(*req.ApiKey)
 	}
 	if req.SecretKey != nil {
-		// 加密SecretKey
-		encryptedSecretKey, err := r.encryptSensitiveData(*req.SecretKey)
-		if err != nil {
-			return err
-		}
-		builder.SetSecretKey(encryptedSecretKey)
+		builder.SetSecretKey(*req.SecretKey)
 	}
 	if req.PassKey != nil {
-		// 加密PassKey
-		encryptedPassKey, err := r.encryptSensitiveData(*req.PassKey)
-		if err != nil {
-			return err
-		}
-		builder.SetPassKey(encryptedPassKey)
+		builder.SetPassKey(*req.PassKey)
 	}
 	if req.BrokerId != nil {
 		builder.SetBrokerID(*req.BrokerId)
@@ -438,32 +417,6 @@ func (r *exchangeAccountRepo) UpdateCombined(ctx context.Context, req *tradingV1
 	}
 
 	return builder.Exec(ctx)
-}
-
-// encryptSensitiveData 加密敏感数据
-func (r *exchangeAccountRepo) encryptSensitiveData(data string) (string, error) {
-	if data == "" {
-		return "", nil
-	}
-	encrypted, err := crypto.AesEncrypt([]byte(data), crypto.DefaultAESKey, nil)
-	if err != nil {
-		r.log.Errorf("encrypt sensitive data failed: %s", err.Error())
-		return "", err
-	}
-	return string(encrypted), nil
-}
-
-// decryptSensitiveData 解密敏感数据
-func (r *exchangeAccountRepo) decryptSensitiveData(encryptedData string) (string, error) {
-	if encryptedData == "" {
-		return "", nil
-	}
-	decrypted, err := crypto.AesDecrypt([]byte(encryptedData), crypto.DefaultAESKey, nil)
-	if err != nil {
-		r.log.Errorf("decrypt sensitive data failed: %s", err.Error())
-		return "", err
-	}
-	return string(decrypted), nil
 }
 
 // convertUint32ToStringSlice 转换uint32切片为字符串切片

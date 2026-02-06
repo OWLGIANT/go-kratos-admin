@@ -4,6 +4,7 @@ package trading.service.v1;
 
 import "google/protobuf/timestamp.proto";
 import "trading/service/v1/server.proto";
+import "trading/service/v1/exchange_account.proto";
 
 option go_package = "kratos-admin/api/gen/go/trading/service/v1;tradingV1";
 
@@ -44,7 +45,17 @@ message Robot {
   // 最后心跳时间
   google.protobuf.Timestamp last_heartbeat = 9;
 
+  // 关联服务器ID
+  uint32 server_id = 10;
 
+  // 关联交易账号ID
+  uint32 exchange_account_id = 11;
+
+  // 关联服务器信息
+  Server server = 12;
+
+  // 关联交易账号信息
+  ExchangeAccount exchange_account = 13;
 }
 
 // 获取 Robot 列表响应
@@ -84,6 +95,12 @@ message CreateRobotRequest {
 
   // 余额
   double balance = 7;
+
+  // 关联服务器ID
+  uint32 server_id = 8;
+
+  // 关联交易账号ID
+  uint32 exchange_account_id = 9;
 }
 
 // 更新 Robot 请求
@@ -108,6 +125,12 @@ message UpdateRobotRequest {
 
   // 余额
   optional double balance = 7;
+
+  // 关联服务器ID
+  optional uint32 server_id = 8;
+
+  // 关联交易账号ID
+  optional uint32 exchange_account_id = 9;
 }
 
 // 删除 Robot 请求

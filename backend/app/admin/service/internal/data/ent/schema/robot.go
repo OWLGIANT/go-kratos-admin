@@ -72,6 +72,16 @@ func (Robot) Fields() []ent.Field {
 			Comment("最后心跳时间").
 			Optional().
 			Nillable(),
+
+		field.Uint32("server_id").
+			Comment("关联服务器ID").
+			Optional().
+			Default(0),
+
+		field.Uint32("exchange_account_id").
+			Comment("关联交易账号ID").
+			Optional().
+			Default(0),
 	}
 }
 

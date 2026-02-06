@@ -139,6 +139,16 @@ func LastHeartbeat(v time.Time) predicate.Robot {
 	return predicate.Robot(sql.FieldEQ(FieldLastHeartbeat, v))
 }
 
+// ServerID applies equality check predicate on the "server_id" field. It's identical to ServerIDEQ.
+func ServerID(v uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldServerID, v))
+}
+
+// ExchangeAccountID applies equality check predicate on the "exchange_account_id" field. It's identical to ExchangeAccountIDEQ.
+func ExchangeAccountID(v uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldExchangeAccountID, v))
+}
+
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
 func CreatedByEQ(v uint32) predicate.Robot {
 	return predicate.Robot(sql.FieldEQ(FieldCreatedBy, v))
@@ -1107,6 +1117,106 @@ func LastHeartbeatIsNil() predicate.Robot {
 // LastHeartbeatNotNil applies the NotNil predicate on the "last_heartbeat" field.
 func LastHeartbeatNotNil() predicate.Robot {
 	return predicate.Robot(sql.FieldNotNull(FieldLastHeartbeat))
+}
+
+// ServerIDEQ applies the EQ predicate on the "server_id" field.
+func ServerIDEQ(v uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldServerID, v))
+}
+
+// ServerIDNEQ applies the NEQ predicate on the "server_id" field.
+func ServerIDNEQ(v uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldNEQ(FieldServerID, v))
+}
+
+// ServerIDIn applies the In predicate on the "server_id" field.
+func ServerIDIn(vs ...uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldIn(FieldServerID, vs...))
+}
+
+// ServerIDNotIn applies the NotIn predicate on the "server_id" field.
+func ServerIDNotIn(vs ...uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldNotIn(FieldServerID, vs...))
+}
+
+// ServerIDGT applies the GT predicate on the "server_id" field.
+func ServerIDGT(v uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldGT(FieldServerID, v))
+}
+
+// ServerIDGTE applies the GTE predicate on the "server_id" field.
+func ServerIDGTE(v uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldGTE(FieldServerID, v))
+}
+
+// ServerIDLT applies the LT predicate on the "server_id" field.
+func ServerIDLT(v uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldLT(FieldServerID, v))
+}
+
+// ServerIDLTE applies the LTE predicate on the "server_id" field.
+func ServerIDLTE(v uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldLTE(FieldServerID, v))
+}
+
+// ServerIDIsNil applies the IsNil predicate on the "server_id" field.
+func ServerIDIsNil() predicate.Robot {
+	return predicate.Robot(sql.FieldIsNull(FieldServerID))
+}
+
+// ServerIDNotNil applies the NotNil predicate on the "server_id" field.
+func ServerIDNotNil() predicate.Robot {
+	return predicate.Robot(sql.FieldNotNull(FieldServerID))
+}
+
+// ExchangeAccountIDEQ applies the EQ predicate on the "exchange_account_id" field.
+func ExchangeAccountIDEQ(v uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldEQ(FieldExchangeAccountID, v))
+}
+
+// ExchangeAccountIDNEQ applies the NEQ predicate on the "exchange_account_id" field.
+func ExchangeAccountIDNEQ(v uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldNEQ(FieldExchangeAccountID, v))
+}
+
+// ExchangeAccountIDIn applies the In predicate on the "exchange_account_id" field.
+func ExchangeAccountIDIn(vs ...uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldIn(FieldExchangeAccountID, vs...))
+}
+
+// ExchangeAccountIDNotIn applies the NotIn predicate on the "exchange_account_id" field.
+func ExchangeAccountIDNotIn(vs ...uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldNotIn(FieldExchangeAccountID, vs...))
+}
+
+// ExchangeAccountIDGT applies the GT predicate on the "exchange_account_id" field.
+func ExchangeAccountIDGT(v uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldGT(FieldExchangeAccountID, v))
+}
+
+// ExchangeAccountIDGTE applies the GTE predicate on the "exchange_account_id" field.
+func ExchangeAccountIDGTE(v uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldGTE(FieldExchangeAccountID, v))
+}
+
+// ExchangeAccountIDLT applies the LT predicate on the "exchange_account_id" field.
+func ExchangeAccountIDLT(v uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldLT(FieldExchangeAccountID, v))
+}
+
+// ExchangeAccountIDLTE applies the LTE predicate on the "exchange_account_id" field.
+func ExchangeAccountIDLTE(v uint32) predicate.Robot {
+	return predicate.Robot(sql.FieldLTE(FieldExchangeAccountID, v))
+}
+
+// ExchangeAccountIDIsNil applies the IsNil predicate on the "exchange_account_id" field.
+func ExchangeAccountIDIsNil() predicate.Robot {
+	return predicate.Robot(sql.FieldIsNull(FieldExchangeAccountID))
+}
+
+// ExchangeAccountIDNotNil applies the NotNil predicate on the "exchange_account_id" field.
+func ExchangeAccountIDNotNil() predicate.Robot {
+	return predicate.Robot(sql.FieldNotNull(FieldExchangeAccountID))
 }
 
 // And groups predicates with the AND operator between them.

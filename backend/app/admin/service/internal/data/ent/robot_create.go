@@ -252,6 +252,34 @@ func (_c *RobotCreate) SetNillableLastHeartbeat(v *time.Time) *RobotCreate {
 	return _c
 }
 
+// SetServerID sets the "server_id" field.
+func (_c *RobotCreate) SetServerID(v uint32) *RobotCreate {
+	_c.mutation.SetServerID(v)
+	return _c
+}
+
+// SetNillableServerID sets the "server_id" field if the given value is not nil.
+func (_c *RobotCreate) SetNillableServerID(v *uint32) *RobotCreate {
+	if v != nil {
+		_c.SetServerID(*v)
+	}
+	return _c
+}
+
+// SetExchangeAccountID sets the "exchange_account_id" field.
+func (_c *RobotCreate) SetExchangeAccountID(v uint32) *RobotCreate {
+	_c.mutation.SetExchangeAccountID(v)
+	return _c
+}
+
+// SetNillableExchangeAccountID sets the "exchange_account_id" field if the given value is not nil.
+func (_c *RobotCreate) SetNillableExchangeAccountID(v *uint32) *RobotCreate {
+	if v != nil {
+		_c.SetExchangeAccountID(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *RobotCreate) SetID(v uint32) *RobotCreate {
 	_c.mutation.SetID(v)
@@ -322,6 +350,14 @@ func (_c *RobotCreate) defaults() error {
 	if _, ok := _c.mutation.InitBalance(); !ok {
 		v := robot.DefaultInitBalance
 		_c.mutation.SetInitBalance(v)
+	}
+	if _, ok := _c.mutation.ServerID(); !ok {
+		v := robot.DefaultServerID
+		_c.mutation.SetServerID(v)
+	}
+	if _, ok := _c.mutation.ExchangeAccountID(); !ok {
+		v := robot.DefaultExchangeAccountID
+		_c.mutation.SetExchangeAccountID(v)
 	}
 	return nil
 }
@@ -447,6 +483,14 @@ func (_c *RobotCreate) createSpec() (*Robot, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.LastHeartbeat(); ok {
 		_spec.SetField(robot.FieldLastHeartbeat, field.TypeTime, value)
 		_node.LastHeartbeat = &value
+	}
+	if value, ok := _c.mutation.ServerID(); ok {
+		_spec.SetField(robot.FieldServerID, field.TypeUint32, value)
+		_node.ServerID = value
+	}
+	if value, ok := _c.mutation.ExchangeAccountID(); ok {
+		_spec.SetField(robot.FieldExchangeAccountID, field.TypeUint32, value)
+		_node.ExchangeAccountID = value
 	}
 	return _node, _spec
 }
@@ -767,6 +811,54 @@ func (u *RobotUpsert) UpdateLastHeartbeat() *RobotUpsert {
 // ClearLastHeartbeat clears the value of the "last_heartbeat" field.
 func (u *RobotUpsert) ClearLastHeartbeat() *RobotUpsert {
 	u.SetNull(robot.FieldLastHeartbeat)
+	return u
+}
+
+// SetServerID sets the "server_id" field.
+func (u *RobotUpsert) SetServerID(v uint32) *RobotUpsert {
+	u.Set(robot.FieldServerID, v)
+	return u
+}
+
+// UpdateServerID sets the "server_id" field to the value that was provided on create.
+func (u *RobotUpsert) UpdateServerID() *RobotUpsert {
+	u.SetExcluded(robot.FieldServerID)
+	return u
+}
+
+// AddServerID adds v to the "server_id" field.
+func (u *RobotUpsert) AddServerID(v uint32) *RobotUpsert {
+	u.Add(robot.FieldServerID, v)
+	return u
+}
+
+// ClearServerID clears the value of the "server_id" field.
+func (u *RobotUpsert) ClearServerID() *RobotUpsert {
+	u.SetNull(robot.FieldServerID)
+	return u
+}
+
+// SetExchangeAccountID sets the "exchange_account_id" field.
+func (u *RobotUpsert) SetExchangeAccountID(v uint32) *RobotUpsert {
+	u.Set(robot.FieldExchangeAccountID, v)
+	return u
+}
+
+// UpdateExchangeAccountID sets the "exchange_account_id" field to the value that was provided on create.
+func (u *RobotUpsert) UpdateExchangeAccountID() *RobotUpsert {
+	u.SetExcluded(robot.FieldExchangeAccountID)
+	return u
+}
+
+// AddExchangeAccountID adds v to the "exchange_account_id" field.
+func (u *RobotUpsert) AddExchangeAccountID(v uint32) *RobotUpsert {
+	u.Add(robot.FieldExchangeAccountID, v)
+	return u
+}
+
+// ClearExchangeAccountID clears the value of the "exchange_account_id" field.
+func (u *RobotUpsert) ClearExchangeAccountID() *RobotUpsert {
+	u.SetNull(robot.FieldExchangeAccountID)
 	return u
 }
 
@@ -1139,6 +1231,62 @@ func (u *RobotUpsertOne) UpdateLastHeartbeat() *RobotUpsertOne {
 func (u *RobotUpsertOne) ClearLastHeartbeat() *RobotUpsertOne {
 	return u.Update(func(s *RobotUpsert) {
 		s.ClearLastHeartbeat()
+	})
+}
+
+// SetServerID sets the "server_id" field.
+func (u *RobotUpsertOne) SetServerID(v uint32) *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetServerID(v)
+	})
+}
+
+// AddServerID adds v to the "server_id" field.
+func (u *RobotUpsertOne) AddServerID(v uint32) *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.AddServerID(v)
+	})
+}
+
+// UpdateServerID sets the "server_id" field to the value that was provided on create.
+func (u *RobotUpsertOne) UpdateServerID() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.UpdateServerID()
+	})
+}
+
+// ClearServerID clears the value of the "server_id" field.
+func (u *RobotUpsertOne) ClearServerID() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearServerID()
+	})
+}
+
+// SetExchangeAccountID sets the "exchange_account_id" field.
+func (u *RobotUpsertOne) SetExchangeAccountID(v uint32) *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetExchangeAccountID(v)
+	})
+}
+
+// AddExchangeAccountID adds v to the "exchange_account_id" field.
+func (u *RobotUpsertOne) AddExchangeAccountID(v uint32) *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.AddExchangeAccountID(v)
+	})
+}
+
+// UpdateExchangeAccountID sets the "exchange_account_id" field to the value that was provided on create.
+func (u *RobotUpsertOne) UpdateExchangeAccountID() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.UpdateExchangeAccountID()
+	})
+}
+
+// ClearExchangeAccountID clears the value of the "exchange_account_id" field.
+func (u *RobotUpsertOne) ClearExchangeAccountID() *RobotUpsertOne {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearExchangeAccountID()
 	})
 }
 
@@ -1677,6 +1825,62 @@ func (u *RobotUpsertBulk) UpdateLastHeartbeat() *RobotUpsertBulk {
 func (u *RobotUpsertBulk) ClearLastHeartbeat() *RobotUpsertBulk {
 	return u.Update(func(s *RobotUpsert) {
 		s.ClearLastHeartbeat()
+	})
+}
+
+// SetServerID sets the "server_id" field.
+func (u *RobotUpsertBulk) SetServerID(v uint32) *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetServerID(v)
+	})
+}
+
+// AddServerID adds v to the "server_id" field.
+func (u *RobotUpsertBulk) AddServerID(v uint32) *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.AddServerID(v)
+	})
+}
+
+// UpdateServerID sets the "server_id" field to the value that was provided on create.
+func (u *RobotUpsertBulk) UpdateServerID() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.UpdateServerID()
+	})
+}
+
+// ClearServerID clears the value of the "server_id" field.
+func (u *RobotUpsertBulk) ClearServerID() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearServerID()
+	})
+}
+
+// SetExchangeAccountID sets the "exchange_account_id" field.
+func (u *RobotUpsertBulk) SetExchangeAccountID(v uint32) *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.SetExchangeAccountID(v)
+	})
+}
+
+// AddExchangeAccountID adds v to the "exchange_account_id" field.
+func (u *RobotUpsertBulk) AddExchangeAccountID(v uint32) *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.AddExchangeAccountID(v)
+	})
+}
+
+// UpdateExchangeAccountID sets the "exchange_account_id" field to the value that was provided on create.
+func (u *RobotUpsertBulk) UpdateExchangeAccountID() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.UpdateExchangeAccountID()
+	})
+}
+
+// ClearExchangeAccountID clears the value of the "exchange_account_id" field.
+func (u *RobotUpsertBulk) ClearExchangeAccountID() *RobotUpsertBulk {
+	return u.Update(func(s *RobotUpsert) {
+		s.ClearExchangeAccountID()
 	})
 }
 

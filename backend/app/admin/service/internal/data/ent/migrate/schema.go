@@ -2136,8 +2136,8 @@ var (
 			},
 		},
 	}
-	// AppRobotsColumns holds the columns for the "app_robots" table.
-	AppRobotsColumns = []*schema.Column{
+	// TradingRobotsColumns holds the columns for the "trading_robots" table.
+	TradingRobotsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
 		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
@@ -2156,28 +2156,30 @@ var (
 		{Name: "init_balance", Type: field.TypeFloat64, Comment: "初始资金", Default: 0},
 		{Name: "registered_at", Type: field.TypeTime, Nullable: true, Comment: "注册时间"},
 		{Name: "last_heartbeat", Type: field.TypeTime, Nullable: true, Comment: "最后心跳时间"},
+		{Name: "server_id", Type: field.TypeUint32, Nullable: true, Comment: "关联服务器ID", Default: 0},
+		{Name: "exchange_account_id", Type: field.TypeUint32, Nullable: true, Comment: "关联交易账号ID", Default: 0},
 	}
-	// AppRobotsTable holds the schema information for the "app_robots" table.
-	AppRobotsTable = &schema.Table{
-		Name:       "app_robots",
+	// TradingRobotsTable holds the schema information for the "trading_robots" table.
+	TradingRobotsTable = &schema.Table{
+		Name:       "trading_robots",
 		Comment:    "机器人表",
-		Columns:    AppRobotsColumns,
-		PrimaryKey: []*schema.Column{AppRobotsColumns[0]},
+		Columns:    TradingRobotsColumns,
+		PrimaryKey: []*schema.Column{TradingRobotsColumns[0]},
 		Indexes: []*schema.Index{
 			{
 				Name:    "idx_app_robot_tenant_rid",
 				Unique:  true,
-				Columns: []*schema.Column{AppRobotsColumns[8], AppRobotsColumns[9]},
+				Columns: []*schema.Column{TradingRobotsColumns[8], TradingRobotsColumns[9]},
 			},
 			{
 				Name:    "idx_app_robot_tenant_status",
 				Unique:  false,
-				Columns: []*schema.Column{AppRobotsColumns[8], AppRobotsColumns[13]},
+				Columns: []*schema.Column{TradingRobotsColumns[8], TradingRobotsColumns[13]},
 			},
 			{
 				Name:    "idx_app_robot_tenant_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{AppRobotsColumns[8], AppRobotsColumns[4]},
+				Columns: []*schema.Column{TradingRobotsColumns[8], TradingRobotsColumns[4]},
 			},
 		},
 	}
@@ -3025,7 +3027,7 @@ var (
 		SysPermissionPoliciesTable,
 		SysPolicyEvaluationLogsTable,
 		SysPositionsTable,
-		AppRobotsTable,
+		TradingRobotsTable,
 		SysRolesTable,
 		SysRoleMetadataTable,
 		SysRolePermissionsTable,
@@ -3197,8 +3199,8 @@ func init() {
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
-	AppRobotsTable.Annotation = &entsql.Annotation{
-		Table:     "app_robots",
+	TradingRobotsTable.Annotation = &entsql.Annotation{
+		Table:     "trading_robots",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

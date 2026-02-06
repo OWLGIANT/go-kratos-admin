@@ -48218,36 +48218,40 @@ func (m *PositionMutation) ResetEdge(name string) error {
 // RobotMutation represents an operation that mutates the Robot nodes in the graph.
 type RobotMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *uint32
-	created_by      *uint32
-	addcreated_by   *int32
-	updated_by      *uint32
-	addupdated_by   *int32
-	deleted_by      *uint32
-	adddeleted_by   *int32
-	created_at      *time.Time
-	updated_at      *time.Time
-	deleted_at      *time.Time
-	remark          *string
-	tenant_id       *uint32
-	addtenant_id    *int32
-	rid             *string
-	nickname        *string
-	exchange        *string
-	version         *string
-	status          *string
-	balance         *float64
-	addbalance      *float64
-	init_balance    *float64
-	addinit_balance *float64
-	registered_at   *time.Time
-	last_heartbeat  *time.Time
-	clearedFields   map[string]struct{}
-	done            bool
-	oldValue        func(context.Context) (*Robot, error)
-	predicates      []predicate.Robot
+	op                     Op
+	typ                    string
+	id                     *uint32
+	created_by             *uint32
+	addcreated_by          *int32
+	updated_by             *uint32
+	addupdated_by          *int32
+	deleted_by             *uint32
+	adddeleted_by          *int32
+	created_at             *time.Time
+	updated_at             *time.Time
+	deleted_at             *time.Time
+	remark                 *string
+	tenant_id              *uint32
+	addtenant_id           *int32
+	rid                    *string
+	nickname               *string
+	exchange               *string
+	version                *string
+	status                 *string
+	balance                *float64
+	addbalance             *float64
+	init_balance           *float64
+	addinit_balance        *float64
+	registered_at          *time.Time
+	last_heartbeat         *time.Time
+	server_id              *uint32
+	addserver_id           *int32
+	exchange_account_id    *uint32
+	addexchange_account_id *int32
+	clearedFields          map[string]struct{}
+	done                   bool
+	oldValue               func(context.Context) (*Robot, error)
+	predicates             []predicate.Robot
 }
 
 var _ ent.Mutation = (*RobotMutation)(nil)
@@ -49272,6 +49276,146 @@ func (m *RobotMutation) ResetLastHeartbeat() {
 	delete(m.clearedFields, robot.FieldLastHeartbeat)
 }
 
+// SetServerID sets the "server_id" field.
+func (m *RobotMutation) SetServerID(u uint32) {
+	m.server_id = &u
+	m.addserver_id = nil
+}
+
+// ServerID returns the value of the "server_id" field in the mutation.
+func (m *RobotMutation) ServerID() (r uint32, exists bool) {
+	v := m.server_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldServerID returns the old "server_id" field's value of the Robot entity.
+// If the Robot object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RobotMutation) OldServerID(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldServerID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldServerID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldServerID: %w", err)
+	}
+	return oldValue.ServerID, nil
+}
+
+// AddServerID adds u to the "server_id" field.
+func (m *RobotMutation) AddServerID(u int32) {
+	if m.addserver_id != nil {
+		*m.addserver_id += u
+	} else {
+		m.addserver_id = &u
+	}
+}
+
+// AddedServerID returns the value that was added to the "server_id" field in this mutation.
+func (m *RobotMutation) AddedServerID() (r int32, exists bool) {
+	v := m.addserver_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearServerID clears the value of the "server_id" field.
+func (m *RobotMutation) ClearServerID() {
+	m.server_id = nil
+	m.addserver_id = nil
+	m.clearedFields[robot.FieldServerID] = struct{}{}
+}
+
+// ServerIDCleared returns if the "server_id" field was cleared in this mutation.
+func (m *RobotMutation) ServerIDCleared() bool {
+	_, ok := m.clearedFields[robot.FieldServerID]
+	return ok
+}
+
+// ResetServerID resets all changes to the "server_id" field.
+func (m *RobotMutation) ResetServerID() {
+	m.server_id = nil
+	m.addserver_id = nil
+	delete(m.clearedFields, robot.FieldServerID)
+}
+
+// SetExchangeAccountID sets the "exchange_account_id" field.
+func (m *RobotMutation) SetExchangeAccountID(u uint32) {
+	m.exchange_account_id = &u
+	m.addexchange_account_id = nil
+}
+
+// ExchangeAccountID returns the value of the "exchange_account_id" field in the mutation.
+func (m *RobotMutation) ExchangeAccountID() (r uint32, exists bool) {
+	v := m.exchange_account_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldExchangeAccountID returns the old "exchange_account_id" field's value of the Robot entity.
+// If the Robot object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RobotMutation) OldExchangeAccountID(ctx context.Context) (v uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldExchangeAccountID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldExchangeAccountID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldExchangeAccountID: %w", err)
+	}
+	return oldValue.ExchangeAccountID, nil
+}
+
+// AddExchangeAccountID adds u to the "exchange_account_id" field.
+func (m *RobotMutation) AddExchangeAccountID(u int32) {
+	if m.addexchange_account_id != nil {
+		*m.addexchange_account_id += u
+	} else {
+		m.addexchange_account_id = &u
+	}
+}
+
+// AddedExchangeAccountID returns the value that was added to the "exchange_account_id" field in this mutation.
+func (m *RobotMutation) AddedExchangeAccountID() (r int32, exists bool) {
+	v := m.addexchange_account_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearExchangeAccountID clears the value of the "exchange_account_id" field.
+func (m *RobotMutation) ClearExchangeAccountID() {
+	m.exchange_account_id = nil
+	m.addexchange_account_id = nil
+	m.clearedFields[robot.FieldExchangeAccountID] = struct{}{}
+}
+
+// ExchangeAccountIDCleared returns if the "exchange_account_id" field was cleared in this mutation.
+func (m *RobotMutation) ExchangeAccountIDCleared() bool {
+	_, ok := m.clearedFields[robot.FieldExchangeAccountID]
+	return ok
+}
+
+// ResetExchangeAccountID resets all changes to the "exchange_account_id" field.
+func (m *RobotMutation) ResetExchangeAccountID() {
+	m.exchange_account_id = nil
+	m.addexchange_account_id = nil
+	delete(m.clearedFields, robot.FieldExchangeAccountID)
+}
+
 // Where appends a list predicates to the RobotMutation builder.
 func (m *RobotMutation) Where(ps ...predicate.Robot) {
 	m.predicates = append(m.predicates, ps...)
@@ -49306,7 +49450,7 @@ func (m *RobotMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RobotMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 19)
 	if m.created_by != nil {
 		fields = append(fields, robot.FieldCreatedBy)
 	}
@@ -49358,6 +49502,12 @@ func (m *RobotMutation) Fields() []string {
 	if m.last_heartbeat != nil {
 		fields = append(fields, robot.FieldLastHeartbeat)
 	}
+	if m.server_id != nil {
+		fields = append(fields, robot.FieldServerID)
+	}
+	if m.exchange_account_id != nil {
+		fields = append(fields, robot.FieldExchangeAccountID)
+	}
 	return fields
 }
 
@@ -49400,6 +49550,10 @@ func (m *RobotMutation) Field(name string) (ent.Value, bool) {
 		return m.RegisteredAt()
 	case robot.FieldLastHeartbeat:
 		return m.LastHeartbeat()
+	case robot.FieldServerID:
+		return m.ServerID()
+	case robot.FieldExchangeAccountID:
+		return m.ExchangeAccountID()
 	}
 	return nil, false
 }
@@ -49443,6 +49597,10 @@ func (m *RobotMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldRegisteredAt(ctx)
 	case robot.FieldLastHeartbeat:
 		return m.OldLastHeartbeat(ctx)
+	case robot.FieldServerID:
+		return m.OldServerID(ctx)
+	case robot.FieldExchangeAccountID:
+		return m.OldExchangeAccountID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Robot field %s", name)
 }
@@ -49571,6 +49729,20 @@ func (m *RobotMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLastHeartbeat(v)
 		return nil
+	case robot.FieldServerID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetServerID(v)
+		return nil
+	case robot.FieldExchangeAccountID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetExchangeAccountID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Robot field %s", name)
 }
@@ -49597,6 +49769,12 @@ func (m *RobotMutation) AddedFields() []string {
 	if m.addinit_balance != nil {
 		fields = append(fields, robot.FieldInitBalance)
 	}
+	if m.addserver_id != nil {
+		fields = append(fields, robot.FieldServerID)
+	}
+	if m.addexchange_account_id != nil {
+		fields = append(fields, robot.FieldExchangeAccountID)
+	}
 	return fields
 }
 
@@ -49617,6 +49795,10 @@ func (m *RobotMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedBalance()
 	case robot.FieldInitBalance:
 		return m.AddedInitBalance()
+	case robot.FieldServerID:
+		return m.AddedServerID()
+	case robot.FieldExchangeAccountID:
+		return m.AddedExchangeAccountID()
 	}
 	return nil, false
 }
@@ -49668,6 +49850,20 @@ func (m *RobotMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddInitBalance(v)
 		return nil
+	case robot.FieldServerID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddServerID(v)
+		return nil
+	case robot.FieldExchangeAccountID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddExchangeAccountID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Robot numeric field %s", name)
 }
@@ -49717,6 +49913,12 @@ func (m *RobotMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(robot.FieldLastHeartbeat) {
 		fields = append(fields, robot.FieldLastHeartbeat)
+	}
+	if m.FieldCleared(robot.FieldServerID) {
+		fields = append(fields, robot.FieldServerID)
+	}
+	if m.FieldCleared(robot.FieldExchangeAccountID) {
+		fields = append(fields, robot.FieldExchangeAccountID)
 	}
 	return fields
 }
@@ -49773,6 +49975,12 @@ func (m *RobotMutation) ClearField(name string) error {
 		return nil
 	case robot.FieldLastHeartbeat:
 		m.ClearLastHeartbeat()
+		return nil
+	case robot.FieldServerID:
+		m.ClearServerID()
+		return nil
+	case robot.FieldExchangeAccountID:
+		m.ClearExchangeAccountID()
 		return nil
 	}
 	return fmt.Errorf("unknown Robot nullable field %s", name)
@@ -49832,6 +50040,12 @@ func (m *RobotMutation) ResetField(name string) error {
 		return nil
 	case robot.FieldLastHeartbeat:
 		m.ResetLastHeartbeat()
+		return nil
+	case robot.FieldServerID:
+		m.ResetServerID()
+		return nil
+	case robot.FieldExchangeAccountID:
+		m.ResetExchangeAccountID()
 		return nil
 	}
 	return fmt.Errorf("unknown Robot field %s", name)

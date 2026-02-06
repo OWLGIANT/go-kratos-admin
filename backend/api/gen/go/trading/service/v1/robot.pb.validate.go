@@ -128,6 +128,68 @@ func (m *Robot) validate(all bool) error {
 		}
 	}
 
+	// no validation rules for ServerId
+
+	// no validation rules for ExchangeAccountId
+
+	if all {
+		switch v := interface{}(m.GetServer()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, RobotValidationError{
+					field:  "Server",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, RobotValidationError{
+					field:  "Server",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetServer()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return RobotValidationError{
+				field:  "Server",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetExchangeAccount()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, RobotValidationError{
+					field:  "ExchangeAccount",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, RobotValidationError{
+					field:  "ExchangeAccount",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetExchangeAccount()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return RobotValidationError{
+				field:  "ExchangeAccount",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	if len(errors) > 0 {
 		return RobotMultiError(errors)
 	}
@@ -481,6 +543,10 @@ func (m *CreateRobotRequest) validate(all bool) error {
 
 	// no validation rules for Balance
 
+	// no validation rules for ServerId
+
+	// no validation rules for ExchangeAccountId
+
 	if len(errors) > 0 {
 		return CreateRobotRequestMultiError(errors)
 	}
@@ -607,6 +673,14 @@ func (m *UpdateRobotRequest) validate(all bool) error {
 
 	if m.Balance != nil {
 		// no validation rules for Balance
+	}
+
+	if m.ServerId != nil {
+		// no validation rules for ServerId
+	}
+
+	if m.ExchangeAccountId != nil {
+		// no validation rules for ExchangeAccountId
 	}
 
 	if len(errors) > 0 {

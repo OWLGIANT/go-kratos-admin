@@ -22,6 +22,8 @@ export interface RobotInfo {
   balance?: number;
   registeredAt?: string;
   lastHeartbeat?: string;
+  serverId?: number;
+  exchangeAccountId?: number;
 }
 
 export const useRobotStore = defineStore('robot', () => {
@@ -47,6 +49,8 @@ export const useRobotStore = defineStore('robot', () => {
       balance: robot.balance,
       registeredAt: robot.registeredAt,
       lastHeartbeat: robot.lastHeartbeat,
+      serverId: robot.serverId,
+      exchangeAccountId: robot.exchangeAccountId,
     };
   }
 
@@ -95,6 +99,8 @@ export const useRobotStore = defineStore('robot', () => {
     status?: string;
     initBalance?: number;
     balance?: number;
+    serverId?: number;
+    exchangeAccountId?: number;
   }) {
     await service.CreateRobot(data);
   }
@@ -110,6 +116,8 @@ export const useRobotStore = defineStore('robot', () => {
     status?: string;
     initBalance?: number;
     balance?: number;
+    serverId?: number;
+    exchangeAccountId?: number;
   }) {
     await service.UpdateRobot(data);
   }

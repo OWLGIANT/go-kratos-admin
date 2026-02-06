@@ -114,6 +114,6 @@
   },
   "ossProvider": {
     "LOCAL": "Local Storage",
-    "ALIYUN": "Aliyun OSS",
+    "ALIYUN": "Aliyun OSS"
   }
 }

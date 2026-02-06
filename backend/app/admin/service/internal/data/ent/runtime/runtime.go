@@ -1044,6 +1044,14 @@ func init() {
 	robotDescInitBalance := robotFields[6].Descriptor()
 	// robot.DefaultInitBalance holds the default value on creation for the init_balance field.
 	robot.DefaultInitBalance = robotDescInitBalance.Default.(float64)
+	// robotDescServerID is the schema descriptor for server_id field.
+	robotDescServerID := robotFields[9].Descriptor()
+	// robot.DefaultServerID holds the default value on creation for the server_id field.
+	robot.DefaultServerID = robotDescServerID.Default.(uint32)
+	// robotDescExchangeAccountID is the schema descriptor for exchange_account_id field.
+	robotDescExchangeAccountID := robotFields[10].Descriptor()
+	// robot.DefaultExchangeAccountID holds the default value on creation for the exchange_account_id field.
+	robot.DefaultExchangeAccountID = robotDescExchangeAccountID.Default.(uint32)
 	// robotDescID is the schema descriptor for id field.
 	robotDescID := robotMixinFields0[0].Descriptor()
 	// robot.IDValidator is a validator for the "id" field. It is called by the builders before save.

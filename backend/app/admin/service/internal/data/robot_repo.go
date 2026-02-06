@@ -139,13 +139,15 @@ func (r *robotRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (
 // entityToProto 将实体转换为 protobuf
 func (r *robotRepo) entityToProto(entity *ent.Robot) *tradingV1.Robot {
 	item := &tradingV1.Robot{
-		RobotId:     entity.Rid,
-		Nickname:    entity.Nickname,
-		Exchange:    entity.Exchange,
-		Version:     entity.Version,
-		Status:      entity.Status,
-		InitBalance: entity.InitBalance,
-		Balance:     entity.Balance,
+		RobotId:           entity.Rid,
+		Nickname:          entity.Nickname,
+		Exchange:          entity.Exchange,
+		Version:           entity.Version,
+		Status:            entity.Status,
+		InitBalance:       entity.InitBalance,
+		Balance:           entity.Balance,
+		ServerId:          entity.ServerID,
+		ExchangeAccountId: entity.ExchangeAccountID,
 	}
 
 	// 处理可选字段
@@ -187,7 +189,9 @@ func (r *robotRepo) Create(ctx context.Context, req *tradingV1.CreateRobotReques
 		SetVersion(req.Version).
 		SetStatus(req.Status).
 		SetInitBalance(req.InitBalance).
-		SetBalance(req.Balance)
+		SetBalance(req.Balance).
+		SetServerID(req.ServerId).
+		SetExchangeAccountID(req.ExchangeAccountId)
 
 	entity, err := builder.Save(ctx)
 	if err != nil {
@@ -220,6 +224,12 @@ func (r *robotRepo) Update(ctx context.Context, req *tradingV1.UpdateRobotReques
 	}
 	if req.Balance != nil {
 		builder.SetBalance(*req.Balance)
+	}
+	if req.ServerId != nil {
+		builder.SetServerID(*req.ServerId)
+	}
+	if req.ExchangeAccountId != nil {
+		builder.SetExchangeAccountID(*req.ExchangeAccountId)
 	}
 
 	if _, err := builder.Save(ctx); err != nil {
@@ -275,15 +285,17 @@ func (r *robotRepo) GetRobot(ctx context.Context, tenantID uint32, rid string) (
 	}
 
 	result := map[string]interface{}{
-		"robot_id":      entity.Rid,
-		"nickname":      entity.Nickname,
-		"exchange":      entity.Exchange,
-		"version":       entity.Version,
-		"status":        entity.Status,
-		"init_balance":  entity.InitBalance,
-		"balance":       entity.Balance,
-		"registered_at": entity.RegisteredAt,
-		"last_heartbeat": entity.LastHeartbeat,
+		"robot_id":            entity.Rid,
+		"nickname":            entity.Nickname,
+		"exchange":            entity.Exchange,
+		"version":             entity.Version,
+		"status":              entity.Status,
+		"init_balance":        entity.InitBalance,
+		"balance":             entity.Balance,
+		"registered_at":       entity.RegisteredAt,
+		"last_heartbeat":      entity.LastHeartbeat,
+		"server_id":           entity.ServerID,
+		"exchange_account_id": entity.ExchangeAccountID,
 	}
 
 	return result, nil

@@ -3,7 +3,6 @@
 package config
 
 import (
-	"actor/helper"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -63,9 +62,6 @@ func LoadConfig(fileName string, isEncrypt bool) *Config {
 	err = decoder.Decode(&Conf)
 	if err != nil {
 		fmt.Println(err)
-	}
-	if isEncrypt {
-		Conf.SecretKey = helper.AesDecrypt(Conf.SecretKey, "l#Os#*JFJX!0^yOI")
 	}
 	return &Conf
 }

@@ -332,6 +332,60 @@ func (_u *RobotUpdate) ClearLastHeartbeat() *RobotUpdate {
 	return _u
 }
 
+// SetServerID sets the "server_id" field.
+func (_u *RobotUpdate) SetServerID(v uint32) *RobotUpdate {
+	_u.mutation.ResetServerID()
+	_u.mutation.SetServerID(v)
+	return _u
+}
+
+// SetNillableServerID sets the "server_id" field if the given value is not nil.
+func (_u *RobotUpdate) SetNillableServerID(v *uint32) *RobotUpdate {
+	if v != nil {
+		_u.SetServerID(*v)
+	}
+	return _u
+}
+
+// AddServerID adds value to the "server_id" field.
+func (_u *RobotUpdate) AddServerID(v int32) *RobotUpdate {
+	_u.mutation.AddServerID(v)
+	return _u
+}
+
+// ClearServerID clears the value of the "server_id" field.
+func (_u *RobotUpdate) ClearServerID() *RobotUpdate {
+	_u.mutation.ClearServerID()
+	return _u
+}
+
+// SetExchangeAccountID sets the "exchange_account_id" field.
+func (_u *RobotUpdate) SetExchangeAccountID(v uint32) *RobotUpdate {
+	_u.mutation.ResetExchangeAccountID()
+	_u.mutation.SetExchangeAccountID(v)
+	return _u
+}
+
+// SetNillableExchangeAccountID sets the "exchange_account_id" field if the given value is not nil.
+func (_u *RobotUpdate) SetNillableExchangeAccountID(v *uint32) *RobotUpdate {
+	if v != nil {
+		_u.SetExchangeAccountID(*v)
+	}
+	return _u
+}
+
+// AddExchangeAccountID adds value to the "exchange_account_id" field.
+func (_u *RobotUpdate) AddExchangeAccountID(v int32) *RobotUpdate {
+	_u.mutation.AddExchangeAccountID(v)
+	return _u
+}
+
+// ClearExchangeAccountID clears the value of the "exchange_account_id" field.
+func (_u *RobotUpdate) ClearExchangeAccountID() *RobotUpdate {
+	_u.mutation.ClearExchangeAccountID()
+	return _u
+}
+
 // Mutation returns the RobotMutation object of the builder.
 func (_u *RobotUpdate) Mutation() *RobotMutation {
 	return _u.mutation
@@ -477,6 +531,24 @@ func (_u *RobotUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.LastHeartbeatCleared() {
 		_spec.ClearField(robot.FieldLastHeartbeat, field.TypeTime)
+	}
+	if value, ok := _u.mutation.ServerID(); ok {
+		_spec.SetField(robot.FieldServerID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedServerID(); ok {
+		_spec.AddField(robot.FieldServerID, field.TypeUint32, value)
+	}
+	if _u.mutation.ServerIDCleared() {
+		_spec.ClearField(robot.FieldServerID, field.TypeUint32)
+	}
+	if value, ok := _u.mutation.ExchangeAccountID(); ok {
+		_spec.SetField(robot.FieldExchangeAccountID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedExchangeAccountID(); ok {
+		_spec.AddField(robot.FieldExchangeAccountID, field.TypeUint32, value)
+	}
+	if _u.mutation.ExchangeAccountIDCleared() {
+		_spec.ClearField(robot.FieldExchangeAccountID, field.TypeUint32)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -803,6 +875,60 @@ func (_u *RobotUpdateOne) ClearLastHeartbeat() *RobotUpdateOne {
 	return _u
 }
 
+// SetServerID sets the "server_id" field.
+func (_u *RobotUpdateOne) SetServerID(v uint32) *RobotUpdateOne {
+	_u.mutation.ResetServerID()
+	_u.mutation.SetServerID(v)
+	return _u
+}
+
+// SetNillableServerID sets the "server_id" field if the given value is not nil.
+func (_u *RobotUpdateOne) SetNillableServerID(v *uint32) *RobotUpdateOne {
+	if v != nil {
+		_u.SetServerID(*v)
+	}
+	return _u
+}
+
+// AddServerID adds value to the "server_id" field.
+func (_u *RobotUpdateOne) AddServerID(v int32) *RobotUpdateOne {
+	_u.mutation.AddServerID(v)
+	return _u
+}
+
+// ClearServerID clears the value of the "server_id" field.
+func (_u *RobotUpdateOne) ClearServerID() *RobotUpdateOne {
+	_u.mutation.ClearServerID()
+	return _u
+}
+
+// SetExchangeAccountID sets the "exchange_account_id" field.
+func (_u *RobotUpdateOne) SetExchangeAccountID(v uint32) *RobotUpdateOne {
+	_u.mutation.ResetExchangeAccountID()
+	_u.mutation.SetExchangeAccountID(v)
+	return _u
+}
+
+// SetNillableExchangeAccountID sets the "exchange_account_id" field if the given value is not nil.
+func (_u *RobotUpdateOne) SetNillableExchangeAccountID(v *uint32) *RobotUpdateOne {
+	if v != nil {
+		_u.SetExchangeAccountID(*v)
+	}
+	return _u
+}
+
+// AddExchangeAccountID adds value to the "exchange_account_id" field.
+func (_u *RobotUpdateOne) AddExchangeAccountID(v int32) *RobotUpdateOne {
+	_u.mutation.AddExchangeAccountID(v)
+	return _u
+}
+
+// ClearExchangeAccountID clears the value of the "exchange_account_id" field.
+func (_u *RobotUpdateOne) ClearExchangeAccountID() *RobotUpdateOne {
+	_u.mutation.ClearExchangeAccountID()
+	return _u
+}
+
 // Mutation returns the RobotMutation object of the builder.
 func (_u *RobotUpdateOne) Mutation() *RobotMutation {
 	return _u.mutation
@@ -978,6 +1104,24 @@ func (_u *RobotUpdateOne) sqlSave(ctx context.Context) (_node *Robot, err error)
 	}
 	if _u.mutation.LastHeartbeatCleared() {
 		_spec.ClearField(robot.FieldLastHeartbeat, field.TypeTime)
+	}
+	if value, ok := _u.mutation.ServerID(); ok {
+		_spec.SetField(robot.FieldServerID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedServerID(); ok {
+		_spec.AddField(robot.FieldServerID, field.TypeUint32, value)
+	}
+	if _u.mutation.ServerIDCleared() {
+		_spec.ClearField(robot.FieldServerID, field.TypeUint32)
+	}
+	if value, ok := _u.mutation.ExchangeAccountID(); ok {
+		_spec.SetField(robot.FieldExchangeAccountID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedExchangeAccountID(); ok {
+		_spec.AddField(robot.FieldExchangeAccountID, field.TypeUint32, value)
+	}
+	if _u.mutation.ExchangeAccountIDCleared() {
+		_spec.ClearField(robot.FieldExchangeAccountID, field.TypeUint32)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &Robot{config: _u.config}

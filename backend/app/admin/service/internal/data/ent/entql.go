@@ -928,23 +928,25 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Robot",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			robot.FieldCreatedBy:     {Type: field.TypeUint32, Column: robot.FieldCreatedBy},
-			robot.FieldUpdatedBy:     {Type: field.TypeUint32, Column: robot.FieldUpdatedBy},
-			robot.FieldDeletedBy:     {Type: field.TypeUint32, Column: robot.FieldDeletedBy},
-			robot.FieldCreatedAt:     {Type: field.TypeTime, Column: robot.FieldCreatedAt},
-			robot.FieldUpdatedAt:     {Type: field.TypeTime, Column: robot.FieldUpdatedAt},
-			robot.FieldDeletedAt:     {Type: field.TypeTime, Column: robot.FieldDeletedAt},
-			robot.FieldRemark:        {Type: field.TypeString, Column: robot.FieldRemark},
-			robot.FieldTenantID:      {Type: field.TypeUint32, Column: robot.FieldTenantID},
-			robot.FieldRid:           {Type: field.TypeString, Column: robot.FieldRid},
-			robot.FieldNickname:      {Type: field.TypeString, Column: robot.FieldNickname},
-			robot.FieldExchange:      {Type: field.TypeString, Column: robot.FieldExchange},
-			robot.FieldVersion:       {Type: field.TypeString, Column: robot.FieldVersion},
-			robot.FieldStatus:        {Type: field.TypeString, Column: robot.FieldStatus},
-			robot.FieldBalance:       {Type: field.TypeFloat64, Column: robot.FieldBalance},
-			robot.FieldInitBalance:   {Type: field.TypeFloat64, Column: robot.FieldInitBalance},
-			robot.FieldRegisteredAt:  {Type: field.TypeTime, Column: robot.FieldRegisteredAt},
-			robot.FieldLastHeartbeat: {Type: field.TypeTime, Column: robot.FieldLastHeartbeat},
+			robot.FieldCreatedBy:         {Type: field.TypeUint32, Column: robot.FieldCreatedBy},
+			robot.FieldUpdatedBy:         {Type: field.TypeUint32, Column: robot.FieldUpdatedBy},
+			robot.FieldDeletedBy:         {Type: field.TypeUint32, Column: robot.FieldDeletedBy},
+			robot.FieldCreatedAt:         {Type: field.TypeTime, Column: robot.FieldCreatedAt},
+			robot.FieldUpdatedAt:         {Type: field.TypeTime, Column: robot.FieldUpdatedAt},
+			robot.FieldDeletedAt:         {Type: field.TypeTime, Column: robot.FieldDeletedAt},
+			robot.FieldRemark:            {Type: field.TypeString, Column: robot.FieldRemark},
+			robot.FieldTenantID:          {Type: field.TypeUint32, Column: robot.FieldTenantID},
+			robot.FieldRid:               {Type: field.TypeString, Column: robot.FieldRid},
+			robot.FieldNickname:          {Type: field.TypeString, Column: robot.FieldNickname},
+			robot.FieldExchange:          {Type: field.TypeString, Column: robot.FieldExchange},
+			robot.FieldVersion:           {Type: field.TypeString, Column: robot.FieldVersion},
+			robot.FieldStatus:            {Type: field.TypeString, Column: robot.FieldStatus},
+			robot.FieldBalance:           {Type: field.TypeFloat64, Column: robot.FieldBalance},
+			robot.FieldInitBalance:       {Type: field.TypeFloat64, Column: robot.FieldInitBalance},
+			robot.FieldRegisteredAt:      {Type: field.TypeTime, Column: robot.FieldRegisteredAt},
+			robot.FieldLastHeartbeat:     {Type: field.TypeTime, Column: robot.FieldLastHeartbeat},
+			robot.FieldServerID:          {Type: field.TypeUint32, Column: robot.FieldServerID},
+			robot.FieldExchangeAccountID: {Type: field.TypeUint32, Column: robot.FieldExchangeAccountID},
 		},
 	}
 	graph.Nodes[31] = &sqlgraph.Node{
@@ -5273,6 +5275,16 @@ func (f *RobotFilter) WhereRegisteredAt(p entql.TimeP) {
 // WhereLastHeartbeat applies the entql time.Time predicate on the last_heartbeat field.
 func (f *RobotFilter) WhereLastHeartbeat(p entql.TimeP) {
 	f.Where(p.Field(robot.FieldLastHeartbeat))
+}
+
+// WhereServerID applies the entql uint32 predicate on the server_id field.
+func (f *RobotFilter) WhereServerID(p entql.Uint32P) {
+	f.Where(p.Field(robot.FieldServerID))
+}
+
+// WhereExchangeAccountID applies the entql uint32 predicate on the exchange_account_id field.
+func (f *RobotFilter) WhereExchangeAccountID(p entql.Uint32P) {
+	f.Where(p.Field(robot.FieldExchangeAccountID))
 }
 
 // addPredicate implements the predicateAdder interface.
