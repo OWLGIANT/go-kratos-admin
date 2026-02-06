@@ -60,9 +60,9 @@ func (h *ActorCommandHandler) SetTimeout(timeout time.Duration) {
 }
 
 // SendCommand 发送命令给 Actor 并等待响应
-func (h *ActorCommandHandler) SendCommand(robotID, action string, data map[string]interface{}) (*CommandResultData, error) {
+func (h *ActorCommandHandler) SendCommand(ip, action string, data map[string]interface{}) (*CommandResultData, error) {
 	// 获取 Actor 信息
-	info := h.registry.Get(robotID)
+	info := h.registry.Get(ip)
 	if info == nil {
 		return &CommandResultData{
 			Success: false,
@@ -70,8 +70,17 @@ func (h *ActorCommandHandler) SendCommand(robotID, action string, data map[strin
 		}, nil
 	}
 
+	// 通过 IP 找到 clientID
+	clientID := h.registry.GetClientIDByIP(ip)
+	if clientID == "" {
+		return &CommandResultData{
+			Success: false,
+			Error:   "actor client not found",
+		}, nil
+	}
+
 	// 获取客户端
-	client, err := h.manager.GetClient(info.ClientID)
+	client, err := h.manager.GetClient(clientID)
 	if err != nil {
 		return &CommandResultData{
 			Success: false,
@@ -86,7 +95,7 @@ func (h *ActorCommandHandler) SendCommand(robotID, action string, data map[strin
 	pending := &PendingCommand{
 		RequestID:  requestID,
 		Action:     action,
-		RobotID:    robotID,
+		RobotID:    ip,
 		SentAt:     time.Now(),
 		ResultChan: make(chan *CommandResultData, 1),
 	}
@@ -108,7 +117,7 @@ func (h *ActorCommandHandler) SendCommand(robotID, action string, data map[strin
 	cmd := protocol.NewCommandWithRequestID(protocol.CommandTypeRobotCommand, requestID)
 	cmd.Payload = &protocol.RobotCommandCmd{
 		Request: &protocol.RobotCommandRequest{
-			RobotID:   robotID,
+			RobotID:   ip,
 			Action:    action,
 			Payload:   payload,
 			TimeoutMs: int32(h.timeout.Milliseconds()),
@@ -123,7 +132,7 @@ func (h *ActorCommandHandler) SendCommand(robotID, action string, data map[strin
 		}, nil
 	}
 
-	h.log.Infof("Command sent: robot_id=%s, action=%s, request_id=%s", robotID, action, requestID)
+	h.log.Infof("Command sent: ip=%s, action=%s, request_id=%s", ip, action, requestID)
 
 	// 等待响应或超时
 	select {

@@ -9,10 +9,17 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"go-wind-admin/app/admin/service/internal/data"
+	"go-wind-admin/app/admin/service/internal/websocket/handler"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	tradingV1 "go-wind-admin/api/gen/go/trading/service/v1"
 )
+
+// ActorRegistry 接口，用于获取 Actor 数据
+type ActorRegistry interface {
+	GetAll() []*handler.ActorServerInfo
+	Get(robotID string) *handler.ActorServerInfo
+}
 
 type ServerService struct {
 	adminV1.ServerServiceHTTPServer
@@ -20,6 +27,7 @@ type ServerService struct {
 	log *log.Helper
 
 	serverRepo data.ServerRepo
+	registry   ActorRegistry
 }
 
 func NewServerService(
@@ -34,8 +42,20 @@ func NewServerService(
 	return svc
 }
 
+// SetRegistry 设置 Actor Registry（由 WebSocket 服务器提供）
+func (s *ServerService) SetRegistry(registry ActorRegistry) {
+	s.registry = registry
+}
+
 // ListServer 获取托管者列表
 func (s *ServerService) ListServer(ctx context.Context, req *paginationV1.PagingRequest) (*tradingV1.ListServerResponse, error) {
+	if s.registry == nil {
+		s.log.Warn("Actor registry not set")
+		return &tradingV1.ListServerResponse{
+			Total: 0,
+			Items: []*tradingV1.Server{},
+		}, nil
+	}
 	return s.serverRepo.List(ctx, req)
 }
 

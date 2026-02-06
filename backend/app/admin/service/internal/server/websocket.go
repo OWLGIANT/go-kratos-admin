@@ -100,7 +100,7 @@ func NewWebSocketServer(
 
 	// Actor 处理器
 	actorRegistry := handler.NewActorRegistry()
-	actorRegisterHandler := handler.NewActorRegisterHandler(actorRegistry, manager, logger)
+	actorRegisterHandler := handler.NewActorRegisterHandler(actorRegistry, manager, serverRepo, logger)
 	router.Register(protocol.CommandTypeActorRegister, recoveryMw.Recover(actorRegisterHandler.Handle))
 	router.Register(protocol.CommandTypeActorUnregister, recoveryMw.Recover(actorRegisterHandler.HandleUnregister))
 
@@ -218,11 +218,12 @@ func (s *WebSocketServer) SendActorCommand(robotID, action string, data map[stri
 }
 
 // GetConnectedActors 获取所有连接的 Actor
-func (s *WebSocketServer) GetConnectedActors() []*handler.ActorInfo {
+func (s *WebSocketServer) GetConnectedActors() []*handler.ActorServerInfo {
 	return s.actorRegistry.GetAll()
 }
 
-// GetActorsByTenant 获取租户的所有 Actor
-func (s *WebSocketServer) GetActorsByTenant(tenantID uint32) []*handler.ActorInfo {
-	return s.actorRegistry.GetByTenant(tenantID)
+// GetActorsByTenant 获取租户的所有 Actor（暂不支持）
+func (s *WebSocketServer) GetActorsByTenant(tenantID uint32) []*handler.ActorServerInfo {
+	// 暂不支持按租户过滤
+	return s.actorRegistry.GetAll()
 }

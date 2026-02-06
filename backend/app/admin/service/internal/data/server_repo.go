@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
@@ -167,6 +168,14 @@ func (r *serverRepo) entityToProto(entity *ent.Server) *tradingV1.Server {
 	}
 	if entity.InstanceID != nil {
 		item.InstanceId = *entity.InstanceID
+	}
+
+	// 处理时间字段
+	if entity.CreatedAt != nil {
+		item.CreateTime = timestamppb.New(*entity.CreatedAt)
+	}
+	if entity.UpdatedAt != nil {
+		item.UpdateTime = timestamppb.New(*entity.UpdatedAt)
 	}
 
 	// 解析服务器状态信息

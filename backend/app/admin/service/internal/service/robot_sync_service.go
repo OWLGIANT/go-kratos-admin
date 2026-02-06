@@ -11,12 +11,12 @@ import (
 
 // RobotSyncService handles robot synchronization business logic
 type RobotSyncService struct {
-	robotRepo *data.RobotRepo
+	robotRepo data.RobotRepo
 	log       *log.Helper
 }
 
 // NewRobotSyncService creates a new robot sync service
-func NewRobotSyncService(ctx *bootstrap.Context, robotRepo *data.RobotRepo) *RobotSyncService {
+func NewRobotSyncService(ctx *bootstrap.Context, robotRepo data.RobotRepo) *RobotSyncService {
 	return &RobotSyncService{
 		robotRepo: robotRepo,
 		log:       ctx.NewLoggerHelper("robot-sync/service/admin-service"),

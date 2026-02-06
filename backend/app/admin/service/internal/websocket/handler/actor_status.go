@@ -32,23 +32,28 @@ func (h *ActorStatusHandler) Handle(client *websocket.Client, cmd *protocol.Comm
 	}
 
 	req := payload.Request
-	if req.RobotID == "" {
-		h.log.Error("Missing robot_id in status update")
-		return client.SendError(cmd.RequestID, cmd.Seq, 400, "Missing robot_id")
-	}
 
-	// 更新 Actor 状态
-	if !h.registry.UpdateStatus(req.RobotID, req.Status, req.Balance) {
-		h.log.Warnf("Actor not found for status update: robot_id=%s", req.RobotID)
+	// 通过客户端 ID 获取 Actor 信息
+	info := h.registry.GetByClientID(client.ID)
+	if info == nil {
+		h.log.Warnf("Actor not found for status update: client_id=%s", client.ID)
 		return client.SendError(cmd.RequestID, cmd.Seq, 404, "Actor not found")
 	}
 
-	// 如果有服务器信息，也更新
+	// 如果有服务器信息，更新
 	if req.ServerInfo != nil {
-		h.registry.UpdateServerInfo(req.RobotID, req.ServerInfo, "", "", "", "", "")
+		serverInfoMap := map[string]interface{}{
+			"cpu":      req.ServerInfo.CPU,
+			"ip_pool":  req.ServerInfo.IPPool,
+			"mem":      req.ServerInfo.Mem,
+			"mem_pct":  req.ServerInfo.MemPct,
+			"disk_pct": req.ServerInfo.DiskPct,
+			"task_num": req.ServerInfo.TaskNum,
+		}
+		h.registry.UpdateServerInfo(info.IP, serverInfoMap, "", "", "", "")
 	}
 
-	h.log.Infof("Actor status updated: robot_id=%s, status=%s, balance=%.2f", req.RobotID, req.Status, req.Balance)
+	h.log.Infof("Actor status updated: ip=%s, status=%s", info.IP, req.Status)
 
 	// 发送成功响应
 	respPayload := &protocol.ActorStatusCmd{
@@ -61,26 +66,6 @@ func (h *ActorStatusHandler) Handle(client *websocket.Client, cmd *protocol.Comm
 
 // HandleHeartbeat 处理 Actor 心跳命令
 func (h *ActorStatusHandler) HandleHeartbeat(client *websocket.Client, cmd *protocol.Command) error {
-	payload, ok := cmd.Payload.(*protocol.ActorHeartbeatCmd)
-
-	var robotID string
-	if ok && payload.Request != nil {
-		robotID = payload.Request.RobotID
-	}
-
-	if robotID == "" {
-		// 尝试从注册表中通过客户端 ID 获取机器人 ID
-		info := h.registry.GetByClientID(client.ID)
-		if info != nil {
-			robotID = info.RobotID
-		}
-	}
-
-	if robotID != "" {
-		h.registry.UpdateHeartbeat(robotID)
-		h.log.Debugf("Actor heartbeat: robot_id=%s", robotID)
-	}
-
 	// 更新客户端活动时间
 	client.UpdateActivity()
 

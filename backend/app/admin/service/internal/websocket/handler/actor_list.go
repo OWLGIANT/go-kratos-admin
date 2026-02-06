@@ -27,57 +27,12 @@ func NewActorListHandler(registry *ActorRegistry, manager *websocket.Manager, lo
 func (h *ActorListHandler) Handle(client *websocket.Client, cmd *protocol.Command) error {
 	h.log.Infof("Received actor.list request: client=%s, isActor=%v", client.ID, client.IsActor)
 
-	payload, _ := cmd.Payload.(*protocol.ActorListCmd)
-
-	var tenantID uint32
-	var status string
-	if payload != nil && payload.Request != nil {
-		tenantID = payload.Request.TenantID
-		status = payload.Request.Status
-	}
-
-	// 获取 Actor 列表
-	var actors []*ActorInfo
-	if tenantID > 0 {
-		actors = h.registry.GetByTenant(tenantID)
-	} else {
-		actors = h.registry.GetAll()
-	}
-
-	// 按状态过滤
-	if status != "" {
-		filtered := make([]*ActorInfo, 0)
-		for _, actor := range actors {
-			if actor.Status == status {
-				filtered = append(filtered, actor)
-			}
-		}
-		actors = filtered
-	}
+	actors := h.registry.GetAll()
 
 	h.log.Infof("Actor list requested: client=%s, count=%d", client.ID, len(actors))
 
 	// 转换为协议格式
-	protoActors := make([]*protocol.ActorInfo, len(actors))
-	for i, actor := range actors {
-		protoActors[i] = &protocol.ActorInfo{
-			ClientID:      actor.ClientID,
-			RobotID:       actor.RobotID,
-			Exchange:      actor.Exchange,
-			Version:       actor.Version,
-			TenantID:      actor.TenantID,
-			Status:        actor.Status,
-			Balance:       actor.Balance,
-			RegisteredAt:  actor.RegisteredAt,
-			LastHeartbeat: actor.LastHeartbeat,
-			ServerInfo:    actor.ServerInfo,
-			IP:            actor.IP,
-			InnerIP:       actor.InnerIP,
-			Port:          actor.Port,
-			MachineID:     actor.MachineID,
-			Nickname:      actor.Nickname,
-		}
-	}
+	protoActors := h.convertToProtoActors(actors)
 
 	// 发送响应
 	respPayload := &protocol.ActorListCmd{
@@ -93,27 +48,7 @@ func (h *ActorListHandler) Handle(client *websocket.Client, cmd *protocol.Comman
 func (h *ActorListHandler) BroadcastActorList() {
 	actors := h.registry.GetAll()
 
-	// 转换为协议格式
-	protoActors := make([]*protocol.ActorInfo, len(actors))
-	for i, actor := range actors {
-		protoActors[i] = &protocol.ActorInfo{
-			ClientID:      actor.ClientID,
-			RobotID:       actor.RobotID,
-			Exchange:      actor.Exchange,
-			Version:       actor.Version,
-			TenantID:      actor.TenantID,
-			Status:        actor.Status,
-			Balance:       actor.Balance,
-			RegisteredAt:  actor.RegisteredAt,
-			LastHeartbeat: actor.LastHeartbeat,
-			ServerInfo:    actor.ServerInfo,
-			IP:            actor.IP,
-			InnerIP:       actor.InnerIP,
-			Port:          actor.Port,
-			MachineID:     actor.MachineID,
-			Nickname:      actor.Nickname,
-		}
-	}
+	protoActors := h.convertToProtoActors(actors)
 
 	cmd := protocol.NewCommand(protocol.CommandTypeActorList)
 	cmd.Payload = &protocol.ActorListCmd{
@@ -125,4 +60,49 @@ func (h *ActorListHandler) BroadcastActorList() {
 
 	h.manager.BroadcastCommand(cmd)
 	h.log.Infof("Actor list broadcasted: count=%d", len(actors))
+}
+
+// convertToProtoActors 转换为协议格式
+func (h *ActorListHandler) convertToProtoActors(actors []*ActorServerInfo) []*protocol.ActorInfo {
+	protoActors := make([]*protocol.ActorInfo, len(actors))
+	for i, actor := range actors {
+		machineID := ""
+		if actor.MachineID != nil {
+			machineID = *actor.MachineID
+		}
+
+		// 转换 ServerInfo map 为 protocol.ServerStatusInfo
+		var serverInfo *protocol.ServerStatusInfo
+		if actor.ServerInfo != nil {
+			serverInfo = &protocol.ServerStatusInfo{}
+			if cpu, ok := actor.ServerInfo["cpu"].(string); ok {
+				serverInfo.CPU = cpu
+			}
+			if ipPool, ok := actor.ServerInfo["ip_pool"].(float64); ok {
+				serverInfo.IPPool = ipPool
+			}
+			if mem, ok := actor.ServerInfo["mem"].(float64); ok {
+				serverInfo.Mem = mem
+			}
+			if memPct, ok := actor.ServerInfo["mem_pct"].(string); ok {
+				serverInfo.MemPct = memPct
+			}
+			if diskPct, ok := actor.ServerInfo["disk_pct"].(string); ok {
+				serverInfo.DiskPct = diskPct
+			}
+			if taskNum, ok := actor.ServerInfo["task_num"].(float64); ok {
+				serverInfo.TaskNum = int32(taskNum)
+			}
+		}
+
+		protoActors[i] = &protocol.ActorInfo{
+			IP:         actor.IP,
+			InnerIP:    actor.InnerIP,
+			Port:       actor.Port,
+			MachineID:  machineID,
+			Nickname:   actor.Nickname,
+			ServerInfo: serverInfo,
+		}
+	}
+	return protoActors
 }

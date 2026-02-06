@@ -119,7 +119,7 @@ func NewRestServer(
 
 	exchangeAccountService *service.ExchangeAccountService,
 	serverService *service.ServerService,
-	actorService *service.ActorService,
+	actorService *service.RobotService,
 
 ) (*http.Server, error) {
 	cfg := ctx.GetConfig()

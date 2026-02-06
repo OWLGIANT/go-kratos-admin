@@ -43,57 +43,57 @@ func (h *ActorServerSyncHandler) Handle(client *websocket.Client, cmd *protocol.
 	}
 
 	req := payload.Request
-	robotID := req.RobotID
-	if robotID == "" {
-		// 尝试从客户端获取机器人 ID
-		if client.IsActor && client.RobotID != "" {
-			robotID = client.RobotID
-		} else {
-			h.log.Error("Missing robot_id in server sync")
-			return client.SendError(cmd.RequestID, cmd.Seq, 400, "Missing robot_id")
+	if req.IP == "" {
+		h.log.Error("Missing ip in server sync")
+		return client.SendError(cmd.RequestID, cmd.Seq, 400, "Missing ip")
+	}
+
+	// 转换 ServerStatusInfo 为 map
+	var serverInfoMap map[string]interface{}
+	if req.ServerInfo != nil {
+		serverInfoMap = map[string]interface{}{
+			"cpu":      req.ServerInfo.CPU,
+			"ip_pool":  req.ServerInfo.IPPool,
+			"mem":      req.ServerInfo.Mem,
+			"mem_pct":  req.ServerInfo.MemPct,
+			"disk_pct": req.ServerInfo.DiskPct,
+			"task_num": req.ServerInfo.TaskNum,
 		}
 	}
 
 	// 更新 Actor 的服务器信息
-	if !h.registry.UpdateServerInfo(robotID, req.ServerInfo, req.IP, req.InnerIP, req.Port, req.MachineID, req.Nickname) {
-		h.log.Warnf("Actor not found for server sync: robot_id=%s", robotID)
-		return client.SendError(cmd.RequestID, cmd.Seq, 404, "Actor not found")
-	}
+	h.registry.UpdateServerInfo(req.IP, serverInfoMap, req.InnerIP, req.Port, req.MachineID, req.Nickname)
 
-	h.log.Infof("Actor server info synced: robot_id=%s, ip=%s, machine_id=%s", robotID, req.IP, req.MachineID)
+	h.log.Infof("Actor server info synced: ip=%s, machine_id=%s", req.IP, req.MachineID)
 
 	// 插入或更新服务器到数据库
-	if req.IP != "" {
-		// 转换 ServerStatusInfo
-		var serverInfo *tradingV1.ServerStatusInfo
-		if req.ServerInfo != nil {
-			serverInfo = &tradingV1.ServerStatusInfo{
-				Cpu:     req.ServerInfo.CPU,
-				IpPool:  req.ServerInfo.IPPool,
-				Mem:     req.ServerInfo.Mem,
-				MemPct:  req.ServerInfo.MemPct,
-				DiskPct: req.ServerInfo.DiskPct,
-				TaskNum: req.ServerInfo.TaskNum,
-			}
+	var serverInfo *tradingV1.ServerStatusInfo
+	if req.ServerInfo != nil {
+		serverInfo = &tradingV1.ServerStatusInfo{
+			Cpu:     req.ServerInfo.CPU,
+			IpPool:  req.ServerInfo.IPPool,
+			Mem:     req.ServerInfo.Mem,
+			MemPct:  req.ServerInfo.MemPct,
+			DiskPct: req.ServerInfo.DiskPct,
+			TaskNum: req.ServerInfo.TaskNum,
 		}
+	}
 
-		upsertReq := &tradingV1.UpsertServerByIPRequest{
-			Ip:         req.IP,
-			InnerIp:    req.InnerIP,
-			Port:       req.Port,
-			Nickname:   req.Nickname,
-			MachineId:  req.MachineID,
-			ServerInfo: serverInfo,
-		}
+	upsertReq := &tradingV1.UpsertServerByIPRequest{
+		Ip:         req.IP,
+		InnerIp:    req.InnerIP,
+		Port:       req.Port,
+		Nickname:   req.Nickname,
+		MachineId:  req.MachineID,
+		ServerInfo: serverInfo,
+	}
 
-		ctx := context.Background()
-		_, err := h.serverRepo.UpsertByIP(ctx, upsertReq)
-		if err != nil {
-			h.log.Errorf("Failed to upsert server to database: %v", err)
-			// 不返回错误，继续处理，因为内存中的更新已经成功
-		} else {
-			h.log.Infof("Server upserted to database: ip=%s", req.IP)
-		}
+	ctx := context.Background()
+	_, err := h.serverRepo.UpsertByIP(ctx, upsertReq)
+	if err != nil {
+		h.log.Errorf("Failed to upsert server to database: %v", err)
+	} else {
+		h.log.Infof("Server upserted to database: ip=%s", req.IP)
 	}
 
 	// 广播更新后的 Actor 列表给所有客户端

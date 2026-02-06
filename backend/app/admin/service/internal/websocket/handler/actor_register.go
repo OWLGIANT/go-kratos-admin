@@ -1,178 +1,131 @@
 package handler
 
 import (
+	"context"
 	"sync"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 
+	"go-wind-admin/app/admin/service/internal/data"
+	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/websocket"
 	"go-wind-admin/app/admin/service/internal/websocket/protocol"
+
+	tradingV1 "go-wind-admin/api/gen/go/trading/service/v1"
 )
 
-// ActorInfo Actor 信息
-type ActorInfo struct {
-	ClientID      string                    `json:"client_id"`
-	RobotID       string                    `json:"robot_id"`
-	Exchange      string                    `json:"exchange"`
-	Version       string                    `json:"version"`
-	TenantID      uint32                    `json:"tenant_id"`
-	Status        string                    `json:"status"`
-	Balance       float64                   `json:"balance"`
-	RegisteredAt  time.Time                 `json:"registered_at"`
-	LastHeartbeat time.Time                 `json:"last_heartbeat"`
-	ServerInfo    *protocol.ServerStatusInfo `json:"server_info,omitempty"`
-	IP            string                    `json:"ip,omitempty"`
-	InnerIP       string                    `json:"inner_ip,omitempty"`
-	Port          string                    `json:"port,omitempty"`
-	MachineID     string                    `json:"machine_id,omitempty"`
-	Nickname      string                    `json:"nickname,omitempty"`
+// ActorServerInfo Actor 信息（对应数据库 Server 表）
+type ActorServerInfo struct {
+	ent.Server
 }
 
 // ActorRegistry Actor 注册表
 type ActorRegistry struct {
-	// actors 映射 robot_id 到 ActorInfo
-	actors map[string]*ActorInfo
-	// clientToRobot 映射 client_id 到 robot_id
-	clientToRobot map[string]string
-	mu            sync.RWMutex
+	// actorServers 映射 IP 到 ActorServerInfo
+	actorServers map[string]*ActorServerInfo
+	// clientToIP 映射 client_id 到 IP
+	clientToIP map[string]string
+	mu         sync.RWMutex
 }
 
 // NewActorRegistry 创建新的 Actor 注册表
 func NewActorRegistry() *ActorRegistry {
 	return &ActorRegistry{
-		actors:        make(map[string]*ActorInfo),
-		clientToRobot: make(map[string]string),
+		actorServers: make(map[string]*ActorServerInfo),
+		clientToIP:   make(map[string]string),
 	}
 }
 
 // Register 注册 Actor
-func (r *ActorRegistry) Register(info *ActorInfo) {
+func (r *ActorRegistry) Register(info *ActorServerInfo, clientID string) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	r.actors[info.RobotID] = info
-	r.clientToRobot[info.ClientID] = info.RobotID
+	r.actorServers[info.IP] = info
+	r.clientToIP[clientID] = info.IP
 }
 
 // UnregisterByClientID 通过客户端 ID 注销 Actor
-func (r *ActorRegistry) UnregisterByClientID(clientID string) *ActorInfo {
+func (r *ActorRegistry) UnregisterByClientID(clientID string) *ActorServerInfo {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	robotID, ok := r.clientToRobot[clientID]
+	ip, ok := r.clientToIP[clientID]
 	if !ok {
 		return nil
 	}
 
-	info := r.actors[robotID]
-	delete(r.actors, robotID)
-	delete(r.clientToRobot, clientID)
+	info := r.actorServers[ip]
+	delete(r.actorServers, ip)
+	delete(r.clientToIP, clientID)
 	return info
 }
 
-// UnregisterByRobotID 通过机器人 ID 注销 Actor
-func (r *ActorRegistry) UnregisterByRobotID(robotID string) *ActorInfo {
+// UnregisterByIP 通过 IP 注销 Actor
+func (r *ActorRegistry) UnregisterByIP(ip string) *ActorServerInfo {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	info, ok := r.actors[robotID]
+	info, ok := r.actorServers[ip]
 	if !ok {
 		return nil
 	}
 
-	delete(r.actors, robotID)
-	delete(r.clientToRobot, info.ClientID)
+	delete(r.actorServers, ip)
+	// 需要遍历找到对应的 clientID
+	for cid, cip := range r.clientToIP {
+		if cip == ip {
+			delete(r.clientToIP, cid)
+			break
+		}
+	}
 	return info
 }
 
-// Get 通过机器人 ID 获取 Actor 信息
-func (r *ActorRegistry) Get(robotID string) *ActorInfo {
+// Get 通过 IP 获取 Actor 信息
+func (r *ActorRegistry) Get(ip string) *ActorServerInfo {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	return r.actors[robotID]
+	return r.actorServers[ip]
 }
 
 // GetByClientID 通过客户端 ID 获取 Actor 信息
-func (r *ActorRegistry) GetByClientID(clientID string) *ActorInfo {
+func (r *ActorRegistry) GetByClientID(clientID string) *ActorServerInfo {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	robotID, ok := r.clientToRobot[clientID]
+	ip, ok := r.clientToIP[clientID]
 	if !ok {
 		return nil
 	}
-	return r.actors[robotID]
+	return r.actorServers[ip]
 }
 
 // GetAll 获取所有注册的 Actor
-func (r *ActorRegistry) GetAll() []*ActorInfo {
+func (r *ActorRegistry) GetAll() []*ActorServerInfo {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	result := make([]*ActorInfo, 0, len(r.actors))
-	for _, info := range r.actors {
+	result := make([]*ActorServerInfo, 0, len(r.actorServers))
+	for _, info := range r.actorServers {
 		result = append(result, info)
 	}
 	return result
 }
 
-// GetByTenant 获取租户的所有 Actor
-func (r *ActorRegistry) GetByTenant(tenantID uint32) []*ActorInfo {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-
-	var result []*ActorInfo
-	for _, info := range r.actors {
-		if info.TenantID == tenantID {
-			result = append(result, info)
-		}
-	}
-	return result
-}
-
-// UpdateStatus 更新 Actor 状态
-func (r *ActorRegistry) UpdateStatus(robotID, status string, balance float64) bool {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
-	info, ok := r.actors[robotID]
-	if !ok {
-		return false
-	}
-
-	info.Status = status
-	info.Balance = balance
-	return true
-}
-
-// UpdateHeartbeat 更新 Actor 心跳时间
-func (r *ActorRegistry) UpdateHeartbeat(robotID string) bool {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
-	info, ok := r.actors[robotID]
-	if !ok {
-		return false
-	}
-
-	info.LastHeartbeat = time.Now()
-	return true
-}
-
 // UpdateServerInfo 更新 Actor 服务器信息
-func (r *ActorRegistry) UpdateServerInfo(robotID string, serverInfo *protocol.ServerStatusInfo, ip, innerIP, port, machineID, nickname string) bool {
+func (r *ActorRegistry) UpdateServerInfo(ip string, serverInfo map[string]interface{}, innerIP, port, machineID, nickname string) bool {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
-	info, ok := r.actors[robotID]
+	info, ok := r.actorServers[ip]
 	if !ok {
 		return false
 	}
 
-	info.ServerInfo = serverInfo
-	if ip != "" {
-		info.IP = ip
+	if serverInfo != nil {
+		info.ServerInfo = serverInfo
 	}
 	if innerIP != "" {
 		info.InnerIP = innerIP
@@ -181,7 +134,7 @@ func (r *ActorRegistry) UpdateServerInfo(robotID string, serverInfo *protocol.Se
 		info.Port = port
 	}
 	if machineID != "" {
-		info.MachineID = machineID
+		info.MachineID = &machineID
 	}
 	if nickname != "" {
 		info.Nickname = nickname
@@ -189,19 +142,34 @@ func (r *ActorRegistry) UpdateServerInfo(robotID string, serverInfo *protocol.Se
 	return true
 }
 
+// GetClientIDByIP 通过 IP 获取客户端 ID
+func (r *ActorRegistry) GetClientIDByIP(ip string) string {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	for cid, cip := range r.clientToIP {
+		if cip == ip {
+			return cid
+		}
+	}
+	return ""
+}
+
 // ActorRegisterHandler Actor 注册处理器
 type ActorRegisterHandler struct {
-	registry *ActorRegistry
-	manager  *websocket.Manager
-	log      *log.Helper
+	registry   *ActorRegistry
+	manager    *websocket.Manager
+	serverRepo data.ServerRepo
+	log        *log.Helper
 }
 
 // NewActorRegisterHandler 创建新的 Actor 注册处理器
-func NewActorRegisterHandler(registry *ActorRegistry, manager *websocket.Manager, logger log.Logger) *ActorRegisterHandler {
+func NewActorRegisterHandler(registry *ActorRegistry, manager *websocket.Manager, serverRepo data.ServerRepo, logger log.Logger) *ActorRegisterHandler {
 	return &ActorRegisterHandler{
-		registry: registry,
-		manager:  manager,
-		log:      log.NewHelper(log.With(logger, "module", "websocket/handler/actor_register")),
+		registry:   registry,
+		manager:    manager,
+		serverRepo: serverRepo,
+		log:        log.NewHelper(log.With(logger, "module", "websocket/handler/actor_register")),
 	}
 }
 
@@ -217,42 +185,53 @@ func (h *ActorRegisterHandler) Handle(client *websocket.Client, cmd *protocol.Co
 	}
 
 	req := payload.Request
-	if req.RobotID == "" {
-		h.log.Error("Missing robot_id in registration")
-		return client.SendError(cmd.RequestID, cmd.Seq, 400, "Missing robot_id")
+	if req.IP == "" {
+		h.log.Error("Missing ip in registration")
+		return client.SendError(cmd.RequestID, cmd.Seq, 400, "Missing ip")
 	}
 
-	// 使用客户端的租户 ID（如果消息中未提供）
-	tenantID := req.TenantID
-	if tenantID == 0 {
-		tenantID = client.TenantID
+	// 转换 ServerStatusInfo 为 map
+	var serverInfoMap map[string]interface{}
+	// 可以根据需要从 req 中提取服务器信息
+
+	// 插入或更新到数据库
+	ctx := context.Background()
+	upsertReq := &tradingV1.UpsertServerByIPRequest{
+		Ip:        req.IP,
+		InnerIp:   req.InnerIP,
+		Port:      req.Port,
+		Nickname:  req.Nickname,
+		MachineId: req.MachineID,
+	}
+
+	dbServer, err := h.serverRepo.UpsertByIP(ctx, upsertReq)
+	if err != nil {
+		h.log.Errorf("Failed to upsert server to database: %v", err)
+		return client.SendError(cmd.RequestID, cmd.Seq, 500, "Database error")
 	}
 
 	// 创建 Actor 信息
-	info := &ActorInfo{
-		ClientID:      client.ID,
-		RobotID:       req.RobotID,
-		Exchange:      req.Exchange,
-		Version:       req.Version,
-		TenantID:      tenantID,
-		Status:        "connected",
-		RegisteredAt:  time.Now(),
-		LastHeartbeat: time.Now(),
-		IP:            req.IP,
-		InnerIP:       req.InnerIP,
-		Port:          req.Port,
-		MachineID:     req.MachineID,
-		Nickname:      req.Nickname,
+	now := time.Now()
+	info := &ActorServerInfo{}
+	info.ID = dbServer.Id
+	info.IP = req.IP
+	info.InnerIP = req.InnerIP
+	info.Port = req.Port
+	info.Nickname = req.Nickname
+	if req.MachineID != "" {
+		info.MachineID = &req.MachineID
 	}
+	info.ServerInfo = serverInfoMap
+	info.CreatedAt = &now
+	info.UpdatedAt = &now
 
 	// 注册 Actor
-	h.registry.Register(info)
+	h.registry.Register(info, client.ID)
 
 	// 设置客户端为 Actor
-	client.SetActorInfo(req.RobotID)
+	client.SetActorInfo(req.IP)
 
-	h.log.Infof("Actor registered: robot_id=%s, exchange=%s, version=%s, tenant_id=%d, client_id=%s",
-		req.RobotID, req.Exchange, req.Version, tenantID, client.ID)
+	h.log.Infof("Actor registered: ip=%s, client_id=%s", req.IP, client.ID)
 
 	// 发送成功响应
 	respPayload := &protocol.ActorRegisterCmd{
@@ -266,22 +245,10 @@ func (h *ActorRegisterHandler) Handle(client *websocket.Client, cmd *protocol.Co
 
 // HandleUnregister 处理 Actor 注销
 func (h *ActorRegisterHandler) HandleUnregister(client *websocket.Client, cmd *protocol.Command) error {
-	payload, ok := cmd.Payload.(*protocol.ActorUnregisterCmd)
-
-	var robotID string
-	if ok && payload.Request != nil {
-		robotID = payload.Request.RobotID
-	}
-
-	var info *ActorInfo
-	if robotID != "" {
-		info = h.registry.UnregisterByRobotID(robotID)
-	} else {
-		info = h.registry.UnregisterByClientID(client.ID)
-	}
+	info := h.registry.UnregisterByClientID(client.ID)
 
 	if info != nil {
-		h.log.Infof("Actor unregistered: robot_id=%s, client_id=%s", info.RobotID, info.ClientID)
+		h.log.Infof("Actor unregistered: ip=%s, client_id=%s", info.IP, client.ID)
 	}
 
 	respPayload := &protocol.ActorUnregisterCmd{
@@ -296,6 +263,6 @@ func (h *ActorRegisterHandler) HandleUnregister(client *websocket.Client, cmd *p
 func (h *ActorRegisterHandler) OnClientDisconnect(clientID string) {
 	info := h.registry.UnregisterByClientID(clientID)
 	if info != nil {
-		h.log.Infof("Actor disconnected: robot_id=%s, client_id=%s", info.RobotID, clientID)
+		h.log.Infof("Actor disconnected: ip=%s, client_id=%s", info.IP, clientID)
 	}
 }

@@ -14,21 +14,18 @@ import (
 	"go-wind-admin/app/admin/service/internal/server"
 	internalService "go-wind-admin/app/admin/service/internal/service"
 	pkgService "go-wind-admin/pkg/service"
-
 	//_ "github.com/tx7do/kratos-bootstrap/config/apollo"
 	//_ "github.com/tx7do/kratos-bootstrap/config/consul"
 	//_ "github.com/tx7do/kratos-bootstrap/config/etcd"
 	//_ "github.com/tx7do/kratos-bootstrap/config/kubernetes"
 	//_ "github.com/tx7do/kratos-bootstrap/config/nacos"
 	//_ "github.com/tx7do/kratos-bootstrap/config/polaris"
-
 	//_ "github.com/tx7do/kratos-bootstrap/logger/aliyun"
 	//_ "github.com/tx7do/kratos-bootstrap/logger/fluent"
 	//_ "github.com/tx7do/kratos-bootstrap/logger/logrus"
 	//_ "github.com/tx7do/kratos-bootstrap/logger/tencent"
 	//_ "github.com/tx7do/kratos-bootstrap/logger/zap"
 	//_ "github.com/tx7do/kratos-bootstrap/logger/zerolog"
-
 	//_ "github.com/tx7do/kratos-bootstrap/registry/consul"
 	//_ "github.com/tx7do/kratos-bootstrap/registry/etcd"
 	//_ "github.com/tx7do/kratos-bootstrap/registry/eureka"
@@ -37,7 +34,6 @@ import (
 	//_ "github.com/tx7do/kratos-bootstrap/registry/polaris"
 	//_ "github.com/tx7do/kratos-bootstrap/registry/servicecomb"
 	//_ "github.com/tx7do/kratos-bootstrap/registry/zookeeper"
-
 	//_ "github.com/tx7do/kratos-bootstrap/tracer"
 )
 
@@ -51,13 +47,17 @@ func newApp(
 	as *asynq.Server,
 	ss *sse.Server,
 	ws *server.WebSocketServer,
-	actorService *internalService.ActorService,
+	actorService *internalService.RobotService,
+	serverService *internalService.ServerService,
 ) *kratos.App {
 	// Add WebSocket server if configured
 	if ws != nil {
 		// Set actor registry for HTTP API
 		if actorService != nil {
 			actorService.SetRegistry(ws.GetActorRegistry())
+		}
+		if serverService != nil {
+			serverService.SetRegistry(ws.GetActorRegistry())
 		}
 
 		// Start WebSocket server in a goroutine

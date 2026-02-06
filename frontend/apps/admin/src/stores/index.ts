@@ -32,7 +32,6 @@ export * from './robot.state';
 export * from './strategy.state';
 export * from './exchange-account.state';
 export * from './server.state';
-export * from './hft-market-making.state';
 export * from './actor.state';
 
 export const enableList = computed(() => [

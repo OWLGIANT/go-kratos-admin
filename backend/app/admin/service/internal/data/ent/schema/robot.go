@@ -18,7 +18,7 @@ type Robot struct {
 func (Robot) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entsql.Annotation{
-			Table:     "app_robots",
+			Table:     "trading_robots",
 			Charset:   "utf8mb4",
 			Collation: "utf8mb4_bin",
 		},

@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
@@ -171,6 +172,20 @@ func (r *exchangeAccountRepo) entityToProto(entity *ent.ExchangeAccount) *tradin
 	}
 	if entity.SpecialReqLimit != nil {
 		item.SpecialReqLimit = *entity.SpecialReqLimit
+	}
+	if entity.ApplyTime != nil {
+		item.ApplyTime = *entity.ApplyTime
+	}
+	if entity.MotherID != nil {
+		item.MotherId = *entity.MotherID
+	}
+
+	// 处理时间字段
+	if entity.CreatedAt != nil {
+		item.CreateTime = timestamppb.New(*entity.CreatedAt)
+	}
+	if entity.UpdatedAt != nil {
+		item.UpdateTime = timestamppb.New(*entity.UpdatedAt)
 	}
 
 	// 解析组合账号ID
