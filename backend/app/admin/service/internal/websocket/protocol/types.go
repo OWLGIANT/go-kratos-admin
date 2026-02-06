@@ -2,6 +2,8 @@ package protocol
 
 import (
 	"time"
+
+	websocketpb "actor/api/gen/go/websocket/service/v1"
 )
 
 // ContentType 内容类型
@@ -12,47 +14,59 @@ const (
 	ContentTypeProtobuf ContentType = 2
 )
 
-// CommandType 命令类型枚举 (不同组路由步距 600)
-type CommandType int32
+// CommandType 命令类型枚举
+type CommandType = websocketpb.CommandType
 
+// CommandType 常量
 const (
-	CommandTypeUnknown CommandType = 0
+	CommandTypeUnknown         = websocketpb.CommandType_COMMAND_TYPE_UNKNOWN
+	CommandTypeInit            = websocketpb.CommandType_COMMAND_TYPE_INIT
+	CommandTypeEcho            = websocketpb.CommandType_COMMAND_TYPE_ECHO
+	CommandTypeNotify          = websocketpb.CommandType_COMMAND_TYPE_NOTIFY
+	CommandTypeResync          = websocketpb.CommandType_COMMAND_TYPE_RESYNC
+	CommandTypeError           = websocketpb.CommandType_COMMAND_TYPE_ERROR
+	CommandTypeActorRegister   = websocketpb.CommandType_COMMAND_TYPE_ACTOR_REGISTER
+	CommandTypeActorUnregister = websocketpb.CommandType_COMMAND_TYPE_ACTOR_UNREGISTER
+	CommandTypeActorHeartbeat  = websocketpb.CommandType_COMMAND_TYPE_ACTOR_HEARTBEAT
+	CommandTypeActorStatus     = websocketpb.CommandType_COMMAND_TYPE_ACTOR_STATUS
+	CommandTypeActorList       = websocketpb.CommandType_COMMAND_TYPE_ACTOR_LIST
+	CommandTypeRobotStart      = websocketpb.CommandType_COMMAND_TYPE_ROBOT_START
+	CommandTypeRobotStop       = websocketpb.CommandType_COMMAND_TYPE_ROBOT_STOP
+	CommandTypeRobotConfig     = websocketpb.CommandType_COMMAND_TYPE_ROBOT_CONFIG
+	CommandTypeRobotCommand    = websocketpb.CommandType_COMMAND_TYPE_ROBOT_COMMAND
+	CommandTypeRobotResult     = websocketpb.CommandType_COMMAND_TYPE_ROBOT_RESULT
+	CommandTypeServerSync      = websocketpb.CommandType_COMMAND_TYPE_SERVER_SYNC
+	CommandTypeServerStatus    = websocketpb.CommandType_COMMAND_TYPE_SERVER_STATUS
+	CommandTypeAlertSend       = websocketpb.CommandType_COMMAND_TYPE_ALERT_SEND
+	CommandTypeAlertAck        = websocketpb.CommandType_COMMAND_TYPE_ALERT_ACK
+	CommandTypeUserKick        = websocketpb.CommandType_COMMAND_TYPE_USER_KICK
+	CommandTypeUserBroadcast   = websocketpb.CommandType_COMMAND_TYPE_USER_BROADCAST
+	CommandTypeRobotSync       = websocketpb.CommandType_COMMAND_TYPE_ROBOT_SYNC
+)
 
-	// 基础命令 (1-599)
-	CommandTypeInit   CommandType = 1
-	CommandTypeEcho   CommandType = 2
-	CommandTypeNotify CommandType = 3
-	CommandTypeResync CommandType = 4
-	CommandTypeError  CommandType = 5
+// EventType 事件类型
+type EventType = websocketpb.EventType
 
-	// Actor 生命周期命令 (600-1199) - Actor 相当于服务器
-	CommandTypeActorRegister   CommandType = 600
-	CommandTypeActorUnregister CommandType = 601
-	CommandTypeActorHeartbeat  CommandType = 602
-	CommandTypeActorStatus     CommandType = 603
-	CommandTypeActorList       CommandType = 604
+// EventType 常量
+const (
+	EventTypeUnknown             = websocketpb.EventType_EVENT_TYPE_UNKNOWN
+	EventTypeActorConnected      = websocketpb.EventType_EVENT_TYPE_ACTOR_CONNECTED
+	EventTypeActorDisconnected   = websocketpb.EventType_EVENT_TYPE_ACTOR_DISCONNECTED
+	EventTypeActorStatusChanged  = websocketpb.EventType_EVENT_TYPE_ACTOR_STATUS_CHANGED
+	EventTypeServerStatusChanged = websocketpb.EventType_EVENT_TYPE_SERVER_STATUS_CHANGED
+	EventTypeAlert               = websocketpb.EventType_EVENT_TYPE_ALERT
+)
 
-	// Robot 控制命令 (1200-1799) - Robot 是机器人
-	CommandTypeRobotStart   CommandType = 1200
-	CommandTypeRobotStop    CommandType = 1201
-	CommandTypeRobotConfig  CommandType = 1202
-	CommandTypeRobotCommand CommandType = 1203
-	CommandTypeRobotResult  CommandType = 1204
+// AlertLevel 告警级别
+type AlertLevel = websocketpb.AlertLevel
 
-	// 服务器信息命令 (1800-2399)
-	CommandTypeServerSync   CommandType = 1800
-	CommandTypeServerStatus CommandType = 1801
-
-	// 告警命令 (2400-2999)
-	CommandTypeAlertSend CommandType = 2400
-	CommandTypeAlertAck  CommandType = 2401
-
-	// 用户命令 (3000-3599)
-	CommandTypeUserKick      CommandType = 3000
-	CommandTypeUserBroadcast CommandType = 3001
-
-	// 机器人同步命令 (3600-4199)
-	CommandTypeRobotSync CommandType = 3600
+// AlertLevel 常量
+const (
+	AlertLevelUnknown  = websocketpb.AlertLevel_ALERT_LEVEL_UNKNOWN
+	AlertLevelInfo     = websocketpb.AlertLevel_ALERT_LEVEL_INFO
+	AlertLevelWarning  = websocketpb.AlertLevel_ALERT_LEVEL_WARNING
+	AlertLevelError    = websocketpb.AlertLevel_ALERT_LEVEL_ERROR
+	AlertLevelCritical = websocketpb.AlertLevel_ALERT_LEVEL_CRITICAL
 )
 
 // CommandTypeToString 命令类型转字符串
@@ -108,29 +122,6 @@ var StringToCommandType = map[string]CommandType{
 	"user.broadcast":   CommandTypeUserBroadcast,
 	"robot.sync":       CommandTypeRobotSync,
 }
-
-// EventType 事件类型
-type EventType int32
-
-const (
-	EventTypeUnknown             EventType = 0
-	EventTypeActorConnected      EventType = 1
-	EventTypeActorDisconnected   EventType = 2
-	EventTypeActorStatusChanged  EventType = 3
-	EventTypeServerStatusChanged EventType = 4
-	EventTypeAlert               EventType = 5
-)
-
-// AlertLevel 告警级别
-type AlertLevel int32
-
-const (
-	AlertLevelUnknown  AlertLevel = 0
-	AlertLevelInfo     AlertLevel = 1
-	AlertLevelWarning  AlertLevel = 2
-	AlertLevelError    AlertLevel = 3
-	AlertLevelCritical AlertLevel = 4
-)
 
 // ErrorMessage 错误信息
 type ErrorMessage struct {

@@ -3,6 +3,7 @@ module go-wind-admin
 go 1.25.4
 
 require (
+	actor v0.0.0
 	entgo.io/ent v0.14.5
 	github.com/envoyproxy/protoc-gen-validate v1.3.0
 	github.com/getkin/kin-openapi v0.133.0
@@ -281,4 +282,5 @@ require (
 replace (
 	github.com/armon/go-metrics => github.com/hashicorp/go-metrics v0.4.1
 	github.com/clipperhouse/displaywidth => github.com/clipperhouse/displaywidth v0.9.0
+	actor => ../actor
 )

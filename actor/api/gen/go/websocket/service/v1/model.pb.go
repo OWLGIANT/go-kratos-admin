@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: websocket/service/v1/model.proto
 
-package servicev1
+package websocketpb
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -3089,9 +3089,9 @@ const file_websocket_service_v1_model_proto_rawDesc = "" +
 	"\x10ALERT_LEVEL_INFO\x10\x01\x12\x17\n" +
 	"\x13ALERT_LEVEL_WARNING\x10\x02\x12\x15\n" +
 	"\x11ALERT_LEVEL_ERROR\x10\x03\x12\x18\n" +
-	"\x14ALERT_LEVEL_CRITICAL\x10\x04B\xd1\x01\n" +
+	"\x14ALERT_LEVEL_CRITICAL\x10\x04B\xcb\x01\n" +
 	"\x18com.websocket.service.v1B\n" +
-	"ModelProtoP\x01Z7go-wind-admin/api/gen/go/websocket/service/v1;servicev1\xa2\x02\x03WSX\xaa\x02\x14Websocket.Service.V1\xca\x02\x14Websocket\\Service\\V1\xe2\x02 Websocket\\Service\\V1\\GPBMetadata\xea\x02\x16Websocket::Service::V1b\x06proto3"
+	"ModelProtoP\x01Z1actor/api/gen/go/websocket/service/v1;websocketpb\xa2\x02\x03WSX\xaa\x02\x14Websocket.Service.V1\xca\x02\x14Websocket\\Service\\V1\xe2\x02 Websocket\\Service\\V1\\GPBMetadata\xea\x02\x16Websocket::Service::V1b\x06proto3"
 
 var (
 	file_websocket_service_v1_model_proto_rawDescOnce sync.Once

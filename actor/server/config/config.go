@@ -21,6 +21,7 @@ type ServerConfig struct {
 	HTTPPort int    `yaml:"http_port"`
 	GRPCPort int    `yaml:"grpc_port"`
 	WSPath   string `yaml:"ws_path"`
+	Nickname string `yaml:"nickname"` // 托管者昵称 (必须)
 }
 
 // ExchangeConfig represents an exchange configuration

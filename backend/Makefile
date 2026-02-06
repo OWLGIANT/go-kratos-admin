@@ -167,10 +167,6 @@ docker-image-push:
 	@docker push $(IMAGE_NAME):latest
 	@echo "镜像推送完成: $(IMAGE_NAME):$(IMAGE_TAG)"
 
-
-# build and push docker image
-deploy: docker-image docker-image-push
-
 # use docker compose to run backend services and all its dependency services like redis, mysql, etc.
 compose-up:
 	@docker compose up -d --force-recreate
@@ -229,3 +225,6 @@ help:
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
 .DEFAULT_GOAL := help
+
+# build and push docker image
+deploy: docker-image docker-image-push

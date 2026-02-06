@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: websocket/service/v1/command.proto
 
-package servicev1
+package websocketpb
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -1855,8 +1855,8 @@ const file_websocket_service_v1_command_proto_rawDesc = "" +
 	"\x16COMMAND_TYPE_ALERT_ACK\x10\xe1\x12\x12\x1b\n" +
 	"\x16COMMAND_TYPE_USER_KICK\x10\xb8\x17\x12 \n" +
 	"\x1bCOMMAND_TYPE_USER_BROADCAST\x10\xb9\x17\x12\x1c\n" +
-	"\x17COMMAND_TYPE_ROBOT_SYNC\x10\x90\x1cB\xd3\x01\n" +
-	"\x18com.websocket.service.v1B\fCommandProtoP\x01Z7go-wind-admin/api/gen/go/websocket/service/v1;servicev1\xa2\x02\x03WSX\xaa\x02\x14Websocket.Service.V1\xca\x02\x14Websocket\\Service\\V1\xe2\x02 Websocket\\Service\\V1\\GPBMetadata\xea\x02\x16Websocket::Service::V1b\x06proto3"
+	"\x17COMMAND_TYPE_ROBOT_SYNC\x10\x90\x1cB\xcd\x01\n" +
+	"\x18com.websocket.service.v1B\fCommandProtoP\x01Z1actor/api/gen/go/websocket/service/v1;websocketpb\xa2\x02\x03WSX\xaa\x02\x14Websocket.Service.V1\xca\x02\x14Websocket\\Service\\V1\xe2\x02 Websocket\\Service\\V1\\GPBMetadata\xea\x02\x16Websocket::Service::V1b\x06proto3"
 
 var (
 	file_websocket_service_v1_command_proto_rawDescOnce sync.Once

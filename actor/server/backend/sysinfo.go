@@ -5,11 +5,30 @@ import (
 	"net"
 	"os"
 	"runtime"
+	"strings"
 
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/mem"
 )
+
+// 数据库字段长度限制
+const (
+	MaxLenNickname  = 32
+	MaxLenIP        = 32
+	MaxLenInnerIP   = 32
+	MaxLenPort      = 8
+	MaxLenMachineID = 64
+)
+
+// truncateString 截断字符串到指定长度
+func truncateString(s string, maxLen int) string {
+	s = strings.TrimSpace(s)
+	if len(s) > maxLen {
+		return s[:maxLen]
+	}
+	return s
+}
 
 // CollectServerInfo 收集服务器信息
 func CollectServerInfo() *ServerInfo {
@@ -35,9 +54,13 @@ func CollectServerInfo() *ServerInfo {
 }
 
 // CollectServerSyncData 收集完整的服务器同步数据
-func CollectServerSyncData(robotID string) *ServerSyncData {
+// nickname: 托管者昵称 (必须, 最大32字符)
+// port: 服务端口 (必须, 最大8字符)
+func CollectServerSyncData(robotID, nickname, port string) *ServerSyncData {
 	data := &ServerSyncData{
 		RobotID:    robotID,
+		Nickname:   truncateString(nickname, MaxLenNickname),
+		Port:       truncateString(port, MaxLenPort),
 		ServerInfo: CollectServerInfo(),
 	}
 
@@ -56,8 +79,17 @@ func CollectServerSyncData(robotID string) *ServerSyncData {
 		data.IP = GetOutboundIP()
 	}
 
-	// 机器ID
-	data.MachineID = GetMachineID()
+	// 如果没有内网 IP，使用外网 IP
+	if data.InnerIP == "" {
+		data.InnerIP = data.IP
+	}
+
+	// 截断 IP 字段
+	data.IP = truncateString(data.IP, MaxLenIP)
+	data.InnerIP = truncateString(data.InnerIP, MaxLenInnerIP)
+
+	// 机器ID (可选, 最大64字符)
+	data.MachineID = truncateString(GetMachineID(), MaxLenMachineID)
 
 	return data
 }

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package websocket.service.v1;
 
-option go_package = "go-wind-admin/api/gen/go/websocket/service/v1;websocketV1";
+option go_package = "actor/api/gen/go/websocket/service/v1;websocketpb";
 
 import "google/protobuf/timestamp.proto";
 import "websocket/service/v1/model.proto";

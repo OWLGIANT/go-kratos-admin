@@ -4,49 +4,38 @@ import (
 	"encoding/json"
 	"sync/atomic"
 	"time"
+
+	websocketpb "actor/api/gen/go/websocket/service/v1"
 )
 
-// CommandType 命令类型枚举 (不同组路由步距 600)
-type CommandType int32
+// CommandType 命令类型枚举
+type CommandType = websocketpb.CommandType
 
+// CommandType 常量
 const (
-	CommandTypeUnknown CommandType = 0
-
-	// 基础命令 (1-599)
-	CommandTypeInit   CommandType = 1
-	CommandTypeEcho   CommandType = 2
-	CommandTypeNotify CommandType = 3
-	CommandTypeResync CommandType = 4
-	CommandTypeError  CommandType = 5
-
-	// Actor 生命周期命令 (600-1199) - Actor 相当于服务器
-	CommandTypeActorRegister   CommandType = 600
-	CommandTypeActorUnregister CommandType = 601
-	CommandTypeActorHeartbeat  CommandType = 602
-	CommandTypeActorStatus     CommandType = 603
-	CommandTypeActorList       CommandType = 604
-
-	// Robot 控制命令 (1200-1799) - Robot 是机器人
-	CommandTypeRobotStart   CommandType = 1200
-	CommandTypeRobotStop    CommandType = 1201
-	CommandTypeRobotConfig  CommandType = 1202
-	CommandTypeRobotCommand CommandType = 1203
-	CommandTypeRobotResult  CommandType = 1204
-
-	// 服务器信息命令 (1800-2399)
-	CommandTypeServerSync   CommandType = 1800
-	CommandTypeServerStatus CommandType = 1801
-
-	// 告警命令 (2400-2999)
-	CommandTypeAlertSend CommandType = 2400
-	CommandTypeAlertAck  CommandType = 2401
-
-	// 用户命令 (3000-3599)
-	CommandTypeUserKick      CommandType = 3000
-	CommandTypeUserBroadcast CommandType = 3001
-
-	// 机器人同步命令 (3600-4199)
-	CommandTypeRobotSync CommandType = 3600
+	CommandTypeUnknown         = websocketpb.CommandType_COMMAND_TYPE_UNKNOWN
+	CommandTypeInit            = websocketpb.CommandType_COMMAND_TYPE_INIT
+	CommandTypeEcho            = websocketpb.CommandType_COMMAND_TYPE_ECHO
+	CommandTypeNotify          = websocketpb.CommandType_COMMAND_TYPE_NOTIFY
+	CommandTypeResync          = websocketpb.CommandType_COMMAND_TYPE_RESYNC
+	CommandTypeError           = websocketpb.CommandType_COMMAND_TYPE_ERROR
+	CommandTypeActorRegister   = websocketpb.CommandType_COMMAND_TYPE_ACTOR_REGISTER
+	CommandTypeActorUnregister = websocketpb.CommandType_COMMAND_TYPE_ACTOR_UNREGISTER
+	CommandTypeActorHeartbeat  = websocketpb.CommandType_COMMAND_TYPE_ACTOR_HEARTBEAT
+	CommandTypeActorStatus     = websocketpb.CommandType_COMMAND_TYPE_ACTOR_STATUS
+	CommandTypeActorList       = websocketpb.CommandType_COMMAND_TYPE_ACTOR_LIST
+	CommandTypeRobotStart      = websocketpb.CommandType_COMMAND_TYPE_ROBOT_START
+	CommandTypeRobotStop       = websocketpb.CommandType_COMMAND_TYPE_ROBOT_STOP
+	CommandTypeRobotConfig     = websocketpb.CommandType_COMMAND_TYPE_ROBOT_CONFIG
+	CommandTypeRobotCommand    = websocketpb.CommandType_COMMAND_TYPE_ROBOT_COMMAND
+	CommandTypeRobotResult     = websocketpb.CommandType_COMMAND_TYPE_ROBOT_RESULT
+	CommandTypeServerSync      = websocketpb.CommandType_COMMAND_TYPE_SERVER_SYNC
+	CommandTypeServerStatus    = websocketpb.CommandType_COMMAND_TYPE_SERVER_STATUS
+	CommandTypeAlertSend       = websocketpb.CommandType_COMMAND_TYPE_ALERT_SEND
+	CommandTypeAlertAck        = websocketpb.CommandType_COMMAND_TYPE_ALERT_ACK
+	CommandTypeUserKick        = websocketpb.CommandType_COMMAND_TYPE_USER_KICK
+	CommandTypeUserBroadcast   = websocketpb.CommandType_COMMAND_TYPE_USER_BROADCAST
+	CommandTypeRobotSync       = websocketpb.CommandType_COMMAND_TYPE_ROBOT_SYNC
 )
 
 // CommandTypeToString 命令类型转字符串
@@ -312,14 +301,15 @@ type RobotResultCmd struct {
 }
 
 // ServerSyncRequest 服务器同步请求
+// 必须字段: IP, InnerIP, Port, Nickname
 type ServerSyncRequest struct {
 	RobotID    string            `json:"robot_id"`
-	ServerInfo *ServerStatusInfo `json:"server_info"`
-	IP         string            `json:"ip,omitempty"`
-	InnerIP    string            `json:"inner_ip,omitempty"`
-	Port       string            `json:"port,omitempty"`
+	IP         string            `json:"ip"`        // 外网IP (必须)
+	InnerIP    string            `json:"inner_ip"`  // 内网IP (必须)
+	Port       string            `json:"port"`      // 端口 (必须)
+	Nickname   string            `json:"nickname"`  // 托管者昵称 (必须)
 	MachineID  string            `json:"machine_id,omitempty"`
-	Nickname   string            `json:"nickname,omitempty"`
+	ServerInfo *ServerStatusInfo `json:"server_info,omitempty"` // 服务器状态信息
 }
 
 // ServerSyncResponse 服务器同步响应
@@ -409,12 +399,12 @@ func NewServerSyncCommand(data *ServerSyncData) *Command {
 	cmd.Payload = &ServerSyncCmd{
 		Request: &ServerSyncRequest{
 			RobotID:    data.RobotID,
-			ServerInfo: serverInfo,
 			IP:         data.IP,
 			InnerIP:    data.InnerIP,
 			Port:       data.Port,
 			MachineID:  data.MachineID,
 			Nickname:   data.Nickname,
+			ServerInfo: serverInfo,
 		},
 	}
 	return cmd
@@ -440,14 +430,15 @@ func NewRobotResultCommand(requestID string, success bool, result []byte, errMsg
 type ServerInfo = ServerStatusInfo
 
 // ServerSyncData 服务器同步数据 (兼容旧协议)
+// 必须字段: IP, InnerIP, Port, Nickname
 type ServerSyncData struct {
 	RobotID    string      `json:"robot_id"`
-	ServerInfo *ServerInfo `json:"server_info,omitempty"`
-	IP         string      `json:"ip,omitempty"`
-	InnerIP    string      `json:"inner_ip,omitempty"`
-	Port       string      `json:"port,omitempty"`
+	IP         string      `json:"ip"`        // 外网IP (必须)
+	InnerIP    string      `json:"inner_ip"`  // 内网IP (必须)
+	Port       string      `json:"port"`      // 端口 (必须)
+	Nickname   string      `json:"nickname"`  // 托管者昵称 (必须)
 	MachineID  string      `json:"machine_id,omitempty"`
-	Nickname   string      `json:"nickname,omitempty"`
+	ServerInfo *ServerInfo `json:"server_info,omitempty"` // 服务器状态信息
 }
 
 // CommandHandler handles commands from backend

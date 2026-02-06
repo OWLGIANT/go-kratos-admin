@@ -98,14 +98,6 @@ docker-push:
 	@docker push $(IMAGE_NAME):latest
 	@echo "$(GREEN)推送完成!$(NC)"
 
-# 一键部署: 编译 + 构建镜像 + 推送
-deploy: docker-build docker-push
-	@echo ""
-	@echo "$(GREEN)========================================$(NC)"
-	@echo "$(GREEN)  部署完成!$(NC)"
-	@echo "$(GREEN)  镜像: $(IMAGE_NAME):$(IMAGE_TAG)$(NC)"
-	@echo "$(GREEN)========================================$(NC)"
-
 # 本地运行 Docker 容器
 docker-run:
 	@echo "$(GREEN)启动 $(APP_NAME) 容器...$(NC)"
@@ -207,3 +199,12 @@ info:
 	@echo "  GOARCH:      $(GOARCH)"
 
 .DEFAULT_GOAL := help
+
+
+# 一键部署: 编译 + 构建镜像 + 推送
+deploy: docker-build docker-push
+	@echo ""
+	@echo "$(GREEN)========================================$(NC)"
+	@echo "$(GREEN)  部署完成!$(NC)"
+	@echo "$(GREEN)  镜像: $(IMAGE_NAME):$(IMAGE_TAG)$(NC)"
+	@echo "$(GREEN)========================================$(NC)"

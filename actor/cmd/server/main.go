@@ -133,12 +133,18 @@ func main() {
 			logger.Info("Connected to backend......")
 
 			// Send server info after connection
-			serverData := backend.CollectServerSyncData(robotID)
+			// 必须字段: nickname, port (长度限制在 CollectServerSyncData 中处理)
+			nickname := cfg.Server.Nickname
+			if nickname == "" {
+				nickname = robotID // 默认使用 robotID
+			}
+			port := fmt.Sprintf("%d", cfg.Server.HTTPPort)
+			serverData := backend.CollectServerSyncData(robotID, nickname, port)
 			if err = backendClient.SendServerSync(serverData); err != nil {
 				logger.Errorf("Failed to send server sync: %v", err)
 			} else {
-				logger.Infof("Server sync sent: ip=%s, inner_ip=%s, machine_id=%s",
-					serverData.IP, serverData.InnerIP, serverData.MachineID)
+				logger.Infof("Server sync sent: ip=%s, inner_ip=%s, port=%s, nickname=%s, machine_id=%s",
+					serverData.IP, serverData.InnerIP, serverData.Port, serverData.Nickname, serverData.MachineID)
 			}
 		})
 

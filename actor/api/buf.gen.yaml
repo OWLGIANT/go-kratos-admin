@@ -1,0 +1,28 @@
+# 配置protoc生成规则
+version: v2
+
+clean: true
+
+managed:
+  enabled: true
+
+  disable:
+    - module: buf.build/googleapis/googleapis
+
+  override:
+    # per-directory go_package options
+    - file_option: go_package
+      path: websocket/service/v1
+      value: actor/api/gen/go/websocket/service/v1;websocketpb
+
+plugins:
+  # generate go code
+  - local: protoc-gen-go
+    out: gen/go
+    opt: paths=source_relative
+
+  # generate grpc service code (optional, for future use)
+  # - local: protoc-gen-go-grpc
+  #   out: gen/go
+  #   opt:
+  #     - paths=source_relative
